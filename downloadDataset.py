@@ -6,11 +6,29 @@ from PIL import Image, ImageDraw
 # Global Constants ============================================================
 
 TILE_SIZE = 256
-CITY_DICT = {
-	'Zurich': []
-}
+DOWNLOAD_SIZE = 640
 GOOGLE_MAP_KEY = 'AIzaSyAR7IQKtdUg3X0wmpdIoES5lcGwGqtlL7o'
-DEFAULT_GOOGLE_SIZE = 640
+CITY_DICT = {
+	# Longitude first, latitude second
+	'Zurich': {
+		'center': (8.5402048, 47.3779211),
+		'step': (0.0015, 0.0010),
+		'xrange': (-3, 4),
+		'yrange': (-3, 4),
+		'zoom': 17,
+		'scale': 2,
+		'size': 1200
+	},
+	'London': {
+		'center': (8.5402048, 47.3779211),
+		'step': (0.0015, 0.0010),
+		'xrange': (-2, 3),
+		'yrange': (-2, 3),
+		'zoom': 19,
+		'scale': 2,
+		'size': 1200
+	}
+}
 
 # Maps Utilities ============================================================
 
@@ -70,13 +88,13 @@ class AerialImageWithCorner(object):
 		self.scale = scale
 		self.size = size
 		self.z = self.zoom + self.scale - 1
-		if not os.path.exists('./data'): 
-			os.makedirs('./data')
-		if not os.path.exists('./data/osm'): 
-			os.makedirs('./data/osm')
-		self.filenamePNG = './data/%d-i.png' % fid
-		self.filenameOSM = './data/osm/%d.osm' % fid
-		self.filenameMEG = './data/%d-m.png' % fid
+		if not os.path.exists('../Data'): 
+			os.makedirs('../Data')
+		if not os.path.exists('../Data/osm'): 
+			os.makedirs('../Data/osm')
+		self.filenamePNG = '../Data/%d-i.png' % fid
+		self.filenameOSM = '../Data/osm/%d.osm' % fid
+		self.filenameMEG = '../Data/%d-m.png' % fid
 		self.bbox = BoundingBox(lon = lon, lat = lat, zoom = zoom, scale = scale, size = size)
 		self.downloadAerialImage()
 		self.downloadOpenStreetMap()
@@ -88,7 +106,7 @@ class AerialImageWithCorner(object):
 			'maptype=%s&' 			% 'satellite' 									+ \
 			'center=%.7lf,%.7lf&' 	% (self.lat, self.lon) 							+ \
 			'zoom=%d&' 				% self.zoom 									+ \
-			'size=%dx%d&' 			% (DEFAULT_GOOGLE_SIZE, DEFAULT_GOOGLE_SIZE)	+ \
+			'size=%dx%d&' 			% (DOWNLOAD_SIZE, DOWNLOAD_SIZE)	+ \
 			'scale=%d&' 			% self.scale 									+ \
 			'format=%s&' 			% 'png32' 										+ \
 			'key=%s' 				% GOOGLE_MAP_KEY 								  \
@@ -138,7 +156,7 @@ class AerialImageWithCorner(object):
 						v = sub_item.attrib.get('v')
 						if k and v:
 							d[k] = v
-				if 'building' in d and d['building'] == 'yes':
+				if 'building' in d or d.get('tourism') == 'hotel':# and d['building'] == 'yes':
 					flag = True
 					polygon = []
 					for coo in node_list:
@@ -158,18 +176,17 @@ class AerialImageWithCorner(object):
 		Image.alpha_composite(img, mask).save(self.filenameMEG)
 
 if __name__ == '__main__':
-	blon = -87.6926273#8.5475291
-	blat = 41.8495845#47.3885816
-	zoom = 19
-	scale = 2
-	size = 1200
+	city = 'Zurich'
+	clon, clat = CITY_DICT[city]['center']
+	zoom = CITY_DICT[city]['zoom']
+	scale = CITY_DICT[city]['scale']
+	size = CITY_DICT[city]['size']
+	xrg = CITY_DICT[city]['xrange']
+	yrg = CITY_DICT[city]['yrange']
 	fid = 0
-	for i in range(-2, 2):
-		for j in range(-2, 2):
+	for i in range(xrg[0], xrg[1]):
+		for j in range(yrg[0], yrg[1]):
 			fid += 1
-			lon = blon + 0.0016 * i
-			lat = blat + 0.0010 * j
+			lon = clon + 0.0015 * i
+			lat = clat + 0.0010 * j
 			obj = AerialImageWithCorner(lon, lat, zoom, scale, size, fid)
-
-
-
