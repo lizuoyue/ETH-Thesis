@@ -5,19 +5,21 @@ from PIL import Image, ImageDraw
 
 # Global Constants ============================================================
 
+CITY = 'Zurich'
 TILE_SIZE = 256
 DOWNLOAD_SIZE = 640
+FILE_PATH = '../Dataset'
 GOOGLE_MAP_KEY = 'AIzaSyAR7IQKtdUg3X0wmpdIoES5lcGwGqtlL7o'
 CITY_DICT = {
 	# Longitude first, latitude second
 	'Zurich': {
-		'center': (8.5402048, 47.3779211),
-		'step': (0.0015, 0.0010),
-		'xrange': (-3, 4),
-		'yrange': (-3, 4),
+		'center': (8.5386261, 47.3930324),
+		'step': (0.0030, 0.0020),
+		'xrange': (-5, 5),
+		'yrange': (-5, 5),
 		'zoom': 17,
 		'scale': 2,
-		'size': 1200
+		'size': 600
 	},
 	'London': {
 		'center': (8.5402048, 47.3779211),
@@ -88,16 +90,15 @@ class AerialImageWithCorner(object):
 		self.scale = scale
 		self.size = size
 		self.z = self.zoom + self.scale - 1
-		if not os.path.exists('../Data'): 
-			os.makedirs('../Data')
-		if not os.path.exists('../Data/osm'): 
-			os.makedirs('../Data/osm')
-		self.filenamePNG = '../Data/%d-i.png' % fid
-		self.filenameOSM = '../Data/osm/%d.osm' % fid
-		self.filenameMEG = '../Data/%d-m.png' % fid
+		if not os.path.exists(FILE_PATH): 
+			os.makedirs(FILE_PATH)
+		if not os.path.exists(FILE_PATH + '/osm'): 
+			os.makedirs(FILE_PATH + '/osm')
+		self.filenamePNG = FILE_PATH + '/%d-i.png' % fid
+		self.filenameOSM = FILE_PATH + '/osm/%d.osm' % fid
+		self.filenameMEG = FILE_PATH + '/%d-m.png' % fid
+		self.filenameCLS = FILE_PATH + '/%d-c.png' % fid
 		self.bbox = BoundingBox(lon = lon, lat = lat, zoom = zoom, scale = scale, size = size)
-		self.downloadAerialImage()
-		self.downloadOpenStreetMap()
 
 	def downloadAerialImage(self):
 		f = open(self.filenamePNG, 'wb')
@@ -156,37 +157,48 @@ class AerialImageWithCorner(object):
 						v = sub_item.attrib.get('v')
 						if k and v:
 							d[k] = v
-				if 'building' in d or d.get('tourism') == 'hotel':# and d['building'] == 'yes':
-					flag = True
+				if 'building' in d or d.get('tourism') == 'hotel': # and d['building'] == 'yes':
+					# flag = []
+					# for coo in node_list:
+					# 	col, row = self.bbox.lonLatToRelativePixel(lon = coo[0], lat = coo[1])
+					# 	if col >= 0 and col < self.size and row >= 0 and row < self.size:
+					# 		flag.append(1)
+					# 	else:
+					# 		flag.append(0)
+					# if sum(flag) == 0:
+					# 	continue
+					# node_list = node_list[0: len(node_list) - 1]
 					polygon = []
-					for coo in node_list:
+					for i, coo in enumerate(node_list):
 						col, row = self.bbox.lonLatToRelativePixel(lon = coo[0], lat = coo[1])
-						if col >= 0 and col < self.size and row >= 0 and row < self.size:
-							polygon.append((col, row))
-						else:
-							flag = False
-							break
-					if flag:
-						polygons.append(polygon)
+						# if col >= 0 and col < self.size and row >= 0 and row < self.size:
+						polygon.append((col, row))
+						# else:
+						# 	flag = False
+						# 	break
+					polygons.append(polygon)
 		img = Image.open(self.filenamePNG)
 		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 		draw = ImageDraw.Draw(mask)
 		for polygon in polygons:
-			draw.polygon(polygon, fill=(255,0,0,128), outline=(255,0,0,128))
+			draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
 		Image.alpha_composite(img, mask).save(self.filenameMEG)
+		mask.save(self.filenameCLS)
 
 if __name__ == '__main__':
-	city = 'Zurich'
-	clon, clat = CITY_DICT[city]['center']
-	zoom = CITY_DICT[city]['zoom']
-	scale = CITY_DICT[city]['scale']
-	size = CITY_DICT[city]['size']
-	xrg = CITY_DICT[city]['xrange']
-	yrg = CITY_DICT[city]['yrange']
+	c_lon, c_lat = CITY_DICT[CITY]['center']
+	x_step, y_step = CITY_DICT[CITY]['step']
+	zoom = CITY_DICT[CITY]['zoom']
+	scale = CITY_DICT[CITY]['scale']
+	size = CITY_DICT[CITY]['size']
+	xrg = CITY_DICT[CITY]['xrange']
+	yrg = CITY_DICT[CITY]['yrange']
 	fid = 0
 	for i in range(xrg[0], xrg[1]):
 		for j in range(yrg[0], yrg[1]):
 			fid += 1
-			lon = clon + 0.0015 * i
-			lat = clat + 0.0010 * j
+			lon = c_lon + x_step * i
+			lat = c_lat + y_step * j
 			obj = AerialImageWithCorner(lon, lat, zoom, scale, size, fid)
+			obj.downloadAerialImage()
+			obj.downloadOpenStreetMap()
