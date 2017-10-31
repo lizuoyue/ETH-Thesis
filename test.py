@@ -1,3 +1,4 @@
+import random
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -234,7 +235,7 @@ def model(x, y, n_class):
 	)
 	dense_2 = tf.layers.dense(
 		inputs = dense_1,
-		units = 64,
+		units = 128,
 		activation = tf.nn.relu
 	)
 	logits = tf.layers.dense(
@@ -251,28 +252,29 @@ if __name__ == '__main__':
 	x = tf.placeholder(tf.float32)
 	y = tf.placeholder(tf.int32)
 	pred_class, pred_prob, loss = model(x, y, 3)
-	optimizer = tf.train.GradientDescentOptimizer(0.01)
+	optimizer = tf.train.AdamOptimizer(learning_rate = 0.0005)
 	train = optimizer.minimize(loss)
 	init = tf.global_variables_initializer()
 	batch = 30
+	n_iter = 1000
 	with tf.Session() as sess:
 		sess.run(init)
-		for i in range(100):
-			x_train = []
-			y_train = []
+		for i in range(n_iter):
+			xy_train = []
 			for j in range(batch / 3):
-				x_train.append(generatePolygon(polygon_type = 'tri'))
-				y_train.append(0)
-				x_train.append(generatePolygon(polygon_type = 'qua'))
-				y_train.append(1)
-				x_train.append(generatePolygon(polygon_type = 'ell'))
-				y_train.append(2)
+				xy_train.append((generatePolygon(polygon_type = 'tri'), 0))
+				xy_train.append((generatePolygon(polygon_type = 'qua'), 1))
+				xy_train.append((generatePolygon(polygon_type = 'ell'), 2))
+			random.shuffle(xy_train)
+			x_train = [item[0] for item in xy_train]
+			y_train = [item[1] for item in xy_train]
 			# for j in range(batch):
 			# 	plt.imshow(x_train[j])
 			# 	plt.show()
+			print(np.array(y_train))
 			feed_dict = {x: x_train, y: y_train}
 			sess.run(train, feed_dict)
 			pred = sess.run(pred_class, feed_dict)
 			print(pred)
 			acc = sum(pred == y_train) / float(batch)
-			print(i, sess.run(loss, feed_dict), acc)
+			print(i, sess.run(loss, feed_dict), float('%.2lf' % acc))
