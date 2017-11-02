@@ -249,6 +249,7 @@ def model(x, y, n_class):
 	return pred_class, pred_prob, loss
 
 if __name__ == '__main__':
+	f = open('a.out', 'w')
 	random.seed(3142857)
 	x = tf.placeholder(tf.float32)
 	y = tf.placeholder(tf.int32)
@@ -272,11 +273,12 @@ if __name__ == '__main__':
 			# for j in range(batch):
 			# 	plt.imshow(x_train[j])
 			# 	plt.show()
-			print(np.array(y_train))
+			f.write(str(np.array(y_train)))
 			feed_dict = {x: x_train, y: y_train}
 			sess.run(train, feed_dict)
 			pred_class, pred_prob, loss = sess.run(res, feed_dict)
-			print(pred_class)
+			f.write(str(pred_class))
 			acc = sum(pred_class == y_train) / float(batch)
-			print(i, loss, float('%.2lf' % acc))
+			f.write('%d, %.8lf, %.2lf' % (i, loss, acc))
+
 			
