@@ -249,14 +249,15 @@ def model(x, y, n_class):
 	return pred_class, pred_prob, loss
 
 if __name__ == '__main__':
+	random.seed(3142857)
 	x = tf.placeholder(tf.float32)
 	y = tf.placeholder(tf.int32)
-	pred_class, pred_prob, loss = model(x, y, 3)
+	res = model(x, y, 3)
 	optimizer = tf.train.AdamOptimizer(learning_rate = 0.0005)
-	train = optimizer.minimize(loss)
+	train = optimizer.minimize(res[2])
 	init = tf.global_variables_initializer()
 	batch = 30
-	n_iter = 1000
+	n_iter = 10000
 	with tf.Session() as sess:
 		sess.run(init)
 		for i in range(n_iter):
@@ -274,7 +275,8 @@ if __name__ == '__main__':
 			print(np.array(y_train))
 			feed_dict = {x: x_train, y: y_train}
 			sess.run(train, feed_dict)
-			pred = sess.run(pred_class, feed_dict)
-			print(pred)
-			acc = sum(pred == y_train) / float(batch)
-			print(i, sess.run(loss, feed_dict), float('%.2lf' % acc))
+			pred_class, pred_prob, loss = sess.run(res, feed_dict)
+			print(pred_class)
+			acc = sum(pred_class == y_train) / float(batch)
+			print(i, loss, float('%.2lf' % acc))
+			
