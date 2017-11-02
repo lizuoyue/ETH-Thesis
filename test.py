@@ -273,12 +273,13 @@ if __name__ == '__main__':
 			# for j in range(batch):
 			# 	plt.imshow(x_train[j])
 			# 	plt.show()
-			f.write(str(np.array(y_train)))
+			f.write(str(np.array(y_train)) + '\n')
+			f.flush()
 			feed_dict = {x: x_train, y: y_train}
 			sess.run(train, feed_dict)
 			pred_class, pred_prob, loss = sess.run(res, feed_dict)
-			f.write(str(pred_class))
+			f.write(str(pred_class) + '\n')
+			f.flush()
 			acc = sum(pred_class == y_train) / float(batch)
-			f.write('%d, %.8lf, %.2lf' % (i, loss, acc))
-
-			
+			f.write('%d, %.8lf, %.2lf\n' % (i, loss, acc))
+			f.flush()
