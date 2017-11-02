@@ -262,7 +262,7 @@ if __name__ == '__main__':
 		sess.run(init)
 		for i in range(n_iter):
 			xy_train = []
-			for j in range(batch / 3):
+			for j in range(int(batch / 3)):
 				xy_train.append((generatePolygon(polygon_type = 'tri'), 0))
 				xy_train.append((generatePolygon(polygon_type = 'qua'), 1))
 				xy_train.append((generatePolygon(polygon_type = 'ell'), 2))
