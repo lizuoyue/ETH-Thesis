@@ -186,12 +186,11 @@ def model(x, y1, y2):
 		padding = 'same',
 		activation = tf.sigmoid
 	)
-	aaa = tf.reduce_sum(boundary_true) / 30.0
 	loss = 0.0
-	loss += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * aaa) + aaa))
-	loss += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * 772 + 6))
+	loss += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * 688 + 48))
+	loss += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * 772 + 6 ))
 	loss /= (2 * 784 / 100.0)
-	return loss, boundary, vertices, aaa
+	return loss, boundary, vertices
 
 if __name__ == '__main__':
 	f = open('a.out', 'w')
@@ -220,6 +219,6 @@ if __name__ == '__main__':
 				Image.fromarray(np.array(img[j] * 255.0, dtype = np.uint8)).save('./res/%d-a.png' % j)
 				Image.fromarray(np.array(boundary[j,...,0] * 255.0, dtype = np.uint8)).resize((224,224),PIL.Image.BILINEAR).save('./res/%d-b.png' % j)
 				Image.fromarray(np.array(vertices[j,...,0] * 255.0, dtype = np.uint8)).resize((224,224),PIL.Image.BILINEAR).save('./res/%d-c.png' % j)
-			f.write('%.6lf, %.2lf\n' % (loss, aaa))
+			f.write('%.6lf\n' % loss)
 			f.flush()
 
