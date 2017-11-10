@@ -64,7 +64,7 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6):
 
 if __name__ == '__main__':
 	for i in range(2):
-		plotPolygon(num_vertices = 6)
+		plotPolygon()
 
 
 

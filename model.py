@@ -1,13 +1,15 @@
 import random
 import numpy as np
 import tensorflow as tf
+import PIL
 from PIL import Image, ImageDraw
 import utility
+# import matplotlib.pyplot as plt
 
-def model(image, boundary_true, vertices_true):
+def model(x, y1, y2):
 	input_layer = tf.reshape(x, [-1, 224, 224, 3])
-	label = tf.reshape(y, [-1])
-
+	boundary_true = tf.reshape(y1, [-1, 28, 28, 1])
+	vertices_true = tf.reshape(y2, [-1, 28, 28, 1])
 	conv1_1 = tf.layers.conv2d(
 		inputs = input_layer,
 		filters = 64,
@@ -184,44 +186,40 @@ def model(image, boundary_true, vertices_true):
 		padding = 'same',
 		activation = tf.sigmoid
 	)
+	aaa = tf.reduce_sum(boundary_true) / 30.0
 	loss = 0.0
-	loss += tf.losses.log_loss(labels = boundary_true, prediction = boundary)
-	loss += tf.losses.log_loss(labels = vertices_true, prediction = vertices)
-	loss /= 2
-	return loss, boundary, vertices
+	loss += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * aaa) + aaa))
+	loss += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * 772 + 6))
+	loss /= (2 * 784 / 100.0)
+	return loss, boundary, vertices, aaa
 
 if __name__ == '__main__':
 	f = open('a.out', 'w')
 	random.seed(3142857)
 	x = tf.placeholder(tf.float32)
-	y = tf.placeholder(tf.int32)
-	res = model(x, y, 3)
-	optimizer = tf.train.AdamOptimizer(learning_rate = 0.0005)
-	train = optimizer.minimize(res[2])
+	y1 = tf.placeholder(tf.int32)
+	y2 = tf.placeholder(tf.int32)
+	result = model(x, y1, y2)
+	optimizer = tf.train.AdamOptimizer(learning_rate = 0.1)
+	train = optimizer.minimize(result[0])
 	init = tf.global_variables_initializer()
 	batch = 30
-	n_iter = 1000
+	n_iter = 10000
 	with tf.Session() as sess:
 		sess.run(init)
 		for i in range(n_iter):
-			xy_train = []
-			for j in range(int(batch / 3)):
-				xy_train.append((generatePolygon(polygon_type = 'tri'), 0))
-				xy_train.append((generatePolygon(polygon_type = 'qua'), 1))
-				xy_train.append((generatePolygon(polygon_type = 'ell'), 2))
-			random.shuffle(xy_train)
-			x_train = [item[0] for item in xy_train]
-			y_train = [item[1] for item in xy_train]
-			# for j in range(batch):
-			# 	plt.imshow(x_train[j])
-			# 	plt.show()
-			f.write(str(np.array(y_train)) + '\n')
-			f.flush()
-			feed_dict = {x: x_train, y: y_train}
+			data = [utility.plotPolygon() for j in range(batch)]
+			polygon = [item[0] for item in data]
+			img = [item[1] for item in data]
+			boundary_true = [item[2] for item in data]
+			vertices_true = [item[3] for item in data]
+			feed_dict = {x: img, y1: boundary_true, y2: vertices_true}
 			sess.run(train, feed_dict)
-			pred_class, pred_prob, loss = sess.run(res, feed_dict)
-			f.write(str(pred_class) + '\n')
+			loss, boundary, vertices, aaa = sess.run(result, feed_dict)
+			for j in range(batch):
+				Image.fromarray(np.array(img[j] * 255.0, dtype = np.uint8)).save('./res/%d-a.png' % j)
+				Image.fromarray(np.array(boundary[j,...,0] * 255.0, dtype = np.uint8)).resize((224,224),PIL.Image.BILINEAR).save('./res/%d-b.png' % j)
+				Image.fromarray(np.array(vertices[j,...,0] * 255.0, dtype = np.uint8)).resize((224,224),PIL.Image.BILINEAR).save('./res/%d-c.png' % j)
+			f.write('%.6lf, %.2lf\n' % (loss, aaa))
 			f.flush()
-			acc = sum(pred_class == y_train) / float(batch)
-			f.write('%d, %.8lf, %.2lf\n' % (i, loss, acc))
-			f.flush()
+
