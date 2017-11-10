@@ -199,7 +199,7 @@ if __name__ == '__main__':
 	y1 = tf.placeholder(tf.int32)
 	y2 = tf.placeholder(tf.int32)
 	result = model(x, y1, y2)
-	optimizer = tf.train.AdamOptimizer(learning_rate = 0.1)
+	optimizer = tf.train.AdamOptimizer(learning_rate = 0.001)
 	train = optimizer.minimize(result[0])
 	init = tf.global_variables_initializer()
 	batch = 30
@@ -220,5 +220,6 @@ if __name__ == '__main__':
 				Image.fromarray(np.array(boundary[j,...,0] * 255.0, dtype = np.uint8)).resize((224,224),PIL.Image.BILINEAR).save('./res/%d-b.png' % j)
 				Image.fromarray(np.array(vertices[j,...,0] * 255.0, dtype = np.uint8)).resize((224,224),PIL.Image.BILINEAR).save('./res/%d-c.png' % j)
 			f.write('%.6lf\n' % loss)
+			print('%.6lf\n' % loss)
 			f.flush()
 
