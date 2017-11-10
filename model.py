@@ -214,7 +214,7 @@ if __name__ == '__main__':
 			vertices_true = [item[3] for item in data]
 			feed_dict = {x: img, y1: boundary_true, y2: vertices_true}
 			sess.run(train, feed_dict)
-			loss, boundary, vertices, aaa = sess.run(result, feed_dict)
+			loss, boundary, vertices = sess.run(result, feed_dict)
 			for j in range(batch):
 				Image.fromarray(np.array(img[j] * 255.0, dtype = np.uint8)).save('./res/%d-a.png' % j)
 				Image.fromarray(np.array(boundary[j,...,0] * 255.0, dtype = np.uint8)).resize((224,224),PIL.Image.BILINEAR).save('./res/%d-b.png' % j)
