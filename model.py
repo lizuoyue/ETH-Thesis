@@ -199,11 +199,11 @@ if __name__ == '__main__':
 	y1 = tf.placeholder(tf.int32)
 	y2 = tf.placeholder(tf.int32)
 	result = model(x, y1, y2)
-	optimizer = tf.train.AdamOptimizer(learning_rate = 0.001)
+	optimizer = tf.train.AdamOptimizer(learning_rate = 0.0005)
 	train = optimizer.minimize(result[0])
 	init = tf.global_variables_initializer()
 	batch = 30
-	n_iter = 10000
+	n_iter = 100000
 	with tf.Session() as sess:
 		sess.run(init)
 		for i in range(n_iter):
