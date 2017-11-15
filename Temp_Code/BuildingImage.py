@@ -55,7 +55,7 @@ class BoundingBox(object):
 		px, py = lonLatToPixel(lon, lat, self.z)
 		return int(px - self.center_px + self.size / 2), int(py - self.center_py + self.size / 2)
 
-def getBuildingAerialImage(building, filename):
+def getBuildingAerialImage(building):
 	min_lon, max_lon = 200, -200
 	min_lat, max_lat = 100, -100
 	for lon, lat in building:
@@ -89,7 +89,7 @@ def getBuildingAerialImage(building, filename):
 	img = np.array(Image.open(io.BytesIO(data)))
 	beg = int((img.shape[0] - 224) / 2)
 	end = img.shape[0] - beg
-	scipy.misc.imsave(filename, img[beg: end, beg: end, 0: ])
+	img = img[beg: end, beg: end, 0: ]
 
 	bbox = BoundingBox(c_lon, c_lat, 19, 2, 224)
 	polygon = []
@@ -98,7 +98,7 @@ def getBuildingAerialImage(building, filename):
 		px, py = bbox.lonLatToRelativePixel(lon, lat)
 		polygon.append((px, py))
 		polygon_s.append((int(px / 8), int(py / 8)))
-	img = Image.open(filename)
+	img = Image.fromarray(img)
 	mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 	draw = ImageDraw.Draw(mask)
 	draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
@@ -237,7 +237,7 @@ class BuildingListConstructor(object):
 		result = []
 		while len(result) < batch_size:
 			building = random.sample(self.getBuildingList(), 1)
-			res = getBuildingAerialImage(building[0], 'wolegequ.png')
+			res = getBuildingAerialImage(building[0])
 			if res:
 				result.append(res)
 		return result
