@@ -2,7 +2,8 @@ import numpy as np
 import lxml.etree as ET
 import os, math, requests, scipy.misc
 from PIL import Image, ImageDraw
-import random
+import random, time
+import io, binascii
 
 TILE_SIZE = 256
 GOOGLE_MAP_KEY = 'AIzaSyAR7IQKtdUg3X0wmpdIoES5lcGwGqtlL7o'
@@ -70,8 +71,7 @@ def getBuildingAerialImage(building, filename):
 	c_lat = (min_lat + max_lat) / 2
 	while True:
 		try:
-			f = open(filename, 'wb')
-			img = requests.get(
+			data = requests.get(
 				'https://maps.googleapis.com/maps/api/staticmap?' 						+ \
 				'maptype=%s&' 			% 'satellite' 									+ \
 				'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 							+ \
@@ -81,13 +81,12 @@ def getBuildingAerialImage(building, filename):
 				'format=%s&' 			% 'png32' 										+ \
 				'key=%s' 				% GOOGLE_MAP_KEY 								  \
 			).content
-			f.write(img)
-			f.close()
+			time.sleep(0.2)
 			break
 		except:
 			print('Try again.')
 			pass
-	img = scipy.misc.imread(filename)
+	img = np.array(Image.open(io.BytesIO(data)))
 	beg = int((img.shape[0] - 224) / 2)
 	end = img.shape[0] - beg
 	scipy.misc.imsave(filename, img[beg: end, beg: end, 0: ])

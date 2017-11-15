@@ -208,7 +208,7 @@ def model(x, b, v, y, end):
 		activation = tf.sigmoid
 	)
 	loss1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary , weights = (boundary_true * 686 + 49))
-	loss1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices , weights = (vertices_true * 772 + 6 ))
+	loss1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices , weights = (vertices_true * 776 + 4 ))
 	loss1 /= (2 * 784 / 100)
 
 	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell() for _ in range(2)])
@@ -255,7 +255,7 @@ if __name__ == '__main__':
 	v = tf.placeholder(tf.float32)
 	end = tf.placeholder(tf.float32)
 	result = model(x, b, v, y, end)
-	optimizer = tf.train.AdamOptimizer(learning_rate = 0.0005)
+	optimizer = tf.train.AdamOptimizer(learning_rate = 0.0004)
 	train = optimizer.minimize(result[0][0] + result[0][1])
 	init = tf.global_variables_initializer()
 	n_iter = 10000
