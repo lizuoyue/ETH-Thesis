@@ -2,6 +2,7 @@ import numpy as np
 import lxml.etree as ET
 import os, math, requests, scipy.misc
 from PIL import Image, ImageDraw
+import random
 
 TILE_SIZE = 256
 GOOGLE_MAP_KEY = 'AIzaSyAR7IQKtdUg3X0wmpdIoES5lcGwGqtlL7o'
@@ -63,8 +64,6 @@ def getBuildingAerialImage(building, filename):
 		max_lat = max(lat, max_lat)
 	a, b = lonLatToPixel(min_lon, max_lat, 20)
 	c, d = lonLatToPixel(max_lon, min_lat, 20)
-	# print(c - a, d - b)
-	# return
 	if c - a > 200 or d - b > 200:
 		return
 	c_lon = (min_lon + max_lon) / 2
@@ -84,25 +83,53 @@ def getBuildingAerialImage(building, filename):
 			).content
 			f.write(img)
 			f.close()
-			img = scipy.misc.imread(filename)
 			break
 		except:
+			print('Try again.')
 			pass
+	img = scipy.misc.imread(filename)
 	beg = int((img.shape[0] - 224) / 2)
 	end = img.shape[0] - beg
 	scipy.misc.imsave(filename, img[beg: end, beg: end, 0: ])
 
 	bbox = BoundingBox(c_lon, c_lat, 19, 2, 224)
 	polygon = []
+	polygon_s = []
 	for lon, lat in building:
-		polygon.append(bbox.lonLatToRelativePixel(lon, lat))
+		px, py = bbox.lonLatToRelativePixel(lon, lat)
+		polygon.append((px, py))
+		polygon_s.append((int(px / 8), int(py / 8)))
 	img = Image.open(filename)
 	mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 	draw = ImageDraw.Draw(mask)
 	draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-	Image.alpha_composite(img, mask).save(filename.replace('.png', '-z.png'))
-	mask.save(filename.replace('.png', '-m.png'))
+	merge = Image.alpha_composite(img, mask)
+	# img.show()
+	# mask.show()
+	# merge.show()
+	# merge.save(filename.replace('.png', '-z.png'))
+	# mask.save(filename.replace('.png', '-m.png'))
+	img_size_s = (28, 28)
 
+	boundary = Image.new('P', img_size_s, color = 0)
+	draw = ImageDraw.Draw(boundary)
+	draw.polygon(polygon_s, fill = 0, outline = 255)
+	# boundary.show()
+
+	vertices = Image.new('P', img_size_s, color = 0)
+	draw = ImageDraw.Draw(vertices)
+	draw.point(polygon_s, fill = 255)
+	# vertices.show()
+
+	polygon_img = []
+	for vertex in polygon_s:
+		single = Image.new('P', img_size_s, color = 0)
+		draw = ImageDraw.Draw(single)
+		draw.point([vertex], fill = 255)
+		# single.show()
+		polygon_img.append(np.array(single) / 255.0)
+	polygon_img.append(np.array(Image.new('P', img_size_s, color = 0)) / 255.0)
+	return img, mask, merge, np.array(boundary)/255.0, np.array(vertices)/255.0, np.array(polygon_img)
 
 class BuildingListConstructor(object):
 	def __init__(self, range_vertices, filename = None):
@@ -126,7 +153,10 @@ class BuildingListConstructor(object):
 			if item in self.building:
 				pass
 			else:
-				self.building[item] = d[item]
+				building = d[item]
+				if len(building) >= self.range_vertices[0] and len(building) <= self.range_vertices[1]:
+					self.building[item] = building
+		print(len(self.building))
 		return
 
 	def getBuildingList(self):
@@ -150,8 +180,7 @@ class BuildingListConstructor(object):
 		return
 
 	def addBuildingList(self, left, down, right, up):
-		flag = True
-		while flag:
+		while True:
 			try:
 				osm = requests.get(
 					'http://www.openstreetmap.org/api/0.6/map?bbox=' + \
@@ -159,7 +188,7 @@ class BuildingListConstructor(object):
 					(left, down, right, up)
 				).content
 				osm = ET.fromstring(osm)
-				flag = False
+				break
 			except:
 				print('Try again.')
 				pass
@@ -205,6 +234,15 @@ class BuildingListConstructor(object):
 				pass
 		return
 
+	def getImage(self, batch_size):
+		result = []
+		while len(result) < batch_size:
+			building = random.sample(self.getBuildingList(), 1)
+			res = getBuildingAerialImage(building[0], 'wolegequ.png')
+			if res:
+				result.append(res)
+		return result
+
 if __name__ == '__main__':
 	if False:
 		obj = BuildingListConstructor(range_vertices = (4, 12))
@@ -220,10 +258,5 @@ if __name__ == '__main__':
 		obj.printBuildingList()
 	else:
 		obj = BuildingListConstructor(range_vertices = (4, 12), filename = './buildingList.npy')
-	for i, item in enumerate(obj.getBuildingList()):
-		getBuildingAerialImage(item, 'temp-%d.png' % i)
-		if i > 320:
-			break
-
 
 
