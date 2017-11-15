@@ -91,7 +91,7 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6):
 	single_v.append(np.array(Image.new('P', img_size_s, color = 0)) / 255.0)
 
 	# Show
-	if False:
+	if True:
 		img.show(title = 'img')
 		boundary.show(title = 'boundary')
 		vertices.show(title = 'vertices')
@@ -113,7 +113,7 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6):
 
 if __name__ == '__main__':
 	for i in range(1):
-		plotPolygon()
+		plotPolygon(num_vertices = 7)
 
 
 
