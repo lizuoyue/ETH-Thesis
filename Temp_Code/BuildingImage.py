@@ -81,12 +81,11 @@ def getBuildingAerialImage(building):
 				'format=%s&' 			% 'png32' 										+ \
 				'key=%s' 				% GOOGLE_MAP_KEY 								  \
 			).content
-			time.sleep(0.2)
+			img = np.array(Image.open(io.BytesIO(data)))
 			break
 		except:
 			print('Try again.')
 			pass
-	img = np.array(Image.open(io.BytesIO(data)))
 	beg = int((img.shape[0] - 224) / 2)
 	end = img.shape[0] - beg
 	img = img[beg: end, beg: end, 0: ]
