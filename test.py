@@ -2,14 +2,16 @@ import random
 import numpy as np
 import PIL
 from PIL import Image, ImageDraw
-import BuildingImage
+import downloadBuilding
 import matplotlib.pyplot as plt
 BATCH_SIZE = 3
 def show(img):
 	plt.imshow(img)
 	plt.show()
 if __name__ == '__main__':
-	obj = BuildingImage.BuildingListConstructor(range_vertices = (4, 4), filename = './buildingList.npy')
+	obj = downloadBuilding.BuildingListConstructor(range_vertices = (4, 4), filename = './buildingList.npy')
+	print(obj.building)
+	quit()
 	data = obj.getImage(BATCH_SIZE)
 	img = [np.array(item[0])[...,0:3]/255.0 for item in data] # batch_size 224 224 3
 	single = [item[5] for item in data] # batch_size num_vertices+1 28 28

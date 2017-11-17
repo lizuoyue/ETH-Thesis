@@ -1,38 +1,32 @@
 import numpy as np
-import sys, math, PIL
+import sys, math, random
 from PIL import Image, ImageDraw
+# PIL.ImageDraw: 0-based, (col_idx, row_idx) if taking image as matrix
 
-def computeSlope(p1, p2):
-	if p2[0] == p1[0]:
-		return math.inf
-	return float(p2[1] - p1[1]) / float(p2[0] - p1[0])
+def pil2np(image, show):
+	if show:
+		import matplotlib.pyplot as plt
+	img = np.array(image, dtype = np.float32) / 255.0
+	if show:
+		plt.imshow(img)
+		plt.show()
+	return img
 
-def sortPolygon(polygon):
-	slope = sys.maxsize
-	for i in range(len(polygon)):
-		temp_slope = abs(computeSlope(polygon[i], polygon[i - 1]))
-		if temp_slope < slope:
-			idx = i - 1
-			slope = temp_slope
-	if idx < 0:
-		idx += len(polygon)
-	result = polygon[idx:]
-	result.extend(polygon[0: idx])
-	return result
+def plotPolygon(img_size = (224, 224), num_vertices = 6, show = False):
 
-def plotPolygon(img_size = (224, 224), num_vertices = 6):
 	# Set image parameters
 	num_row = img_size[0]
 	num_col = img_size[1]
-	half_x = int(num_col / 2)
-	half_y = int(num_row / 2)
-	img_size_s = (int(num_row / 8), int(num_col / 8))
+	half_x = math.floor(num_col / 2)
+	half_y = math.floor(num_row / 2)
+	img_size_s = (math.floor(num_row / 8), math.floor(num_col / 8))
 
 	# Set polygon parameters
-	center_r = int(min(num_row, num_col) / 30)
-	polygon_size = int(min(num_row, num_col) * 0.35)
-	delta_angle = np.pi * 2 / num_vertices
-	angle = np.random.uniform(0.0, delta_angle)
+	epsilon = 1.0 / num_vertices
+	center_r = math.floor(min(num_row, num_col) * 0.05) # <- Decide polygon's center
+	polygon_size = math.floor(min(num_row, num_col) * 0.35) # <- Decide polygon's size
+	delta_angle = np.pi * 2 * epsilon
+	angle = np.random.uniform(0.0, delta_angle) # <- Decide polygon's first vertex
 
 	# Determin the center of polygon
 	center_x = half_x + np.random.randint(-center_r, center_r)
@@ -42,78 +36,62 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6):
 	polygon = []
 	polygon_s = []
 	for i in range(num_vertices):
-		r = polygon_size * np.random.uniform(0.8, 1.1)
-		px = int(center_x + r * np.sin(angle))
-		py = int(center_y + r * np.cos(angle))
+		r = polygon_size * np.random.uniform(0.8, 1.1) # <- Decide polygon's size range
+		px = math.floor(center_x + r * np.cos(angle))
+		py = math.floor(center_y - r * np.sin(angle)) # <- Decide polygon's order (counterclockwise)
 		polygon.append((px, py))
-		polygon_s.append((int(px / 8), int(py / 8)))
-		angle += delta_angle * np.random.uniform(0.9, 1.1)
-	polygon = sortPolygon(polygon)
-	polygon_s = sortPolygon(polygon_s)
+		polygon_s.append((math.floor(px / 8), math.floor(py / 8)))
+		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon) # <- Decide polygon's vertices
+	first_idx = random.choice([i for i in range(num_vertices)])
+	polygon = polygon[first_idx:] + polygon[:first_idx]
+	polygon_s = polygon_s[first_idx:] + polygon_s[:first_idx]
 
 	# Draw polygon
 	color = (255, 0, 0)
 	org = Image.new('RGB', img_size, color = (255, 255, 255))
 	draw = ImageDraw.Draw(org)
 	draw.polygon(polygon, fill = color, outline = color)
-	boundary = Image.new('P', img_size_s, color = 0)
-	draw = ImageDraw.Draw(boundary)
-	draw.polygon(polygon_s, fill = 0, outline = 255)
-	vertices = Image.new('P', img_size_s, color = 0)
-	draw = ImageDraw.Draw(vertices)
-	draw.point(polygon_s, fill = 255)
-	# first_two = Image.new('P', img_size_s, color = 0)
-	# draw = ImageDraw.Draw(first_two)
-	# draw.line(polygon_s[0: 2], fill = 255)
-	# first = Image.new('P', img_size_s, color = 0)
-	# draw = ImageDraw.Draw(first)
-	# draw.point(polygon_s[0: 1], fill = 255)
-	# second = Image.new('P', img_size_s, color = 0)
-	# draw = ImageDraw.Draw(second)
-	# draw.point(polygon_s[1: 2], fill = 255)
 
-	# Add noise
+	# Add noise to the orginal image
 	noise = np.random.normal(0, 40, (num_row, num_col, 3))
 	background = np.array(org)
 	img = background + noise
 	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
 	img = Image.fromarray(img)
+	img = pil2np(img, show)
 
-	# Each vertex
-	single_v = []
+	# Draw boundary
+	boundary = Image.new('P', img_size_s, color = 0)
+	draw = ImageDraw.Draw(boundary)
+	draw.polygon(polygon_s, fill = 0, outline = 255)
+	boundary = pil2np(boundary, show)
+
+	# Draw vertices
+	vertices = Image.new('P', img_size_s, color = 0)
+	draw = ImageDraw.Draw(vertices)
+	draw.point(polygon_s, fill = 255)
+	vertices = pil2np(vertices, show)
+
+	# Draw each vertex
+	vertex_list = []
 	for i in range(num_vertices):
-		single = Image.new('P', img_size_s, color = 0)
-		draw = ImageDraw.Draw(single)
+		vertex = Image.new('P', img_size_s, color = 0)
+		draw = ImageDraw.Draw(vertex)
 		draw.point([polygon_s[i]], fill = 255)
-		# single.show()
-		# input()
-		single_v.append(np.array(single) / 255.0)
-	single_v.append(np.array(Image.new('P', img_size_s, color = 0)) / 255.0)
-
-	# Show
-	if True:
-		img.show(title = 'img')
-		boundary.show(title = 'boundary')
-		vertices.show(title = 'vertices')
-		# first_two.show(title = 'first_two')
-		# input()
-		# first.show(title = 'first')
-		# input()
-		# second.show(title = 'second')
+		vertex = pil2np(vertex, show)
+		vertex_list.append(vertex)
+	vertex_list.append(np.zeros(img_size_s, dtype = np.float32))
+	vertex_list = np.array(vertex_list)
 
 	# Return
-	img = np.array(img) / 255.0
-	boundary = np.array(boundary) / 255.0
-	vertices = np.array(vertices) / 255.0
-	# first_two = np.array(first_two) / 255.0
-	# first = np.array(first) / 255.0
-	# second = np.array(second) / 255.0
-	return polygon, img, np.array(single_v), boundary, vertices
-	#, first_two, first, second
+	if show:
+		print(img.shape)
+		print(boundary.shape)
+		print(vertices.shape)
+		print(vertex_list.shape)
+	return img, boundary, vertices, vertex_list
 
 if __name__ == '__main__':
 	for i in range(1):
-		plotPolygon(num_vertices = 7)
-
-
+		plotPolygon(num_vertices = 7, show = False)
 
