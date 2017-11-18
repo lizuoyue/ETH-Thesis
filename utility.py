@@ -7,6 +7,8 @@ def pil2np(image, show):
 	if show:
 		import matplotlib.pyplot as plt
 	img = np.array(image, dtype = np.float32) / 255.0
+	if img.shape[2] == 4:
+		img = img[..., 0: 3]
 	if show:
 		plt.imshow(img)
 		plt.show()
@@ -90,6 +92,60 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6, show = False):
 		print(vertices.shape)
 		print(vertex_list.shape)
 	return img, boundary, vertices, vertex_list
+
+TILE_SIZE = 256
+
+def lonLatToWorld(lon, lat):
+	# Truncating to 0.9999 effectively limits latitude to 89.189. This is
+	# about a third of a tile past the edge of the world tile.
+	siny = math.sin(float(lat) * math.pi / 180.0);
+	siny = min(max(siny, -0.9999), 0.9999)
+	return \
+		TILE_SIZE * (0.5 + float(lon) / 360.0), \
+		TILE_SIZE * (0.5 - math.log((1 + siny) / (1 - siny)) / (4 * math.pi)) \
+
+def lonLatToPixel(lon, lat, z):
+	scale = 2 ** z
+	wx, wy = lonLatToWorld(lon, lat)
+	return math.floor(wx * scale), math.floor(wy * scale)
+
+def lonLatToTile(lon, lat, z):
+	scale = 2 ** z
+	wx, wy = lonLatToWorld(lon, lat)
+	return math.floor(wx * scale / TILE_SIZE), math.floor(wy * scale / TILE_SIZE)
+
+def pixelToLonLat(px, py, z):
+	# Return the longitude of the left boundary of a pixel
+	# and the latitude of the upper boundary of a pixel
+	scale = 2 ** z
+	lon = (float(px) / float(scale) / TILE_SIZE - 0.5) * 360.0
+	temp = math.exp((0.5 - float(py) / float(scale) / TILE_SIZE) * 4 * math.pi)
+	lat = math.asin((temp - 1.0) / (temp + 1.0)) / math.pi * 180.0
+	return lon, lat
+
+class BoundingBox(object):
+	# size: (width, height)
+	def __init__(self, lon, lat, zoom, scale, size = (224, 224)):
+		self.center_lon = lon
+		self.center_lat = lat
+		self.size = size
+		self.z = zoom + scale - 1
+		self.center_px, self.center_py = lonLatToPixel(lon, lat, self.z)
+		self.left, self.up = pixelToLonLat(
+			self.center_px - math.floor(size[0] / 2), \
+			self.center_py - math.floor(size[1] / 2), \
+			self.z \
+		)
+		self.right, self.down = pixelToLonLat(
+			self.center_px + math.floor(size[0] / 2), \
+			self.center_py + math.floor(size[1] / 2), \
+			self.z \
+		)
+
+	def lonLatToRelativePixel(self, lon, lat):
+		# 0-based
+		px, py = lonLatToPixel(lon, lat, self.z)
+		return math.floor(px - self.center_px + self.size / 2), math.floor(py - self.center_py + self.size / 2)
 
 if __name__ == '__main__':
 	for i in range(1):

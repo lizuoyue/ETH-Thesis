@@ -1,138 +1,108 @@
 import numpy as np
 import lxml.etree as ET
-import os, math, requests, scipy.misc
+import io, requests, math, random
 from PIL import Image, ImageDraw
-import random, time
-import io, binascii
+ut = __import__('utility')
 
-TILE_SIZE = 256
-GOOGLE_MAP_KEY = 'AIzaSyAR7IQKtdUg3X0wmpdIoES5lcGwGqtlL7o'
+class BuildingImageDownloader(object):
 
-# Maps Utilities ============================================================
+	def __init__(self, google_keys_filename):
+		self.count = 0
+		f = open(google_keys_filename, 'r')
+		self.keys = [item.strip() for item in f.readlines()]
+		f.close()
 
-def lonLatToWorld(lon, lat):
-	# Truncating to 0.9999 effectively limits latitude to 89.189. This is
-	# about a third of a tile past the edge of the world tile.
-	siny = math.sin(float(lat) * math.pi / 180.0);
-	siny = min(max(siny, -0.9999), 0.9999)
-	return \
-		TILE_SIZE * (0.5 + float(lon) / 360.0), \
-		TILE_SIZE * (0.5 - math.log((1 + siny) / (1 - siny)) / (4 * math.pi)) \
+	def getBuildingAerialImage(building, zoom = 19, scale = 2, size = (224, 224), show = False):
+		z = zoom + scale - 1
+		size_s = (math.floor(size[0] / 8), math.floor(size[1] / 8))
+		min_lon, max_lon = 200.0, -200.0
+		min_lat, max_lat = 100.0, -100.0
+		for lon, lat in building:
+			min_lon = min(lon, min_lon)
+			min_lat = min(lat, min_lat)
+			max_lon = max(lon, max_lon)
+			max_lat = max(lat, max_lat)
+		left, up = ut.lonLatToPixel(min_lon, max_lat, z)
+		right, down = ut.lonLatToPixel(max_lon, min_lat, z)
+		if right - left > math.floor(size[0] * 0.85) or down - up > math.floor(size[1] * 0.85): # <- Decide the padding
+			return None
+		c_lon = (min_lon + max_lon) / 2.0
+		c_lat = (min_lat + max_lat) / 2.0
+		while True:
+			try:
+				data = requests.get(
+					'https://maps.googleapis.com/maps/api/staticmap?' 			+ \
+					'maptype=%s&' 			% 'satellite' 						+ \
+					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 					+ \
+					'zoom=%d&' 				% zoom 								+ \
+					'size=%dx%d&' 			% (size[0] + 100, size[1] + 100) 	+ \
+					'scale=%d&' 			% scale 							+ \
+					'format=%s&' 			% 'png32' 							+ \
+					'key=%s' 				% self.keys[self.count] 			  \
+				).content
+				img = np.array(Image.open(io.BytesIO(data)))
+				break
+			except:
+				print('Try again to get image.')
+				pass
+		img = img[100: img.shape[0] - 100, 100: img.shape[1] - 100, ...]
 
-def lonLatToPixel(lon, lat, z):
-	scale = 2 ** z
-	wx, wy = lonLatToWorld(lon, lat)
-	return math.floor(wx * scale), math.floor(wy * scale)
+		bbox = ut.BoundingBox(c_lon, c_lat, zoom, scale, size)
+		polygon = []
+		polygon_s = []
+		for lon, lat in building:
+			px, py = bbox.lonLatToRelativePixel(lon, lat)
+			polygon.append((px, py))
+			polygon_s.append((math.floor(px / 8), math.floor(py / 8)))
 
-def lonLatToTile(lon, lat, z):
-	scale = 2 ** z
-	wx, wy = lonLatToWorld(lon, lat)
-	return math.floor(wx * scale / TILE_SIZE), math.floor(wy * scale / TILE_SIZE)
+		# 
+		img = Image.fromarray(img)
+		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
+		draw = ImageDraw.Draw(mask)
+		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+		merge = Image.alpha_composite(img, mask)
+		img = ut.pil2np(img, show)
+		mask = ut.pil2np(mask, show)
+		merge = ut.pil2np(merge, show)
 
-def pixelToLonLat(px, py, z):
-	# Return the longitude of the left boundary of a pixel
-	# and the latitude of the upper boundary of a pixel
-	scale = 2 ** z
-	lon = (float(px) / float(scale) / TILE_SIZE - 0.5) * 360.0
-	temp = math.exp((0.5 - float(py) / float(scale) / TILE_SIZE) * 4 * math.pi)
-	lat = math.asin((temp - 1.0) / (temp + 1.0)) / math.pi * 180
-	return lon, lat
+		# 
+		boundary = Image.new('P', size_s, color = 0)
+		draw = ImageDraw.Draw(boundary)
+		draw.polygon(polygon_s, fill = 0, outline = 255)
+		boundary = ut.pil2np(boundary, show)
 
-class BoundingBox(object):
+		# 
+		vertices = Image.new('P', size_s, color = 0)
+		draw = ImageDraw.Draw(vertices)
+		draw.point(polygon_s, fill = 255)
+		vertices = ut.pil2np(vertices, show)
 
-	def __init__(self, lon, lat, zoom, scale, size):
-		self.center_lon = lon
-		self.center_lat = lat
-		self.size = size
-		self.z = zoom + scale - 1
-		self.center_px, self.center_py = lonLatToPixel(lon, lat, self.z)
-		self.left, self.up = pixelToLonLat(self.center_px - size / 2, self.center_py - size / 2, self.z)
-		self.right, self.down = pixelToLonLat(self.center_px + size / 2, self.center_py + size / 2, self.z)
-		# print(self.up, self.right, self.down, self.left)
+		# 
+		vertex_list = []
+		for i in range(len(polygon_s)):
+			vertex = Image.new('P', size_s, color = 0)
+			draw = ImageDraw.Draw(vertex)
+			draw.point([polygon_s[i]], fill = 255)
+			vertex = ut.pil2np(vertex, show)
+			vertex_list.append(vertex)
+		vertex_list.append(np.zeros(img_size_s, dtype = np.float32))
+		vertex_list = np.array(vertex_list)
 
-	def lonLatToRelativePixel(self, lon, lat):
-		# Zero-based
-		px, py = lonLatToPixel(lon, lat, self.z)
-		return int(px - self.center_px + self.size / 2), int(py - self.center_py + self.size / 2)
-
-def getBuildingAerialImage(building):
-	min_lon, max_lon = 200, -200
-	min_lat, max_lat = 100, -100
-	for lon, lat in building:
-		min_lon = min(lon, min_lon)
-		min_lat = min(lat, min_lat)
-		max_lon = max(lon, max_lon)
-		max_lat = max(lat, max_lat)
-	a, b = lonLatToPixel(min_lon, max_lat, 20)
-	c, d = lonLatToPixel(max_lon, min_lat, 20)
-	if c - a > 200 or d - b > 200:
-		return
-	c_lon = (min_lon + max_lon) / 2
-	c_lat = (min_lat + max_lat) / 2
-	while True:
-		try:
-			data = requests.get(
-				'https://maps.googleapis.com/maps/api/staticmap?' 						+ \
-				'maptype=%s&' 			% 'satellite' 									+ \
-				'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 							+ \
-				'zoom=%d&' 				% 19 									+ \
-				'size=%dx%d&' 			% (300, 300)	+ \
-				'scale=%d&' 			% 2 									+ \
-				'format=%s&' 			% 'png32' 										+ \
-				'key=%s' 				% GOOGLE_MAP_KEY 								  \
-			).content
-			img = np.array(Image.open(io.BytesIO(data)))
-			break
-		except:
-			print('Try again.')
-			pass
-	beg = int((img.shape[0] - 224) / 2)
-	end = img.shape[0] - beg
-	img = img[beg: end, beg: end, 0: ]
-
-	bbox = BoundingBox(c_lon, c_lat, 19, 2, 224)
-	polygon = []
-	polygon_s = []
-	for lon, lat in building:
-		px, py = bbox.lonLatToRelativePixel(lon, lat)
-		polygon.append((px, py))
-		polygon_s.append((int(px / 8), int(py / 8)))
-	img = Image.fromarray(img)
-	mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
-	draw = ImageDraw.Draw(mask)
-	draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-	merge = Image.alpha_composite(img, mask)
-	# img.show()
-	# mask.show()
-	# merge.show()
-	# merge.save(filename.replace('.png', '-z.png'))
-	# mask.save(filename.replace('.png', '-m.png'))
-	img_size_s = (28, 28)
-
-	boundary = Image.new('P', img_size_s, color = 0)
-	draw = ImageDraw.Draw(boundary)
-	draw.polygon(polygon_s, fill = 0, outline = 255)
-	# boundary.show()
-
-	vertices = Image.new('P', img_size_s, color = 0)
-	draw = ImageDraw.Draw(vertices)
-	draw.point(polygon_s, fill = 255)
-	# vertices.show()
-
-	polygon_img = []
-	for vertex in polygon_s:
-		single = Image.new('P', img_size_s, color = 0)
-		draw = ImageDraw.Draw(single)
-		draw.point([vertex], fill = 255)
-		# single.show()
-		polygon_img.append(np.array(single) / 255.0)
-	polygon_img.append(np.array(Image.new('P', img_size_s, color = 0)) / 255.0)
-	return img, mask, merge, np.array(boundary)/255.0, np.array(vertices)/255.0, np.array(polygon_img)
+		# Return
+		if show:
+			print(img.shape)
+			print(boundary.shape)
+			print(vertices.shape)
+			print(vertex_list.shape)
+		return img, mask, merge, boundary, vertices, vertex_list
 
 class BuildingListConstructor(object):
+
 	def __init__(self, range_vertices, filename = None):
 		self.building = {}
 		self.range_vertices = range_vertices
+		assert(range_vertices[0] >= 3)
+		assert(range_vertices[0] <= range_vertices[1])
 		if filename:
 			self.loadBuildingList(filename)
 		return
@@ -145,6 +115,10 @@ class BuildingListConstructor(object):
 		print(self.building)
 		return
 
+	def printBuildingListLen(self):
+		print('Totally %d buidings.' % len(self.building))
+		return
+
 	def loadBuildingList(self, filename):
 		d = np.load(filename).item()
 		for item in d:
@@ -154,7 +128,7 @@ class BuildingListConstructor(object):
 				building = d[item]
 				if len(building) >= self.range_vertices[0] and len(building) <= self.range_vertices[1]:
 					self.building[item] = building
-		print(len(self.building))
+		self.printBuildingListLen()
 		return
 
 	def getBuildingList(self):
@@ -162,19 +136,6 @@ class BuildingListConstructor(object):
 
 	def resetBuildingList(self):
 		self.building = {}
-		return
-
-	def batchAddBuildingList(self, lon, lat, lon_step, lat_step, lon_num, lat_num):
-		for i in range(lon_num):
-			for j in range(lat_num):
-				print(i, j)
-				self.addBuildingList(
-					left  = lon + lon_step * i - lon_step / 2,
-					down  = lat - lat_step * j - lat_step / 2,
-					right = lon + lon_step * i + lon_step / 2,
-					up    = lat - lat_step * j + lat_step / 2,
-				)
-				print(len(self.building))
 		return
 
 	def addBuildingList(self, left, down, right, up):
@@ -188,7 +149,7 @@ class BuildingListConstructor(object):
 				osm = ET.fromstring(osm)
 				break
 			except:
-				print('Try again.')
+				print('Try again to get .osm file.')
 				pass
 		node = {}
 		for item in osm:
@@ -214,7 +175,7 @@ class BuildingListConstructor(object):
 								d[k] = v
 						else:
 							pass
-					if 'building' in d and d['building'] == 'yes':
+					if 'building' in d and d['building'] == 'yes': # <- Maybe there is other kind of building
 						node_list = node_list[: -1]
 						if len(node_list) >= self.range_vertices[0] and len(node_list) <= self.range_vertices[1]:
 							bid = int(item.attrib.get('id'))
@@ -230,6 +191,19 @@ class BuildingListConstructor(object):
 					pass
 			else:
 				pass
+		return
+
+	def batchAddBuildingList(self, lon, lat, lon_step, lat_step, lon_num, lat_num):
+		for i in range(lon_num):
+			for j in range(lat_num):
+				print('Step', i, j)
+				self.addBuildingList(
+					left  = lon + lon_step * i - lon_step / 2,
+					down  = lat - lat_step * j - lat_step / 2,
+					right = lon + lon_step * i + lon_step / 2,
+					up    = lat - lat_step * j + lat_step / 2,
+				)
+				self.printBuildingListLen()
 		return
 
 	def getImage(self, batch_size):
@@ -252,9 +226,9 @@ if __name__ == '__main__':
 			lon_num = 10,
 			lat_num = 10,
 		)
-		obj.saveBuildingList('./buildingList.npy')
+		obj.saveBuildingList('../Dataset/buildingList.npy')
 		obj.printBuildingList()
 	else:
-		obj = BuildingListConstructor(range_vertices = (4, 12), filename = './buildingList.npy')
-
+		obj = BuildingListConstructor(range_vertices = (4, 10), filename = '../Dataset/buildingList.npy')
+		building = BuildingImageDownloader('../Dataset/GoogleMapAPIKey.txt')
 
