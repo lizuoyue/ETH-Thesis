@@ -304,9 +304,9 @@ if __name__ == '__main__':
 	friend = bot.friends().search('李作越')[0]
 
 	# Set parameters
-	random.seed(0)
+	random.seed(31415926)
 	lr = 0.0004
-	n_iter = 100000
+	n_iter = 200000
 	f = open('polyRNN.out', 'w')
 	obj = DataGenerator('../Dataset')
 
@@ -320,7 +320,7 @@ if __name__ == '__main__':
 	result = polyRNN(xx, bb, vv, yy, ee, ll)
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
 	train = optimizer.minimize(result[0] + result[1])
-	saver = tf.train.Saver(max_to_keep = 10)
+	saver = tf.train.Saver(max_to_keep = 8)
 	init = tf.global_variables_initializer()
 
 	# Launch graph
@@ -330,16 +330,17 @@ if __name__ == '__main__':
 			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(BATCH_SIZE)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
-			saver.save(sess, './tmp/model-%d.ckpt' % i)
+			if i % 200 == 0:
+				saver.save(sess, './tmp/model-%d.ckpt' % i)
 
 			# Write loss to file
-			print('%.6lf, %.6lf, %.6lf' % (loss_1, loss_2, loss_1 + loss_2))
-			f.write('%.6lf, %.6lf, %.6lf\n' % (loss_1, loss_2, loss_1 + loss_2))
+			print('%d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
+			f.write('%d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
 			f.flush()
 
 			# Send to mobile
 			if int(time.time()) % 1800 < 60:
-				friend.send('%.6lf, %.6lf, %.6lf' % (loss_1, loss_2, loss_1 + loss_2))
+				friend.send('%d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
 
 			# Clear last files
 			for item in glob.glob('./res/*'):
@@ -366,6 +367,4 @@ if __name__ == '__main__':
 				plt.plot(end_pred[j, 1: seq_len[j] + 1])
 				plt.savefig('./res/%d-5-end.pdf' % j)
 				plt.gcf().clear()
-
-my_friend.send('Hello WeChat!')
 
