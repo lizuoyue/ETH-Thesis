@@ -1,6 +1,6 @@
 import numpy as np
 import lxml.etree as ET
-import io, requests, math, random
+import io, os, requests, math, random
 from PIL import Image, ImageDraw
 ut = __import__('utility')
 
@@ -28,6 +28,10 @@ class BuildingImageDownloader(object):
 			size_g = (size[0] + pad * 2, size[1] + pad * 2)
 		if save:
 			assert(building_id != None)
+
+		# Create new folder
+		if not os.path.exists('../Dataset/%d' % building_id):
+			os.makedirs('../Dataset/%d' % building_id)
 
 		# Decide the tight bounding box
 		min_lon, max_lon = 200.0, -200.0
@@ -84,9 +88,9 @@ class BuildingImageDownloader(object):
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
 		merge = Image.alpha_composite(img, mask)
 		if save:
-			img.save('../Dataset/%d-0-img.png' % building_id)
-			mask.save('../Dataset/%d-1-mask.png' % building_id)
-			merge.save('../Dataset/%d-2-merge.png' % building_id)
+			img.save('../Dataset/%d/0-img.png' % building_id)
+			mask.save('../Dataset/%d/1-mask.png' % building_id)
+			merge.save('../Dataset/%d/2-merge.png' % building_id)
 		img = ut.pil2np(img, show)
 		mask = ut.pil2np(mask, show)
 		merge = ut.pil2np(merge, show)
@@ -96,7 +100,7 @@ class BuildingImageDownloader(object):
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_s, fill = 0, outline = 255)
 		if save:
-			boundary.save('../Dataset/%d-3-b.png' % building_id)
+			boundary.save('../Dataset/%d/3-b.png' % building_id)
 		boundary = ut.pil2np(boundary, show)
 
 		# 
@@ -104,7 +108,7 @@ class BuildingImageDownloader(object):
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_s, fill = 255)
 		if save:
-			vertices.save('../Dataset/%d-4-v.png' % building_id)
+			vertices.save('../Dataset/%d/4-v.png' % building_id)
 		vertices = ut.pil2np(vertices, show)
 
 		# 
@@ -114,7 +118,7 @@ class BuildingImageDownloader(object):
 			draw = ImageDraw.Draw(vertex)
 			draw.point([polygon_s[i]], fill = 255)
 			if save:
-				vertex.save('../Dataset/%d-5-v%d.png' % (building_id, i))
+				vertex.save('../Dataset/%d/5-v%d.png' % (building_id, i))
 			vertex = ut.pil2np(vertex, show)
 			vertex_list.append(vertex)
 		vertex_list.append(np.zeros(size_s, dtype = np.float32))
@@ -253,10 +257,12 @@ if __name__ == '__main__':
 		objCons.saveBuildingList('./buildingList.npy')
 		objCons.printBuildingList()
 	else:
-		objCons = BuildingListConstructor(range_vertices = (4, 12), filename = './buildingList.npy')
+		objCons = BuildingListConstructor(range_vertices = (4, 20), filename = './buildingList.npy')
 		objDown = BuildingImageDownloader('./GoogleMapAPIKey.txt')
-		for i, building_id in enumerate(objCons.building):
-			if i < 10 or i >= 18:
+		id_list = [k for k in objCons.building]
+		id_list.sort()
+		for i, building_id in enumerate(id_list):
+			if i < 10 or i >= 14:
 				continue
-			objDown.getBuildingAerialImage(i, objCons.building[building_id], show = True, building_id = building_id)
+			objDown.getBuildingAerialImage(i, objCons.building[building_id], building_id = building_id)
 
