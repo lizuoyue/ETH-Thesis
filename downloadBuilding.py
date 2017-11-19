@@ -11,6 +11,20 @@ class BuildingImageDownloader(object):
 		self.keys = [item.strip() for item in f.readlines()]
 		f.close()
 
+	def dist(self, p1, p2):
+		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
+
+	def norm(self, p):
+		l = math.sqrt(p[0] ** 2 + p[1] ** 2)
+		return (p[0] / l, p[1] / l)
+
+	def centerRight(self, p1, p2, l):
+		direction = (p1[1] - p2[1], p2[0] - p1[0])
+		direction = self.norm(direction)
+		x = math.floor((p1[0] + p2[0]) / 2 + l * direction[0])
+		y = math.floor((p1[1] + p2[1]) / 2 + l * direction[1])
+		return (x, y)
+
 	def getBuildingAerialImage(self, idx, building, scale = 2, size = (224, 224), show = False, save = True, building_id = None):
 
 		# Decide the parameters
@@ -73,13 +87,16 @@ class BuildingImageDownloader(object):
 				pass
 		img = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad, ...]
 
+		# Compute polygon's vertices
 		bbox = ut.BoundingBox(c_lon, c_lat, zoom, scale, size)
 		polygon = []
 		polygon_s = []
 		for lon, lat in building:
 			px, py = bbox.lonLatToRelativePixel(lon, lat)
-			polygon.append((px, py))
-			polygon_s.append((math.floor(px / 8), math.floor(py / 8)))
+			px_s, py_s = math.floor(px / 8), math.floor(py / 8)
+			if not polygon_s or self.dist(polygon_s[-1], (px_s, py_s)) > 0:
+				polygon.append((px, py))
+				polygon_s.append((px_s, py_s))
 
 		# 
 		img = Image.fromarray(img)
@@ -94,6 +111,15 @@ class BuildingImageDownloader(object):
 		img = ut.pil2np(img, show)
 		mask = ut.pil2np(mask, show)
 		merge = ut.pil2np(merge, show)
+
+		# Decide the order of vertices
+		inner_count = 0
+		for i in range(len(polygon)):
+			x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
+			inner_count += (mask[x, y, 0] > 0.25)
+		if inner_count / len(polygon) > 0.5:
+			polygon.reverse()
+			polygon_s.reverse()
 
 		# 
 		boundary = Image.new('P', size_s, color = 0)
@@ -118,7 +144,7 @@ class BuildingImageDownloader(object):
 			draw = ImageDraw.Draw(vertex)
 			draw.point([polygon_s[i]], fill = 255)
 			if save:
-				vertex.save('../Dataset/%d/5-v%d.png' % (building_id, i))
+				vertex.save('../Dataset/%d/5-v%s.png' % (building_id, str(i).zfill(2)))
 			vertex = ut.pil2np(vertex, show)
 			vertex_list.append(vertex)
 		vertex_list.append(np.zeros(size_s, dtype = np.float32))
@@ -163,7 +189,6 @@ class BuildingListConstructor(object):
 			else:
 				building = d[item]
 				if len(building) >= self.range_vertices[0] and len(building) <= self.range_vertices[1]:
-					building.reverse()
 					self.building[item] = building
 		self.printBuildingListLen()
 		return
@@ -261,9 +286,6 @@ if __name__ == '__main__':
 		objDown = BuildingImageDownloader('./GoogleMapAPIKey.txt')
 		id_list = [k for k in objCons.building]
 		id_list.sort()
-		print(len(id_list))
-		print(id_list[-1])
-		quit()
 		for i, building_id in enumerate(id_list):
 			if i < int(sys.argv[1]) or i >= int(sys.argv[2]):
 				continue
