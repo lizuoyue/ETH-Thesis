@@ -1,8 +1,9 @@
-import os, glob, random
+import os, glob, random, time
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
+from wxpy import *
 plt.switch_backend('agg')
 
 def modifiedVGG16(x):
@@ -298,6 +299,10 @@ def norm(array):
 		return (array - mi) / (ma - mi)
 
 if __name__ == '__main__':
+	# Set WeChat
+	bot = Bot()
+	friend = bot.friends().search('李作越')[0]
+
 	# Set parameters
 	random.seed(0)
 	lr = 0.0004
@@ -332,6 +337,10 @@ if __name__ == '__main__':
 			f.write('%.6lf, %.6lf, %.6lf\n' % (loss_1, loss_2, loss_1 + loss_2))
 			f.flush()
 
+			# Send to mobile
+			if int(time.time()) % 1800 < 60:
+				friend.send('%.6lf, %.6lf, %.6lf' % (loss_1, loss_2, loss_1 + loss_2))
+
 			# Clear last files
 			for item in glob.glob('./res/*'):
 				os.remove(item)
@@ -357,4 +366,6 @@ if __name__ == '__main__':
 				plt.plot(end_pred[j, 1: seq_len[j] + 1])
 				plt.savefig('./res/%d-5-end.pdf' % j)
 				plt.gcf().clear()
+
+my_friend.send('Hello WeChat!')
 
