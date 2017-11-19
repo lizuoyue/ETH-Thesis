@@ -127,6 +127,7 @@ class BuildingImageDownloader(object):
 		merge = ut.pil2np(merge, show)
 
 		# Decide the order of vertices
+		inner_count = 0
 		for i in range(len(polygon)):
 			x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
 			try:
