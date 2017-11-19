@@ -116,8 +116,11 @@ class BuildingImageDownloader(object):
 		inner_count = 0
 		for i in range(len(polygon)):
 			x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
-			inner_count += (mask[x, y, 0] > 0.25)
-		if inner_count / len(polygon) > 0.5:
+			try:
+				inner_count += (np.sum(mask[y, x, 1: 3]) > 1.0) # <- The pixel is not red
+			except:
+				inner_count += 1
+		if inner_count / len(polygon) < 0.5:
 			polygon.reverse()
 			polygon_s.reverse()
 
