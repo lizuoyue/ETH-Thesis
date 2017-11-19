@@ -14,6 +14,11 @@ class BuildingImageDownloader(object):
 	def dist(self, p1, p2):
 		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
 
+	def centroid(self, p1, p2):
+		x = (p1[0] * p1[2] + p2[0] * p2[2]) / (p1[2] + p2[2])
+		y = (p1[1] * p1[2] + p2[1] * p2[2]) / (p1[2] + p2[2])
+		return (math.floor(x), math.floor(y), p1[2] + p2[2])
+
 	def norm(self, p):
 		l = math.sqrt(p[0] ** 2 + p[1] ** 2)
 		return (p[0] / l, p[1] / l)
@@ -95,8 +100,14 @@ class BuildingImageDownloader(object):
 			px, py = bbox.lonLatToRelativePixel(lon, lat)
 			px_s, py_s = math.floor(px / 8), math.floor(py / 8)
 			if not polygon_s or self.dist(polygon_s[-1], (px_s, py_s)) > 0:
-				polygon.append((px, py))
-				polygon_s.append((px_s, py_s))
+				polygon.append((px, py, 1))
+				polygon_s.append((px_s, py_s, 1))
+			else:
+				pass
+				# polygon[-1] = self.centroid(polygon[-1], (px, py, 1))
+				# polygon_s[-1] = self.centroid(polygon_s[-1], (px_s, py_s, 1))
+		polygon = [(item[0], item[1]) for item in polygon]
+		polygon_s = [(item[0], item[1]) for item in polygon_s]
 
 		# 
 		img = Image.fromarray(img)
