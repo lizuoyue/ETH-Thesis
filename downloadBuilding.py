@@ -1,6 +1,6 @@
 import numpy as np
 import lxml.etree as ET
-import io, os, requests, math, random
+import io, os, sys, requests, math, random
 from PIL import Image, ImageDraw
 ut = __import__('utility')
 
@@ -262,7 +262,7 @@ if __name__ == '__main__':
 		id_list = [k for k in objCons.building]
 		id_list.sort()
 		for i, building_id in enumerate(id_list):
-			if i < 10 or i >= 14:
+			if i < int(sys.argv[1]) or i >= int(sys.argv[2]):
 				continue
 			objDown.getBuildingAerialImage(i, objCons.building[building_id], building_id = building_id)
 
