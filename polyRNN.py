@@ -167,8 +167,8 @@ def modifiedVGG16(x):
 	)
 	return feature
 
-BATCH_SIZE = 4
-MAX_SEQ_LEN = 20
+BATCH_SIZE = 8
+MAX_SEQ_LEN = 24
 LSTM_OUT_CHANNEL = [16, 8]
 
 def conv_lstm_cell(output_channels):
@@ -179,21 +179,19 @@ def conv_lstm_cell(output_channels):
 		kernel_shape = (3, 3)
 	)
 
-def combine(y, end):
-	y_re = tf.reshape(y, [-1, 28 * 28])
-	end_re = tf.reshape(end, [-1, 1])
-	return tf.concat([y_re, end_re], 1)
-
-def polyRNN(x, b, v, y, e, l):
+def polyRNN(xx, bb, vv, yy, ee, ll):
 	# Reshape
-	img           = tf.reshape(x, [-1, 224, 224, 3])
-	boundary_true = tf.reshape(b, [-1, 28, 28, 1])
-	vertices_true = tf.reshape(v, [-1, 28, 28, 1])
-	y_true        = tf.reshape(y, [-1, MAX_SEQ_LEN, 28, 28, 1])
-	end_true      = tf.reshape(e, [-1, MAX_SEQ_LEN, 1, 1, 1])
-	seq_len       = tf.reshape(l, [-1])
+	img           = tf.reshape(xx, [-1, 224, 224, 3])
+	boundary_true = tf.reshape(bb, [-1, 28, 28, 1])
+	vertices_true = tf.reshape(vv, [-1, 28, 28, 1])
+	y_true        = tf.reshape(yy, [-1, MAX_SEQ_LEN, 28, 28, 1])
+	end_true      = tf.reshape(ee, [-1, MAX_SEQ_LEN, 1, 1, 1])
+	seq_len       = tf.reshape(ll, [-1])
+	y_re          = tf.reshape(yy, [-1, MAX_SEQ_LEN, 28 * 28])
+	e_re          = tf.reshape(ee, [-1, MAX_SEQ_LEN, 1])
+	y_end_true    = tf.concat([y_re, e_re], 2)
 
-	# CNN Part
+	# CNN part
 	feature = modifiedVGG16(img) # batch_size 28 28 128
 
 	loss_1 = 0.0
@@ -215,13 +213,13 @@ def polyRNN(x, b, v, y, e, l):
 	n_v = tf.reduce_sum(vertices_true) / BATCH_SIZE
 	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * n_b) + n_b))
 	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * (784 - 2 * n_v) + n_v))
-	loss_1 /= (2 * 784 / 100)
+	loss_1 /= (2 * 784 / 200)
 
-	# RNN Part
+	# RNN part
 	feature_rep = tf.tile(tf.reshape(feature, [-1, 1, 28, 28, 128]), [1, MAX_SEQ_LEN, 1, 1, 1]) # batch_size max_len 28 28 128
 	y_true_1 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -1], axis = 1)
 	y_true_2 = tf.stack([y_true[:, 0, ...], y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -2], axis = 1)
-	rnn_input = tf.concat([feature_rep, y_true, y_true_1, y_true_2], axis = 4)
+	rnn_input = tf.concat([feature_rep, y_true, y_true_1, y_true_2], axis = 4) # batch_size max_len 28 28 131
 
 	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell(out) for out in LSTM_OUT_CHANNEL])
 	initial_state = stacked_lstm.zero_state(BATCH_SIZE, tf.float32)
@@ -232,48 +230,21 @@ def polyRNN(x, b, v, y, e, l):
 		initial_state = initial_state,
 		dtype = tf.float32
 	)
-	return outputs
-	# print(outputs.shape)
-	# print(np.array(seq_len).shape)
+	outputs_reshape = tf.reshape(outputs, [-1, MAX_SEQ_LEN, 28 * 28 * LSTM_OUT_CHANNEL[1]])
 
-	# for i in range(BATCH_SIZE):
-	# 	for j in range(np.array(seq_len)):
-	# 		pass
+	# FC part
+	logits = tf.layers.dense( # batch_size max_len 785
+		inputs = outputs_reshape,
+		units = 28 * 28 + 1,
+		activation = None
+	)
+	loss_2 = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels = y_end_true, logits = logits)) / tf.reduce_sum(seq_len)
 
-	# return
-
-	# pred = []
-	# loss2 = 0.0
-	# t = []
-	# for i in range(2, 5):
-	# 	comb = tf.concat([feature, y_true[..., i - 1], y_true[..., i - 2], y_true[..., 0]], 3)
-	# 	output, state = stacked_lstm(comb, state)
-	# 	y_pred = tf.layers.conv2d(
-	# 		inputs = output,
-	# 		filters = 1,
-	# 		kernel_size = (3, 3),
-	# 		padding = 'same',
-	# 		# activation = tf.sigmoid
-	# 	)
-	# 	end_pred = tf.layers.conv2d(
-	# 		inputs = output,
-	# 		filters = 1,
-	# 		kernel_size = (28, 28),
-	# 		# activation = tf.sigmoid
-	# 	)
-	# 	y_end_true = combine(y_true[..., i], end_true[..., i])
-	# 	y_end_pred = combine(y_pred, end_pred)
-	# 	temp = tf.nn.softmax(y_end_pred)
-	# 	pred.append(tf.reshape(temp[..., 0: 784], [-1, 28, 28]))
-	# 	t.append(temp[..., 784])
-	# 	loss2 += tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = y_end_true, logits = y_end_pred))
-	# loss2 /= 3
-	# return (loss1, loss2), pred, boundary, vertices, t
-
-def trans(array):
-	ma = np.max(array)
-	mi = np.min(array)
-	return (array - mi) / (ma - mi)
+	# Return
+	y_end_pred = tf.nn.softmax(logits)
+	y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, MAX_SEQ_LEN, 28, 28])
+	end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, MAX_SEQ_LEN, 1])
+	return loss_1, loss_2, boundary, vertices, y_pred, end_pred
 
 class DataGenerator(object):
 
@@ -284,13 +255,20 @@ class DataGenerator(object):
 			self.id_list.remove('.DS_Store')
 
 	def getDataSingle(self, building_id):
+		# Set path
 		if type(building_id) == int:
 			building_id = str(building_id)
 		path = self.data_path + '/' + building_id
+
+		# Get images
 		img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
 		boundary = np.array(Image.open(glob.glob(path + '/' + '3-b.png')[0])) / 255.0
 		vertices = np.array(Image.open(glob.glob(path + '/' + '4-v.png')[0])) / 255.0
-		vertex = [np.array(Image.open(item)) / 255.0 for item in glob.glob(path + '/' + '5-v*.png')]
+		vertex_file_list = glob.glob(path + '/' + '5-v*.png')
+		vertex_file_list.sort()
+		# for item in vertex_file_list:
+		# 	print(item)
+		vertex = [np.array(Image.open(item)) / 255.0 for item in vertex_file_list]
 		seq_len = len(vertex)
 		while len(vertex) < MAX_SEQ_LEN:
 			vertex.append(np.zeros((28, 28), dtype = np.float32))
@@ -298,6 +276,8 @@ class DataGenerator(object):
 		end = [0.0 for i in range(MAX_SEQ_LEN)]
 		end[seq_len] = 1.0
 		end = np.array(end)
+
+		# Return
 		return img, boundary, vertices, vertex, end, seq_len
 
 	def getDataBatch(self, batch_size):
@@ -305,56 +285,55 @@ class DataGenerator(object):
 		sel = np.random.choice(len(self.id_list), batch_size, replace = False)
 		for i in sel:
 			res.append(self.getDataSingle(self.id_list[i]))
-		return ([item[i] for item in res] for i in range(6))
+		return (np.array([item[i] for item in res]) for i in range(6))
+
+def norm(array):
+	ma = np.max(array)
+	mi = np.min(array)
+	return (array - mi) / (ma - mi)
 
 if __name__ == '__main__':
-	obj = DataGenerator('../Dataset')
-	# f = open('a.out', 'w')
-	random.seed(31415926)
-	x = tf.placeholder(tf.float32)
-	b = tf.placeholder(tf.float32)
-	v = tf.placeholder(tf.float32)
-	y = tf.placeholder(tf.float32)
-	e = tf.placeholder(tf.float32)
-	l = tf.placeholder(tf.uint8)
-	result = polyRNN(x, b, v, y, e, l)
-	# optimizer = tf.train.AdamOptimizer(learning_rate = 0.0004)
-	# train = optimizer.minimize(result)
-	init = tf.global_variables_initializer()
+	# Set parameters
+	random.seed(0)
+	lr = 0.0004
 	n_iter = 100000
+	f = open('polyRNN.out', 'w')
+	obj = DataGenerator('../Dataset')
+
+	# Define graph
+	xx = tf.placeholder(tf.float32)
+	bb = tf.placeholder(tf.float32)
+	vv = tf.placeholder(tf.float32)
+	yy = tf.placeholder(tf.float32)
+	ee = tf.placeholder(tf.float32)
+	ll = tf.placeholder(tf.float32)
+	result = polyRNN(xx, bb, vv, yy, ee, ll)
+	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
+	train = optimizer.minimize(result[0] + result[1])
+	init = tf.global_variables_initializer()
+
+	# Launch graph
 	with tf.Session() as sess:
 		sess.run(init)
 		for i in range(n_iter):
-			d1,d2,d3,d4,d5,d6 = obj.getDataBatch(4)
-			# data = obj.getImage(BATCH_SIZE)
-			# img = [np.array(item[0])[...,0:3]/255.0 for item in data] # batch_size 224 224 3
-			# single = [item[5] for item in data] # batch_size num_vertices+1 28 28
-			# single_true = np.transpose(np.array(single), axes = [0, 2, 3, 1]) # batch_size 28 28 num_vertices+1
-			# end_true = np.array([[0,0,0,0,1] for i in range(BATCH_SIZE)]) # batch_size num_vertices+1
-			# boundary_true = [item[3] for item in data]
-			# vertices_true = [item[4] for item in data]
-			feed_dict = {x: d1, b: d2, v: d3, y: d4, e: d5, l:d6}
-			a = sess.run(result, feed_dict)
-			a = (a - np.min(a))/(np.max(a) - np.min(a))
-			print(d6)
-			import matplotlib.pyplot as plt
-			for i in range(a.shape[0]):
-				for j in range(a.shape[1]):
-					plt.imshow(a[i,j,...,0])
-					plt.show()
-			break
-			# loss, pred, boundary, vertices, t = sess.run(result, feed_dict)
-			# # print(np.sum(np.array(pred), axis = (2, 3))) # 7 8 28 28
-			# # print(np.array(t)) # 7 8
-			# for j in range(BATCH_SIZE):
-			# 	Image.fromarray(np.array(img[j] * 255.0, dtype = np.uint8)).save('./res/%d-a.png' % j)
-			# 	Image.fromarray(np.array(boundary[j,...,0] * 255.0, dtype = np.uint8)).save('./res/%d-b.png' % j)
-			# 	Image.fromarray(np.array(vertices[j,...,0] * 255.0, dtype = np.uint8)).save('./res/%d-c.png' % j)
-			# 	Image.fromarray(np.array(single[j][0] * 255.0, dtype = np.uint8)).save('./res/%d-p1.png' % j)
-			# 	Image.fromarray(np.array(single[j][1] * 255.0, dtype = np.uint8)).save('./res/%d-p2.png' % j)
-			# 	for k in range(3):
-			# 		Image.fromarray(np.array(pred[k][j, ...] * 255.0, dtype = np.uint8)).save('./res/%d-p%d.png' % (j, k + 3))
-			# 		Image.fromarray(np.array(trans(pred[k][j, ...]) * 255.0, dtype = np.uint8)).save('./res/%d-z%d.png' % (j, k + 3))
+			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(BATCH_SIZE)
+			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
+			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
+
+			# Write loss to file
+			print('%.6lf, %.6lf, %.6lf' % (loss_1, loss_2, loss_1 + loss_2))
+			f.write('%.6lf, %.6lf, %.6lf\n' % (loss_1, loss_2, loss_1 + loss_2))
+			f.flush()
+
+			# Visualize prediction
+			for j in range(BATCH_SIZE):
+				Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).save('./res/%d-0-img.png' % j)
+				Image.fromarray(np.array(b_pred[j, ...] * 255.0, dtype = np.uint8)).save('./res/%d-1-b.png' % j)
+				Image.fromarray(np.array(v_pred[j, ...] * 255.0, dtype = np.uint8)).save('./res/%d-2-v.png' % j)
+				Image.fromarray(np.array(vertex[j, 0, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-p00.png' % j)
+				for k in range(1, seq_len[j] + 1):
+					Image.fromarray(np.array(y_end_pred[j, k, ...] * 255.0, dtype = np.uint8)).save('./res/%d-p%d.png' % (j, k + 3))
+					Image.fromarray(np.array(norm(pred[k][j, ...]) * 255.0, dtype = np.uint8)).save('./res/%d-z%d.png' % (j, k + 3))
 			# f.write('%.6lf, %.6lf, %.6lf\n' % (loss[0], loss[1], sum(loss)))
 			# print('%.6lf, %.6lf, %.6lf' % (loss[0], loss[1], sum(loss)))
 			# f.flush()

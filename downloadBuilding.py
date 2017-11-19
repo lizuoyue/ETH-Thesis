@@ -108,6 +108,9 @@ class BuildingImageDownloader(object):
 				# polygon_s[-1] = self.centroid(polygon_s[-1], (px_s, py_s, 1))
 		polygon = [(item[0], item[1]) for item in polygon]
 		polygon_s = [(item[0], item[1]) for item in polygon_s]
+		if polygon[-1] == polygon[0] or polygon_s[-1] == polygon_s[0]:
+			polygon.pop()
+			polygon_s.pop()
 
 		# 
 		img = Image.fromarray(img)
@@ -124,7 +127,6 @@ class BuildingImageDownloader(object):
 		merge = ut.pil2np(merge, show)
 
 		# Decide the order of vertices
-		inner_count = 0
 		for i in range(len(polygon)):
 			x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
 			try:
