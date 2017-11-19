@@ -261,6 +261,9 @@ if __name__ == '__main__':
 		objDown = BuildingImageDownloader('./GoogleMapAPIKey.txt')
 		id_list = [k for k in objCons.building]
 		id_list.sort()
+		print(len(id_list))
+		print(id_list[-1])
+		quit()
 		for i, building_id in enumerate(id_list):
 			if i < int(sys.argv[1]) or i >= int(sys.argv[2]):
 				continue
