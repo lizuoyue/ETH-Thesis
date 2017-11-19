@@ -7,14 +7,29 @@ ut = __import__('utility')
 class BuildingImageDownloader(object):
 
 	def __init__(self, google_keys_filename):
-		self.count = 0
 		f = open(google_keys_filename, 'r')
 		self.keys = [item.strip() for item in f.readlines()]
 		f.close()
 
-	def getBuildingAerialImage(building, zoom = 19, scale = 2, size = (224, 224), show = False):
-		z = zoom + scale - 1
+	def getBuildingAerialImage(self, idx, building, scale = 2, size = (224, 224), show = False, save = True, building_id = None):
+
+		# Decide the parameters
+		pad = 100
+		zoom = 19
 		size_s = (math.floor(size[0] / 8), math.floor(size[1] / 8))
+
+		# Check inputs
+		assert(scale == 1 or scale == 2)
+		if scale == 2:
+			assert(size[0] % 2 == 0)
+			assert(size[1] % 2 == 0)
+			size_g = (int(size[0] / 2) + pad, int(size[1] / 2) + pad)
+		else:
+			size_g = (size[0] + pad * 2, size[1] + pad * 2)
+		if save:
+			assert(building_id != None)
+
+		# Decide the tight bounding box
 		min_lon, max_lon = 200.0, -200.0
 		min_lat, max_lat = 100.0, -100.0
 		for lon, lat in building:
@@ -22,12 +37,19 @@ class BuildingImageDownloader(object):
 			min_lat = min(lat, min_lat)
 			max_lon = max(lon, max_lon)
 			max_lat = max(lat, max_lat)
-		left, up = ut.lonLatToPixel(min_lon, max_lat, z)
-		right, down = ut.lonLatToPixel(max_lon, min_lat, z)
-		if right - left > math.floor(size[0] * 0.85) or down - up > math.floor(size[1] * 0.85): # <- Decide the padding
-			return None
 		c_lon = (min_lon + max_lon) / 2.0
 		c_lat = (min_lat + max_lat) / 2.0
+
+		# Decide the zoom level
+		left, up = ut.lonLatToPixel(min_lon, max_lat, zoom + scale - 1)
+		right, down = ut.lonLatToPixel(max_lon, min_lat, zoom + scale - 1)
+		while right - left > math.floor(size[0] * 0.9) or down - up > math.floor(size[1] * 0.9): # <- Decide the padding
+			zoom -= 1
+			assert(zoom > 0)
+			left, up = ut.lonLatToPixel(min_lon, max_lat, zoom + scale - 1)
+			right, down = ut.lonLatToPixel(max_lon, min_lat, zoom + scale - 1)
+		print('%d, %d, Final zoom = %d.' % (idx, building_id, zoom))
+		
 		while True:
 			try:
 				data = requests.get(
@@ -35,17 +57,17 @@ class BuildingImageDownloader(object):
 					'maptype=%s&' 			% 'satellite' 						+ \
 					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 					+ \
 					'zoom=%d&' 				% zoom 								+ \
-					'size=%dx%d&' 			% (size[0] + 100, size[1] + 100) 	+ \
+					'size=%dx%d&' 			% size_g						 	+ \
 					'scale=%d&' 			% scale 							+ \
 					'format=%s&' 			% 'png32' 							+ \
-					'key=%s' 				% self.keys[self.count] 			  \
+					'key=%s' 				% self.keys[idx % len(self.keys)] 	  \
 				).content
 				img = np.array(Image.open(io.BytesIO(data)))
 				break
 			except:
 				print('Try again to get image.')
 				pass
-		img = img[100: img.shape[0] - 100, 100: img.shape[1] - 100, ...]
+		img = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad, ...]
 
 		bbox = ut.BoundingBox(c_lon, c_lat, zoom, scale, size)
 		polygon = []
@@ -61,6 +83,10 @@ class BuildingImageDownloader(object):
 		draw = ImageDraw.Draw(mask)
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
 		merge = Image.alpha_composite(img, mask)
+		if save:
+			img.save('../Dataset/%d-0-img.png' % building_id)
+			mask.save('../Dataset/%d-1-mask.png' % building_id)
+			merge.save('../Dataset/%d-2-merge.png' % building_id)
 		img = ut.pil2np(img, show)
 		mask = ut.pil2np(mask, show)
 		merge = ut.pil2np(merge, show)
@@ -69,12 +95,16 @@ class BuildingImageDownloader(object):
 		boundary = Image.new('P', size_s, color = 0)
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_s, fill = 0, outline = 255)
+		if save:
+			boundary.save('../Dataset/%d-3-b.png' % building_id)
 		boundary = ut.pil2np(boundary, show)
 
 		# 
 		vertices = Image.new('P', size_s, color = 0)
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_s, fill = 255)
+		if save:
+			vertices.save('../Dataset/%d-4-v.png' % building_id)
 		vertices = ut.pil2np(vertices, show)
 
 		# 
@@ -83,9 +113,11 @@ class BuildingImageDownloader(object):
 			vertex = Image.new('P', size_s, color = 0)
 			draw = ImageDraw.Draw(vertex)
 			draw.point([polygon_s[i]], fill = 255)
+			if save:
+				vertex.save('../Dataset/%d-5-v%d.png' % (building_id, i))
 			vertex = ut.pil2np(vertex, show)
 			vertex_list.append(vertex)
-		vertex_list.append(np.zeros(img_size_s, dtype = np.float32))
+		vertex_list.append(np.zeros(size_s, dtype = np.float32))
 		vertex_list = np.array(vertex_list)
 
 		# Return
@@ -127,6 +159,7 @@ class BuildingListConstructor(object):
 			else:
 				building = d[item]
 				if len(building) >= self.range_vertices[0] and len(building) <= self.range_vertices[1]:
+					building.reverse()
 					self.building[item] = building
 		self.printBuildingListLen()
 		return
@@ -206,19 +239,10 @@ class BuildingListConstructor(object):
 				self.printBuildingListLen()
 		return
 
-	def getImage(self, batch_size):
-		result = []
-		while len(result) < batch_size:
-			building = random.sample(self.getBuildingList(), 1)
-			res = getBuildingAerialImage(building[0])
-			if res:
-				result.append(res)
-		return result
-
 if __name__ == '__main__':
 	if False:
-		obj = BuildingListConstructor(range_vertices = (4, 12))
-		obj.batchAddBuildingList(
+		objCons = BuildingListConstructor(range_vertices = (4, 20))
+		objCons.batchAddBuildingList(
 			lon = 8.4200,
 			lat = 47.4600,
 			lon_step = 0.0221822,
@@ -226,9 +250,13 @@ if __name__ == '__main__':
 			lon_num = 10,
 			lat_num = 10,
 		)
-		obj.saveBuildingList('../Dataset/buildingList.npy')
-		obj.printBuildingList()
+		objCons.saveBuildingList('./buildingList.npy')
+		objCons.printBuildingList()
 	else:
-		obj = BuildingListConstructor(range_vertices = (4, 10), filename = '../Dataset/buildingList.npy')
-		building = BuildingImageDownloader('../Dataset/GoogleMapAPIKey.txt')
+		objCons = BuildingListConstructor(range_vertices = (4, 12), filename = './buildingList.npy')
+		objDown = BuildingImageDownloader('./GoogleMapAPIKey.txt')
+		for i, building_id in enumerate(objCons.building):
+			if i < 10 or i >= 18:
+				continue
+			objDown.getBuildingAerialImage(i, objCons.building[building_id], show = True, building_id = building_id)
 

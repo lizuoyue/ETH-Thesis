@@ -1,11 +1,9 @@
 import random
 import numpy as np
 import tensorflow as tf
-import PIL
 from PIL import Image, ImageDraw
-import BuildingImage
 
-def vgg16(x):
+def modifiedVGG16(x):
 	conv1_1 = tf.layers.conv2d(
 		inputs = x,
 		filters = 64,
@@ -170,12 +168,13 @@ def vgg16(x):
 	return feature
 
 BATCH_SIZE = 8
+LSTM_OUT_CHANNEL = 8
 
 def conv_lstm_cell():
 	return tf.contrib.rnn.ConvLSTMCell(
 		conv_ndims = 2,
 		input_shape = [28, 28, 131],
-		output_channels = 8,
+		output_channels = LSTM_OUT_CHANNEL,
 		kernel_shape = (3, 3)
 	)
 
@@ -184,15 +183,18 @@ def combine(y, end):
 	end_re = tf.reshape(end, [-1, 1])
 	return tf.concat([y_re, end_re], 1)
 
-def model(x, b, v, y, end):
+def polyRNN(x, b, v, y, end):
+	# Reshape
 	img = tf.reshape(x, [-1, 224, 224, 3])
 	boundary_true = tf.reshape(b, [-1, 28, 28, 1])
 	vertices_true = tf.reshape(v, [-1, 28, 28, 1])
 	y_true = tf.reshape(y, [-1, 28, 28, 1, 5])
 	end_true = tf.reshape(end, [-1, 1, 1, 1, 5])
-	feature = vgg16(img) # batch_size 28 28 128
 
-	loss1 = 0.0
+	# 
+	feature = modifiedVGG16(img) # batch_size 28 28 128
+
+	loss_1 = 0.0
 	boundary = tf.layers.conv2d(
 		inputs = feature,
 		filters = 1,
@@ -207,9 +209,9 @@ def model(x, b, v, y, end):
 		padding = 'same',
 		activation = tf.sigmoid
 	)
-	loss1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary , weights = (boundary_true * 686 + 49))
-	loss1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices , weights = (vertices_true * 776 + 4 ))
-	loss1 /= (2 * 784 / 100)
+	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary , weights = (boundary_true * 686 + 49))
+	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices , weights = (vertices_true * 776 + 4 ))
+	loss_1 /= (2 * 784 / 100)
 
 	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell() for _ in range(2)])
 	initial_state = state = stacked_lstm.zero_state(BATCH_SIZE, tf.float32)

@@ -7,7 +7,7 @@ def pil2np(image, show):
 	if show:
 		import matplotlib.pyplot as plt
 	img = np.array(image, dtype = np.float32) / 255.0
-	if img.shape[2] == 4:
+	if len(img.shape) > 2 and img.shape[2] == 4:
 		img = img[..., 0: 3]
 	if show:
 		plt.imshow(img)
@@ -145,7 +145,7 @@ class BoundingBox(object):
 	def lonLatToRelativePixel(self, lon, lat):
 		# 0-based
 		px, py = lonLatToPixel(lon, lat, self.z)
-		return math.floor(px - self.center_px + self.size / 2), math.floor(py - self.center_py + self.size / 2)
+		return math.floor(px - self.center_px + self.size[0] / 2), math.floor(py - self.center_py + self.size[1] / 2)
 
 if __name__ == '__main__':
 	for i in range(1):
