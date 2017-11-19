@@ -288,9 +288,12 @@ class DataGenerator(object):
 		return (np.array([item[i] for item in res]) for i in range(6))
 
 def norm(array):
-	ma = np.max(array)
-	mi = np.min(array)
-	return (array - mi) / (ma - mi)
+	ma = np.amax(array)
+	mi = np.amin(array)
+	if ma == mi:
+		return np.zeros(array.shape)
+	else:
+		return (array - mi) / (ma - mi)
 
 if __name__ == '__main__':
 	# Set parameters
@@ -310,6 +313,7 @@ if __name__ == '__main__':
 	result = polyRNN(xx, bb, vv, yy, ee, ll)
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
 	train = optimizer.minimize(result[0] + result[1])
+	saver = tf.train.Saver(max_to_keep = 10)
 	init = tf.global_variables_initializer()
 
 	# Launch graph
@@ -319,22 +323,37 @@ if __name__ == '__main__':
 			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(BATCH_SIZE)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
+			saver.save(sess, './tmp/model-%d.ckpt' % i)
 
 			# Write loss to file
 			print('%.6lf, %.6lf, %.6lf' % (loss_1, loss_2, loss_1 + loss_2))
 			f.write('%.6lf, %.6lf, %.6lf\n' % (loss_1, loss_2, loss_1 + loss_2))
 			f.flush()
 
+			# Clear last files
+			for item in glob.glob('./res/*'):
+				os.remove(item)
+
 			# Visualize prediction
 			for j in range(BATCH_SIZE):
-				Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).save('./res/%d-0-img.png' % j)
-				Image.fromarray(np.array(b_pred[j, ...] * 255.0, dtype = np.uint8)).save('./res/%d-1-b.png' % j)
-				Image.fromarray(np.array(v_pred[j, ...] * 255.0, dtype = np.uint8)).save('./res/%d-2-v.png' % j)
-				Image.fromarray(np.array(vertex[j, 0, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-p00.png' % j)
+				org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
+				org.save('./res/%d-0-img.png' % j)
+				Image.fromarray(np.array(b_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save('./res/%d-1-b.png' % j)
+				Image.fromarray(np.array(boundary[j] * 255.0, dtype = np.uint8)).save('./res/%d-1-b-t.png' % j)
+				Image.fromarray(np.array(v_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save('./res/%d-2-v.png' % j)
+				Image.fromarray(np.array(vertices[j] * 255.0, dtype = np.uint8)).save('./res/%d-2-v-t.png' % j)
+				Image.fromarray(np.array(vertex[j, 0, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-v00.png' % j)
 				for k in range(1, seq_len[j] + 1):
-					Image.fromarray(np.array(y_end_pred[j, k, ...] * 255.0, dtype = np.uint8)).save('./res/%d-p%d.png' % (j, k + 3))
-					Image.fromarray(np.array(norm(pred[k][j, ...]) * 255.0, dtype = np.uint8)).save('./res/%d-z%d.png' % (j, k + 3))
-			# f.write('%.6lf, %.6lf, %.6lf\n' % (loss[0], loss[1], sum(loss)))
-			# print('%.6lf, %.6lf, %.6lf' % (loss[0], loss[1], sum(loss)))
-			# f.flush()
+					Image.fromarray(np.array(y_pred[j, k, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-v%s.png' % (j, str(k).zfill(2)))
+					Image.fromarray(np.array(norm(y_pred[j, k, ...]) * 255.0, dtype = np.uint8)).save('./res/%d-4-p%s.png' % (j, str(k).zfill(2)))
+					alpha = np.array(norm(y_pred[j, k, ...]) * 128.0, dtype = np.uint8)
+					alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
+					alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
+					alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
+					merge = Image.alpha_composite(org, alpha)
+					merge.save('./res/%d-5-m%s.png' % (j, str(k).zfill(2)))
+				import matplotlib.pyplot as plt
+				plt.plot(end_pred[j, 1: seq_len[j] + 1])
+				plt.savefig('./res/%d-5-end.pdf' % j)
+				plt.gcf().clear()
 
