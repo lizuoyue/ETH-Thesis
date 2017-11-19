@@ -1,7 +1,9 @@
 import os, glob, random
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
+plt.switch_backend('agg')
 
 def modifiedVGG16(x):
 	conv1_1 = tf.layers.conv2d(
@@ -352,7 +354,6 @@ if __name__ == '__main__':
 					alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
 					merge = Image.alpha_composite(org, alpha)
 					merge.save('./res/%d-5-m%s.png' % (j, str(k).zfill(2)))
-				import matplotlib.pyplot as plt
 				plt.plot(end_pred[j, 1: seq_len[j] + 1])
 				plt.savefig('./res/%d-5-end.pdf' % j)
 				plt.gcf().clear()
