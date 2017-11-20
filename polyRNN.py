@@ -181,7 +181,7 @@ def conv_lstm_cell(output_channels):
 		conv_ndims = 2,
 		input_shape = [28, 28, 133],
 		output_channels = output_channels,
-		kernel_shape = (3, 3)
+		kernel_shape = [3, 3]
 	)
 
 def polyRNN(xx, bb, vv, yy, ee, ll):
