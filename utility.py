@@ -83,7 +83,7 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6, show = False):
 		vertex = pil2np(vertex, show)
 		vertex_list.append(vertex)
 	vertex_list.append(np.zeros(img_size_s, dtype = np.float32))
-	vertex_list = np.array(vertex_list)
+	# vertex_list = np.array(vertex_list)
 
 	# Return
 	if show:
@@ -149,5 +149,5 @@ class BoundingBox(object):
 
 if __name__ == '__main__':
 	for i in range(1):
-		plotPolygon(num_vertices = 7, show = False)
+		plotPolygon(num_vertices = 7, show = True)
 
