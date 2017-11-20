@@ -343,7 +343,7 @@ if __name__ == '__main__':
 		sess.run(init)
 		for i in range(n_iter):
 			# Get batch data and create feed dictionary
-			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(BATCH_SIZE)
+			img, boundary, vertices, vertex, end, seq_len = obj.getToyDataBatch(BATCH_SIZE)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 
 			# Training and get result
