@@ -179,7 +179,7 @@ def modifiedVGG16(x):
 def conv_lstm_cell(output_channels):
 	return tf.contrib.rnn.ConvLSTMCell(
 		conv_ndims = 2,
-		input_shape = [28, 28, 131],
+		input_shape = [28, 28, 133],
 		output_channels = output_channels,
 		kernel_shape = (3, 3)
 	)
@@ -198,8 +198,6 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 
 	# CNN part
 	feature = modifiedVGG16(img) # batch_size 28 28 128
-
-	loss_1 = 0.0
 	boundary = tf.layers.conv2d(
 		inputs = feature,
 		filters = 1,
@@ -216,16 +214,17 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 	)
 	n_b = tf.reduce_sum(boundary_true) / BATCH_SIZE
 	n_v = tf.reduce_sum(vertices_true) / BATCH_SIZE
+	loss_1 = 0.0
 	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * n_b) + n_b))
 	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * (784 - 2 * n_v) + n_v))
 	loss_1 /= (2 * 784 / 200)
-	return loss_1, boundary, vertices
 
 	# RNN part
-	feature_rep = tf.tile(tf.reshape(feature, [-1, 1, 28, 28, 128]), [1, MAX_SEQ_LEN, 1, 1, 1]) # batch_size max_len 28 28 128
+	feature_new = tf.concat([feature, boundary, vertices], 3)
+	feature_rep = tf.tile(tf.reshape(feature_new, [-1, 1, 28, 28, 130]), [1, MAX_SEQ_LEN, 1, 1, 1]) # batch_size max_len 28 28 130
 	y_true_1 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -1], axis = 1)
 	y_true_2 = tf.stack([y_true[:, 0, ...], y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -2], axis = 1)
-	rnn_input = tf.concat([feature_rep, y_true, y_true_1, y_true_2], axis = 4) # batch_size max_len 28 28 131
+	rnn_input = tf.concat([feature_rep, y_true, y_true_1, y_true_2], axis = 4) # batch_size max_len 28 28 133
 
 	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell(out) for out in LSTM_OUT_CHANNEL])
 	initial_state = stacked_lstm.zero_state(BATCH_SIZE, tf.float32)
@@ -272,8 +271,6 @@ class DataGenerator(object):
 		vertices = np.array(Image.open(glob.glob(path + '/' + '4-v.png')[0])) / 255.0
 		vertex_file_list = glob.glob(path + '/' + '5-v*.png')
 		vertex_file_list.sort()
-		# for item in vertex_file_list:
-		# 	print(item)
 		vertex = [np.array(Image.open(item)) / 255.0 for item in vertex_file_list]
 		seq_len = len(vertex)
 		while len(vertex) < MAX_SEQ_LEN:
@@ -295,7 +292,7 @@ class DataGenerator(object):
 
 	def getToyDataBatch(self, batch_size):
 		res = []
-		num_v = np.random.choice(7, batch_size, replace = True) + 4
+		num_v = np.random.choice(6, batch_size, replace = True) + 4
 		for n in num_v:
 			img, b, v, vertex_list = ut.plotPolygon(num_vertices = n)
 			while len(vertex_list) < MAX_SEQ_LEN:
@@ -323,7 +320,7 @@ if __name__ == '__main__':
 
 	# Set parameters
 	random.seed(31415926)
-	lr = 0.0004
+	lr = 0.0005
 	n_iter = 200000
 	f = open('polyRNN.out', 'w')
 	obj = DataGenerator('../Dataset')
@@ -337,7 +334,7 @@ if __name__ == '__main__':
 	ll = tf.placeholder(tf.float32)
 	result = polyRNN(xx, bb, vv, yy, ee, ll)
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
-	train = optimizer.minimize(result[0])
+	train = optimizer.minimize(result[0] + result[1])
 	saver = tf.train.Saver(max_to_keep = 8)
 	init = tf.global_variables_initializer()
 
@@ -345,18 +342,22 @@ if __name__ == '__main__':
 	with tf.Session() as sess:
 		sess.run(init)
 		for i in range(n_iter):
+			# Get batch data and create feed dictionary
 			img, boundary, vertices, vertex, end, seq_len = obj.getToyDataBatch(BATCH_SIZE)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
-			# loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
-			loss, b_pred, v_pred = sess.run(result, feed_dict)
+
+			# Training and get result
+			sess.run(train, feed_dict)
+			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
+
+			# Save model
 			if i % 200 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
-			print(loss)
 
 			# Write loss to file
-			# print('%d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
-			# f.write('%d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
-			# f.flush()
+			print('%d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
+			f.write('%d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
+			f.flush()
 
 			# Send to mobile
 			if SET_WECHAT and int(time.time()) % 1800 < 60:
@@ -375,18 +376,18 @@ if __name__ == '__main__':
 				Image.fromarray(np.array(v_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save('./res/%d-2-v.png' % j)
 				Image.fromarray(np.array(vertices[j] * 255.0, dtype = np.uint8)).save('./res/%d-2-v-t.png' % j)
 				Image.fromarray(np.array(vertex[j, 0, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-v00.png' % j)
-				# for k in range(1, seq_len[j] + 1):
-				# 	Image.fromarray(np.array(y_pred[j, k, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-v%s.png' % (j, str(k).zfill(2)))
-				# 	Image.fromarray(np.array(norm(y_pred[j, k, ...]) * 255.0, dtype = np.uint8)).save('./res/%d-4-p%s.png' % (j, str(k).zfill(2)))
-				# 	alpha = np.array(norm(y_pred[j, k, ...]) * 128.0, dtype = np.uint8)
-				# 	alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
-				# 	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
-				# 	alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
-				# 	merge = Image.alpha_composite(org, alpha)
-				# 	merge.save('./res/%d-5-m%s.png' % (j, str(k).zfill(2)))
-				# plt.plot(end_pred[j, 1: seq_len[j] + 1])
-				# plt.savefig('./res/%d-5-end.pdf' % j)
-				# plt.gcf().clear()
+				for k in range(1, seq_len[j] + 1):
+					Image.fromarray(np.array(y_pred[j, k, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-v%s.png' % (j, str(k).zfill(2)))
+					Image.fromarray(np.array(norm(y_pred[j, k, ...]) * 255.0, dtype = np.uint8)).save('./res/%d-4-p%s.png' % (j, str(k).zfill(2)))
+					alpha = np.array(norm(y_pred[j, k, ...]) * 128.0, dtype = np.uint8)
+					alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
+					alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
+					alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
+					merge = Image.alpha_composite(org, alpha)
+					merge.save('./res/%d-5-m%s.png' % (j, str(k).zfill(2)))
+				plt.plot(end_pred[j, 1: seq_len[j] + 1])
+				plt.savefig('./res/%d-5-end.pdf' % j)
+				plt.gcf().clear()
 	f.close()
 
 
