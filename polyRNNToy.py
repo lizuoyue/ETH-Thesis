@@ -8,9 +8,9 @@ plt.switch_backend('agg')
 ut = __import__('utility')
 
 BATCH_SIZE = 8
-MAX_SEQ_LEN = 24
+MAX_SEQ_LEN = 12
 LSTM_OUT_CHANNEL = [16, 8]
-SET_WECHAT = True
+SET_WECHAT = False
 
 def modifiedVGG16(x):
 	conv1_1 = tf.layers.conv2d(
