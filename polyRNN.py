@@ -1,4 +1,4 @@
-import os, sys, glob, random, time
+import os, sys, glob, random, time, tarfile
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ ut = __import__('utility')
 BATCH_SIZE = 8
 MAX_SEQ_LEN = 24
 LSTM_OUT_CHANNEL = [16, 8]
-SET_WECHAT = True
+SET_WECHAT = False
 
 def modifiedVGG16(x):
 	conv1_1 = tf.layers.conv2d(
@@ -254,25 +254,33 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 class DataGenerator(object):
 
 	def __init__(self, data_path):
-		self.data_path = data_path
-		self.id_list = os.listdir(data_path)
-		if '.DS_Store' in self.id_list:
-			self.id_list.remove('.DS_Store')
+		self.data_path = data_path.replace('.tar.gz', '')[1:]
+		self.tar = tarfile.open(data_path, 'r:gz')
+		self.building_list = {}
+		for filename in self.tar.getnames():
+			parts = filename.split('/')
+			if len(parts) == 4:
+				bid = int(parts[2])
+				if bid in self.building_list:
+					self.building_list[bid].append(filename)
+				else:
+					self.building_list[bid] = [filename]
+		print('Totally %d buildings.' % len(self.building_list))
+		self.id_list = [k for k in self.building_list]
+		return
 
 	def getDataSingle(self, building_id):
 		# Set path
 		if type(building_id) == int:
 			building_id = str(building_id)
-		path = self.data_path + '/' + building_id
+		path = self.data_path + '/' + building_id + '/'
+		seq_len = len(self.building_list[int(building_id)]) - 5
 
 		# Get images
-		img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
-		boundary = np.array(Image.open(glob.glob(path + '/' + '3-b.png')[0])) / 255.0
-		vertices = np.array(Image.open(glob.glob(path + '/' + '4-v.png')[0])) / 255.0
-		vertex_file_list = glob.glob(path + '/' + '5-v*.png')
-		vertex_file_list.sort()
-		vertex = [np.array(Image.open(item)) / 255.0 for item in vertex_file_list]
-		seq_len = len(vertex)
+		img = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '0-img.png').read())))[..., 0: 3] / 255.0
+		boundary = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '3-b.png').read()))) / 255.0
+		vertices = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '4-v.png').read()))) / 255.0
+		vertex = [np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '5-v%s.png' % str(n).zfill(2)).read()))) / 255.0 for n in range(seq_len)]
 		while len(vertex) < MAX_SEQ_LEN:
 			vertex.append(np.zeros((28, 28), dtype = np.float32))
 		vertex = np.array(vertex)
@@ -313,6 +321,12 @@ def norm(array):
 		return (array - mi) / (ma - mi)
 
 if __name__ == '__main__':
+	# Create new folder
+	if not os.path.exists('./tmp/'):
+		os.makedirs('./tmp/')
+	if not os.path.exists('./res/'):
+		os.makedirs('./res/')
+
 	# Set WeChat
 	if SET_WECHAT:
 		bot = Bot()
@@ -323,7 +337,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 200000
 	f = open('polyRNN.out', 'w')
-	obj = DataGenerator('../Dataset')
+	obj = DataGenerator('../Dataset.tar.gz')
 
 	# Define graph
 	xx = tf.placeholder(tf.float32)
