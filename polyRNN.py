@@ -281,8 +281,12 @@ class DataGenerator(object):
 
 		# Get images
 		img = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/0-img.png').read())))[..., 0: 3] / 255.0
+		print('img done')
 		boundary = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/3-b.png').read()))) / 255.0
+		print('b done')
 		vertices = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/4-v.png').read()))) / 255.0
+		print('v done')
+		vertex = []
 		# vertex = [
 		# 	np.array(Image.open(io.BytesIO(
 		# 		self.tar.extractfile(path + '/5-v%s.png' % str(n).zfill(2)).read())
@@ -296,7 +300,7 @@ class DataGenerator(object):
 		end = np.array(end)
 
 		# Return
-		return img, boundary, vertices, None, end, seq_len
+		return img, boundary, vertices, vertex, end, seq_len
 
 	def getDataBatch(self, batch_size):
 		res = []
