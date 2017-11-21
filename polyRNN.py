@@ -274,14 +274,18 @@ class DataGenerator(object):
 		# Set path
 		if type(building_id) == int:
 			building_id = str(building_id)
-		path = self.data_path + '/' + building_id + '/'
+		path = self.data_path + '/' + building_id
 		seq_len = len(self.building_list[int(building_id)]) - 5
 
 		# Get images
-		img = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '0-img.png').read())))[..., 0: 3] / 255.0
-		boundary = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '3-b.png').read()))) / 255.0
-		vertices = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '4-v.png').read()))) / 255.0
-		vertex = [np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '5-v%s.png' % str(n).zfill(2)).read()))) / 255.0 for n in range(seq_len)]
+		img = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/0-img.png').read())))[..., 0: 3] / 255.0
+		boundary = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/3-b.png').read()))) / 255.0
+		vertices = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/4-v.png').read()))) / 255.0
+		vertex = [
+			np.array(Image.open(io.BytesIO(
+				self.tar.extractfile(path + '/5-v%s.png' % str(n).zfill(2)).read())
+			)) / 255.0 for n in range(seq_len)
+		]
 		while len(vertex) < MAX_SEQ_LEN:
 			vertex.append(np.zeros((28, 28), dtype = np.float32))
 		vertex = np.array(vertex)
@@ -296,6 +300,7 @@ class DataGenerator(object):
 		res = []
 		sel = np.random.choice(len(self.id_list), batch_size, replace = False)
 		for i in sel:
+			print(i)
 			res.append(self.getDataSingle(self.id_list[i]))
 		return (np.array([item[i] for item in res]) for i in range(6))
 
