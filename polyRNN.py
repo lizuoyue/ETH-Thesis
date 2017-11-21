@@ -280,11 +280,17 @@ class DataGenerator(object):
 		print(building_id, seq_len)
 
 		# Get images
-		img = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/0-img.png').read())))[..., 0: 3] / 255.0
+		f = self.tar.extractfile(path + '/0-img.png')
+		print('f done')
+		img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
 		print('img done')
-		boundary = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/3-b.png').read()))) / 255.0
+		f = self.tar.extractfile(path + '/3-b.png')
+		print('f done')
+		boundary = np.array(Image.open(io.BytesIO(f.read()))) / 255.0
 		print('b done')
-		vertices = np.array(Image.open(io.BytesIO(self.tar.extractfile(path + '/4-v.png').read()))) / 255.0
+		f = self.tar.extractfile(path + '/4-v.png')
+		print('f done')
+		vertices = np.array(Image.open(f.read())) / 255.0
 		print('v done')
 		vertex = []
 		# vertex = [
