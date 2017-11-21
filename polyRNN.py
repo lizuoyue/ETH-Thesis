@@ -1,4 +1,4 @@
-import os, glob, random, time
+import os, sys, glob, random, time
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -340,8 +340,13 @@ if __name__ == '__main__':
 
 	# Launch graph
 	with tf.Session() as sess:
-		sess.run(init)
-		for i in range(n_iter):
+		if len(sys.argv) > 1 and sys.argv[1] != None:
+			saver.restore(sess, './tmp/model-%s.ckpt' % sys.argv[1])
+			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
+		else:
+			sess.run(init)
+			iter_obj = range(n_iter)
+		for i in iter_obj:
 			# Get batch data and create feed dictionary
 			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(BATCH_SIZE)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
