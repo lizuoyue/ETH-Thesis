@@ -1,4 +1,5 @@
-import os, sys, glob, random, time, tarfile
+import io, os, sys, glob
+import time, random, tarfile
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
