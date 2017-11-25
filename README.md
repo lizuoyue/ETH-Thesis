@@ -1,2 +1,2 @@
-# Master-Thesis
-Master's thesis project at ETH Zurich.
+# Building Detection
+Project at ETH Zurich.
