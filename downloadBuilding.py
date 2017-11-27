@@ -1,15 +1,33 @@
 import numpy as np
 import lxml.etree as ET
-import io, os, sys, requests, math, random
+import io, os, sys, time
+import requests, math, random
 from PIL import Image, ImageDraw
 ut = __import__('utility')
 
+CITY_DICT = {
+	# lon, lat
+	'Zurich': {
+		'left-up': (  8.4200000, 47.4600000),
+		'step':    (  0.0221822,  0.0150000),
+		'xrange':  (0, 10),
+		'yrange':  (0, 10),
+	},
+	'Chicago': {
+		'left-up': (-87.7976490,  41.960124),
+		'step':    (  0.0201724,  0.0150000),
+		'xrange':  (0, 8),
+		'yrange':  (0, 12),
+	}
+}
+
 class BuildingImageDownloader(object):
 
-	def __init__(self, google_keys_filename):
+	def __init__(self, google_keys_filename, city_name):
 		f = open(google_keys_filename, 'r')
 		self.keys = [item.strip() for item in f.readlines()]
 		f.close()
+		self.city_name = city_name
 
 	def dist(self, p1, p2):
 		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
@@ -31,7 +49,6 @@ class BuildingImageDownloader(object):
 		return (x, y)
 
 	def getBuildingAerialImage(self, idx, building, scale = 2, size = (224, 224), show = False, save = True, building_id = None):
-
 		# Decide the parameters
 		pad = 100
 		zoom = 19
@@ -49,8 +66,8 @@ class BuildingImageDownloader(object):
 			assert(building_id != None)
 
 		# Create new folder
-		if not os.path.exists('../Dataset/%d' % building_id):
-			os.makedirs('../Dataset/%d' % building_id)
+		if not os.path.exists('../%s/%d' % (self.city_name, building_id)):
+			os.makedirs('../%s/%d' % (self.city_name, building_id))
 
 		# Decide the tight bounding box
 		min_lon, max_lon = 200.0, -200.0
@@ -89,6 +106,7 @@ class BuildingImageDownloader(object):
 				break
 			except:
 				print('Try again to get image.')
+				time.sleep(1)
 				pass
 		img = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad, ...]
 
@@ -119,9 +137,9 @@ class BuildingImageDownloader(object):
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
 		merge = Image.alpha_composite(img, mask)
 		if save:
-			img.save('../Dataset/%d/0-img.png' % building_id)
-			mask.save('../Dataset/%d/1-mask.png' % building_id)
-			merge.save('../Dataset/%d/2-merge.png' % building_id)
+			img.save('../%s/%d/0-img.png' % (self.city_name, building_id))
+			mask.save('../%s/%d/1-mask.png' % (self.city_name, building_id))
+			merge.save('../%s/%d/2-merge.png' % (self.city_name, building_id))
 		img = ut.pil2np(img, show)
 		mask = ut.pil2np(mask, show)
 		merge = ut.pil2np(merge, show)
@@ -143,7 +161,7 @@ class BuildingImageDownloader(object):
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_s, fill = 0, outline = 255)
 		if save:
-			boundary.save('../Dataset/%d/3-b.png' % building_id)
+			boundary.save('../%s/%d/3-b.png' % (self.city_name, building_id))
 		boundary = ut.pil2np(boundary, show)
 
 		# 
@@ -151,7 +169,7 @@ class BuildingImageDownloader(object):
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_s, fill = 255)
 		if save:
-			vertices.save('../Dataset/%d/4-v.png' % building_id)
+			vertices.save('../%s/%d/4-v.png' % (self.city_name, building_id))
 		vertices = ut.pil2np(vertices, show)
 
 		# 
@@ -161,7 +179,7 @@ class BuildingImageDownloader(object):
 			draw = ImageDraw.Draw(vertex)
 			draw.point([polygon_s[i]], fill = 255)
 			if save:
-				vertex.save('../Dataset/%d/5-v%s.png' % (building_id, str(i).zfill(2)))
+				vertex.save('../%s/%d/5-v%s.png' % (self.city_name, building_id, str(i).zfill(2)))
 			vertex = ut.pil2np(vertex, show)
 			vertex_list.append(vertex)
 		vertex_list.append(np.zeros(size_s, dtype = np.float32))
@@ -219,6 +237,7 @@ class BuildingListConstructor(object):
 
 	def addBuildingList(self, left, down, right, up):
 		while True:
+			time.sleep(1)
 			try:
 				osm = requests.get(
 					'http://www.openstreetmap.org/api/0.6/map?bbox=' + \
@@ -272,10 +291,16 @@ class BuildingListConstructor(object):
 				pass
 		return
 
-	def batchAddBuildingList(self, lon, lat, lon_step, lat_step, lon_num, lat_num):
-		for i in range(lon_num):
-			for j in range(lat_num):
-				print('Step', i, j)
+	def batchAddBuildingList(self, city_info):
+		lon = city_info['left-up'][0]
+		lat = city_info['left-up'][1]
+		lon_step = city_info['step'][0]
+		lat_step = city_info['step'][1]
+		lon_range = city_info['xrange']
+		lat_range = city_info['yrange']
+		for i in range(lon_range[0], lon_range[1]):
+			for j in range(lat_range[0], lat_range[1]):
+				print('Step', i, j, end = ' ')
 				self.addBuildingList(
 					left  = lon + lon_step * i - lon_step / 2,
 					down  = lat - lat_step * j - lat_step / 2,
@@ -286,25 +311,25 @@ class BuildingListConstructor(object):
 		return
 
 if __name__ == '__main__':
-	if False:
+	assert(len(sys.argv) >= 2)
+	if not os.path.exists('./BuildingList-%s.npy' % sys.argv[1]):
+		assert(len(sys.argv) == 2)
+		city_name = sys.argv[1]
 		objCons = BuildingListConstructor(range_vertices = (4, 20))
-		objCons.batchAddBuildingList(
-			lon = 8.4200,
-			lat = 47.4600,
-			lon_step = 0.0221822,
-			lat_step = 0.0150000,
-			lon_num = 10,
-			lat_num = 10,
-		)
-		objCons.saveBuildingList('./buildingList.npy')
+		objCons.batchAddBuildingList(CITY_DICT[city_name])
+		objCons.saveBuildingList('./BuildingList-%s.npy' % city_name)
 		objCons.printBuildingList()
 	else:
-		objCons = BuildingListConstructor(range_vertices = (4, 20), filename = './buildingList.npy')
+		assert(len(sys.argv) == 4)
+		city_name = sys.argv[1]
+		idx_beg = int(sys.argv[2])
+		idx_end = int(sys.argv[3])
+		objCons = BuildingListConstructor(range_vertices = (4, 20), filename = './BuildingList-%s.npy' % city_name)
 		objDown = BuildingImageDownloader('./GoogleMapAPIKey.txt')
 		id_list = [k for k in objCons.building]
 		id_list.sort()
 		for i, building_id in enumerate(id_list):
-			if i < int(sys.argv[1]) or i >= int(sys.argv[2]):
+			if i < idx_beg or i >= idx_end:
 				continue
 			objDown.getBuildingAerialImage(i, objCons.building[building_id], building_id = building_id)
 
