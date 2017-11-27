@@ -3,15 +3,16 @@ import time, random, tarfile
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 from wxpy import *
 plt.switch_backend('agg')
-ut = __import__('utility')
+ut = __import__('Utility')
 
 BATCH_SIZE = 8
 MAX_SEQ_LEN = 24
 LSTM_OUT_CHANNEL = [16, 8]
-SET_WECHAT = False
+SET_WECHAT = True
+BLUR = True
 
 def modifiedVGG16(x):
 	conv1_1 = tf.layers.conv2d(
@@ -218,74 +219,7 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 	loss_1 = 0.0
 	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * n_b) + n_b))
 	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * (784 - 2 * n_v) + n_v))
-	loss_1 /= (2 * 784 / 200)
-
-	# RNN part
-	feature_new = tf.concat([feature, boundary, vertices], 3)
-	feature_rep = tf.tile(tf.reshape(feature_new, [-1, 1, 28, 28, 130]), [1, MAX_SEQ_LEN, 1, 1, 1]) # batch_size max_len 28 28 130
-	y_true_1 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -1], axis = 1)
-	y_true_2 = tf.stack([y_true[:, 0, ...], y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -2], axis = 1)
-	rnn_input = tf.concat([feature_rep, y_true, y_true_1, y_true_2], axis = 4) # batch_size max_len 28 28 133
-
-	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell(out) for out in LSTM_OUT_CHANNEL])
-	initial_state = stacked_lstm.zero_state(BATCH_SIZE, tf.float32)
-	outputs, state = tf.nn.dynamic_rnn(
-		cell = stacked_lstm,
-		inputs = rnn_input,
-		sequence_length = seq_len,
-		initial_state = initial_state,
-		dtype = tf.float32
-	)
-	outputs_reshape = tf.reshape(outputs, [-1, MAX_SEQ_LEN, 28 * 28 * LSTM_OUT_CHANNEL[1]])
-
-	# FC part
-	logits = tf.layers.dense( # batch_size max_len 785
-		inputs = outputs_reshape,
-		units = 28 * 28 + 1,
-		activation = None
-	)
-	loss_2 = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels = y_end_true, logits = logits)) / tf.reduce_sum(seq_len)
-
-	# Return
-	y_end_pred = tf.nn.softmax(logits)
-	y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, MAX_SEQ_LEN, 28, 28])
-	end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, MAX_SEQ_LEN, 1])
-	return loss_1, loss_2, boundary, vertices, y_pred, end_pred
-
-def NewPolyRNN(xx, bb, vv, yy, ee, ll):
-	# Reshape
-	img           = tf.reshape(xx, [-1, 224, 224, 3])
-	boundary_true = tf.reshape(bb, [-1, 28, 28, 1])
-	vertices_true = tf.reshape(vv, [-1, 28, 28, 1])
-	y_true        = tf.reshape(yy, [-1, MAX_SEQ_LEN, 28, 28, 1])
-	end_true      = tf.reshape(ee, [-1, MAX_SEQ_LEN, 1, 1, 1])
-	seq_len       = tf.reshape(ll, [-1])
-	y_re          = tf.reshape(yy, [-1, MAX_SEQ_LEN, 28 * 28])
-	e_re          = tf.reshape(ee, [-1, MAX_SEQ_LEN, 1])
-	y_end_true    = tf.concat([y_re, e_re], 2)
-
-	# CNN part
-	feature = modifiedVGG16(img) # batch_size 28 28 128
-	boundary = tf.layers.conv2d(
-		inputs = feature,
-		filters = 1,
-		kernel_size = (3, 3),
-		padding = 'same',
-		activation = tf.sigmoid
-	)
-	vertices = tf.layers.conv2d(
-		inputs = tf.concat([feature, boundary], 3),
-		filters = 1,
-		kernel_size = (3, 3),
-		padding = 'same',
-		activation = tf.sigmoid
-	)
-	n_b = tf.reduce_sum(boundary_true) / BATCH_SIZE
-	n_v = tf.reduce_sum(vertices_true) / BATCH_SIZE
-	loss_1 = 0.0
-	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * n_b) + n_b))
-	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * (784 - 2 * n_v) + n_v))
-	loss_1 /= (2 * 784 / 200)
+	loss_1 /= (2 * 784 / 50)
 
 	# RNN part
 	feature_new = tf.concat([feature, boundary, vertices], 3)
@@ -332,7 +266,7 @@ class DataGenerator(object):
 			if '.DS_Store' in self.id_list:
 				self.id_list.remove('.DS_Store')
 		if self.data_file_type == 'tar':
-			self.data_path = data_path.replace('.tar.gz', '')
+			self.data_path = data_path.replace('.tar.gz', '')[1:]
 			self.tar = tarfile.open(data_path, 'r:gz')
 			self.building_list = {}
 			for filename in self.tar.getnames():
@@ -345,7 +279,27 @@ class DataGenerator(object):
 						self.building_list[bid] = [filename]
 			self.id_list = [k for k in self.building_list]
 		print('Totally %d buildings.' % len(self.id_list))
+		# Split
+		random.shuffle(self.id_list)
+		self.id_list_train = self.id_list[:int(len(self.id_list) * 0.8)]
+		self.id_list_valid = self.id_list[int(len(self.id_list) * 0.8):]
+
+		self.blank = np.zeros((28, 28), dtype = np.float32)
+		self.vertex_pool = [[] for i in range(28)]
+		for i in range(28):
+			for j in range(28):
+				self.vertex_pool[i].append(np.zeros((28, 28), dtype = np.float32))
+				self.vertex_pool[i][j][i, j] = 1.0
 		return
+
+	def blur(self, img):
+		if BLUR:
+			img = img.convert('L').filter(ImageFilter.GaussianBlur(1))
+			img = np.array(img, np.float32)
+			img = np.minimum(img * (1.2 / np.max(img)), 1.0)
+		else:
+			img = np.array(img, np.float32) / 255.0
+		return img
 
 	def getDataSingle(self, building_id):
 		# Set path
@@ -358,27 +312,27 @@ class DataGenerator(object):
 			f = self.tar.extractfile(path + '/0-img.png')
 			img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
 			f = self.tar.extractfile(path + '/3-b.png')
-			boundary = np.array(Image.open(io.BytesIO(f.read()))) / 255.0
+			boundary = self.blur(Image.open(io.BytesIO(f.read())))
 			f = self.tar.extractfile(path + '/4-v.png')
-			vertices = np.array(Image.open(io.BytesIO(f.read()))) / 255.0
-			seq_len = len(self.building_list[int(building_id)]) - 5
-			vertex = [
-				np.array(Image.open(io.BytesIO(
-					self.tar.extractfile(path + '/5-v%s.png' % str(n).zfill(2)).read())
-				)) / 255.0 for n in range(seq_len)
-			]
+			vertices = self.blur(Image.open(io.BytesIO(f.read())))
+			f = self.tar.extractfile(path + '/5-v.txt')
+			lines = f.readlines()
+			lines = [line.decode('utf-8') for line in lines]
 		if self.data_file_type == 'dir':
 			img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
-			boundary = np.array(Image.open(glob.glob(path + '/' + '3-b.png')[0])) / 255.0
-			vertices = np.array(Image.open(glob.glob(path + '/' + '4-v.png')[0])) / 255.0
-			vertex_file_list = glob.glob(path + '/' + '5-v*.png')
-			vertex_file_list.sort()
-			vertex = [np.array(Image.open(item)) / 255.0 for item in vertex_file_list]
-			seq_len = len(vertex)
+			boundary = self.blur(Image.open(glob.glob(path + '/' + '3-b.png')[0]))
+			vertices = self.blur(Image.open(glob.glob(path + '/' + '4-v.png')[0]))
+			f = open(path + '/' + '5-v.txt', 'r')
+			lines = f.readlines()
+		vertex = []
+		for line in lines:
+			y, x = line.strip().split()
+			vertex.append(self.vertex_pool[int(x)][int(y)])
+		seq_len = len(vertex)
 
 		# 
 		while len(vertex) < MAX_SEQ_LEN:
-			vertex.append(np.zeros((28, 28), dtype = np.float32))
+			vertex.append(self.blank)
 		vertex = np.array(vertex)
 		end = [0.0 for i in range(MAX_SEQ_LEN)]
 		end[seq_len] = 1.0
@@ -387,11 +341,18 @@ class DataGenerator(object):
 		# Return
 		return img, boundary, vertices, vertex, end, seq_len
 
-	def getDataBatch(self, batch_size):
+	def getDataBatch(self, batch_size, mode = 'train'):
 		res = []
-		sel = np.random.choice(len(self.id_list), batch_size, replace = False)
-		for i in sel:
-			res.append(self.getDataSingle(self.id_list[i]))
+		if mode == 'train':
+			batch_size = min(len(self.id_list_train), batch_size)
+			sel = np.random.choice(len(self.id_list_train), batch_size, replace = False)
+			for i in sel:
+				res.append(self.getDataSingle(self.id_list_train[i]))
+		else:
+			# batch_size = min(len(self.id_list_valid), batch_size)
+			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = True)
+			for i in sel:
+				res.append(self.getDataSingle(self.id_list_valid[i]))
 		return (np.array([item[i] for item in res]) for i in range(6))
 
 	def getToyDataBatch(self, batch_size):
@@ -416,12 +377,40 @@ def norm(array):
 	else:
 		return (array - mi) / (ma - mi)
 
+def visualize(path, img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end_pred):
+	# Clear last files
+	for item in glob.glob(path + '/*'):
+		os.remove(item)
+	for j in range(img.shape[0]):
+		org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
+		org.save(path + '/%d-0-img.png' % j)
+		Image.fromarray(np.array(b_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save(path + '/%d-1-b.png' % j)
+		Image.fromarray(np.array(boundary[j] * 255.0, dtype = np.uint8)).save(path + '/%d-1-b-t.png' % j)
+		Image.fromarray(np.array(v_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save(path + '/%d-2-v.png' % j)
+		Image.fromarray(np.array(vertices[j] * 255.0, dtype = np.uint8)).save(path + '/%d-2-v-t.png' % j)
+		Image.fromarray(np.array(vertex[j, 0, ...] * 255.0, dtype = np.uint8)).save(path + '/%d-3-v00.png' % j)
+		for k in range(1, seq_len[j] + 1):
+			Image.fromarray(np.array(y_pred[j, k, ...] * 255.0, dtype = np.uint8)).save(path + '/%d-3-v%s.png' % (j, str(k).zfill(2)))
+			Image.fromarray(np.array(norm(y_pred[j, k, ...]) * 255.0, dtype = np.uint8)).save(path + '/%d-4-p%s.png' % (j, str(k).zfill(2)))
+			alpha = np.array(norm(y_pred[j, k, ...]) * 128.0, dtype = np.uint8)
+			alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
+			alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
+			alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
+			merge = Image.alpha_composite(org, alpha)
+			merge.save(path + '/%d-5-m%s.png' % (j, str(k).zfill(2)))
+		plt.plot(end_pred[j, 1: seq_len[j] + 1])
+		plt.savefig(path + '/%d-5-end.pdf' % j)
+		plt.gcf().clear()
+	return
+
 if __name__ == '__main__':
 	# Create new folder
 	if not os.path.exists('./tmp/'):
 		os.makedirs('./tmp/')
 	if not os.path.exists('./res/'):
 		os.makedirs('./res/')
+	if not os.path.exists('./val/'):
+		os.makedirs('./val/')
 
 	# Set WeChat
 	if SET_WECHAT:
@@ -433,7 +422,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 200000
 	f = open('polyRNN.out', 'w')
-	obj = DataGenerator('../Zurich.tar.gz')
+	obj = DataGenerator('../Chicago.tar.gz')
 
 	# Define graph
 	xx = tf.placeholder(tf.float32)
@@ -465,45 +454,28 @@ if __name__ == '__main__':
 			sess.run(train, feed_dict)
 			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
 
-			# Save model
-			if i % 200 == 0:
-				saver.save(sess, './tmp/model-%d.ckpt' % i)
-
 			# Write loss to file
-			print('%d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
-			f.write('%d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
+			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
+			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
 			f.flush()
 
 			# Send to mobile
 			if SET_WECHAT and int(time.time()) % 7200 < 60:
 				friend.send('%d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
 
-			# Clear last files
-			for item in glob.glob('./res/*'):
-				os.remove(item)
+			# Visualize
+			visualize('./res', img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end_pred)
 
-			# Visualize prediction
-			for j in range(BATCH_SIZE):
-				org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
-				org.save('./res/%d-0-img.png' % j)
-				Image.fromarray(np.array(b_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save('./res/%d-1-b.png' % j)
-				Image.fromarray(np.array(boundary[j] * 255.0, dtype = np.uint8)).save('./res/%d-1-b-t.png' % j)
-				Image.fromarray(np.array(v_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save('./res/%d-2-v.png' % j)
-				Image.fromarray(np.array(vertices[j] * 255.0, dtype = np.uint8)).save('./res/%d-2-v-t.png' % j)
-				Image.fromarray(np.array(vertex[j, 0, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-v00.png' % j)
-				for k in range(1, seq_len[j] + 1):
-					Image.fromarray(np.array(y_pred[j, k, ...] * 255.0, dtype = np.uint8)).save('./res/%d-3-v%s.png' % (j, str(k).zfill(2)))
-					Image.fromarray(np.array(norm(y_pred[j, k, ...]) * 255.0, dtype = np.uint8)).save('./res/%d-4-p%s.png' % (j, str(k).zfill(2)))
-					alpha = np.array(norm(y_pred[j, k, ...]) * 128.0, dtype = np.uint8)
-					alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
-					alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
-					alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
-					merge = Image.alpha_composite(org, alpha)
-					merge.save('./res/%d-5-m%s.png' % (j, str(k).zfill(2)))
-				plt.plot(end_pred[j, 1: seq_len[j] + 1])
-				plt.savefig('./res/%d-5-end.pdf' % j)
-				plt.gcf().clear()
+			# Save model and validate
+			if i % 200 == 0:
+				saver.save(sess, './tmp/model-%d.ckpt' % i)
+				img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(BATCH_SIZE, mode = 'valid')
+				feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
+				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
+				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
+				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
+				f.flush()
+				visualize('./val', img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end_pred)
+
 	f.close()
-
-
 
