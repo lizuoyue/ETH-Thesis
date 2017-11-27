@@ -422,7 +422,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 200000
 	f = open('polyRNN.out', 'w')
-	obj = DataGenerator('../Chicago.tar.gz')
+	obj = DataGenerator('../Chicago')
 
 	# Define graph
 	xx = tf.placeholder(tf.float32)
