@@ -11,7 +11,7 @@ ut = __import__('Utility')
 BATCH_SIZE = 8
 MAX_SEQ_LEN = 24
 LSTM_OUT_CHANNEL = [16, 8]
-SET_WECHAT = True
+SET_WECHAT = False
 BLUR = True
 
 def modifiedVGG16(x):
@@ -422,7 +422,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 200000
 	f = open('polyRNN.out', 'w')
-	obj = DataGenerator('../Chicago')
+	obj = DataGenerator('../Chicago.tar.gz')
 
 	# Define graph
 	xx = tf.placeholder(tf.float32)
