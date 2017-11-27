@@ -252,22 +252,99 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 	end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, MAX_SEQ_LEN, 1])
 	return loss_1, loss_2, boundary, vertices, y_pred, end_pred
 
+def NewPolyRNN(xx, bb, vv, yy, ee, ll):
+	# Reshape
+	img           = tf.reshape(xx, [-1, 224, 224, 3])
+	boundary_true = tf.reshape(bb, [-1, 28, 28, 1])
+	vertices_true = tf.reshape(vv, [-1, 28, 28, 1])
+	y_true        = tf.reshape(yy, [-1, MAX_SEQ_LEN, 28, 28, 1])
+	end_true      = tf.reshape(ee, [-1, MAX_SEQ_LEN, 1, 1, 1])
+	seq_len       = tf.reshape(ll, [-1])
+	y_re          = tf.reshape(yy, [-1, MAX_SEQ_LEN, 28 * 28])
+	e_re          = tf.reshape(ee, [-1, MAX_SEQ_LEN, 1])
+	y_end_true    = tf.concat([y_re, e_re], 2)
+
+	# CNN part
+	feature = modifiedVGG16(img) # batch_size 28 28 128
+	boundary = tf.layers.conv2d(
+		inputs = feature,
+		filters = 1,
+		kernel_size = (3, 3),
+		padding = 'same',
+		activation = tf.sigmoid
+	)
+	vertices = tf.layers.conv2d(
+		inputs = tf.concat([feature, boundary], 3),
+		filters = 1,
+		kernel_size = (3, 3),
+		padding = 'same',
+		activation = tf.sigmoid
+	)
+	n_b = tf.reduce_sum(boundary_true) / BATCH_SIZE
+	n_v = tf.reduce_sum(vertices_true) / BATCH_SIZE
+	loss_1 = 0.0
+	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * n_b) + n_b))
+	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * (784 - 2 * n_v) + n_v))
+	loss_1 /= (2 * 784 / 200)
+
+	# RNN part
+	feature_new = tf.concat([feature, boundary, vertices], 3)
+	feature_rep = tf.tile(tf.reshape(feature_new, [-1, 1, 28, 28, 130]), [1, MAX_SEQ_LEN, 1, 1, 1]) # batch_size max_len 28 28 130
+	y_true_1 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -1], axis = 1)
+	y_true_2 = tf.stack([y_true[:, 0, ...], y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -2], axis = 1)
+	rnn_input = tf.concat([feature_rep, y_true, y_true_1, y_true_2], axis = 4) # batch_size max_len 28 28 133
+
+	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell(out) for out in LSTM_OUT_CHANNEL])
+	initial_state = stacked_lstm.zero_state(BATCH_SIZE, tf.float32)
+	outputs, state = tf.nn.dynamic_rnn(
+		cell = stacked_lstm,
+		inputs = rnn_input,
+		sequence_length = seq_len,
+		initial_state = initial_state,
+		dtype = tf.float32
+	)
+	outputs_reshape = tf.reshape(outputs, [-1, MAX_SEQ_LEN, 28 * 28 * LSTM_OUT_CHANNEL[1]])
+
+	# FC part
+	logits = tf.layers.dense( # batch_size max_len 785
+		inputs = outputs_reshape,
+		units = 28 * 28 + 1,
+		activation = None
+	)
+	loss_2 = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(labels = y_end_true, logits = logits)) / tf.reduce_sum(seq_len)
+
+	# Return
+	y_end_pred = tf.nn.softmax(logits)
+	y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, MAX_SEQ_LEN, 28, 28])
+	end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, MAX_SEQ_LEN, 1])
+	return loss_1, loss_2, boundary, vertices, y_pred, end_pred
+
 class DataGenerator(object):
 
 	def __init__(self, data_path):
-		self.data_path = data_path.replace('.tar.gz', '')[1:]
-		self.tar = tarfile.open(data_path, 'r:gz')
-		self.building_list = {}
-		for filename in self.tar.getnames():
-			parts = filename.split('/')
-			if len(parts) == 4:
-				bid = int(parts[2])
-				if bid in self.building_list:
-					self.building_list[bid].append(filename)
-				else:
-					self.building_list[bid] = [filename]
-		print('Totally %d buildings.' % len(self.building_list))
-		self.id_list = [k for k in self.building_list]
+		if data_path.endswith('.tar.gz'):
+			self.data_file_type = 'tar'
+		else:
+			self.data_file_type = 'dir'
+		if self.data_file_type == 'dir':
+			self.data_path = data_path
+			self.id_list = os.listdir(data_path)
+			if '.DS_Store' in self.id_list:
+				self.id_list.remove('.DS_Store')
+		if self.data_file_type == 'tar':
+			self.data_path = data_path.replace('.tar.gz', '')
+			self.tar = tarfile.open(data_path, 'r:gz')
+			self.building_list = {}
+			for filename in self.tar.getnames():
+				parts = filename.split('/')
+				if len(parts) == 4:
+					bid = int(parts[2])
+					if bid in self.building_list:
+						self.building_list[bid].append(filename)
+					else:
+						self.building_list[bid] = [filename]
+			self.id_list = [k for k in self.building_list]
+		print('Totally %d buildings.' % len(self.id_list))
 		return
 
 	def getDataSingle(self, building_id):
@@ -275,29 +352,31 @@ class DataGenerator(object):
 		if type(building_id) == int:
 			building_id = str(building_id)
 		path = self.data_path + '/' + building_id
-		seq_len = len(self.building_list[int(building_id)]) - 5
-		self.building_list[int(building_id)]
-		print(building_id, seq_len)
 
 		# Get images
-		f = self.tar.extractfile(path + '/0-img.png')
-		print('f done')
-		img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
-		print('img done')
-		f = self.tar.extractfile(path + '/3-b.png')
-		print('f done')
-		boundary = np.array(Image.open(io.BytesIO(f.read()))) / 255.0
-		print('b done')
-		f = self.tar.extractfile(path + '/4-v.png')
-		print('f done')
-		vertices = np.array(Image.open(f.read())) / 255.0
-		print('v done')
-		vertex = []
-		# vertex = [
-		# 	np.array(Image.open(io.BytesIO(
-		# 		self.tar.extractfile(path + '/5-v%s.png' % str(n).zfill(2)).read())
-		# 	)) / 255.0 for n in range(seq_len)
-		# ]
+		if self.data_file_type == 'tar':
+			f = self.tar.extractfile(path + '/0-img.png')
+			img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
+			f = self.tar.extractfile(path + '/3-b.png')
+			boundary = np.array(Image.open(io.BytesIO(f.read()))) / 255.0
+			f = self.tar.extractfile(path + '/4-v.png')
+			vertices = np.array(Image.open(io.BytesIO(f.read()))) / 255.0
+			seq_len = len(self.building_list[int(building_id)]) - 5
+			vertex = [
+				np.array(Image.open(io.BytesIO(
+					self.tar.extractfile(path + '/5-v%s.png' % str(n).zfill(2)).read())
+				)) / 255.0 for n in range(seq_len)
+			]
+		if self.data_file_type == 'dir':
+			img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
+			boundary = np.array(Image.open(glob.glob(path + '/' + '3-b.png')[0])) / 255.0
+			vertices = np.array(Image.open(glob.glob(path + '/' + '4-v.png')[0])) / 255.0
+			vertex_file_list = glob.glob(path + '/' + '5-v*.png')
+			vertex_file_list.sort()
+			vertex = [np.array(Image.open(item)) / 255.0 for item in vertex_file_list]
+			seq_len = len(vertex)
+
+		# 
 		while len(vertex) < MAX_SEQ_LEN:
 			vertex.append(np.zeros((28, 28), dtype = np.float32))
 		vertex = np.array(vertex)
@@ -354,7 +433,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 200000
 	f = open('polyRNN.out', 'w')
-	obj = DataGenerator('../Dataset.tar.gz')
+	obj = DataGenerator('../Zurich.tar.gz')
 
 	# Define graph
 	xx = tf.placeholder(tf.float32)
