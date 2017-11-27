@@ -1,7 +1,6 @@
 import numpy as np
-import lxml.etree as ET
-import io, os, sys, time
-import requests, math, random
+import io, os, sys
+import requests, math
 from PIL import Image, ImageDraw
 ut = __import__('Utility')
 bli = __import__('GetBuildingListOSM')
@@ -73,6 +72,7 @@ class BuildingImageDownloader(object):
 			assert(zoom > 0)
 			left, up = ut.lonLatToPixel(min_lon, max_lat, zoom + scale - 1)
 			right, down = ut.lonLatToPixel(max_lon, min_lat, zoom + scale - 1)
+		# zoom -= 1
 		print('%d, %d, Final zoom = %d.' % (idx, building_id, zoom))
 		
 		while True:
@@ -91,7 +91,6 @@ class BuildingImageDownloader(object):
 				break
 			except:
 				print('Try again to get image.')
-				time.sleep(1)
 				pass
 		img = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad, ...]
 
@@ -120,14 +119,14 @@ class BuildingImageDownloader(object):
 		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 		draw = ImageDraw.Draw(mask)
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-		merge = Image.alpha_composite(img, mask)
+		# merge = Image.alpha_composite(img, mask)
 		if save:
 			img.save('../%s/%d/0-img.png' % (self.city_name, building_id))
-			mask.save('../%s/%d/1-mask.png' % (self.city_name, building_id))
-			merge.save('../%s/%d/2-merge.png' % (self.city_name, building_id))
-		img = ut.pil2np(img, show)
-		mask = ut.pil2np(mask, show)
-		merge = ut.pil2np(merge, show)
+			# mask.save('../%s/%d/1-mask.png' % (self.city_name, building_id))
+			# merge.save('../%s/%d/2-merge.png' % (self.city_name, building_id))
+		# img = ut.pil2np(img, show)
+		# mask = ut.pil2np(mask, show)
+		# merge = ut.pil2np(merge, show)
 
 		# Decide the order of vertices
 		inner_count = 0
@@ -145,6 +144,9 @@ class BuildingImageDownloader(object):
 		boundary = Image.new('P', size_s, color = 0)
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_s, fill = 0, outline = 255)
+		# draw.line(polygon_s + [polygon_s[0]], fill = 255, width = 3) # <- For thicker outline
+		# for point in polygon_s:
+			# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
 		if save:
 			boundary.save('../%s/%d/3-b.png' % (self.city_name, building_id))
 		boundary = ut.pil2np(boundary, show)
@@ -153,30 +155,38 @@ class BuildingImageDownloader(object):
 		vertices = Image.new('P', size_s, color = 0)
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_s, fill = 255)
+		# for point in polygon_s:
+			# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
 		if save:
 			vertices.save('../%s/%d/4-v.png' % (self.city_name, building_id))
 		vertices = ut.pil2np(vertices, show)
 
 		# 
-		vertex_list = []
-		for i in range(len(polygon_s)):
-			vertex = Image.new('P', size_s, color = 0)
-			draw = ImageDraw.Draw(vertex)
-			draw.point([polygon_s[i]], fill = 255)
-			if save:
-				vertex.save('../%s/%d/5-v%s.png' % (self.city_name, building_id, str(i).zfill(2)))
-			vertex = ut.pil2np(vertex, show)
-			vertex_list.append(vertex)
-		vertex_list.append(np.zeros(size_s, dtype = np.float32))
-		vertex_list = np.array(vertex_list)
+		# vertex_list = []
+		# for i in range(len(polygon_s)):
+		# 	vertex = Image.new('P', size_s, color = 0)
+		# 	draw = ImageDraw.Draw(vertex)
+		# 	draw.point([polygon_s[i]], fill = 255)
+		# 	if save:
+		# 		vertex.save('../%s/%d/5-v%s.png' % (self.city_name, building_id, str(i).zfill(2)))
+		# 	vertex = ut.pil2np(vertex, show)
+		# 	vertex_list.append(vertex)
+		# vertex_list.append(np.zeros(size_s, dtype = np.float32))
+		# vertex_list = np.array(vertex_list)
+		#
+		# Just save text to save storage
+		f = open('../%s/%d/5-v.txt' % (self.city_name, building_id), 'w')
+		for point in polygon_s:
+			f.write('%d %d\n' % point)
+		f.close()
 
 		# Return
 		if show:
 			print(img.shape)
 			print(boundary.shape)
 			print(vertices.shape)
-			print(vertex_list.shape)
-		return img, mask, merge, boundary, vertices, vertex_list
+			# print(vertex_list.shape)
+		return# img, mask, merge, boundary, vertices, vertex_list
 
 if __name__ == '__main__':
 	assert(len(sys.argv) == 4)
@@ -184,7 +194,7 @@ if __name__ == '__main__':
 	idx_beg = int(sys.argv[2])
 	idx_end = int(sys.argv[3])
 	objCons = bli.BuildingListConstructor(range_vertices = (4, 20), filename = './BuildingList-%s.npy' % city_name)
-	objDown = BuildingImageDownloader('./GoogleMapAPIKey.txt')
+	objDown = BuildingImageDownloader('./GoogleMapAPIKey.txt', city_name)
 	id_list = [k for k in objCons.building]
 	id_list.sort()
 	for i, building_id in enumerate(id_list):

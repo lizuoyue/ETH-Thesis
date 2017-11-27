@@ -132,7 +132,7 @@ class BuildingListConstructor(object):
 					up    = lat - lat_step * j + lat_step / 2,
 				)
 				self.printBuildingListLen()
-				self.saveBuildingList('./BuildingList-%s.npy' % sys.argv[1])
+				self.saveBuildingList('./BuildingList-%s-1.npy' % sys.argv[1])
 		return
 
 if __name__ == '__main__':
@@ -140,6 +140,6 @@ if __name__ == '__main__':
 	city_name = sys.argv[1]
 	objCons = BuildingListConstructor(range_vertices = (4, 20), filename = './BuildingList-%s.npy' % city_name)
 	objCons.batchAddBuildingList(CITY_DICT[city_name])
-	objCons.saveBuildingList('./BuildingList-%s.npy' % city_name)
+	objCons.saveBuildingList('./BuildingList-%s-1.npy' % city_name)
 	objCons.printBuildingList()
 
