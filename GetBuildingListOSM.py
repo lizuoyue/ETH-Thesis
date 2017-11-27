@@ -11,9 +11,9 @@ CITY_DICT = {
 	},
 	'Chicago': {
 		'left-up-center': (-87.7976490, 41.960124),
-		'step': (0.0201724, 0.0150000),
-		'xrange': (0, 8),
-		'yrange': (0, 12),
+		'step': (0.0134483, 0.0100000),
+		'xrange': (3, 9), # 12
+		'yrange': (3, 15), # 18
 	}
 }
 
@@ -132,12 +132,13 @@ class BuildingListConstructor(object):
 					up    = lat - lat_step * j + lat_step / 2,
 				)
 				self.printBuildingListLen()
+				self.saveBuildingList('./BuildingList-%s.npy' % sys.argv[1])
 		return
 
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
-	objCons = BuildingListConstructor(range_vertices = (4, 20))
+	objCons = BuildingListConstructor(range_vertices = (4, 20), filename = './BuildingList-%s.npy' % city_name)
 	objCons.batchAddBuildingList(CITY_DICT[city_name])
 	objCons.saveBuildingList('./BuildingList-%s.npy' % city_name)
 	objCons.printBuildingList()
