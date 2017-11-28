@@ -16,6 +16,7 @@ SET_WECHAT = False
 BLUR = True
 BLUR_R = 0.75
 TRAIN_PROB = 0.9
+DATA_PATH = '../Chicago'
 
 def modifiedVGG16(x):
 	conv1_1 = tf.layers.conv2d(
@@ -425,7 +426,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 200000
 	f = open('polyRNN.out', 'w')
-	obj = DataGenerator('../Chicago')
+	obj = DataGenerator(DATA_PATH)
 
 	# Define graph
 	xx = tf.placeholder(tf.float32)
