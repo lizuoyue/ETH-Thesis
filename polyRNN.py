@@ -11,8 +11,11 @@ ut = __import__('Utility')
 BATCH_SIZE = 8
 MAX_SEQ_LEN = 24
 LSTM_OUT_CHANNEL = [16, 8]
+LSTM_IN_CHANNEL = [133, 16]
 SET_WECHAT = False
 BLUR = True
+BLUR_R = 0.75
+TRAIN_PROB = 0.9
 
 def modifiedVGG16(x):
 	conv1_1 = tf.layers.conv2d(
@@ -178,10 +181,10 @@ def modifiedVGG16(x):
 	)
 	return feature
 
-def conv_lstm_cell(output_channels):
+def conv_lstm_cell(intput_channels, output_channels):
 	return tf.contrib.rnn.ConvLSTMCell(
 		conv_ndims = 2,
-		input_shape = [28, 28, 133],
+		input_shape = [28, 28, intput_channels],
 		output_channels = output_channels,
 		kernel_shape = [3, 3]
 	)
@@ -228,7 +231,7 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 	y_true_2 = tf.stack([y_true[:, 0, ...], y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[0: -2], axis = 1)
 	rnn_input = tf.concat([feature_rep, y_true, y_true_1, y_true_2], axis = 4) # batch_size max_len 28 28 133
 
-	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell(out) for out in LSTM_OUT_CHANNEL])
+	stacked_lstm = tf.contrib.rnn.MultiRNNCell([conv_lstm_cell(in_c, out_c) for in_c, out_c in zip(LSTM_IN_CHANNEL, LSTM_OUT_CHANNEL)])
 	initial_state = stacked_lstm.zero_state(BATCH_SIZE, tf.float32)
 	outputs, state = tf.nn.dynamic_rnn(
 		cell = stacked_lstm,
@@ -281,8 +284,8 @@ class DataGenerator(object):
 		print('Totally %d buildings.' % len(self.id_list))
 		# Split
 		random.shuffle(self.id_list)
-		self.id_list_train = self.id_list[:int(len(self.id_list) * 0.8)]
-		self.id_list_valid = self.id_list[int(len(self.id_list) * 0.8):]
+		self.id_list_train = self.id_list[:int(len(self.id_list) * TRAIN_PROB)]
+		self.id_list_valid = self.id_list[int(len(self.id_list) * (1 - TRAIN_PROB)):]
 
 		self.blank = np.zeros((28, 28), dtype = np.float32)
 		self.vertex_pool = [[] for i in range(28)]
@@ -294,7 +297,7 @@ class DataGenerator(object):
 
 	def blur(self, img):
 		if BLUR:
-			img = img.convert('L').filter(ImageFilter.GaussianBlur(1))
+			img = img.convert('L').filter(ImageFilter.GaussianBlur(BLUR_R))
 			img = np.array(img, np.float32)
 			img = np.minimum(img * (1.2 / np.max(img)), 1.0)
 		else:
@@ -349,8 +352,8 @@ class DataGenerator(object):
 			for i in sel:
 				res.append(self.getDataSingle(self.id_list_train[i]))
 		else:
-			# batch_size = min(len(self.id_list_valid), batch_size)
-			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = True)
+			batch_size = min(len(self.id_list_valid), batch_size)
+			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = False)
 			for i in sel:
 				res.append(self.getDataSingle(self.id_list_valid[i]))
 		return (np.array([item[i] for item in res]) for i in range(6))
