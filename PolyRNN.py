@@ -13,7 +13,7 @@ MAX_SEQ_LEN = 24
 LSTM_OUT_CHANNEL = [16, 8]
 LSTM_IN_CHANNEL = [133, 16]
 SET_WECHAT = False
-BLUR = True
+BLUR = False
 BLUR_R = 0.75
 TRAIN_PROB = 0.9
 DATA_PATH = '../Chicago'
@@ -223,7 +223,7 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 	loss_1 = 0.0
 	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * n_b) + n_b))
 	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * (784 - 2 * n_v) + n_v))
-	loss_1 /= (2 * 784 / 50)
+	loss_1 /= (2 * 784 / 100)
 
 	# RNN part
 	feature_new = tf.concat([feature, boundary, vertices], 3)
@@ -285,8 +285,9 @@ class DataGenerator(object):
 		print('Totally %d buildings.' % len(self.id_list))
 		# Split
 		random.shuffle(self.id_list)
-		self.id_list_train = self.id_list[:int(len(self.id_list) * TRAIN_PROB)]
-		self.id_list_valid = self.id_list[int(len(self.id_list) * (1 - TRAIN_PROB)):]
+		split = int(len(self.id_list) * TRAIN_PROB)
+		self.id_list_train = self.id_list[:split]
+		self.id_list_valid = self.id_list[split:]
 
 		self.blank = np.zeros((28, 28), dtype = np.float32)
 		self.vertex_pool = [[] for i in range(28)]
