@@ -288,6 +288,7 @@ class DataGenerator(object):
 		split = int(len(self.id_list) * TRAIN_PROB)
 		self.id_list_train = self.id_list[:split]
 		self.id_list_valid = self.id_list[split:]
+		random.seed(31415927)
 
 		self.blank = np.zeros((28, 28), dtype = np.float32)
 		self.vertex_pool = [[] for i in range(28)]
