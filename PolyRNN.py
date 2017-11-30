@@ -8,10 +8,10 @@ from wxpy import *
 plt.switch_backend('agg')
 ut = __import__('Utility')
 
-BATCH_SIZE = 8
+BATCH_SIZE = 9
 MAX_SEQ_LEN = 24
-LSTM_OUT_CHANNEL = [16, 8]
-LSTM_IN_CHANNEL = [133, 16]
+LSTM_OUT_CHANNEL = [32, 12]
+LSTM_IN_CHANNEL = [133, 32]
 SET_WECHAT = False
 BLUR = True
 BLUR_R = 0.75
@@ -223,7 +223,7 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 	loss_1 = 0.0
 	loss_1 += tf.losses.log_loss(labels = boundary_true, predictions = boundary, weights = (boundary_true * (784 - 2 * n_b) + n_b))
 	loss_1 += tf.losses.log_loss(labels = vertices_true, predictions = vertices, weights = (vertices_true * (784 - 2 * n_v) + n_v))
-	loss_1 /= (2 * 784 / 100)
+	loss_1 /= (2 * 784 / 50)
 
 	# RNN part
 	feature_new = tf.concat([feature, boundary, vertices], 3)
@@ -283,12 +283,14 @@ class DataGenerator(object):
 						self.building_list[bid] = [filename]
 			self.id_list = [k for k in self.building_list]
 		print('Totally %d buildings.' % len(self.id_list))
+
 		# Split
+		random.seed(31415927)
 		random.shuffle(self.id_list)
+		random.seed(random.randint(0, 31415926))
 		split = int(len(self.id_list) * TRAIN_PROB)
 		self.id_list_train = self.id_list[:split]
 		self.id_list_valid = self.id_list[split:]
-		random.seed(31415925)
 
 		self.blank = np.zeros((28, 28), dtype = np.float32)
 		self.vertex_pool = [[] for i in range(28)]
@@ -383,6 +385,15 @@ def norm(array):
 	else:
 		return (array - mi) / (ma - mi)
 
+def overlay(img, mask):
+	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
+	alpha = np.array(mask * 128.0, dtype = np.uint8)
+	alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
+	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
+	alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
+	merge = Image.alpha_composite(org, alpha)
+	return merge
+
 def visualize(path, img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end_pred):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
@@ -390,20 +401,13 @@ def visualize(path, img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end
 	for j in range(img.shape[0]):
 		org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
 		org.save(path + '/%d-0-img.png' % j)
-		Image.fromarray(np.array(b_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save(path + '/%d-1-b.png' % j)
-		Image.fromarray(np.array(boundary[j] * 255.0, dtype = np.uint8)).save(path + '/%d-1-b-t.png' % j)
-		Image.fromarray(np.array(v_pred[j, ..., 0] * 255.0, dtype = np.uint8)).save(path + '/%d-2-v.png' % j)
-		Image.fromarray(np.array(vertices[j] * 255.0, dtype = np.uint8)).save(path + '/%d-2-v-t.png' % j)
-		Image.fromarray(np.array(vertex[j, 0, ...] * 255.0, dtype = np.uint8)).save(path + '/%d-3-v00.png' % j)
+		overlay(img[j, ...], b_pred[j, ..., 0]).save(path + '/%d-1-b-p.png' % j)
+		overlay(img[j, ...], boundary[j]).save(path + '/%d-1-b-t.png' % j)
+		overlay(img[j, ...], v_pred[j, ..., 0]).save(path + '/%d-2-v-p.png' % j)
+		overlay(img[j, ...], vertices[j]).save(path + '/%d-2-v-t.png' % j)
+		overlay(img[j, ...], vertex[j, 0, ...]).save(path + '/%d-3-v00.png' % j)
 		for k in range(1, seq_len[j] + 1):
-			Image.fromarray(np.array(y_pred[j, k, ...] * 255.0, dtype = np.uint8)).save(path + '/%d-3-v%s.png' % (j, str(k).zfill(2)))
-			Image.fromarray(np.array(norm(y_pred[j, k, ...]) * 255.0, dtype = np.uint8)).save(path + '/%d-4-p%s.png' % (j, str(k).zfill(2)))
-			alpha = np.array(norm(y_pred[j, k, ...]) * 128.0, dtype = np.uint8)
-			alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
-			alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
-			alpha = alpha.resize((224, 224), resample = Image.BILINEAR)
-			merge = Image.alpha_composite(org, alpha)
-			merge.save(path + '/%d-5-m%s.png' % (j, str(k).zfill(2)))
+			overlay(img[j, ...], y_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k).zfill(2)))
 		plt.plot(end_pred[j, 1: seq_len[j] + 1])
 		plt.savefig(path + '/%d-5-end.pdf' % j)
 		plt.gcf().clear()
@@ -424,10 +428,9 @@ if __name__ == '__main__':
 		friend = bot.friends().search('李作越')[0]
 
 	# Set parameters
-	random.seed(31415926)
 	lr = 0.0005
-	n_iter = 200000
-	f = open('polyRNN.out', 'w')
+	n_iter = 2000000
+	f = open('PolyRNN.out', 'w')
 	obj = DataGenerator(DATA_PATH)
 
 	# Define graph
@@ -440,7 +443,7 @@ if __name__ == '__main__':
 	result = polyRNN(xx, bb, vv, yy, ee, ll)
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
 	train = optimizer.minimize(result[0] + result[1])
-	saver = tf.train.Saver(max_to_keep = 8)
+	saver = tf.train.Saver(max_to_keep = 20)
 	init = tf.global_variables_initializer()
 
 	# Launch graph
