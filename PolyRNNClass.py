@@ -235,9 +235,9 @@ class PolyRNN(object):
 			y_true_1 = y_true[:, : -1, ...]
 			y_true_2 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[: -2], axis = 1)
 			rnn_input = tf.concat([feature_rep, y_true_0, y_true_1, y_true_2], axis = 4)
-			# y_true_0:   0 0 0 0 0 ... 0
 			# y_true_1:   0 1 2 3 4 ... N - 2
 			# y_true_2:   0 0 1 2 3 ... N - 3
+			# y_true_0:   0 0 0 0 0 ... 0
 			# y_end_true: 1 2 3 4 5 ... N - 1
 			initial_state = self.stacked_lstm.zero_state(self.batch_size, tf.float32)
 			outputs, state = tf.nn.dynamic_rnn(
@@ -337,9 +337,9 @@ def visualize(path, img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end
 		overlay(img[j, ...], v_pred[j, ..., 0]).save(path + '/%d-2-v-p.png' % j)
 		overlay(img[j, ...], vertices[j]).save(path + '/%d-2-v-t.png' % j)
 		overlay(img[j, ...], vertex[j, 0, ...]).save(path + '/%d-3-v00.png' % j)
-		for k in range(1, seq_len[j] + 1):
-			overlay(img[j, ...], y_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k).zfill(2)))
-		plt.plot(end_pred[j, 1: seq_len[j] + 1])
+		for k in range(0, seq_len[j]):
+			overlay(img[j, ...], y_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k + 1).zfill(2)))
+		plt.plot(end_pred[j, : seq_len[j]])
 		plt.savefig(path + '/%d-5-end.pdf' % j)
 		plt.gcf().clear()
 	return
