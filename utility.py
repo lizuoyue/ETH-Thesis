@@ -1,7 +1,11 @@
 import numpy as np
-import sys, math, random
-from PIL import Image, ImageDraw
+import os, sys, glob
+import math, random
+from PIL import Image, ImageDraw, ImageFilter
 # PIL.ImageDraw: 0-based, (col_idx, row_idx) if taking image as matrix
+
+BLUR = True
+BLUR_R = 0.75
 
 def pil2np(image, show):
 	if show:
@@ -123,6 +127,14 @@ def pixelToLonLat(px, py, z):
 	lat = math.asin((temp - 1.0) / (temp + 1.0)) / math.pi * 180.0
 	return lon, lat
 
+def norm(array):
+	ma = np.amax(array)
+	mi = np.amin(array)
+	if ma == mi:
+		return np.zeros(array.shape)
+	else:
+		return (array - mi) / (ma - mi)
+
 class BoundingBox(object):
 	# size: (width, height)
 	def __init__(self, lon, lat, zoom, scale, size = (224, 224)):
@@ -146,6 +158,127 @@ class BoundingBox(object):
 		# 0-based
 		px, py = lonLatToPixel(lon, lat, self.z)
 		return math.floor(px - self.center_px + self.size[0] / 2), math.floor(py - self.center_py + self.size[1] / 2)
+
+class DataGenerator(object):
+	def __init__(self, data_path, train_prob = 0.9, max_seq_len = 24):
+		self.train_prob = train_prob
+		self.max_seq_len = max_seq_len
+		if data_path.endswith('.tar.gz'):
+			self.data_file_type = 'tar'
+		else:
+			self.data_file_type = 'dir'
+		if self.data_file_type == 'dir':
+			self.data_path = data_path
+			self.id_list = os.listdir(data_path)
+			if '.DS_Store' in self.id_list:
+				self.id_list.remove('.DS_Store')
+		if self.data_file_type == 'tar':
+			self.data_path = data_path.replace('.tar.gz', '')[1:]
+			self.tar = tarfile.open(data_path, 'r|gz')
+			self.building_list = {}
+			for filename in self.tar.getnames():
+				parts = filename.split('/')
+				if len(parts) == 4:
+					bid = int(parts[2])
+					if bid in self.building_list:
+						self.building_list[bid].append(filename)
+					else:
+						self.building_list[bid] = [filename]
+			self.id_list = [k for k in self.building_list]
+		print('Totally %d buildings.' % len(self.id_list))
+
+		# Split
+		random.seed(31415927)
+		random.shuffle(self.id_list)
+		random.seed(random.randint(0, 31415926))
+		split = int(len(self.id_list) * self.train_prob)
+		self.id_list_train = self.id_list[:split]
+		self.id_list_valid = self.id_list[split:]
+
+		self.blank = np.zeros((28, 28), dtype = np.float32)
+		self.vertex_pool = [[] for i in range(28)]
+		for i in range(28):
+			for j in range(28):
+				self.vertex_pool[i].append(np.zeros((28, 28), dtype = np.float32))
+				self.vertex_pool[i][j][i, j] = 1.0
+		return
+
+	def blur(self, img):
+		if BLUR:
+			img = img.convert('L').filter(ImageFilter.GaussianBlur(BLUR_R))
+			img = np.array(img, np.float32)
+			img = np.minimum(img * (1.2 / np.max(img)), 1.0)
+		else:
+			img = np.array(img, np.float32) / 255.0
+		return img
+
+	def getDataSingle(self, building_id):
+		# Set path
+		if type(building_id) == int:
+			building_id = str(building_id)
+		path = self.data_path + '/' + building_id
+
+		# Get images
+		if self.data_file_type == 'tar':
+			f = self.tar.extractfile(path + '/0-img.png')
+			img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
+			f = self.tar.extractfile(path + '/3-b.png')
+			boundary = self.blur(Image.open(io.BytesIO(f.read())))
+			f = self.tar.extractfile(path + '/4-v.png')
+			vertices = self.blur(Image.open(io.BytesIO(f.read())))
+			f = self.tar.extractfile(path + '/5-v.txt')
+			lines = f.readlines()
+			lines = [line.decode('utf-8') for line in lines]
+		if self.data_file_type == 'dir':
+			img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
+			boundary = self.blur(Image.open(glob.glob(path + '/' + '3-b.png')[0]))
+			vertices = self.blur(Image.open(glob.glob(path + '/' + '4-v.png')[0]))
+			f = open(path + '/' + '5-v.txt', 'r')
+			lines = f.readlines()
+		vertex = []
+		for line in lines:
+			y, x = line.strip().split()
+			vertex.append(self.vertex_pool[int(x)][int(y)])
+		seq_len = len(vertex)
+
+		# 
+		while len(vertex) < self.max_seq_len:
+			vertex.append(self.blank)
+		vertex = np.array(vertex)
+		end = [0.0 for i in range(self.max_seq_len)]
+		end[seq_len] = 1.0
+		end = np.array(end)
+
+		# Return
+		return img, boundary, vertices, vertex, end, seq_len
+
+	def getDataBatch(self, batch_size, mode = 'train'):
+		res = []
+		if mode == 'train':
+			batch_size = min(len(self.id_list_train), batch_size)
+			sel = np.random.choice(len(self.id_list_train), batch_size, replace = False)
+			for i in sel:
+				res.append(self.getDataSingle(self.id_list_train[i]))
+		else:
+			batch_size = min(len(self.id_list_valid), batch_size)
+			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = False)
+			for i in sel:
+				res.append(self.getDataSingle(self.id_list_valid[i]))
+		return (np.array([item[i] for item in res]) for i in range(6))
+
+	def getToyDataBatch(self, batch_size):
+		res = []
+		num_v = np.random.choice(6, batch_size, replace = True) + 4
+		for n in num_v:
+			img, b, v, vertex_list = plotPolygon(num_vertices = n)
+			while len(vertex_list) < self.max_seq_len:
+				vertex_list.append(np.zeros((28, 28), dtype = np.float32))
+			vertex_list = np.array(vertex_list)
+			end = [0.0 for i in range(self.max_seq_len)]
+			end[n] = 1.0
+			end = np.array(end)
+			res.append((img, b, v, vertex_list, end, n))
+		return (np.array([item[i] for item in res]) for i in range(6))
 
 if __name__ == '__main__':
 	for i in range(1):

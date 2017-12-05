@@ -8,14 +8,11 @@ from wxpy import *
 plt.switch_backend('agg')
 ut = __import__('Utility')
 
-BATCH_SIZE = 9
+BATCH_SIZE = 8
 MAX_SEQ_LEN = 24
 LSTM_OUT_CHANNEL = [32, 12]
 LSTM_IN_CHANNEL = [133, 32]
 SET_WECHAT = False
-BLUR = True
-BLUR_R = 0.75
-TRAIN_PROB = 0.9
 DATA_PATH = '../Chicago'
 
 def modifiedVGG16(x):
@@ -257,134 +254,6 @@ def polyRNN(xx, bb, vv, yy, ee, ll):
 	end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, MAX_SEQ_LEN, 1])
 	return loss_1, loss_2, boundary, vertices, y_pred, end_pred
 
-class DataGenerator(object):
-
-	def __init__(self, data_path):
-		if data_path.endswith('.tar.gz'):
-			self.data_file_type = 'tar'
-		else:
-			self.data_file_type = 'dir'
-		if self.data_file_type == 'dir':
-			self.data_path = data_path
-			self.id_list = os.listdir(data_path)
-			if '.DS_Store' in self.id_list:
-				self.id_list.remove('.DS_Store')
-		if self.data_file_type == 'tar':
-			self.data_path = data_path.replace('.tar.gz', '')[1:]
-			self.tar = tarfile.open(data_path, 'r:gz')
-			self.building_list = {}
-			for filename in self.tar.getnames():
-				parts = filename.split('/')
-				if len(parts) == 4:
-					bid = int(parts[2])
-					if bid in self.building_list:
-						self.building_list[bid].append(filename)
-					else:
-						self.building_list[bid] = [filename]
-			self.id_list = [k for k in self.building_list]
-		print('Totally %d buildings.' % len(self.id_list))
-
-		# Split
-		random.seed(31415927)
-		random.shuffle(self.id_list)
-		random.seed(random.randint(0, 31415926))
-		split = int(len(self.id_list) * TRAIN_PROB)
-		self.id_list_train = self.id_list[:split]
-		self.id_list_valid = self.id_list[split:]
-
-		self.blank = np.zeros((28, 28), dtype = np.float32)
-		self.vertex_pool = [[] for i in range(28)]
-		for i in range(28):
-			for j in range(28):
-				self.vertex_pool[i].append(np.zeros((28, 28), dtype = np.float32))
-				self.vertex_pool[i][j][i, j] = 1.0
-		return
-
-	def blur(self, img):
-		if BLUR:
-			img = img.convert('L').filter(ImageFilter.GaussianBlur(BLUR_R))
-			img = np.array(img, np.float32)
-			img = np.minimum(img * (1.2 / np.max(img)), 1.0)
-		else:
-			img = np.array(img, np.float32) / 255.0
-		return img
-
-	def getDataSingle(self, building_id):
-		# Set path
-		if type(building_id) == int:
-			building_id = str(building_id)
-		path = self.data_path + '/' + building_id
-
-		# Get images
-		if self.data_file_type == 'tar':
-			f = self.tar.extractfile(path + '/0-img.png')
-			img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
-			f = self.tar.extractfile(path + '/3-b.png')
-			boundary = self.blur(Image.open(io.BytesIO(f.read())))
-			f = self.tar.extractfile(path + '/4-v.png')
-			vertices = self.blur(Image.open(io.BytesIO(f.read())))
-			f = self.tar.extractfile(path + '/5-v.txt')
-			lines = f.readlines()
-			lines = [line.decode('utf-8') for line in lines]
-		if self.data_file_type == 'dir':
-			img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
-			boundary = self.blur(Image.open(glob.glob(path + '/' + '3-b.png')[0]))
-			vertices = self.blur(Image.open(glob.glob(path + '/' + '4-v.png')[0]))
-			f = open(path + '/' + '5-v.txt', 'r')
-			lines = f.readlines()
-		vertex = []
-		for line in lines:
-			y, x = line.strip().split()
-			vertex.append(self.vertex_pool[int(x)][int(y)])
-		seq_len = len(vertex)
-
-		# 
-		while len(vertex) < MAX_SEQ_LEN:
-			vertex.append(self.blank)
-		vertex = np.array(vertex)
-		end = [0.0 for i in range(MAX_SEQ_LEN)]
-		end[seq_len] = 1.0
-		end = np.array(end)
-
-		# Return
-		return img, boundary, vertices, vertex, end, seq_len
-
-	def getDataBatch(self, batch_size, mode = 'train'):
-		res = []
-		if mode == 'train':
-			batch_size = min(len(self.id_list_train), batch_size)
-			sel = np.random.choice(len(self.id_list_train), batch_size, replace = False)
-			for i in sel:
-				res.append(self.getDataSingle(self.id_list_train[i]))
-		else:
-			batch_size = min(len(self.id_list_valid), batch_size)
-			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = False)
-			for i in sel:
-				res.append(self.getDataSingle(self.id_list_valid[i]))
-		return (np.array([item[i] for item in res]) for i in range(6))
-
-	def getToyDataBatch(self, batch_size):
-		res = []
-		num_v = np.random.choice(6, batch_size, replace = True) + 4
-		for n in num_v:
-			img, b, v, vertex_list = ut.plotPolygon(num_vertices = n)
-			while len(vertex_list) < MAX_SEQ_LEN:
-				vertex_list.append(np.zeros((28, 28), dtype = np.float32))
-			vertex_list = np.array(vertex_list)
-			end = [0.0 for i in range(MAX_SEQ_LEN)]
-			end[n] = 1.0
-			end = np.array(end)
-			res.append((img, b, v, vertex_list, end, n))
-		return (np.array([item[i] for item in res]) for i in range(6))
-
-def norm(array):
-	ma = np.amax(array)
-	mi = np.amin(array)
-	if ma == mi:
-		return np.zeros(array.shape)
-	else:
-		return (array - mi) / (ma - mi)
-
 def overlay(img, mask):
 	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
 	alpha = np.array(mask * 128.0, dtype = np.uint8)
@@ -431,7 +300,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 2000000
 	f = open('PolyRNN.out', 'w')
-	obj = DataGenerator(DATA_PATH)
+	obj = ut.DataGenerator(DATA_PATH, train_prob = 0.5)
 
 	# Define graph
 	xx = tf.placeholder(tf.float32)
@@ -462,6 +331,10 @@ if __name__ == '__main__':
 			# Training and get result
 			sess.run(train, feed_dict)
 			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
+			print(b_pred.shape)
+			print(v_pred.shape)
+			print(y_pred.shape)
+			print(end_pred.shape)
 
 			# Write loss to file
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
