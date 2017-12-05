@@ -9,11 +9,11 @@ ut = __import__('Utility')
 
 class PolyRNN(object):
 
-	def __init__(self, batch_size = 8, max_seq_len = 24, lstm_out_channel = [32, 12]):
+	def __init__(self, batch_size = 9, max_seq_len = 24, lstm_out_channel = [32, 16, 8]):
 		self.batch_size = batch_size
 		self.max_seq_len = max_seq_len
 		self.lstm_out_channel = lstm_out_channel
-		self.lstm_in_channel = [133] + lstm_out_channel[:-1]
+		self.lstm_in_channel = [133] + lstm_out_channel[: -1]
 		self.stacked_lstm = tf.contrib.rnn.MultiRNNCell(
 			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
 		)
@@ -371,11 +371,14 @@ if __name__ == '__main__':
 	# Set parameters
 	lr = 0.0005
 	n_iter = 2000000
+	max_seq_len = 24
+	train_prob = 0.9
+	batch_size = 9
 	f = open('PolyRNN.out', 'w')
-	obj = ut.DataGenerator('../Chicago', train_prob = 0.5, max_seq_len = 12)
+	obj = ut.DataGenerator('../Chicago', train_prob = train_prob, max_seq_len = max_seq_len)
 
 	# Define graph
-	PolyRNNGraph = PolyRNN(batch_size = 8, max_seq_len = 12)
+	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len)
 	xx = tf.placeholder(tf.float32)
 	bb = tf.placeholder(tf.float32)
 	vv = tf.placeholder(tf.float32)
@@ -404,7 +407,7 @@ if __name__ == '__main__':
 			iter_obj = range(n_iter)
 		for i in iter_obj:
 			# Get batch data and create feed dictionary
-			img, boundary, vertices, vertex, end, seq_len = obj.getToyDataBatch(8)
+			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 
 			# Training and get result
@@ -420,9 +423,9 @@ if __name__ == '__main__':
 			visualize('./res', img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end_pred, seq_len)
 
 			# Save model and validate
-			if i % 50 == 0:
+			if i % 200 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
-				img, boundary, vertices, vertex, end, seq_len = obj.getToyDataBatch(8)#(8, mode = 'valid')
+				img, boundary, vertices, vertex, end, seq_len = obj.getToyDataBatch(batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
 				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
