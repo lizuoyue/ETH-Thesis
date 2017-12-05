@@ -371,14 +371,14 @@ if __name__ == '__main__':
 	# Set parameters
 	lr = 0.0005
 	n_iter = 2000000
-	max_seq_len = 24
-	train_prob = 0.9
-	batch_size = 9
+	max_seq_len = 12
+	train_prob = 0.5
+	batch_size = 8
 	f = open('PolyRNN.out', 'w')
 	obj = ut.DataGenerator('../Chicago', train_prob = train_prob, max_seq_len = max_seq_len)
 
 	# Define graph
-	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len)
+	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len, lstm_out_channel = [32, 12])
 	xx = tf.placeholder(tf.float32)
 	bb = tf.placeholder(tf.float32)
 	vv = tf.placeholder(tf.float32)
@@ -407,7 +407,7 @@ if __name__ == '__main__':
 			iter_obj = range(n_iter)
 		for i in iter_obj:
 			# Get batch data and create feed dictionary
-			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size)
+			img, boundary, vertices, vertex, end, seq_len = obj.getToyDataBatch(batch_size)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 
 			# Training and get result
@@ -423,9 +423,9 @@ if __name__ == '__main__':
 			visualize('./res', img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end_pred, seq_len)
 
 			# Save model and validate
-			if i % 200 == 0:
+			if i % 50 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
-				img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
+				img, boundary, vertices, vertex, end, seq_len = obj.getToyDataBatch(batch_size)
 				feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
 				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
