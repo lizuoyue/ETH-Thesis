@@ -337,7 +337,7 @@ def visualize(path, img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end
 		overlay(img[j, ...], v_pred[j, ..., 0]).save(path + '/%d-2-v-p.png' % j)
 		overlay(img[j, ...], vertices[j]).save(path + '/%d-2-v-t.png' % j)
 		overlay(img[j, ...], vertex[j, 0, ...]).save(path + '/%d-3-v00.png' % j)
-		for k in range(0, seq_len[j]):
+		for k in range(seq_len[j]):
 			overlay(img[j, ...], y_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k + 1).zfill(2)))
 		plt.plot(end_pred[j, : seq_len[j]])
 		plt.savefig(path + '/%d-5-end.pdf' % j)
