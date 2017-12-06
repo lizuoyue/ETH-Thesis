@@ -1,6 +1,7 @@
 import numpy as np
 import os, sys, glob
 import math, random
+import tarfile
 from PIL import Image, ImageDraw, ImageFilter
 # PIL.ImageDraw: 0-based, (col_idx, row_idx) if taking image as matrix
 
