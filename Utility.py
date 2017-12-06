@@ -294,7 +294,8 @@ class DataGenerator(object):
 		# Return
 		return img, boundary, vertices, vertex, end, seq_len
 
-	def getDataBatch(self, batch_size, mode = None):
+	def getDataBatch(self, batch_size, mode = None, seed = 0):
+		random.seed(seed)
 		if self.fake:
 			return self.getToyDataBatch(batch_size)
 		res = []

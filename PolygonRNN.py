@@ -1,5 +1,4 @@
 import io, os, sys, glob
-import time, random, tarfile
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -424,7 +423,7 @@ if __name__ == '__main__':
 			iter_obj = range(n_iter)
 		for i in iter_obj:
 			# Get batch data and create feed dictionary
-			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'train')
+			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'train', seed = i)
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 
 			# Training and get result
@@ -443,7 +442,7 @@ if __name__ == '__main__':
 			# Save model and validate
 			if i % 200 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
-				img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
+				img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid', seed = i)
 				feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred, summary = sess.run(result, feed_dict)
 				valid_writer.add_summary(summary, i)
