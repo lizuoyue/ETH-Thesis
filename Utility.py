@@ -188,7 +188,7 @@ class DataGenerator(object):
 					self.id_list.remove('.DS_Store')
 			if self.data_file_type == 'tar':
 				self.data_path = data_path.replace('.tar.gz', '')[1:]
-				self.tar = tarfile.open(data_path, 'r|gz')
+				self.tar = tarfile.open(data_path, 'r:gz')
 				self.building_list = {}
 				for filename in self.tar.getnames():
 					parts = filename.split('/')
