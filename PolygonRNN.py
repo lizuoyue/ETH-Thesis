@@ -373,13 +373,11 @@ if __name__ == '__main__':
 		os.makedirs('./val/')
 	if not os.path.exists('./tes/'):
 		os.makedirs('./tes/')
-	if not os.path.exists('./log/'):
-		os.makedirs('./log/')
 
 	# Set parameters
 	lr = 0.0005
 	n_iter = 2000000
-	toy = False
+	toy = True
 	if not toy:
 		max_seq_len = 24
 		train_prob = 0.9
