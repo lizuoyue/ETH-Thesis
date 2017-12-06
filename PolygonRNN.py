@@ -378,6 +378,7 @@ if __name__ == '__main__':
 	lr = 0.0005
 	n_iter = 2000000
 	toy = False
+	data_path = '../Chicago.zip'
 	if not toy:
 		max_seq_len = 24
 		train_prob = 0.9
@@ -389,7 +390,7 @@ if __name__ == '__main__':
 		batch_size = 8
 		lstm_out_channel = [32, 12]
 	f = open('PolygonRNN.out', 'w')
-	obj = ut.DataGenerator(fake = toy, data_path = '../Chicago.tar.gz', train_prob = train_prob, max_seq_len = max_seq_len)
+	obj = ut.DataGenerator(fake = toy, data_path = data_path, train_prob = train_prob, max_seq_len = max_seq_len)
 
 	# Define graph
 	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len, lstm_out_channel = lstm_out_channel)

@@ -168,29 +168,34 @@ class DataGenerator(object):
 			assert(max_seq_len != None)
 			self.max_seq_len = max_seq_len
 		else:
+			#
 			self.fake = False
 			assert(data_path != None)
 			assert(train_prob != None)
 			assert(max_seq_len != None)
 			self.train_prob = train_prob
 			self.max_seq_len = max_seq_len
+
+			#
 			if data_path.endswith('.tar.gz'):
 				self.data_file_type = 'tar'
 			elif data_path.endswith('.zip'):
 				self.data_file_type = 'zip'
-				self.archive = zipfile.ZipFile('images.zip', 'r')
 			else:
 				self.data_file_type = 'dir'
+
+			#
 			if self.data_file_type == 'dir':
 				self.data_path = data_path
 				self.id_list = os.listdir(data_path)
 				if '.DS_Store' in self.id_list:
 					self.id_list.remove('.DS_Store')
+				sort(self.id_list)
 			if self.data_file_type == 'tar':
-				self.data_path = data_path.replace('.tar.gz', '')[1:]
-				self.tar = tarfile.open(data_path, 'r:gz')
+				self.data_path = './' + data_path.replace('.tar.gz', '').lstrip('./')
+				self.archive = tarfile.open(data_path, 'r:gz')
 				self.building_list = {}
-				for filename in self.tar.getnames():
+				for filename in self.archive.getnames():
 					parts = filename.split('/')
 					if len(parts) == 4:
 						bid = int(parts[2])
@@ -199,6 +204,21 @@ class DataGenerator(object):
 						else:
 							self.building_list[bid] = [filename]
 				self.id_list = [k for k in self.building_list]
+				sort(self.id_list)
+			if self.data_file_type == 'zip':
+				self.data_path = data_path.lstrip('./')
+				self.archive = zipfile.ZipFile(data_path, 'r')
+				self.building_list = {}
+				for filename in self.archive.namelist():
+					parts = filename.split('/')
+					if len(parts) == 3:
+						bid = int(parts[1])
+						if bid in self.building_list:
+							self.building_list[bid].append(filename)
+						else:
+							self.building_list[bid] = [filename]
+				self.id_list = [k for k in self.building_list]
+				sort(self.id_list)
 			print('Totally %d buildings.' % len(self.id_list))
 
 			# Split
@@ -234,15 +254,20 @@ class DataGenerator(object):
 
 		# Get images
 		if self.data_file_type == 'tar':
-			f = self.tar.extractfile(path + '/0-img.png')
+			f = self.archive.extractfile(path + '/0-img.png')
 			img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
-			f = self.tar.extractfile(path + '/3-b.png')
+			f = self.archive.extractfile(path + '/3-b.png')
 			boundary = self.blur(Image.open(io.BytesIO(f.read())))
-			f = self.tar.extractfile(path + '/4-v.png')
+			f = self.archive.extractfile(path + '/4-v.png')
 			vertices = self.blur(Image.open(io.BytesIO(f.read())))
-			f = self.tar.extractfile(path + '/5-v.txt')
+			f = self.archive.extractfile(path + '/5-v.txt')
 			lines = f.readlines()
 			lines = [line.decode('utf-8') for line in lines]
+		if self.data_file_type == 'zip':
+			img = np.array(Image.open(io.BytesIO(self.archive.read(path + '/0-img.png'))))[..., 0: 3] / 255.0
+			boundary = self.blur(Image.open(io.BytesIO(self.archive.read(path + '/3-b.png'))))
+			vertices = self.blur(Image.open(io.BytesIO(self.archive.read(path + '/4-v.png'))))
+			lines = self.archive.read(path + '/5-v.txt').decode('utf-8').split('\n')
 		if self.data_file_type == 'dir':
 			img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
 			boundary = self.blur(Image.open(glob.glob(path + '/' + '3-b.png')[0]))
