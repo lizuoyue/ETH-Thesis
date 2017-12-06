@@ -206,7 +206,7 @@ class DataGenerator(object):
 				self.id_list = [k for k in self.building_list]
 				self.id_list.sort()
 			if self.data_file_type == 'zip':
-				self.data_path = data_path.lstrip('./')
+				self.data_path = data_path.lstrip('./').replace('.zip', '')
 				self.archive = zipfile.ZipFile(data_path, 'r')
 				self.building_list = {}
 				for filename in self.archive.namelist():
