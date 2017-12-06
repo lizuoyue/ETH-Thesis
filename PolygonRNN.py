@@ -389,7 +389,7 @@ if __name__ == '__main__':
 		batch_size = 8
 		lstm_out_channel = [32, 12]
 	f = open('PolygonRNN.out', 'w')
-	obj = ut.DataGenerator(fake = toy, data_path = '../Chicago', train_prob = train_prob, max_seq_len = max_seq_len)
+	obj = ut.DataGenerator(fake = toy, data_path = '../Chicago.tar.gz', train_prob = train_prob, max_seq_len = max_seq_len)
 
 	# Define graph
 	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len, lstm_out_channel = lstm_out_channel)
