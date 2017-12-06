@@ -174,7 +174,7 @@ class DataGenerator(object):
 			assert(max_seq_len != None)
 			self.train_prob = train_prob
 			self.max_seq_len = max_seq_len
-			if data_path.endswith('.tar.gz')
+			if data_path.endswith('.tar.gz'):
 				self.data_file_type = 'tar'
 			elif data_path.endswith('.zip'):
 				self.data_file_type = 'zip'
