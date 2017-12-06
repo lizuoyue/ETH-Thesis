@@ -377,7 +377,7 @@ if __name__ == '__main__':
 	# Set parameters
 	lr = 0.0005
 	n_iter = 2000000
-	toy = True
+	toy = False
 	if not toy:
 		max_seq_len = 24
 		train_prob = 0.9
