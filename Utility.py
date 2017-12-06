@@ -234,7 +234,9 @@ class DataGenerator(object):
 
 		# Get images
 		if self.data_file_type == 'tar':
+			print(path + '/0-img.png')
 			f = self.tar.extractfile(path + '/0-img.png')
+			print(f.read())
 			img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
 			f = self.tar.extractfile(path + '/3-b.png')
 			boundary = self.blur(Image.open(io.BytesIO(f.read())))
