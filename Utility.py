@@ -210,6 +210,8 @@ class DataGenerator(object):
 				self.archive = zipfile.ZipFile(data_path, 'r')
 				self.building_list = {}
 				for filename in self.archive.namelist():
+					if filename.startswith('__MACOSX'):
+						continue
 					parts = filename.split('/')
 					if len(parts) == 3:
 						bid = int(parts[1])
