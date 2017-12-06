@@ -190,7 +190,7 @@ class DataGenerator(object):
 				self.id_list = os.listdir(data_path)
 				if '.DS_Store' in self.id_list:
 					self.id_list.remove('.DS_Store')
-				sort(self.id_list)
+				self.id_list.sort()
 			if self.data_file_type == 'tar':
 				self.data_path = './' + data_path.replace('.tar.gz', '').lstrip('./')
 				self.archive = tarfile.open(data_path, 'r:gz')
@@ -204,7 +204,7 @@ class DataGenerator(object):
 						else:
 							self.building_list[bid] = [filename]
 				self.id_list = [k for k in self.building_list]
-				sort(self.id_list)
+				self.id_list.sort()
 			if self.data_file_type == 'zip':
 				self.data_path = data_path.lstrip('./')
 				self.archive = zipfile.ZipFile(data_path, 'r')
@@ -218,7 +218,7 @@ class DataGenerator(object):
 						else:
 							self.building_list[bid] = [filename]
 				self.id_list = [k for k in self.building_list]
-				sort(self.id_list)
+				self.id_list.sort()
 			print('Totally %d buildings.' % len(self.id_list))
 
 			# Split
