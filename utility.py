@@ -3,7 +3,7 @@ import os, sys, glob
 import math, random
 from PIL import Image, ImageDraw, ImageFilter
 # PIL.ImageDraw: 0-based, (col_idx, row_idx) if taking image as matrix
-
+ 
 BLUR = True
 BLUR_R = 0.75
 
