@@ -3,8 +3,8 @@ plt.switch_backend('agg')
 
 def save(var1, var2, file):
 	plt.gcf().clear()
-	plt.plot(var1[-1000:], 'b')
-	plt.plot(var2[-1000:], 'r')
+	plt.plot(var1[-2000:], 'b')
+	plt.plot(var2[-2000:], 'r')
 	plt.savefig(file)
 	return
 

@@ -415,7 +415,8 @@ if __name__ == '__main__':
 
 	# Launch graph
 	with tf.Session() as sess:
-		train_writer = tf.summary.FileWriter('./log/', sess.graph)
+		train_writer = tf.summary.FileWriter('./log/train/', sess.graph)
+		valid_writer = tf.summary.FileWriter('./log/valid/', sess.graph)
 		if len(sys.argv) > 1 and sys.argv[1] != None:
 			saver.restore(sess, './tmp/model-%s.ckpt' % sys.argv[1])
 			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
@@ -445,7 +446,8 @@ if __name__ == '__main__':
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
 				img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
-				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
+				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred, summary = sess.run(result, feed_dict)
+				valid_writer.add_summary(summary, i)
 				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
 				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
 				f.flush()
@@ -453,5 +455,6 @@ if __name__ == '__main__':
 				b_pred, v_pred, y_pred = sess.run(pred, feed_dict)
 				visualize1('./tes', img, b_pred, v_pred, y_pred)
 		train_writer.close()
+		valid_writer.close()
 	f.close()
 
