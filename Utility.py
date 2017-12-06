@@ -278,9 +278,9 @@ class DataGenerator(object):
 			lines = f.readlines()
 		vertex = []
 		for line in lines:
-			print(line)
-			y, x = line.strip().split()
-			vertex.append(self.vertex_pool[int(x)][int(y)])
+			if line.strip() != '':
+				y, x = line.strip().split()
+				vertex.append(self.vertex_pool[int(x)][int(y)])
 		seq_len = len(vertex)
 
 		# 
