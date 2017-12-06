@@ -302,11 +302,17 @@ class PolyRNN(object):
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
 
+		# Write to summary
+		tf.summary.scalar('Loss CNN', loss_CNN)
+		tf.summary.scalar('Loss RNN', loss_RNN)
+		tf.summary.scalar('Loss Full', loss_CNN + loss_RNN)
+		summary = tf.summary.merge_all()
+
 		# Return
 		y_end_pred = tf.nn.softmax(logits)
 		y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, self.max_seq_len - 1, 28, 28])
 		end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, self.max_seq_len - 1, 1])
-		return loss_CNN, loss_RNN, boundary, vertices, y_pred, end_pred
+		return loss_CNN, loss_RNN, boundary, vertices, y_pred, end_pred, summary
 
 	def Predict(self, xx):
 		img = tf.reshape(xx, [-1, 224, 224, 3])
@@ -367,18 +373,28 @@ if __name__ == '__main__':
 		os.makedirs('./val/')
 	if not os.path.exists('./tes/'):
 		os.makedirs('./tes/')
+	if not os.path.exists('./log/'):
+		os.makedirs('./log/')
 
 	# Set parameters
 	lr = 0.0005
 	n_iter = 2000000
-	max_seq_len = 24
-	train_prob = 0.9
-	batch_size = 9
+	toy = False
+	if not toy:
+		max_seq_len = 24
+		train_prob = 0.9
+		batch_size = 9
+		lstm_out_channel = [32, 16, 8]
+	else:
+		max_seq_len = 12
+		train_prob = 0.5
+		batch_size = 8
+		lstm_out_channel = [32, 12]
 	f = open('PolygonRNN.out', 'w')
-	obj = ut.DataGenerator('../Chicago', train_prob = train_prob, max_seq_len = max_seq_len)
+	obj = ut.DataGenerator(fake = toy, data_path = '../Chicago', train_prob = train_prob, max_seq_len = max_seq_len)
 
 	# Define graph
-	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len)
+	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len, lstm_out_channel = lstm_out_channel)
 	xx = tf.placeholder(tf.float32)
 	bb = tf.placeholder(tf.float32)
 	vv = tf.placeholder(tf.float32)
@@ -399,6 +415,7 @@ if __name__ == '__main__':
 
 	# Launch graph
 	with tf.Session() as sess:
+		train_writer = tf.summary.FileWriter('./log/', sess.graph)
 		if len(sys.argv) > 1 and sys.argv[1] != None:
 			saver.restore(sess, './tmp/model-%s.ckpt' % sys.argv[1])
 			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
@@ -407,12 +424,13 @@ if __name__ == '__main__':
 			iter_obj = range(n_iter)
 		for i in iter_obj:
 			# Get batch data and create feed dictionary
-			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size)
+			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'train')
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 
 			# Training and get result
 			sess.run(train, feed_dict)
-			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred = sess.run(result, feed_dict)
+			loss_1, loss_2, b_pred, v_pred, y_pred, end_pred, summary = sess.run(result, feed_dict)
+			train_writer.add_summary(summary, i)
 
 			# Write loss to file
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
@@ -434,7 +452,6 @@ if __name__ == '__main__':
 				visualize('./val', img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end_pred, seq_len)
 				b_pred, v_pred, y_pred = sess.run(pred, feed_dict)
 				visualize1('./tes', img, b_pred, v_pred, y_pred)
+		train_writer.close()
 	f.close()
-
-
 

@@ -160,48 +160,58 @@ class BoundingBox(object):
 		return math.floor(px - self.center_px + self.size[0] / 2), math.floor(py - self.center_py + self.size[1] / 2)
 
 class DataGenerator(object):
-	def __init__(self, data_path, train_prob = 0.9, max_seq_len = 24):
-		self.train_prob = train_prob
-		self.max_seq_len = max_seq_len
-		if data_path.endswith('.tar.gz'):
-			self.data_file_type = 'tar'
+	# 
+	def __init__(self, fake, data_path = None, train_prob = None, max_seq_len = None):
+		if fake:
+			self.fake = True
+			assert(max_seq_len != None)
+			self.max_seq_len = max_seq_len
 		else:
-			self.data_file_type = 'dir'
-		if self.data_file_type == 'dir':
-			self.data_path = data_path
-			self.id_list = os.listdir(data_path)
-			if '.DS_Store' in self.id_list:
-				self.id_list.remove('.DS_Store')
-		if self.data_file_type == 'tar':
-			self.data_path = data_path.replace('.tar.gz', '')[1:]
-			self.tar = tarfile.open(data_path, 'r|gz')
-			self.building_list = {}
-			for filename in self.tar.getnames():
-				parts = filename.split('/')
-				if len(parts) == 4:
-					bid = int(parts[2])
-					if bid in self.building_list:
-						self.building_list[bid].append(filename)
-					else:
-						self.building_list[bid] = [filename]
-			self.id_list = [k for k in self.building_list]
-		print('Totally %d buildings.' % len(self.id_list))
+			self.fake = False
+			assert(data_path != None)
+			assert(train_prob != None)
+			assert(max_seq_len != None)
+			self.train_prob = train_prob
+			self.max_seq_len = max_seq_len
+			if data_path.endswith('.tar.gz'):
+				self.data_file_type = 'tar'
+			else:
+				self.data_file_type = 'dir'
+			if self.data_file_type == 'dir':
+				self.data_path = data_path
+				self.id_list = os.listdir(data_path)
+				if '.DS_Store' in self.id_list:
+					self.id_list.remove('.DS_Store')
+			if self.data_file_type == 'tar':
+				self.data_path = data_path.replace('.tar.gz', '')[1:]
+				self.tar = tarfile.open(data_path, 'r|gz')
+				self.building_list = {}
+				for filename in self.tar.getnames():
+					parts = filename.split('/')
+					if len(parts) == 4:
+						bid = int(parts[2])
+						if bid in self.building_list:
+							self.building_list[bid].append(filename)
+						else:
+							self.building_list[bid] = [filename]
+				self.id_list = [k for k in self.building_list]
+			print('Totally %d buildings.' % len(self.id_list))
 
-		# Split
-		random.seed(31415927)
-		random.shuffle(self.id_list)
-		random.seed(random.randint(0, 31415926))
-		split = int(len(self.id_list) * self.train_prob)
-		self.id_list_train = self.id_list[:split]
-		self.id_list_valid = self.id_list[split:]
+			# Split
+			random.seed(31415927)
+			random.shuffle(self.id_list)
+			random.seed(random.randint(0, 31415926))
+			split = int(len(self.id_list) * self.train_prob)
+			self.id_list_train = self.id_list[:split]
+			self.id_list_valid = self.id_list[split:]
 
-		self.blank = np.zeros((28, 28), dtype = np.float32)
-		self.vertex_pool = [[] for i in range(28)]
-		for i in range(28):
-			for j in range(28):
-				self.vertex_pool[i].append(np.zeros((28, 28), dtype = np.float32))
-				self.vertex_pool[i][j][i, j] = 1.0
-		return
+			self.blank = np.zeros((28, 28), dtype = np.float32)
+			self.vertex_pool = [[] for i in range(28)]
+			for i in range(28):
+				for j in range(28):
+					self.vertex_pool[i].append(np.zeros((28, 28), dtype = np.float32))
+					self.vertex_pool[i][j][i, j] = 1.0
+			return
 
 	def blur(self, img):
 		if BLUR:
@@ -252,14 +262,16 @@ class DataGenerator(object):
 		# Return
 		return img, boundary, vertices, vertex, end, seq_len
 
-	def getDataBatch(self, batch_size, mode = 'train'):
+	def getDataBatch(self, batch_size, mode = None):
+		if self.fake:
+			return self.getToyDataBatch(batch_size)
 		res = []
 		if mode == 'train':
 			batch_size = min(len(self.id_list_train), batch_size)
 			sel = np.random.choice(len(self.id_list_train), batch_size, replace = False)
 			for i in sel:
 				res.append(self.getDataSingle(self.id_list_train[i]))
-		else:
+		if mode == 'valid':
 			batch_size = min(len(self.id_list_valid), batch_size)
 			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = False)
 			for i in sel:

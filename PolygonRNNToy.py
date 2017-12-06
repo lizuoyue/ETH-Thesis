@@ -374,7 +374,7 @@ if __name__ == '__main__':
 	max_seq_len = 12
 	train_prob = 0.5
 	batch_size = 8
-	f = open('PolyRNN.out', 'w')
+	f = open('PolygonRNN.out', 'w')
 	obj = ut.DataGenerator('../Chicago', train_prob = train_prob, max_seq_len = max_seq_len)
 
 	# Define graph
