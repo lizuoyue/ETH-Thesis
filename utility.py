@@ -1,7 +1,7 @@
 import numpy as np
-import os, sys, glob
+import io, os, sys, glob
 import math, random
-import tarfile
+import tarfile, zipfile
 from PIL import Image, ImageDraw, ImageFilter
 # PIL.ImageDraw: 0-based, (col_idx, row_idx) if taking image as matrix
 
@@ -174,8 +174,11 @@ class DataGenerator(object):
 			assert(max_seq_len != None)
 			self.train_prob = train_prob
 			self.max_seq_len = max_seq_len
-			if data_path.endswith('.tar.gz'):
+			if data_path.endswith('.tar.gz')
 				self.data_file_type = 'tar'
+			elif data_path.endswith('.zip'):
+				self.data_file_type = 'zip'
+				self.archive = zipfile.ZipFile('images.zip', 'r')
 			else:
 				self.data_file_type = 'dir'
 			if self.data_file_type == 'dir':
