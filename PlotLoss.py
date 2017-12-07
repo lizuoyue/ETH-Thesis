@@ -13,7 +13,7 @@ def mean(li):
 
 if __name__ == '__main__':
 	p = 300
-	f = open('./PolyRNN.out', 'r')
+	f = open('./PolygonRNN.out', 'r')
 	lines = f.readlines()
 	f.close()
 	cnn = []
