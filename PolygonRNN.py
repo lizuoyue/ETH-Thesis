@@ -4,9 +4,9 @@ if os.path.exists('../Python-Lib/'):
 import io, glob
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
-plt.switch_backend('agg')
+# plt.switch_backend('agg')
 ut = __import__('Utility')
 
 class PolyRNN(object):
@@ -347,9 +347,9 @@ def visualize(path, img, boundary, vertices, vertex, b_pred, v_pred, y_pred, end
 		overlay(img[j, ...], vertex[j, 0, ...]).save(path + '/%d-3-v00.png' % j)
 		for k in range(seq_len[j]):
 			overlay(img[j, ...], y_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k + 1).zfill(2)))
-		plt.plot(end_pred[j, : seq_len[j]])
-		plt.savefig(path + '/%d-5-end.pdf' % j)
-		plt.gcf().clear()
+		# plt.plot(end_pred[j, : seq_len[j]])
+		# plt.savefig(path + '/%d-5-end.pdf' % j)
+		# plt.gcf().clear()
 	return
 
 def visualize1(path, img, b_pred, v_pred, y_pred):
