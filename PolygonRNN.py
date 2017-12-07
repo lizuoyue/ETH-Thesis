@@ -1,4 +1,7 @@
-import io, os, sys, glob
+import os, re, sys
+if os.path.exists('../Python-Lib/'):
+	sys.path.insert(1, '../Python-Lib')
+import io, glob
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
