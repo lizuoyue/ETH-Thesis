@@ -19,6 +19,8 @@ def plot(lines, mode):
 	rnn_m = []
 	full_m = []
 	for line in lines:
+		if line.strip() == '':
+			continue
 		a, b, c, d = line.strip().split(', ')
 		if a.find(mode) >= 0:
 			cnn.append(float(b))
@@ -32,7 +34,7 @@ def plot(lines, mode):
 	save(full, full_m, './plot-%s-full.png' % mode)
 
 if __name__ == '__main__':
-	p = 300
+	p = 200
 	f = open('./PolygonRNN.out', 'r')
 	lines = f.readlines()
 	f.close()
