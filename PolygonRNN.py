@@ -388,7 +388,7 @@ if __name__ == '__main__':
 		train_prob = 0.5
 		batch_size = 8
 		lstm_out_channel = [32, 12]
-	f = open('PolygonRNN.out', 'w')
+	f = open('PolygonRNN.out', 'a')
 	obj = ut.DataGenerator(fake = toy, data_path = data_path, train_prob = train_prob, max_seq_len = max_seq_len)
 
 	# Define graph
