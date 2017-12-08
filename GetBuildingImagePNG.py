@@ -1,7 +1,7 @@
 import numpy as np
 import io, os, sys, cv2
 import requests, math
-from PIL import Image, ImageDraw, ImageFilter, ImageCms
+from PIL import Image, ImageDraw, ImageFilter
 ut = __import__('Utility')
 bli = __import__('GetBuildingListOSM')
 
@@ -12,9 +12,6 @@ class BuildingImageDownloader(object):
 		self.keys = [item.strip() for item in f.readlines()]
 		f.close()
 		self.city_name = city_name
-		self.srgb_profile = ImageCms.createProfile('sRGB')
-		self.lab_profile  = ImageCms.createProfile('LAB')
-		self.rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(self.srgb_profile, self.lab_profile, 'RGB', 'LAB')
 
 	def dist(self, p1, p2):
 		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
