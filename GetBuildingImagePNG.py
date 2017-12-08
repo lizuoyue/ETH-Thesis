@@ -1,7 +1,7 @@
 import numpy as np
-import io, os, sys
+import io, os, sys, cv2
 import requests, math
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter, ImageCms
 ut = __import__('Utility')
 bli = __import__('GetBuildingListOSM')
 
@@ -12,9 +12,18 @@ class BuildingImageDownloader(object):
 		self.keys = [item.strip() for item in f.readlines()]
 		f.close()
 		self.city_name = city_name
+		self.srgb_profile = ImageCms.createProfile('sRGB')
+		self.lab_profile  = ImageCms.createProfile('LAB')
+		self.rgb2lab_transform = ImageCms.buildTransformFromOpenProfiles(self.srgb_profile, self.lab_profile, 'RGB', 'LAB')
 
 	def dist(self, p1, p2):
 		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
+
+	def colorDist(self, c1, c2):
+		s = 0.0
+		for i in range(3):
+			s += (c1[i] - c2[i]) ** 2
+		return math.sqrt(s)
 
 	def centroid(self, p1, p2):
 		x = (p1[0] * p1[2] + p2[0] * p2[2]) / (p1[2] + p2[2])
@@ -32,11 +41,93 @@ class BuildingImageDownloader(object):
 		y = math.floor((p1[1] + p2[1]) / 2 + l * direction[1])
 		return (x, y)
 
+	def imageAugmentation(self, img):
+		img = np.array(img)
+		lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+		l, a, b = cv2.split(lab)
+		clahe = cv2.createCLAHE(clipLimit = 3.0, tileGridSize = (8, 8))
+		cl = clahe.apply(l)
+		limg = cv2.merge((cl, a, b))
+		final = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+		return final
+
+	def var(self, img, polygon):
+		img = np.array(img)
+		color = []
+		for i, j in polygon:
+			color.append(img[i, j, ...])
+		mean = np.mean(np.array(color), axis = 0)
+		color_dist = [self.colorDist(c, mean) for c in color]
+		var = sum(color_dist) / len(color_dist)
+		return var
+
+	def edge(self, img, polygon):
+		img = np.array(img)
+		li = []
+		for i, j in polygon:
+			li.append(np.sum(img[i, j, ...]))
+		return sum(li)
+
+	def shiftStep(self, img, polygon, mode):
+		if mode == 'var':
+			search_range = range(-1, 2)
+			min_var = sys.maxsize
+			for i in search_range:
+				for j in search_range:
+					new_polygon = [(p[0] + i, p[1] + j) for p in polygon]
+					var = self.var(img, new_polygon)
+					if var < min_var:
+						min_var = var
+						shift_i = i
+						shift_j = j
+		if mode == 'edge':
+			search_range = range(-2, 3)
+			max_edge = 0
+			for i in search_range:
+				for j in search_range:
+					new_polygon = [(p[0] + i, p[1] + j) for p in polygon]
+					edge = self.edge(img, new_polygon)
+					if edge > max_edge:
+						max_edge = edge
+						shift_i = i
+						shift_j = j
+		return shift_i, shift_j
+
+	def shift(self, img, polygon, mode):
+		shift_i = 0
+		shift_j = 0
+		if mode == 'edge':
+			step_num = 6
+			img = cv2.Canny(img[..., 0: 3], 100, 200)
+			mask = Image.new('P', (img.shape[0], img.shape[1]), color = 0)
+			draw = ImageDraw.Draw(mask)
+			draw.polygon(polygon, fill = 0, outline = 255)
+			mask = np.array(mask)
+		if mode == 'var':
+			step_num = 8
+			img = self.imageAugmentation(img[..., 0: 3])
+			mask = Image.new('P', (img.shape[0], img.shape[1]), color = 0)
+			draw = ImageDraw.Draw(mask)
+			draw.polygon(polygon, fill = 255, outline = 255)
+			mask = np.array(mask)
+		polygon = []
+		for i in range(img.shape[0]):
+			for j in range(img.shape[1]):
+				if mask[i, j] > 128:
+					polygon.append((i, j))
+		for i in range(step_num):
+			new_polygon = [(p[0] + shift_i, p[1] + shift_j) for p in polygon]
+			step_i, step_j = self.shiftStep(img, new_polygon, mode)
+			if step_i == 0 and step_j == 0:
+				break
+			shift_i += step_i
+			shift_j += step_j
+		return shift_i, shift_j
+
 	def getBuildingAerialImage(self, idx, building, scale = 2, size = (224, 224), show = False, save = True, building_id = None):
 		# Decide the parameters
 		pad = 100
-		zoom = 19
-		size_s = (math.floor(size[0] / 8), math.floor(size[1] / 8))
+		zoom = 20
 
 		# Check inputs
 		assert(scale == 1 or scale == 2)
@@ -72,7 +163,6 @@ class BuildingImageDownloader(object):
 			assert(zoom > 0)
 			left, up = ut.lonLatToPixel(min_lon, max_lat, zoom + scale - 1)
 			right, down = ut.lonLatToPixel(max_lon, min_lat, zoom + scale - 1)
-		# zoom -= 1
 		print('%d, %d, Final zoom = %d.' % (idx, building_id, zoom))
 		
 		while True:
@@ -90,42 +180,40 @@ class BuildingImageDownloader(object):
 				img = np.array(Image.open(io.BytesIO(data)))
 				break
 			except:
-				print('Try again to get image.')
+				print('Try again to get the image.')
 				pass
 		img = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad, ...]
 
 		# Compute polygon's vertices
 		bbox = ut.BoundingBox(c_lon, c_lat, zoom, scale, size)
 		polygon = []
-		polygon_s = []
 		for lon, lat in building:
 			px, py = bbox.lonLatToRelativePixel(lon, lat)
-			px_s, py_s = math.floor(px / 8), math.floor(py / 8)
-			if not polygon_s or self.dist(polygon_s[-1], (px_s, py_s)) > 0:
+			if not polygon or self.dist(polygon[-1], (px, py, 1)) > 0:
 				polygon.append((px, py, 1))
-				polygon_s.append((px_s, py_s, 1))
 			else:
 				pass
 				# polygon[-1] = self.centroid(polygon[-1], (px, py, 1))
-				# polygon_s[-1] = self.centroid(polygon_s[-1], (px_s, py_s, 1))
 		polygon = [(item[0], item[1]) for item in polygon]
-		polygon_s = [(item[0], item[1]) for item in polygon_s]
-		if polygon[-1] == polygon[0] or polygon_s[-1] == polygon_s[0]:
+		if polygon[-1] == polygon[0]:
 			polygon.pop()
-			polygon_s.pop()
 
-		# 
+		shift_i, shift_j = self.shift(img, polygon, mode = 'var')
+		print(shift_i, shift_j)
+		polygon = [(p[0] + shift_j, p[1] + shift_i) for p in polygon]
+
 		img = Image.fromarray(img)
 		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 		draw = ImageDraw.Draw(mask)
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-		# merge = Image.alpha_composite(img, mask)
+		# polygon: (col, row)
+		merge = Image.alpha_composite(img, mask)
 		if save:
 			img.save('../%s/%d/0-img.png' % (self.city_name, building_id))
 			# mask.save('../%s/%d/1-mask.png' % (self.city_name, building_id))
-			# merge.save('../%s/%d/2-merge.png' % (self.city_name, building_id))
-		# img = ut.pil2np(img, show)
-		# mask = ut.pil2np(mask, show)
+			merge.save('../%s/%d/2-merge.png' % (self.city_name, building_id))
+		img = ut.pil2np(img, show)
+		mask = ut.pil2np(mask, show)
 		# merge = ut.pil2np(merge, show)
 
 		# Decide the order of vertices
@@ -138,28 +226,27 @@ class BuildingImageDownloader(object):
 				inner_count += 1
 		if inner_count / len(polygon) < 0.5:
 			polygon.reverse()
-			polygon_s.reverse()
 
 		# 
-		boundary = Image.new('P', size_s, color = 0)
-		draw = ImageDraw.Draw(boundary)
-		draw.polygon(polygon_s, fill = 0, outline = 255)
-		# draw.line(polygon_s + [polygon_s[0]], fill = 255, width = 3) # <- For thicker outline
-		# for point in polygon_s:
+		# boundary = Image.new('P', size, color = 0)
+		# draw = ImageDraw.Draw(boundary)
+		# draw.polygon(polygon, fill = 0, outline = 255)
+		# draw.line(polygon + [polygon[0]], fill = 255, width = 3) # <- For thicker outline
+		# for point in polygon:
 			# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
-		if save:
-			boundary.save('../%s/%d/3-b.png' % (self.city_name, building_id))
-		boundary = ut.pil2np(boundary, show)
+		# if save:
+			# boundary.save('../%s/%d/3-b.png' % (self.city_name, building_id))
+		# boundary = ut.pil2np(boundary, show)
 
 		# 
-		vertices = Image.new('P', size_s, color = 0)
-		draw = ImageDraw.Draw(vertices)
-		draw.point(polygon_s, fill = 255)
-		# for point in polygon_s:
+		# vertices = Image.new('P', size, color = 0)
+		# draw = ImageDraw.Draw(vertices)
+		# draw.point(polygon, fill = 255)
+		# for point in polygon:
 			# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
-		if save:
-			vertices.save('../%s/%d/4-v.png' % (self.city_name, building_id))
-		vertices = ut.pil2np(vertices, show)
+		# if save:
+			# vertices.save('../%s/%d/4-v.png' % (self.city_name, building_id))
+		# vertices = ut.pil2np(vertices, show)
 
 		# 
 		# vertex_list = []
@@ -176,15 +263,15 @@ class BuildingImageDownloader(object):
 		#
 		# Just save text to save storage
 		f = open('../%s/%d/5-v.txt' % (self.city_name, building_id), 'w')
-		for point in polygon_s:
+		for point in polygon:
 			f.write('%d %d\n' % point)
 		f.close()
 
 		# Return
 		if show:
 			print(img.shape)
-			print(boundary.shape)
-			print(vertices.shape)
+			# print(boundary.shape)
+			# print(vertices.shape)
 			# print(vertex_list.shape)
 		return# img, mask, merge, boundary, vertices, vertex_list
 
