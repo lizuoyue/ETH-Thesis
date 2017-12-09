@@ -126,7 +126,7 @@ class BuildingImageDownloader(object):
 		polygon_l = [] # <- polygon: (col, row)
 		for lon, lat in building:
 			px, py = bbox.lonLatToRelativePixel(lon, lat)
-			if not polygon or (px, py) != polygon_l[-1]
+			if not polygon_l or (px, py) != polygon_l[-1]:
 				polygon_l.append((px, py))
 		if polygon_l[-1] == polygon_l[0]:
 			polygon_l.pop()
