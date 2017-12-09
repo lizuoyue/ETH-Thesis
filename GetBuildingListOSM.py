@@ -12,8 +12,8 @@ CITY_DICT = {
 	'Chicago': {
 		'left-up-center': (-87.7976490, 41.960124),
 		'step': (0.0134483, 0.0100000),
-		'xrange': (3, 9), # 12
-		'yrange': (3, 15), # 18
+		'xrange': (0, 12),
+		'yrange': (0, 18),
 	}
 }
 
