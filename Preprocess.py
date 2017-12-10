@@ -164,7 +164,7 @@ class Preprocessor(object):
 			shift_i, shift_j = self.shift(obj)
 
 			f = open('./4-shift.txt', 'w')
-			f.write('%d %d\n' & (shift_i, shift_j))
+			f.write('%d %d\n' % (shift_i, shift_j))
 			f.close()
 			print(building, shift_i, shift_j)
 
