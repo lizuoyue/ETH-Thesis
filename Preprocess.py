@@ -68,13 +68,13 @@ class ImageShift(object):
 		return d
 
 	def ground(self, shift_i, shift_j):
-		color = self.img[self.face_li[0] + shift_i, self.face_li[1] + shift_j, ...] - np.array([30, 30, 30])
+		color = self.img[self.face_li[0] + shift_i, self.face_li[1] + shift_j, ...] - np.array([30, 50, 30])
 		return 255 - np.sqrt((color ** 2).mean())
 
 	def corner(self, shift_i, shift_j):
 		return np.sum(self.corner_map[self.face_li[0] + shift_i, self.face_li[1] + shift_j])
 
-	def matchCorner(self, shift_i, shift_j, th = 0.75):
+	def matchCorner(self, shift_i, shift_j, th = 0.9):
 		num = np.sum(self.corner_map[self.polygon_i + shift_i, self.polygon_j + shift_j])
 		if num / len(self.polygon) >= th:
 			return True
@@ -112,7 +112,7 @@ class Preprocessor(object):
 		keys = []
 		for i in search_range_i:
 			for j in search_range_j:
-				if obj.matchCorner(i, j):
+				if obj.matchCorner(i, j) or (i == 0 and j == 0):
 					keys.append((i, j))
 					var_d[(i, j)] = obj.var(i, j)
 					edge_d[(i, j)] = obj.edge(i, j)
@@ -132,49 +132,66 @@ class Preprocessor(object):
 		min_c = min(corner_d.items(), key = lambda x: x[1])[1]
 		max_c = max(corner_d.items(), key = lambda x: x[1])[1]
 		keys = [(
-			3 * (   var_d[k] - min_v) / (max_v - min_v) + \
-			7 * (  edge_d[k] - min_e) / (max_e - min_e) + \
-			5 * (  dist_d[k] - min_d) / (max_d - min_d) + \
-			9 * (ground_d[k] - min_m) / (max_m - min_m) + \
-			1 * (corner_d[k] - min_c) / (max_c - min_c),
+			23 * (   var_d[k] - min_v) / (max_v - min_v) + \
+			99 * (  edge_d[k] - min_e) / (max_e - min_e) + \
+			18 * (  dist_d[k] - min_d) / (max_d - min_d) + \
+			27 * (ground_d[k] - min_m) / (max_m - min_m) + \
+			10 * (corner_d[k] - min_c) / (max_c - min_c),
 			k
 		) for k in keys]
 		shift_i, shift_j = min(keys, key = lambda x: x[0])[1]
-		return shift_i, shift_j
+		return shift_i, shift_j, (255 - edge_d[(shift_i, shift_j)]) / 255, (255 - edge_d[(0, 0)]) / 255
 
-	def batchShift(self, beg_idx, end_idx):
+	def batchShift(self, beg_idx = None, end_idx = None):
 		for i, building in enumerate(self.building_list):
-			if i < beg_idx or i >= end_idx:
-				continue
-
 			# Local test
-			# time.sleep(1)
-			# Image.open(building + '2-l-merge.png').show()
+			if False:
+				input()
+				# time.sleep(1)
+				Image.open(building + '2-l-merge.png').show()
 
-			# 
-			img = Image.open(building + '0-l-img.png')
-			f = open(building + '3-l-v.txt', 'r')
-			polygon = []
-			for line in f.readlines():
-				if line.strip() != '':
-					x, y = line.strip().split()
-					polygon.append((int(x), int(y)))
+				# 
+				img = Image.open(building + '0-l-img.png')
+				f = open(building + '3-l-v.txt', 'r')
+				polygon = []
+				for line in f.readlines():
+					if line.strip() != '':
+						x, y = line.strip().split()
+						polygon.append((int(x), int(y)))
 
-			obj = ImageShift(np.array(img), polygon)
-			shift_i, shift_j = self.shift(obj)
+				obj = ImageShift(np.array(img), polygon)
+				shift_i, shift_j, after, before = self.shift(obj)
+				print(i, building, shift_i, shift_j, after, before)
 
-			f = open('./4-shift.txt', 'w')
-			f.write('%d %d\n' % (shift_i, shift_j))
-			f.close()
-			print(building, shift_i, shift_j)
+				polygon = [(p[0] + shift_j, p[1] + shift_i) for p in polygon]
+				mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
+				draw = ImageDraw.Draw(mask)
+				draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+				merge = Image.alpha_composite(img, mask)
+				merge.show()
+			else:
+				#
+				if i < beg_idx or i >= end_idx:
+					continue
 
-			# Local test
-			# polygon = [(p[0] + shift_j, p[1] + shift_i) for p in polygon]
-			# mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
-			# draw = ImageDraw.Draw(mask)
-			# draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-			# merge = Image.alpha_composite(img, mask)
-			# merge.show()
+				#
+				img = Image.open(building + '0-l-img.png')
+				f = open(building + '3-l-v.txt', 'r')
+				polygon = []
+				for line in f.readlines():
+					if line.strip() != '':
+						x, y = line.strip().split()
+						polygon.append((int(x), int(y)))
+
+				obj = ImageShift(np.array(img), polygon)
+				shift_i, shift_j, after, before = self.shift(obj)
+
+				f = open(building + '4-shift.txt', 'w')
+				f.write('%d %d\n' % (shift_i, shift_j))
+				f.write('%.6lf %.6lf\n' % (after, before))
+				f.close()
+
+				print(i, shift_i, shift_j)
 
 		# 
 		# boundary = Image.new('P', size, color = 0)
@@ -213,4 +230,8 @@ class Preprocessor(object):
 if __name__ == '__main__':
 	city_name = sys.argv[1]
 	obj = Preprocessor(city_name)
-	obj.batchShift(int(sys.argv[2]), int(sys.argv[3]))
+	if len(sys.argv) > 3:
+		obj.batchShift(int(sys.argv[2]), int(sys.argv[3]))
+	else:
+		obj.batchShift()
+

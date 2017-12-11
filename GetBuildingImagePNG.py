@@ -33,7 +33,7 @@ class BuildingImageDownloader(object):
 		merge = Image.alpha_composite(img, mask)
 		img.save('../%s/%d/0-%simg.png' % (self.city_name, building_id, info))
 		# mask.save('../%s/%d/1-%smask.png' % (self.city_name, building_id, info))
-		# merge.save('../%s/%d/2-%smerge.png' % (self.city_name, building_id, info))
+		merge.save('../%s/%d/2-%smerge.png' % (self.city_name, building_id, info))
 
 		# Decide the order of vertices
 		if reverse is None:
