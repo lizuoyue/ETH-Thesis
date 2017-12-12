@@ -24,41 +24,36 @@ class BuildingImageDownloader(object):
 		y = math.floor((p1[1] + p2[1]) / 2 + l * direction[1])
 		return (x, y)
 
-	def saveImagePolygon(self, img, polygon, reverse = None, info = None):
+	def saveImagePolygon(self, img, polygon):
 		# Save images
 		img = Image.fromarray(img)
 		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 		draw = ImageDraw.Draw(mask)
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
 		merge = Image.alpha_composite(img, mask)
-		img.save('../%s/%d/0-%simg.png' % (self.city_name, building_id, info))
-		# mask.save('../%s/%d/1-%smask.png' % (self.city_name, building_id, info))
-		merge.save('../%s/%d/2-%smerge.png' % (self.city_name, building_id, info))
+		img.save('../%s/%d/img.png' % (self.city_name, building_id))
+		# mask.save('../%s/%d/mask.png' % (self.city_name, building_id))
+		# merge.save('../%s/%d/merge.png' % (self.city_name, building_id))
 
 		# Decide the order of vertices
-		if reverse is None:
-			inner_count = 0
-			for i in range(len(polygon)):
-				x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
-				try:
-					inner_count += (np.sum(mask[y, x, 1: 3]) > 1.0) # <- The pixel is not red
-				except:
-					inner_count += 1
-			if inner_count / len(polygon) < 0.5:
-				reverse = True
-				polygon.reverse()
-		else:
-			if reverse:
-				polygon.reverse()
+		inner_count = 0
+		for i in range(len(polygon)):
+			x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
+			try:
+				inner_count += (np.sum(mask[y, x, 1: 3]) > 1.0) # <- The pixel is not red
+			except:
+				inner_count += 1
+		if inner_count / len(polygon) < 0.5:
+			polygon.reverse()
 
 		# Save as text file to save storage
-		f = open('../%s/%d/3-%sv.txt' % (self.city_name, building_id, info), 'w')
+		f = open('../%s/%d/polygon.txt' % (self.city_name, building_id), 'w')
 		for point in polygon:
 			f.write('%d %d\n' % point)
 		f.close()
 
 		# Return
-		return reverse
+		return
 
 	def getBuildingAerialImage(self, idx, building, scale = 2, size = (224, 224), building_id = None):
 		# Check inputs
@@ -119,39 +114,20 @@ class BuildingImageDownloader(object):
 				pass
 
 		# Image large
-		img_l = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad, ...]
+		img = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad, ...]
 
 		# Compute polygon's vertices
 		bbox = ut.BoundingBox(c_lon, c_lat, zoom, scale, size)
-		polygon_l = [] # <- polygon: (col, row)
+		polygon = [] # <- polygon: (col, row)
 		for lon, lat in building:
 			px, py = bbox.lonLatToRelativePixel(lon, lat)
-			if not polygon_l or (px, py) != polygon_l[-1]:
-				polygon_l.append((px, py))
-		if polygon_l[-1] == polygon_l[0]:
-			polygon_l.pop()
+			if not polygon or (px, py) != polygon[-1]:
+				polygon.append((px, py))
+		if polygon[-1] == polygon[0]:
+			polygon.pop()
 
-		# Save
-		reverse = self.saveImagePolygon(img_l, polygon_l, info = 'l-')
-
-		# Image small
-		if True:
-			min_x, max_x = size[0], 0
-			min_y, max_y = size[1], 0
-			for x, y in polygon_l:
-				min_x = min(x, min_x)
-				min_y = min(y, min_y)
-				max_x = max(x, max_x)
-				max_y = max(y, max_y)
-			min_x = max(min_x - math.floor(size[0] * (1 - pad_rate)), 0)
-			min_y = max(min_y - math.floor(size[1] * (1 - pad_rate)), 0)
-			max_x = min(max_x + math.floor(size[0] * (1 - pad_rate)), size[0])
-			max_y = min(max_y + math.floor(size[1] * (1 - pad_rate)), size[1])
-			img_s = img_l[min_y: max_y, min_x: max_x, ...]
-
-			# Compute polygon's vertices
-			polygon_s = [(x - min_x, y - min_y) for x, y in polygon_l]
-			self.saveImagePolygon(img_s, polygon_s, reverse = reverse, info = 's-')
+		# Save and return
+		self.saveImagePolygon(img, polygon)
 		return
 
 if __name__ == '__main__':

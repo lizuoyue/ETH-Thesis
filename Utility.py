@@ -1,32 +1,21 @@
-import numpy as np
-import io, os, sys, glob
-import math, random
-import tarfile, zipfile
+import numpy as np 
+import math, random, time
+import io, glob, zipfile
 from PIL import Image, ImageDraw, ImageFilter
 # PIL.ImageDraw: 0-based, (col_idx, row_idx) if taking image as matrix
 
-BLUR = True
-BLUR_R = 0.75
+BLUR = 0.75
+TILE_SIZE = 256
 
-def pil2np(image, show):
-	if show:
-		import matplotlib.pyplot as plt
-	img = np.array(image, dtype = np.float32) / 255.0
-	if len(img.shape) > 2 and img.shape[2] == 4:
-		img = img[..., 0: 3]
-	if show:
-		plt.imshow(img)
-		plt.show()
-	return img
-
-def plotPolygon(img_size = (224, 224), num_vertices = 6, show = False):
+def plotPolygon(img_size = (224, 224), resolution = None, num_vertices = 6):
 
 	# Set image parameters
 	num_row = img_size[0]
 	num_col = img_size[1]
 	half_x = math.floor(num_col / 2)
 	half_y = math.floor(num_row / 2)
-	img_size_s = (math.floor(num_row / 8), math.floor(num_col / 8))
+	dec_rate[0] = img_size[0] / resolution[0]
+	dec_rate[1] = img_size[1] / resolution[1]
 
 	# Set polygon parameters
 	epsilon = 1.0 / num_vertices
@@ -47,7 +36,7 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6, show = False):
 		px = math.floor(center_x + r * np.cos(angle))
 		py = math.floor(center_y - r * np.sin(angle)) # <- Decide polygon's order (counterclockwise)
 		polygon.append((px, py))
-		polygon_s.append((math.floor(px / 8), math.floor(py / 8)))
+		polygon_s.append((math.floor(px / dec_rate[0]), math.floor(py / dec_rate[1])))
 		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon) # <- Decide polygon's vertices
 	first_idx = random.choice([i for i in range(num_vertices)])
 	polygon = polygon[first_idx:] + polygon[:first_idx]
@@ -64,41 +53,32 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6, show = False):
 	background = np.array(org)
 	img = background + noise
 	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
-	img = Image.fromarray(img)
-	img = pil2np(img, show)
 
 	# Draw boundary
-	boundary = Image.new('P', img_size_s, color = 0)
+	boundary = Image.new('P', resolution, color = 0)
 	draw = ImageDraw.Draw(boundary)
 	draw.polygon(polygon_s, fill = 0, outline = 255)
-	boundary = pil2np(boundary, show)
+	boundary = np.array(boundary) / 255.0
 
 	# Draw vertices
-	vertices = Image.new('P', img_size_s, color = 0)
+	vertices = Image.new('P', resolution, color = 0)
 	draw = ImageDraw.Draw(vertices)
 	draw.point(polygon_s, fill = 255)
-	vertices = pil2np(vertices, show)
+	vertices = np.array(vertices) / 255.0
 
 	# Draw each vertex
 	vertex_list = []
 	for i in range(num_vertices):
-		vertex = Image.new('P', img_size_s, color = 0)
+		vertex = Image.new('P', resolution, color = 0)
 		draw = ImageDraw.Draw(vertex)
 		draw.point([polygon_s[i]], fill = 255)
-		vertex = pil2np(vertex, show)
+		vertex = np.array(vertex) / 255.0
 		vertex_list.append(vertex)
-	vertex_list.append(np.zeros(img_size_s, dtype = np.float32))
+	vertex_list.append(np.zeros(resolution, dtype = np.float32))
 	# vertex_list = np.array(vertex_list)
 
 	# Return
-	if show:
-		print(img.shape)
-		print(boundary.shape)
-		print(vertices.shape)
-		print(vertex_list.shape)
 	return img, boundary, vertices, vertex_list
-
-TILE_SIZE = 256
 
 def lonLatToWorld(lon, lat):
 	# Truncating to 0.9999 effectively limits latitude to 89.189. This is
@@ -161,173 +141,283 @@ class BoundingBox(object):
 		return math.floor(px - self.center_px + self.size[0] / 2), math.floor(py - self.center_py + self.size[1] / 2)
 
 class DataGenerator(object):
-	# 
-	def __init__(self, fake, data_path = None, train_prob = None, max_seq_len = None):
+	# num_col, num_row
+	def __init__(self, fake, data_path = None, max_seq_len = None, img_size = (224, 224), resolution = None):
 		if fake:
 			self.fake = True
 			assert(max_seq_len != None)
 			self.max_seq_len = max_seq_len
+			self.img_size = img_size
+			self.resolution = resolution
+			self.blank = np.zeros(resolution, dtype = np.float32)
 		else:
-			#
+			# 
 			self.fake = False
-			assert(data_path != None)
-			assert(train_prob != None)
 			assert(max_seq_len != None)
-			self.train_prob = train_prob
 			self.max_seq_len = max_seq_len
+			self.img_size = img_size
+			self.resolution = resolution
+			assert(data_path.endswith('.zip'))
+
+			# 
+			self.data_path = data_path.lstrip('./').replace('.zip', '')
+			self.archive = zipfile.ZipFile(data_path, 'r')
+			self.building_id_set = set()
+			for filename in self.archive.namelist():
+				if filename.startswith('__MACOSX'):
+					continue
+				parts = filename.split('/')
+				if len(parts) == 3:
+					self.building_id_set.add(int(parts[1]))
+			print('Totally %d buildings.' % len(self.building_id_set))
+			
+			# 
+			self.good_building_id_set = set()
+			self.bad_building_id_set = set()
+			for bid in self.building_id_set:
+				self.dispatchBuilding(bid)
+			print('Totally %d good buildings.' % len(self.good_building_id_set))
+			print('Totally %d bad buildings.' % len(self.bad_building_id_set))
 
 			#
-			if data_path.endswith('.tar.gz'):
-				self.data_file_type = 'tar'
-			elif data_path.endswith('.zip'):
-				self.data_file_type = 'zip'
-			else:
-				self.data_file_type = 'dir'
+			train_prob = 0.9
+			self.good_building_id_list = list(self.good_building_id_set)
+			self.good_building_id_list.sort()
+			random.seed(0)
+			random.shuffle(self.good_building_id_list)
+			split = int(train_prob * len(self.good_building_id_list))
+			self.id_list_train = self.good_building_id_list[:split]
+			self.id_list_valid = self.good_building_id_list[split:]
+			self.bad_id_list = list(self.bad_building_id_set)
 
-			#
-			if self.data_file_type == 'dir':
-				self.data_path = data_path
-				self.id_list = os.listdir(data_path)
-				if '.DS_Store' in self.id_list:
-					self.id_list.remove('.DS_Store')
-				self.id_list.sort()
-			if self.data_file_type == 'tar':
-				self.data_path = './' + data_path.replace('.tar.gz', '').lstrip('./')
-				self.archive = tarfile.open(data_path, 'r:gz')
-				self.building_list = {}
-				for filename in self.archive.getnames():
-					parts = filename.split('/')
-					if len(parts) == 4:
-						bid = int(parts[2])
-						if bid in self.building_list:
-							self.building_list[bid].append(filename)
-						else:
-							self.building_list[bid] = [filename]
-				self.id_list = [k for k in self.building_list]
-				self.id_list.sort()
-			if self.data_file_type == 'zip':
-				self.data_path = data_path.lstrip('./').replace('.zip', '')
-				self.archive = zipfile.ZipFile(data_path, 'r')
-				self.building_list = {}
-				for filename in self.archive.namelist():
-					if filename.startswith('__MACOSX'):
-						continue
-					parts = filename.split('/')
-					if len(parts) == 3:
-						bid = int(parts[1])
-						if bid in self.building_list:
-							self.building_list[bid].append(filename)
-						else:
-							self.building_list[bid] = [filename]
-				self.id_list = [k for k in self.building_list]
-				self.id_list.sort()
-			print('Totally %d buildings.' % len(self.id_list))
-
-			# Split
-			random.seed(31415927)
-			random.shuffle(self.id_list)
-			random.seed(random.randint(0, 31415926))
-			split = int(len(self.id_list) * self.train_prob)
-			self.id_list_train = self.id_list[:split]
-			self.id_list_valid = self.id_list[split:]
-
-			self.blank = np.zeros((28, 28), dtype = np.float32)
-			self.vertex_pool = [[] for i in range(28)]
-			for i in range(28):
-				for j in range(28):
-					self.vertex_pool[i].append(np.zeros((28, 28), dtype = np.float32))
-					self.vertex_pool[i][j][i, j] = 1.0
+			# 
+			self.blank = np.zeros(resolution, dtype = np.uint8)
+			self.vertex_pool = [[] for i in range(resolution[1])]
+			for i in range(resolution[1]):
+				for j in range(resolution[0]):
+					self.vertex_pool[i].append(np.copy(self.blank))
+					self.vertex_pool[i][j][i, j] = 255
+					self.vertex_pool[i][j] = Image.fromarray(self.vertex_pool[i][j])
 			return
 
+	def dispatchBuilding(self, building_id, th = 0.9):
+		# Set path
+		building_id = str(building_id)
+		path = self.data_path + '/' + building_id
+
+		#
+		lines = self.archive.read(path + '/shift.txt').decode('utf-8').split('\n')
+		edge_prob, _ = lines[1].strip().split()
+		edge_prob = float(edge_prob)
+
+		#
+		if edge_prob >= th:
+			self.good_building_id_set.add(int(building_id))
+		else:
+			self.bad_building_id_set.add(int(building_id))
+		return
+
 	def blur(self, img):
-		if BLUR:
-			img = img.convert('L').filter(ImageFilter.GaussianBlur(BLUR_R))
+		# img: PIL.Image object
+		if BLUR is not None:
+			img = img.convert('L').filter(ImageFilter.GaussianBlur(BLUR))
 			img = np.array(img, np.float32)
 			img = np.minimum(img * (1.2 / np.max(img)), 1.0)
+			# Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
 		else:
 			img = np.array(img, np.float32) / 255.0
 		return img
 
-	def getDataSingle(self, building_id):
+	def showImagePolygon(self, img, polygon, rotate):
+		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
+		draw = ImageDraw.Draw(mask)
+		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+		merge = Image.alpha_composite(img, mask.rotate(rotate))
+		merge.show()
+		return
+
+	def distL1(self, p1, p2):
+		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
+
+	def getSingleData(self, building_id):
 		# Set path
-		if type(building_id) == int:
-			building_id = str(building_id)
+		building_id = str(building_id)
 		path = self.data_path + '/' + building_id
 
-		# Get images
-		if self.data_file_type == 'tar':
-			f = self.archive.extractfile(path + '/0-img.png')
-			img = np.array(Image.open(io.BytesIO(f.read())))[..., 0: 3] / 255.0
-			f = self.archive.extractfile(path + '/3-b.png')
-			boundary = self.blur(Image.open(io.BytesIO(f.read())))
-			f = self.archive.extractfile(path + '/4-v.png')
-			vertices = self.blur(Image.open(io.BytesIO(f.read())))
-			f = self.archive.extractfile(path + '/5-v.txt')
-			lines = f.readlines()
-			lines = [line.decode('utf-8') for line in lines]
-		if self.data_file_type == 'zip':
-			img = np.array(Image.open(io.BytesIO(self.archive.read(path + '/0-img.png'))))[..., 0: 3] / 255.0
-			boundary = self.blur(Image.open(io.BytesIO(self.archive.read(path + '/3-b.png'))))
-			vertices = self.blur(Image.open(io.BytesIO(self.archive.read(path + '/4-v.png'))))
-			lines = self.archive.read(path + '/5-v.txt').decode('utf-8').split('\n')
-		if self.data_file_type == 'dir':
-			img = np.array(Image.open(glob.glob(path + '/' + '0-img.png')[0]))[..., 0: 3] / 255.0
-			boundary = self.blur(Image.open(glob.glob(path + '/' + '3-b.png')[0]))
-			vertices = self.blur(Image.open(glob.glob(path + '/' + '4-v.png')[0]))
-			f = open(path + '/' + '5-v.txt', 'r')
-			lines = f.readlines()
-		vertex = []
+		# Rotate
+		rotate = random.choice([0, 90, 180, 270])
+
+		# Get image, polygon coordinates and shift
+		img = Image.open(io.BytesIO(self.archive.read(path + '/img.png')))
+		lines = self.archive.read(path + '/polygon.txt').decode('utf-8').split('\n')
+		polygon = []
 		for line in lines:
 			if line.strip() != '':
-				y, x = line.strip().split()
-				vertex.append(self.vertex_pool[int(x)][int(y)])
-		seq_len = len(vertex)
+				x, y = line.strip().split()
+				polygon.append((int(x), int(y)))
+		lines = self.archive.read(path + '/shift.txt').decode('utf-8').split('\n')
+		shift_i, shift_j = lines[0].strip().split()
+		shift_i, shift_j = int(shift_i), int(shift_j)
+		polygon = [(x + shift_j, y + shift_i) for x, y in polygon]
+
+		# Get local small patch
+		pad_rate = random.random() * 0.1 + 0.1
+		min_x, max_x = img.size[0], 0
+		min_y, max_y = img.size[1], 0
+		for x, y in polygon:
+			min_x = min(x, min_x)
+			min_y = min(y, min_y)
+			max_x = max(x, max_x)
+			max_y = max(y, max_y)
+		min_x = max(min_x - math.floor(img.size[0] * pad_rate), 0)
+		min_y = max(min_y - math.floor(img.size[1] * pad_rate), 0)
+		max_x = min(max_x + math.floor(img.size[0] * pad_rate), img.size[0])
+		max_y = min(max_y + math.floor(img.size[1] * pad_rate), img.size[1])
+
+		# Adjust image and polygon
+		img_patch = img.crop((min_x, min_y, max_x, max_y))
+		img_patch = img_patch.resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
+		# img_patch.show()
+		# time.sleep(0.25)
+		img_patch_backup = img_patch
+		img_patch = np.array(img_patch)[..., 0: 3] / 255.0
+		x_rate = self.img_size[0] / (max_x - min_x)
+		y_rate = self.img_size[1] / (max_y - min_y)
+		res_x = self.resolution[0] / self.img_size[0]
+		res_y = self.resolution[1] / self.img_size[1]
+
+		polygon_patch = []
+		for x, y in polygon:
+			a = math.floor((x - min_x) * x_rate * res_x)
+			b = math.floor((y - min_y) * y_rate * res_y)
+			if not polygon_patch or self.distL1((a, b), polygon_patch[-1]) > 0:
+				polygon_patch.append((a, b))
+
+		start = random.randint(0, len(polygon_patch) - 1)
+		polygon_patch = polygon_patch[start:] + polygon_patch[:start]
+		# self.showImagePolygon(img_patch_backup, [(x * 4, y * 4) for x, y in polygon_patch], rotate)
+		# time.sleep(0.25)
+
+		# Draw boundary and vertices
+		boundary = Image.new('P', (self.resolution[0], self.resolution[1]), color = 0)
+		draw = ImageDraw.Draw(boundary)
+		draw.polygon(polygon_patch, fill = 0, outline = 255)
+		boundary = self.blur(boundary.rotate(rotate))
+		# time.sleep(0.25)
+
+		vertices = Image.new('P', (self.resolution[0], self.resolution[1]), color = 0)
+		draw = ImageDraw.Draw(vertices)
+		draw.point(polygon_patch, fill = 255)
+		vertices = self.blur(vertices.rotate(rotate))
+		# time.sleep(0.25)
+
+		# Get each single vertex
+		vertex_input = []
+		vertex_output = []
+		for i, (x, y) in enumerate(polygon_patch):
+			# self.vertex_pool[int(y)][int(x)].rotate(rotate).show()
+			# time.sleep(0.25)
+			v = self.vertex_pool[int(y)][int(x)].rotate(rotate)
+			vertex_input.append(np.array(v, dtype = np.float32) / 255.0)
+			if i == 0:
+				continue
+			# vertex_output.append(self.blur(v))
+			vertex_output.append(np.array(v, dtype = np.float32) / 255.0)
 
 		# 
-		while len(vertex) < self.max_seq_len:
-			vertex.append(self.blank)
-		vertex = np.array(vertex)
+		while len(vertex_input) < self.max_seq_len:
+			vertex_input.append(np.array(self.blank, dtype = np.float32))
+		while len(vertex_output) < self.max_seq_len:
+			vertex_output.append(np.array(self.blank, dtype = np.float32))
+		vertex_input = np.array(vertex_input)
+		vertex_output = np.array(vertex_output)
+
+		# Get end signal
+		seq_len = len(polygon_patch)
 		end = [0.0 for i in range(self.max_seq_len)]
 		end[seq_len] = 1.0
 		end = np.array(end)
 
 		# Return
-		return img, boundary, vertices, vertex, end, seq_len
+		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len
 
-	def getDataBatch(self, batch_size, mode = None, seed = 0):
-		random.seed(seed)
+	def getDataBatch(self, batch_size, mode = None):
+		# Fake
 		if self.fake:
-			return self.getToyDataBatch(batch_size)
+			return self.getFakeDataBatch(batch_size)
+
+		# Real
 		res = []
 		if mode == 'train':
-			batch_size = min(len(self.id_list_train), batch_size)
-			sel = np.random.choice(len(self.id_list_train), batch_size, replace = False)
+			sel = np.random.choice(len(self.id_list_train), batch_size, replace = True)
 			for i in sel:
-				res.append(self.getDataSingle(self.id_list_train[i]))
+				res.append(self.getSingleData(self.id_list_train[i]))
 		if mode == 'valid':
-			batch_size = min(len(self.id_list_valid), batch_size)
-			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = False)
+			sel = np.random.choice(len(self.id_list_valid), batch_size, replace = True)
 			for i in sel:
-				res.append(self.getDataSingle(self.id_list_valid[i]))
-		return (np.array([item[i] for item in res]) for i in range(6))
+				res.append(self.getSingleData(self.id_list_valid[i]))
+		if mode == 'test':
+			sel = np.random.choice(len(self.bad_id_list), batch_size, replace = True)
+			for i in sel:
+				res.append(self.getSingleData(self.bad_id_list[i]))
+		return (np.array([item[i] for item in res]) for i in range(7))
 
-	def getToyDataBatch(self, batch_size):
+	def getFakeDataBatch(self, batch_size):
 		res = []
 		num_v = np.random.choice(6, batch_size, replace = True) + 4
-		for n in num_v:
-			img, b, v, vertex_list = plotPolygon(num_vertices = n)
-			while len(vertex_list) < self.max_seq_len:
-				vertex_list.append(np.zeros((28, 28), dtype = np.float32))
-			vertex_list = np.array(vertex_list)
+		for seq_len in num_v:
+			img, boundary, vertices, vertex_input = plotPolygon(
+				img_size = self.img_size,
+				resolution = self.resolution,
+				num_vertices = seq_len
+			)
+			while len(vertex_input) < self.max_seq_len:
+				vertex_input.append(np.copy(self.blank))
+			vertex_output = vertex_input[1:] + [self.blank]
+			vertex_input = np.array(vertex_input)
 			end = [0.0 for i in range(self.max_seq_len)]
-			end[n] = 1.0
+			end[seq_len] = 1.0
 			end = np.array(end)
-			res.append((img, b, v, vertex_list, end, n))
-		return (np.array([item[i] for item in res]) for i in range(6))
+			res.append((img, boundary, vertices, vertex_input, vertex_output, end, seq_len))
+		return (np.array([item[i] for item in res]) for i in range(7))
 
 if __name__ == '__main__':
-	for i in range(1):
+	for i in range(0):
 		plotPolygon(num_vertices = 7, show = True)
+	dg = DataGenerator(fake = False, data_path = '../Chicago.zip', max_seq_len = 24, resolution = (28, 28))
+	dg.getDataBatch(mode = 'train', batch_size = 2)
 
+	# 
+	# boundary = Image.new('P', size, color = 0)
+	# draw = ImageDraw.Draw(boundary)
+	# draw.polygon(polygon, fill = 0, outline = 255)
+	# draw.line(polygon + [polygon[0]], fill = 255, width = 3) # <- For thicker outline
+	# for point in polygon:
+		# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
+	# if save:
+		# boundary.save('../%s/%d/3-b.png' % (self.city_name, building_id))
+	# boundary = ut.pil2np(boundary, show)
 
+	# 
+	# vertices = Image.new('P', size, color = 0)
+	# draw = ImageDraw.Draw(vertices)
+	# draw.point(polygon, fill = 255)
+	# for point in polygon:
+		# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
+	# if save:
+		# vertices.save('../%s/%d/4-v.png' % (self.city_name, building_id))
+	# vertices = ut.pil2np(vertices, show)
+
+	# 
+	# vertex_list = []
+	# for i in range(len(polygon_s)):
+	# 	vertex = Image.new('P', size_s, color = 0)
+	# 	draw = ImageDraw.Draw(vertex)
+	# 	draw.point([polygon_s[i]], fill = 255)
+	# 	if save:
+	# 		vertex.save('../%s/%d/5-v%s.png' % (self.city_name, building_id, str(i).zfill(2)))
+	# 	vertex = ut.pil2np(vertex, show)
+	# 	vertex_list.append(vertex)
+	# vertex_list.append(np.zeros(size_s, dtype = np.float32))
+	# vertex_list = np.array(vertex_list)
 

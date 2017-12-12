@@ -142,90 +142,61 @@ class Preprocessor(object):
 		shift_i, shift_j = min(keys, key = lambda x: x[0])[1]
 		return shift_i, shift_j, (255 - edge_d[(shift_i, shift_j)]) / 255, (255 - edge_d[(0, 0)]) / 255
 
+	def showImagePolygon(self, img, polygon):
+		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
+		draw = ImageDraw.Draw(mask)
+		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+		merge = Image.alpha_composite(img, mask)
+		merge.show()
+		return
+
 	def batchShift(self, beg_idx = None, end_idx = None):
 		for i, building in enumerate(self.building_list):
 			# Local test
 			if False:
-				input()
-				# time.sleep(1)
-				Image.open(building + '2-l-merge.png').show()
-
-				# 
-				img = Image.open(building + '0-l-img.png')
-				f = open(building + '3-l-v.txt', 'r')
+				# Show image with polygon before shift
+				img = Image.open(building + 'img.png')
+				f = open(building + 'polygon.txt', 'r')
 				polygon = []
 				for line in f.readlines():
 					if line.strip() != '':
 						x, y = line.strip().split()
 						polygon.append((int(x), int(y)))
+				f.close()
+				self.showImagePolygon(img, polygon)
 
+				# Compute shift
 				obj = ImageShift(np.array(img), polygon)
 				shift_i, shift_j, after, before = self.shift(obj)
+				polygon = [(p[0] + shift_j, p[1] + shift_i) for p in polygon]
 				print(i, building, shift_i, shift_j, after, before)
 
-				polygon = [(p[0] + shift_j, p[1] + shift_i) for p in polygon]
-				mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
-				draw = ImageDraw.Draw(mask)
-				draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-				merge = Image.alpha_composite(img, mask)
-				merge.show()
+				# Show image with polygon after shift
+				self.showImagePolygon(img, polygon)
 			else:
 				#
 				if i < beg_idx or i >= end_idx:
 					continue
 
 				#
-				img = Image.open(building + '0-l-img.png')
-				f = open(building + '3-l-v.txt', 'r')
+				img = Image.open(building + 'img.png')
+				f = open(building + 'polygon.txt', 'r')
 				polygon = []
 				for line in f.readlines():
 					if line.strip() != '':
 						x, y = line.strip().split()
 						polygon.append((int(x), int(y)))
+				f.close()
 
 				obj = ImageShift(np.array(img), polygon)
 				shift_i, shift_j, after, before = self.shift(obj)
 
-				f = open(building + '4-shift.txt', 'w')
+				f = open(building + 'shift.txt', 'w')
 				f.write('%d %d\n' % (shift_i, shift_j))
 				f.write('%.6lf %.6lf\n' % (after, before))
 				f.close()
 
 				print(i, shift_i, shift_j)
-
-		# 
-		# boundary = Image.new('P', size, color = 0)
-		# draw = ImageDraw.Draw(boundary)
-		# draw.polygon(polygon, fill = 0, outline = 255)
-		# draw.line(polygon + [polygon[0]], fill = 255, width = 3) # <- For thicker outline
-		# for point in polygon:
-			# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
-		# if save:
-			# boundary.save('../%s/%d/3-b.png' % (self.city_name, building_id))
-		# boundary = ut.pil2np(boundary, show)
-
-		# 
-		# vertices = Image.new('P', size, color = 0)
-		# draw = ImageDraw.Draw(vertices)
-		# draw.point(polygon, fill = 255)
-		# for point in polygon:
-			# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
-		# if save:
-			# vertices.save('../%s/%d/4-v.png' % (self.city_name, building_id))
-		# vertices = ut.pil2np(vertices, show)
-
-		# 
-		# vertex_list = []
-		# for i in range(len(polygon_s)):
-		# 	vertex = Image.new('P', size_s, color = 0)
-		# 	draw = ImageDraw.Draw(vertex)
-		# 	draw.point([polygon_s[i]], fill = 255)
-		# 	if save:
-		# 		vertex.save('../%s/%d/5-v%s.png' % (self.city_name, building_id, str(i).zfill(2)))
-		# 	vertex = ut.pil2np(vertex, show)
-		# 	vertex_list.append(vertex)
-		# vertex_list.append(np.zeros(size_s, dtype = np.float32))
-		# vertex_list = np.array(vertex_list)
 
 if __name__ == '__main__':
 	city_name = sys.argv[1]
