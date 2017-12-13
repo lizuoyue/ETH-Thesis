@@ -629,14 +629,14 @@ if __name__ == '__main__':
 		os.makedirs('./tes/')
 
 	# Set parameters
-	lr = 0.0005
+	lr = 0.0001
 	n_iter = 2000000
 	toy = False
 	data_path = '../Chicago.zip'
 	if not toy:
 		batch_size = 9
 		max_seq_len = 24
-		lstm_out_channel = [32, 16, 8]#[32, 8, 2]
+		lstm_out_channel = [32, 16, 8]
 		v_out_res = 56
 	else:
 		batch_size = 9
