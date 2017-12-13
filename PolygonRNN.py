@@ -453,7 +453,7 @@ class PolygonRNN(object):
 		rnn_out_true  = tf.concat([v_out_true, end_true], 2)
 
 		feature, loss_CNN = self.CNN(img, boundary_true, vertices_true)
-		logits,  loss_RNN = self.RNN(feature, v_in_true, rnn_out_true, seq_len)
+		logits , loss_RNN = self.RNN(feature, v_in_true, rnn_out_true, seq_len)
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
 
@@ -477,43 +477,54 @@ class PolygonRNN(object):
 		vertices = feature[..., -1:]
 		return boundary, vertices, v_out_pred
 
-def overlay(img, mask, v_out_res):
+def overlay(img, mask, v_out_res, color = (255, 0, 0)):
 	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
 	alpha = np.array(mask * 128.0, dtype = np.uint8)
 	alpha = np.concatenate(
 		(
-			np.ones((v_out_res, v_out_res, 1)) * 255.0,
-			np.zeros((v_out_res, v_out_res, 2)),
+			np.ones((v_out_res, v_out_res, 1)) * color[0],
+			np.ones((v_out_res, v_out_res, 1)) * color[1],
+			np.ones((v_out_res, v_out_res, 1)) * color[2],
 			np.reshape(alpha, (v_out_res, v_out_res, 1))
 		),
 		axis = 2
 	)
-	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
+	alpha = Image.fromarray(alpha, dtype = np.uint8, mode = 'RGBA')
 	alpha = alpha.resize((224, 224), resample = Image.BICUBIC)
 	merge = Image.alpha_composite(org, alpha)
 	return merge
 
-def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len):
+def overlayMultiMask(img, mask, v_out_res):
+	merge = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
+	merge = np.array(overlay(img, mask[0], v_out_res)) / 255.0
+	for i in range(1, mask.shape[0]):
+		color = (0, i % 2 * 255, (1 - i % 2) * 255)
+		merge = np.array(overlay(merge, mask[0], v_out_res, color)) / 255.0
+	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
+
+def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
 
 	# Reshape
-	# np.reshape(b_pred, [])
-	# np.reshape(b_pred, [])
-	# np.reshape(b_pred, [])
+	b_pred = b_pred[..., 0]
+	v_pred = v_pred[..., 0]
+	end_pred = end_pred[..., 0]
+	blank = np.zeros((v_out_res, v_out_res))
 
-	for j in range(img.shape[0]):
-		org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
-		org.save(path + '/%d-0-img.png' % j)
-		overlay(img[j, ...], b_pred[j, ..., 0]).save(path + '/%d-1-b-p.png' % j)
-		overlay(img[j, ...], boundary[j]).save(path + '/%d-1-b-t.png' % j)
-		overlay(img[j, ...], v_pred[j, ..., 0]).save(path + '/%d-2-v-p.png' % j)
-		overlay(img[j, ...], vertices[j]).save(path + '/%d-2-v-t.png' % j)
-		overlay(img[j, ...], v_in[j, 0, ...]).save(path + '/%d-3-v00.png' % j)
-		for k in range(seq_len[j]):
-			overlay(img[j, ...], v_out_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k + 1).zfill(2)))
-		f = open(path + '/%d-4-end.txt' % j, 'w')
+	for i in range(img.shape[0])
+		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], boundary[i], v_out_res).save(path + '/%d-1-bound.png' % i)
+		overlay(img[i], b_pred  [i], v_out_res).save(path + '/%d-1-bound-p.png' % i)
+		overlay(img[i], vertices[i], v_out_res).save(path + '/%d-2-vtx.png' % i)
+		overlay(img[i], v_pred  [i], v_out_res).save(path + '/%d-2-vtx-p.png' % i)
+		overlayMultiMask(
+			img[i],
+			v_in[i, 0, ...], v_out_pred[i, 0: seq_len[i], ...]
+			v_out_res
+		).save(path + '/%d-3-vtx.png' % i)
+		f = open(path + '/%d-4-end.txt' % i, 'w')
 		for i in range(seq_len[j]):
 			f.write('%.6lf\n' % end_pred[j, i])
 		f.close()
@@ -646,16 +657,16 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Visualize
-			print(img.shape)
-			print(boundary.shape)
-			print(vertices.shape)
-			print(v_in.shape)
-			print(b_pred.shape)
-			print(v_pred.shape)
-			print(v_out_pred.shape)
-			print(end_pred.shape)
-			print(seq_len.shape)
-			# visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
+			# print(img.shape)
+			# print(boundary.shape)
+			# print(vertices.shape)
+			# print(v_in.shape)
+			# print(b_pred.shape)
+			# print(v_pred.shape)
+			# print(v_out_pred.shape)
+			# print(end_pred.shape)
+			# print(seq_len.shape)
+			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
 
 			# Save model
 			if i % 200 == 0:
@@ -679,7 +690,7 @@ if __name__ == '__main__':
 				f.flush()
 
 				# Visualize
-				# visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
+				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
 
 				# Prediction
 				# b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
