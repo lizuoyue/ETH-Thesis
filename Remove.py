@@ -23,5 +23,6 @@ if __name__ == '__main__':
 		if len(parts) == 3:
 			building_id_set.add(int(parts[1]))
 	for bid in building_id_set:
+		print(bid)
 		removeBuilding(archive, bid)
 			
