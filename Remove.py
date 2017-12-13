@@ -27,8 +27,8 @@ if __name__ == '__main__':
 	# 	removeBuilding(archive, bid)
 
 	building_id_list = os.popen('ls ../Chicago').read().strip().split('\n')
-	for bid in building_id_list:
-		print(bid)
+	for i, bid in ennumerate(building_id_list):
+		print(i, bid)
 		with open('../Chicago/%s/shift.txt' % bid) as f:
 			lines = f.readlines()
 			edge_prob, _ = lines[1].strip().split()
