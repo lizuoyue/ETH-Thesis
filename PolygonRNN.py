@@ -513,7 +513,7 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	end_pred = end_pred[..., 0]
 	blank = np.zeros((v_out_res, v_out_res))
 
-	for i in range(img.shape[0])
+	for i in range(img.shape[0]):
 		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
 		overlay(img[i], boundary[i], v_out_res).save(path + '/%d-1-bound.png' % i)
 		overlay(img[i], b_pred  [i], v_out_res).save(path + '/%d-1-bound-p.png' % i)
@@ -521,7 +521,10 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 		overlay(img[i], v_pred  [i], v_out_res).save(path + '/%d-2-vtx-p.png' % i)
 		overlayMultiMask(
 			img[i],
-			v_in[i, 0, ...], v_out_pred[i, 0: seq_len[i], ...]
+			np.concatenate(
+				(v_in[i, 0: 1, ...], v_out_pred[i, 0: seq_len[i], ...]),
+				axis = 0
+			),
 			v_out_res
 		).save(path + '/%d-3-vtx.png' % i)
 		f = open(path + '/%d-4-end.txt' % i, 'w')
