@@ -546,6 +546,9 @@ class Logger(object):
 		self.writer.add_summary(summary, step)
 		return
 
+	def close(self):
+		self.writer.close()
+		return
 
 if __name__ == '__main__':
 	# Create new folder
@@ -566,7 +569,7 @@ if __name__ == '__main__':
 	if not toy:
 		batch_size = 9
 		max_seq_len = 24
-		lstm_out_channel = [16, 4, 1]
+		lstm_out_channel = [32, 8, 2]
 		v_out_res = 56
 	else:
 		batch_size = 9
