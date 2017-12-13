@@ -273,17 +273,11 @@ class PolygonRNN(object):
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
 
-		# Write to summary
-		tf.summary.scalar('Loss CNN', loss_CNN)
-		tf.summary.scalar('Loss RNN', loss_RNN)
-		tf.summary.scalar('Loss Full', loss_CNN + loss_RNN)
-		summary = tf.summary.merge_all()
-
 		# Return
 		rnn_pred = tf.nn.softmax(logits)
 		v_out_pred = tf.reshape(rnn_pred[..., 0: 56 * 56], [-1, self.max_seq_len, 56, 56])
 		end_pred = tf.reshape(rnn_pred[..., 56 * 56], [-1, self.max_seq_len, 1])
-		return loss_CNN, loss_RNN, boundary, vertices, v_out_pred, end_pred, summary
+		return loss_CNN, loss_RNN, boundary, vertices, v_out_pred, end_pred
 
 	def Predict(self, xx):
 		img = tf.reshape(xx, [-1, 224, 224, 3])
@@ -357,11 +351,11 @@ if __name__ == '__main__':
 	if not toy:
 		max_seq_len = 24
 		batch_size = 9
-		lstm_out_channel = [4, 1]
+		lstm_out_channel = [16, 4, 1]
 	else:
 		max_seq_len = 12
 		batch_size = 9
-		lstm_out_channel = [4, 1]
+		lstm_out_channel = [16, 4, 1]
 	f = open('PolygonRNN.out', 'a')
 	obj = ut.DataGenerator(fake = toy, data_path = data_path, max_seq_len = max_seq_len, resolution = (56, 56))
 
@@ -383,13 +377,11 @@ if __name__ == '__main__':
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
 	train = optimizer.minimize(result[0] + result[1])
-	saver = tf.train.Saver(max_to_keep = 3)
+	saver = tf.train.Saver(max_to_keep = 2)
 	init = tf.global_variables_initializer()
 
 	# Launch graph
 	with tf.Session() as sess:
-		train_writer = tf.summary.FileWriter('./log/train/', sess.graph)
-		valid_writer = tf.summary.FileWriter('./log/valid/', sess.graph)
 		if len(sys.argv) > 1 and sys.argv[1] != None:
 			saver.restore(sess, './tmp/model-%s.ckpt' % sys.argv[1])
 			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
@@ -403,8 +395,7 @@ if __name__ == '__main__':
 
 			# Training and get result
 			sess.run(train, feed_dict)
-			loss_1, loss_2, b_pred, v_pred, v_out_pred, end_pred, summary = sess.run(result, feed_dict)
-			train_writer.add_summary(summary, i)
+			loss_1, loss_2, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
 
 			# Write loss to file
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
@@ -419,8 +410,8 @@ if __name__ == '__main__':
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
 				img, boundary, vertices, v_in, v_out, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
-				loss_1, loss_2, b_pred, v_pred, v_out_pred, end_pred, summary = sess.run(result, feed_dict)
-				valid_writer.add_summary(summary, i)
+				loss_1, loss_2, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
+
 				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
 				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
 				f.flush()

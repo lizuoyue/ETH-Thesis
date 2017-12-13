@@ -180,7 +180,7 @@ class DataGenerator(object):
 			print('Totally %d bad buildings.' % len(self.bad_building_id_set))
 
 			#
-			train_prob = 0.9
+			train_prob = 0.95
 			self.good_building_id_list = list(self.good_building_id_set)
 			self.good_building_id_list.sort()
 			random.seed(0)
@@ -200,7 +200,7 @@ class DataGenerator(object):
 					self.vertex_pool[i][j] = Image.fromarray(self.vertex_pool[i][j])
 			return
 
-	def dispatchBuilding(self, building_id, th = 0.9):
+	def dispatchBuilding(self, building_id, th = 0.95):
 		# Set path
 		building_id = str(building_id)
 		path = self.data_path + '/' + building_id
