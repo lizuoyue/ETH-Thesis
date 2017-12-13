@@ -563,6 +563,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 	batch_size = img.shape[0]
 	b_pred = b_pred[..., 0]
 	v_pred = v_pred[..., 0]
+	v_out_pred = v_out_pred[..., 0]
 	blank = np.zeros((v_out_res, v_out_res))
 
 	# Sequence length and polygon
