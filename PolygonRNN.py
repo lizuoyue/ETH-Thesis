@@ -737,6 +737,8 @@ if __name__ == '__main__':
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
 				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, v_out_res)
 
+			break
+
 		# End main loop
 		train_writer.close()
 		valid_writer.close()
