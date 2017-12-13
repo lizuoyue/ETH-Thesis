@@ -489,7 +489,7 @@ def overlay(img, mask, v_out_res, color = (255, 0, 0)):
 		),
 		axis = 2
 	)
-	alpha = Image.fromarray(alpha, dtype = np.uint8, mode = 'RGBA')
+	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
 	alpha = alpha.resize((224, 224), resample = Image.BICUBIC)
 	merge = Image.alpha_composite(org, alpha)
 	return merge
