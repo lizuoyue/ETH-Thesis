@@ -200,7 +200,7 @@ class DataGenerator(object):
 					self.vertex_pool[i][j] = Image.fromarray(self.vertex_pool[i][j])
 			return
 
-	def dispatchBuilding(self, building_id, th = 0.95):
+	def dispatchBuilding(self, building_id, th = 0.9):
 		# Set path
 		building_id = str(building_id)
 		path = self.data_path + '/' + building_id
