@@ -567,18 +567,16 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 	blank = np.zeros((v_out_res, v_out_res))
 
 	# Sequence length and polygon
-	seq_len = []
 	polygon = [[] for i in range(batch_size)]
 	for i in range(v_out_pred.shape[0]):
 		for j in range(v_out_pred.shape[1]):
-			if np.sum(v_out_pred[i, j, ...]) < 0.5:
-				seq_len.append(j)
+			if np.sum(v_out_pred[i, j, ...]) >= 0.5:
+				v = v_out_pred[i, j, ...]
+				r, c = np.unravel_index(v.argmax(), v.shape)
+				polygon[i].append((c, r))
+			else:
 				break
-			v = v_out_pred[i, j, ...]
-			print(v.shape)
-			r, c = np.unravel_index(v.argmax(), v.shape)
-			polygon[i].append((c, r))
-		assert(len(polygon[i]) == seq_len[i])
+	seq_len = [len(polygon[i]) for i in range(batch_size)]
 
 	#
 	for i in range(batch_size):
