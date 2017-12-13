@@ -528,8 +528,8 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 			v_out_res
 		).save(path + '/%d-3-vtx.png' % i)
 		f = open(path + '/%d-4-end.txt' % i, 'w')
-		for i in range(seq_len[j]):
-			f.write('%.6lf\n' % end_pred[j, i])
+		for j in range(seq_len[i]):
+			f.write('%.6lf\n' % end_pred[i, j])
 		f.close()
 	return
 
