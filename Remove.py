@@ -30,7 +30,7 @@ if __name__ == '__main__':
 	for bid in building_id_list:
 		print(bid)
 		with open('../Chicago/%s/shift.txt' % bid) as f:
-			f = f.readlines()
+			lines = f.readlines()
 			edge_prob, _ = lines[1].strip().split()
 			edge_prob = float(edge_prob)
 		if edge_prob < 0.9:
