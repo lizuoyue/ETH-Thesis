@@ -440,7 +440,7 @@ class PolygonRNN(object):
 			return logits, loss
 		else:
 			idx = tf.argmax(logits, axis = 2)
-			return tf.gather(self.vertex_pool, idx, axis = 0), idx
+			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
 		img           = tf.reshape(xx, [-1, 224, 224, 3])
@@ -513,6 +513,17 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	end_pred = end_pred[..., 0]
 	blank = np.zeros((v_out_res, v_out_res))
 
+	# Polygon
+	polygon = [[] for i in range(img.shape[0])]
+	for i in range(v_out_pred.shape[0]):
+		v0 = v_in[i, 0, ...]
+		r, c = np.unravel_index(v0.argmax(), v0.shape)
+		polygon.append((c, r))
+		for j in range(seq_len[i] - 1):
+			v = v_out_pred[i, j, ...]
+			r, c = np.unravel_index(v.argmax(), v.shape)
+			polygon[i].append((c, r))
+
 	# 
 	for i in range(img.shape[0]):
 		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
@@ -528,13 +539,22 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 			),
 			v_out_res
 		).save(path + '/%d-3-vtx.png' % i)
-		f = open(path + '/%d-4-end.txt' % i, 'w')
+
+		bb = Image.new('P', (v_out_res, v_out_res), color = 0)
+		draw = ImageDraw.Draw(bb)
+		draw.polygon(polygon[i], fill = 0, outline = 255)
+		bb = np.array(bb) / 255.0
+		overlay(img[i], bb, v_out_res).save(path + '/%d-4-vtx-link.png' % i)
+
+		f = open(path + '/%d-5-end.txt' % i, 'w')
 		for j in range(seq_len[i]):
 			f.write('%.6lf\n' % end_pred[i, j])
 		f.close()
+
+	#
 	return
 
-def visualize_pred(path, img, b_pred, v_pred, v_out_pred, idx, v_out_res):
+def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
@@ -553,15 +573,26 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, idx, v_out_res):
 			if np.sum(v_out_pred[i, j, ...]) < 0.5:
 				seq_len.append(j)
 				break
-			# r, c = np.unravel_index(v_out_pred[i, j, ...].argmax(), a.shape)
+			v = v_out_pred[i, j, ...]
+			r, c = np.unravel_index(v.argmax(), v.shape)
+			polygon[i].append((c, r))
+		assert(len(polygon[i]) == seq_len[i])
 
-	# for j in range(img.shape[0]):
-	# 	org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
-	# 	org.save(path + '/%d-0-img.png' % j)
-	# 	overlay(img[j, ...], b_pred[j, ..., 0]).save(path + '/%d-1-b-p.png' % j)
-	# 	overlay(img[j, ...], v_pred[j, ..., 0]).save(path + '/%d-2-v-p.png' % j)
-	# 	for k in range(v_out_pred.shape[1]):
-	# 		overlay(img[j, ...], v_out_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k).zfill(2)))
+	#
+	for i in range(batch_size):
+		overlay(img[i], blank    , v_out_res).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], b_pred[i], v_out_res).save(path + '/%d-1-bound-p.png' % i)
+		overlay(img[i], v_pred[i], v_out_res).save(path + '/%d-2-vtx-p.png' % i)
+		overlayMultiMask(
+			img[i], v_out_pred[i, 0: seq_len[i], ...], v_out_res
+		).save(path + '/%d-3-vtx.png' % i)
+		boundary = Image.new('P', (v_out_res, v_out_res), color = 0)
+		draw = ImageDraw.Draw(boundary)
+		draw.polygon(polygon[i], fill = 0, outline = 255)
+		boundary = np.array(boundary) / 255.0
+		overlay(img[i], boundary, v_out_res).save(path + '/%d-4-vtx-link.png' % i)
+
+	# 
 	return
 
 class Logger(object):
@@ -703,10 +734,8 @@ if __name__ == '__main__':
 				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res)
 
 				# Prediction
-				b_pred, v_pred, v_out_pred, idx = sess.run(pred, feed_dict)
-				print(idx.shape)
-				print(idx)
-				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, idx, v_out_res)
+				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
+				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, v_out_res)
 
 			break
 
