@@ -534,7 +534,7 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 		overlayMultiMask(
 			img[i],
 			np.concatenate(
-				(v_in[i, 0: 1, ...], v_out_pred[i, 0: seq_len[i], ...]),
+				(v_in[i, 0: 1, ...], v_out_pred[i, 0: seq_len[i] - 1, ...]),
 				axis = 0
 			),
 			v_out_res
@@ -736,8 +736,6 @@ if __name__ == '__main__':
 				# Prediction
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
 				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, v_out_res)
-
-			break
 
 		# End main loop
 		train_writer.close()
