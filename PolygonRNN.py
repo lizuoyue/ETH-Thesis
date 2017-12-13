@@ -440,7 +440,7 @@ class PolygonRNN(object):
 			return logits, loss
 		else:
 			idx = tf.argmax(logits, axis = 2)
-			return tf.gather(self.vertex_pool, idx, axis = 0)
+			return tf.gather(self.vertex_pool, idx, axis = 0), idx
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
 		img           = tf.reshape(xx, [-1, 224, 224, 3])
@@ -472,10 +472,10 @@ class PolygonRNN(object):
 	def Predict(self, xx):
 		img = tf.reshape(xx, [-1, 224, 224, 3])
 		feature, v_first = self.CNN(img, reuse = True)
-		v_out_pred = self.RNN(feature, v_first = v_first, reuse = True)
+		v_out_pred, idx = self.RNN(feature, v_first = v_first, reuse = True)
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
-		return boundary, vertices, v_out_pred
+		return boundary, vertices, v_out_pred, idx
 
 def overlay(img, mask, v_out_res, color = (255, 0, 0)):
 	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
@@ -499,7 +499,7 @@ def overlayMultiMask(img, mask, v_out_res):
 	merge = np.array(overlay(img, mask[0], v_out_res)) / 255.0
 	for i in range(1, mask.shape[0]):
 		color = (0, i % 2 * 255, (1 - i % 2) * 255)
-		merge = np.array(overlay(merge, mask[0], v_out_res, color)) / 255.0
+		merge = np.array(overlay(merge, mask[i], v_out_res, color)) / 255.0
 	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
 
 def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res):
@@ -513,6 +513,7 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	end_pred = end_pred[..., 0]
 	blank = np.zeros((v_out_res, v_out_res))
 
+	# 
 	for i in range(img.shape[0]):
 		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
 		overlay(img[i], boundary[i], v_out_res).save(path + '/%d-1-bound.png' % i)
@@ -533,19 +534,34 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 		f.close()
 	return
 
-def visualize_pred(path, img, b_pred, v_pred, v_out_pred):
+def visualize_pred(path, img, b_pred, v_pred, v_out_pred, idx, v_out_res):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
 
+	# Reshape
+	batch_size = img.shape[0]
+	b_pred = b_pred[..., 0]
+	v_pred = v_pred[..., 0]
+	blank = np.zeros((v_out_res, v_out_res))
 
-	for j in range(img.shape[0]):
-		org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
-		org.save(path + '/%d-0-img.png' % j)
-		overlay(img[j, ...], b_pred[j, ..., 0]).save(path + '/%d-1-b-p.png' % j)
-		overlay(img[j, ...], v_pred[j, ..., 0]).save(path + '/%d-2-v-p.png' % j)
-		for k in range(v_out_pred.shape[1]):
-			overlay(img[j, ...], v_out_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k).zfill(2)))
+	# Sequence length and polygon
+	seq_len = []
+	polygon = [[] for i in range(batch_size)]
+	for i in range(v_out_pred.shape[0]):
+		for j in range(v_out_pred.shape[1]):
+			if np.sum(v_out_pred[i, j, ...]) < 0.5:
+				seq_len.append(j)
+				break
+			# r, c = np.unravel_index(v_out_pred[i, j, ...].argmax(), a.shape)
+
+	# for j in range(img.shape[0]):
+	# 	org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
+	# 	org.save(path + '/%d-0-img.png' % j)
+	# 	overlay(img[j, ...], b_pred[j, ..., 0]).save(path + '/%d-1-b-p.png' % j)
+	# 	overlay(img[j, ...], v_pred[j, ..., 0]).save(path + '/%d-2-v-p.png' % j)
+	# 	for k in range(v_out_pred.shape[1]):
+	# 		overlay(img[j, ...], v_out_pred[j, k, ...]).save(path + '/%d-3-v%s.png' % (j, str(k).zfill(2)))
 	return
 
 class Logger(object):
@@ -660,15 +676,6 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Visualize
-			# print(img.shape)
-			# print(boundary.shape)
-			# print(vertices.shape)
-			# print(v_in.shape)
-			# print(b_pred.shape)
-			# print(v_pred.shape)
-			# print(v_out_pred.shape)
-			# print(end_pred.shape)
-			# print(seq_len.shape)
 			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res)
 
 			# Save model
@@ -696,8 +703,10 @@ if __name__ == '__main__':
 				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res)
 
 				# Prediction
-				# b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				# visualize_pred('./tes', img, b_pred, v_pred, v_out_pred)
+				b_pred, v_pred, v_out_pred, idx = sess.run(pred, feed_dict)
+				print(idx.shape)
+				print(idx)
+				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, idx, v_out_res)
 
 			break
 
