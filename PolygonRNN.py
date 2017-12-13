@@ -498,7 +498,11 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
 
-	# 
+	# Reshape
+	# np.reshape(b_pred, [])
+	# np.reshape(b_pred, [])
+	# np.reshape(b_pred, [])
+
 	for j in range(img.shape[0]):
 		org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
 		org.save(path + '/%d-0-img.png' % j)
@@ -519,6 +523,8 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
+
+
 	for j in range(img.shape[0]):
 		org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
 		org.save(path + '/%d-0-img.png' % j)
@@ -569,7 +575,7 @@ if __name__ == '__main__':
 	if not toy:
 		batch_size = 9
 		max_seq_len = 24
-		lstm_out_channel = [32, 8, 2]
+		lstm_out_channel = [32, 16, 8]#[32, 8, 2]
 		v_out_res = 56
 	else:
 		batch_size = 9
