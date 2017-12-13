@@ -574,6 +574,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 				seq_len.append(j)
 				break
 			v = v_out_pred[i, j, ...]
+			print(v.shape)
 			r, c = np.unravel_index(v.argmax(), v.shape)
 			polygon[i].append((c, r))
 		assert(len(polygon[i]) == seq_len[i])
