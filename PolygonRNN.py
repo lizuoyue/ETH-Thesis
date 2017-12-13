@@ -669,7 +669,7 @@ if __name__ == '__main__':
 			# print(v_out_pred.shape)
 			# print(end_pred.shape)
 			# print(seq_len.shape)
-			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
+			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res)
 
 			# Save model
 			if i % 200 == 0:
@@ -693,7 +693,7 @@ if __name__ == '__main__':
 				f.flush()
 
 				# Visualize
-				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
+				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res)
 
 				# Prediction
 				# b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
