@@ -472,10 +472,10 @@ class PolygonRNN(object):
 	def Predict(self, xx):
 		img = tf.reshape(xx, [-1, 224, 224, 3])
 		feature, v_first = self.CNN(img, reuse = True)
-		v_out_pred, idx = self.RNN(feature, v_first = v_first, reuse = True)
+		v_out_pred = self.RNN(feature, v_first = v_first, reuse = True)
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
-		return boundary, vertices, v_out_pred, idx
+		return boundary, vertices, v_out_pred
 
 def overlay(img, mask, v_out_res, color = (255, 0, 0)):
 	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
