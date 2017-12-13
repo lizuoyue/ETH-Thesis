@@ -477,10 +477,17 @@ class PolygonRNN(object):
 		vertices = feature[..., -1:]
 		return boundary, vertices, v_out_pred
 
-def overlay(img, mask):
+def overlay(img, mask, v_out_res):
 	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
 	alpha = np.array(mask * 128.0, dtype = np.uint8)
-	alpha = np.concatenate((np.ones((28, 28, 1)) * 255.0, np.zeros((28, 28, 2)), np.reshape(alpha, (28, 28, 1))), axis = 2)
+	alpha = np.concatenate(
+		(
+			np.ones((v_out_res, v_out_res, 1)) * 255.0,
+			np.zeros((v_out_res, v_out_res, 2)),
+			np.reshape(alpha, (v_out_res, v_out_res, 1))
+		),
+		axis = 2
+	)
 	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
 	alpha = alpha.resize((224, 224), resample = Image.BICUBIC)
 	merge = Image.alpha_composite(org, alpha)
@@ -490,6 +497,8 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
+
+	# 
 	for j in range(img.shape[0]):
 		org = Image.fromarray(np.array(img[j, ...] * 255.0, dtype = np.uint8)).convert('RGBA')
 		org.save(path + '/%d-0-img.png' % j)
@@ -506,7 +515,7 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 		f.close()
 	return
 
-def visualize_test(path, img, b_pred, v_pred, v_out_pred):
+def visualize_pred(path, img, b_pred, v_pred, v_out_pred):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
@@ -555,18 +564,26 @@ if __name__ == '__main__':
 	toy = False
 	data_path = '../Chicago.zip'
 	if not toy:
+		batch_size = 9
 		max_seq_len = 24
-		batch_size = 9
-		lstm_out_channel = [32, 16, 8]
+		lstm_out_channel = [16, 4, 1]
+		v_out_res = 56
 	else:
-		max_seq_len = 12
 		batch_size = 9
+		max_seq_len = 12
 		lstm_out_channel = [32, 16, 8]
-	f = open('PolygonRNN.out', 'a')
-	obj = ut.DataGenerator(fake = toy, data_path = data_path, max_seq_len = max_seq_len, resolution = (28, 28))
+		v_out_res = 28
+
+	# Create data generator
+	obj = ut.DataGenerator(fake = toy, data_path = data_path, max_seq_len = max_seq_len, resolution = (v_out_res, v_out_res))
 
 	# Define graph
-	PolyRNNGraph = PolygonRNN(batch_size = batch_size, max_seq_len = max_seq_len, lstm_out_channel = lstm_out_channel)
+	PolyRNNGraph = PolygonRNN(
+		batch_size = batch_size,
+		max_seq_len = max_seq_len,
+		lstm_out_channel = lstm_out_channel, 
+		v_out_res = v_out_res
+	)
 	xx = tf.placeholder(tf.float32)
 	bb = tf.placeholder(tf.float32)
 	vv = tf.placeholder(tf.float32)
@@ -588,17 +605,22 @@ if __name__ == '__main__':
 
 	# Launch graph
 	with tf.Session() as sess:
+		# Create loggers
+		f = open('./PolygonRNN.out', 'a')
 		train_writer = Logger('./log/train/')
 		valid_writer = Logger('./log/valid/')
 
+		# Restore weights
 		if len(sys.argv) > 1 and sys.argv[1] != None:
 			saver.restore(sess, './tmp/model-%s.ckpt' % sys.argv[1])
 			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
 		else:
 			sess.run(init)
 			iter_obj = range(n_iter)
+
+		# Main loop
 		for i in iter_obj:
-			# Get batch data and create feed dictionary
+			# Get training batch data and create feed dictionary
 			img, boundary, vertices, v_in, v_out, end, seq_len = obj.getDataBatch(batch_size, mode = 'train')
 			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
 
@@ -615,22 +637,49 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Visualize
-			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
+			print(img.shape)
+			print(boundary.shape)
+			print(vertices.shape)
+			print(v_in.shape)
+			print(b_pred.shape)
+			print(v_pred.shape)
+			print(v_out_pred.shape)
+			print(end_pred.shape)
+			print(seq_len.shape)
+			# visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
 
-			# Save model and validate
+			# Save model
 			if i % 200 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
+
+			# Cross validation
+			if i % 200 == 0:
+				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
+
+				# Validation and get result
 				loss_1, loss_2, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
-				valid_writer.add_summary(summary, i)
-				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
-				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
+				valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
+				valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
+				valid_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN,, i)
+
+				# Write loss to file
+				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
+				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
 				f.flush()
-				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
-				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_test('./tes', img, b_pred, v_pred, v_out_pred)
+
+				# Visualize
+				# visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len)
+
+				# Prediction
+				# b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
+				# visualize_pred('./tes', img, b_pred, v_pred, v_out_pred)
+
+			break
+
+		# End main loop
 		train_writer.close()
 		valid_writer.close()
-	f.close()
+		f.close()
 
