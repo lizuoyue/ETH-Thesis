@@ -662,7 +662,7 @@ if __name__ == '__main__':
 				loss_1, loss_2, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
 				valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
 				valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
-				valid_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN,, i)
+				valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN, i)
 
 				# Write loss to file
 				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
