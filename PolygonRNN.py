@@ -531,14 +531,10 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 		overlay(img[i], b_pred  [i], v_out_res).save(path + '/%d-1-bound-p.png' % i)
 		overlay(img[i], vertices[i], v_out_res).save(path + '/%d-2-vtx.png' % i)
 		overlay(img[i], v_pred  [i], v_out_res).save(path + '/%d-2-vtx-p.png' % i)
-		overlayMultiMask(
-			img[i],
-			np.concatenate(
-				(v_in[i, 0: 1, ...], v_out_pred[i, 0: seq_len[i] - 1, ...]),
-				axis = 0
-			),
-			v_out_res
-		).save(path + '/%d-3-vtx.png' % i)
+		vv = np.concatenate((v_in[i, 0: 1, ...], v_out_pred[i, 0: seq_len[i] - 1, ...]), axis = 0)
+		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vtx.png' % i)
+		for j in range(seq_len[i]):
+			overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 
 		bb = Image.new('P', (v_out_res, v_out_res), color = 0)
 		draw = ImageDraw.Draw(bb)
@@ -583,9 +579,10 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 		overlay(img[i], blank    , v_out_res).save(path + '/%d-0-img.png' % i)
 		overlay(img[i], b_pred[i], v_out_res).save(path + '/%d-1-bound-p.png' % i)
 		overlay(img[i], v_pred[i], v_out_res).save(path + '/%d-2-vtx-p.png' % i)
-		overlayMultiMask(
-			img[i], v_out_pred[i, 0: seq_len[i], ...], v_out_res
-		).save(path + '/%d-3-vtx.png' % i)
+		vv = v_out_pred[i, 0: seq_len[i], ...]
+		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vtx.png' % i)
+		for j in range(seq_len[i]):
+			overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 		boundary = Image.new('P', (v_out_res, v_out_res), color = 0)
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon[i], fill = 0, outline = 255)
@@ -631,7 +628,7 @@ if __name__ == '__main__':
 	# Set parameters
 	lr = 0.0001
 	n_iter = 2000000
-	toy = False
+	toy = True
 	data_path = '../Chicago.zip'
 	if not toy:
 		batch_size = 9
