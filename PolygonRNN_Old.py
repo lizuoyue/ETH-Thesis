@@ -7,7 +7,7 @@ import tensorflow as tf
 # import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 # plt.switch_backend('agg')
-ut = __import__('Utility_Old')
+ut = __import__('Utility')
 
 class PolyRNN(object):
 
@@ -374,7 +374,7 @@ if __name__ == '__main__':
 	# Set parameters
 	lr = 0.0005
 	n_iter = 2000000
-	toy = False
+	toy = True
 	data_path = '../Chicago.zip'
 	if not toy:
 		max_seq_len = 24
@@ -384,10 +384,10 @@ if __name__ == '__main__':
 	else:
 		max_seq_len = 12
 		train_prob = 0.5
-		batch_size = 8
+		batch_size = 9
 		lstm_out_channel = [32, 12]
 	f = open('PolygonRNN.out', 'a')
-	obj = ut.DataGenerator(fake = toy, data_path = data_path, train_prob = train_prob, max_seq_len = max_seq_len)
+	obj = ut.DataGenerator(fake = toy, data_path = data_path, resolution = (28, 28), max_seq_len = max_seq_len)
 
 	# Define graph
 	PolyRNNGraph = PolyRNN(batch_size = batch_size, max_seq_len = max_seq_len, lstm_out_channel = lstm_out_channel)
@@ -421,7 +421,7 @@ if __name__ == '__main__':
 			iter_obj = range(n_iter)
 		for i in iter_obj:
 			# Get batch data and create feed dictionary
-			img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'train', seed = i)
+			img, boundary, vertices, vertex, _, end, seq_len = obj.getDataBatch(batch_size, mode = 'train')
 			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 
 			# Training and get result
@@ -440,7 +440,7 @@ if __name__ == '__main__':
 			# Save model and validate
 			if i % 200 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
-				img, boundary, vertices, vertex, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid', seed = i)
+				img, boundary, vertices, vertex, _, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
 				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred, summary = sess.run(result, feed_dict)
 				valid_writer.add_summary(summary, i)
