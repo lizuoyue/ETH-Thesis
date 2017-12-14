@@ -330,6 +330,7 @@ class DataGenerator(object):
 				continue
 			# vertex_output.append(self.blur(v))
 			vertex_output.append(np.array(v, dtype = np.float32) / 255.0)
+		assert(len(vertex_output) == len(vertex_input) - 1)
 
 		# 
 		while len(vertex_input) < self.max_seq_len:
@@ -344,6 +345,10 @@ class DataGenerator(object):
 		end = [0.0 for i in range(self.max_seq_len)]
 		end[seq_len] = 1.0
 		end = np.array(end)
+
+		print(seq_len)
+		print(np.sum(vertex_input))
+		print(np.sum(vertex_output))
 
 		# Return
 		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len
