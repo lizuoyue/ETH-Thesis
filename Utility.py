@@ -14,8 +14,7 @@ def plotPolygon(img_size = (224, 224), resolution = None, num_vertices = 6):
 	num_col = img_size[1]
 	half_x = math.floor(num_col / 2)
 	half_y = math.floor(num_row / 2)
-	dec_rate[0] = img_size[0] / resolution[0]
-	dec_rate[1] = img_size[1] / resolution[1]
+	dec_rate = (img_size[0] / resolution[0], img_size[1] / resolution[1])
 
 	# Set polygon parameters
 	epsilon = 1.0 / num_vertices
@@ -53,18 +52,25 @@ def plotPolygon(img_size = (224, 224), resolution = None, num_vertices = 6):
 	background = np.array(org)
 	img = background + noise
 	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
+	img = np.array(img / 255.0)
+	# Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
+	# time.sleep(0.25)
 
 	# Draw boundary
 	boundary = Image.new('P', resolution, color = 0)
 	draw = ImageDraw.Draw(boundary)
 	draw.polygon(polygon_s, fill = 0, outline = 255)
 	boundary = np.array(boundary) / 255.0
+	# Image.fromarray(np.array(boundary * 255.0, dtype = np.uint8)).show()
+	# time.sleep(0.25)
 
 	# Draw vertices
 	vertices = Image.new('P', resolution, color = 0)
 	draw = ImageDraw.Draw(vertices)
 	draw.point(polygon_s, fill = 255)
 	vertices = np.array(vertices) / 255.0
+	# Image.fromarray(np.array(vertices * 255.0, dtype = np.uint8)).show()
+	# time.sleep(0.25)
 
 	# Draw each vertex
 	vertex_list = []
@@ -74,7 +80,8 @@ def plotPolygon(img_size = (224, 224), resolution = None, num_vertices = 6):
 		draw.point([polygon_s[i]], fill = 255)
 		vertex = np.array(vertex) / 255.0
 		vertex_list.append(vertex)
-	vertex_list.append(np.zeros(resolution, dtype = np.float32))
+		# Image.fromarray(np.array(vertex * 255.0, dtype = np.uint8)).show()
+		# time.sleep(0.25)
 	# vertex_list = np.array(vertex_list)
 
 	# Return
@@ -223,7 +230,7 @@ class DataGenerator(object):
 			img = img.convert('L').filter(ImageFilter.GaussianBlur(BLUR))
 			img = np.array(img, np.float32)
 			img = np.minimum(img * (1.2 / np.max(img)), 1.0)
-			# Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
+			Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
 		else:
 			img = np.array(img, np.float32) / 255.0
 		return img
@@ -277,8 +284,8 @@ class DataGenerator(object):
 		# Adjust image and polygon
 		img_patch = img.crop((min_x, min_y, max_x, max_y))
 		img_patch = img_patch.resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
-		# img_patch.show()
-		# time.sleep(0.25)
+		img_patch.show()
+		time.sleep(0.25)
 		img_patch_backup = img_patch
 		img_patch = np.array(img_patch)[..., 0: 3] / 255.0
 		x_rate = self.img_size[0] / (max_x - min_x)
@@ -295,28 +302,28 @@ class DataGenerator(object):
 
 		start = random.randint(0, len(polygon_patch) - 1)
 		polygon_patch = polygon_patch[start:] + polygon_patch[:start]
-		# self.showImagePolygon(img_patch_backup, [(x * 4, y * 4) for x, y in polygon_patch], rotate)
-		# time.sleep(0.25)
+		self.showImagePolygon(img_patch_backup, [(x * 4, y * 4) for x, y in polygon_patch], rotate)
+		time.sleep(0.25)
 
 		# Draw boundary and vertices
 		boundary = Image.new('P', (self.resolution[0], self.resolution[1]), color = 0)
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_patch, fill = 0, outline = 255)
 		boundary = self.blur(boundary.rotate(rotate))
-		# time.sleep(0.25)
+		time.sleep(0.25)
 
 		vertices = Image.new('P', (self.resolution[0], self.resolution[1]), color = 0)
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_patch, fill = 255)
 		vertices = self.blur(vertices.rotate(rotate))
-		# time.sleep(0.25)
+		time.sleep(0.25)
 
 		# Get each single vertex
 		vertex_input = []
 		vertex_output = []
 		for i, (x, y) in enumerate(polygon_patch):
-			# self.vertex_pool[int(y)][int(x)].rotate(rotate).show()
-			# time.sleep(0.25)
+			self.vertex_pool[int(y)][int(x)].rotate(rotate).show()
+			time.sleep(0.25)
 			v = self.vertex_pool[int(y)][int(x)].rotate(rotate)
 			vertex_input.append(np.array(v, dtype = np.float32) / 255.0)
 			if i == 0:
@@ -375,6 +382,7 @@ class DataGenerator(object):
 				vertex_input.append(np.copy(self.blank))
 			vertex_output = vertex_input[1:] + [self.blank]
 			vertex_input = np.array(vertex_input)
+			vertex_output = np.array(vertex_output)
 			end = [0.0 for i in range(self.max_seq_len)]
 			end[seq_len] = 1.0
 			end = np.array(end)
@@ -384,7 +392,7 @@ class DataGenerator(object):
 if __name__ == '__main__':
 	for i in range(0):
 		plotPolygon(num_vertices = 7, show = True)
-	dg = DataGenerator(fake = False, data_path = '../Chicago.zip', max_seq_len = 24, resolution = (28, 28))
+	dg = DataGenerator(fake = False, data_path = '../Chicago.zip', max_seq_len = 12, resolution = (56, 56))
 	dg.getDataBatch(mode = 'train', batch_size = 2)
 
 	# 
