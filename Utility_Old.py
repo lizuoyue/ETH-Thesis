@@ -54,7 +54,7 @@ def plotPolygon(img_size = (224, 224), num_vertices = 6, show = False):
 	polygon_s = polygon_s[first_idx:] + polygon_s[:first_idx]
 
 	# Draw polygon
-	color = (255, 0, 0)
+	color = (0, 200, 255)
 	org = Image.new('RGB', img_size, color = (255, 255, 255))
 	draw = ImageDraw.Draw(org)
 	draw.polygon(polygon, fill = color, outline = color)
