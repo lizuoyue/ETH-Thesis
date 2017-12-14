@@ -183,8 +183,7 @@ class PolygonRNN(object):
 			)
 			part4 = tf.image.resize_images(
 				images = part4_conv,
-				size = [28, 28],
-				method = tf.image.ResizeMethod.BICUBIC
+				size = [28, 28]
 			)
 			comb = tf.concat([part1, part2, part3, part4], 3)
 			feature = tf.layers.conv2d(
@@ -381,7 +380,7 @@ class PolygonRNN(object):
 			v_in_0 = tf.tile(v_in[:, 0: 1, ...], [1, self.max_seq_len, 1, 1, 1])
 			v_in_1 = v_in
 			v_in_2 = tf.stack([v_in[:, 0, ...]] + tf.unstack(v_in, axis = 1)[: -1], axis = 1)
-			rnn_in = tf.concat([feature_rep, v_in_0, v_in_1, v_in_2], axis = 4)
+			rnn_input = tf.concat([feature_rep, v_in_0, v_in_1, v_in_2], axis = 4)
 			# v_in_0:   0 0 0 0 0 ... 0
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
@@ -389,7 +388,7 @@ class PolygonRNN(object):
 			initial_state = self.stacked_lstm.zero_state(self.batch_size, tf.float32)
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
-				inputs = rnn_in,
+				inputs = rnn_input,
 				sequence_length = seq_len,
 				initial_state = initial_state,
 				dtype = tf.float32
