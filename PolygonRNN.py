@@ -372,23 +372,20 @@ class PolygonRNN(object):
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)
 			return tf.concat([feature, boundary, vertices], 3), v_first
 
-	def RNN(self, feature, v_in_true = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
+	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
 		if not reuse:
 			feature_rep = tf.tile(
 				tf.reshape(feature, [-1, 1, self.v_out_res, self.v_out_res, 130]),
 				[1, self.max_seq_len, 1, 1, 1]
 			)
-			v_in_true_0 = tf.tile(
-				tf.reshape(v_in_true[:, 0, ...], [-1, 1, self.v_out_res, self.v_out_res, 1]),
-				[1, self.max_seq_len, 1, 1, 1]
-			)
-			v_in_true_1 = v_in_true
-			v_in_true_2 = tf.stack([v_in_true[:, 0, ...]] + tf.unstack(v_in_true, axis = 1)[: -1], axis = 1)
-			rnn_in = tf.concat([feature_rep, v_in_true_0, v_in_true_1, v_in_true_2], axis = 4)
-			# v_in_true_0:   0 0 0 0 0 ... 0
-			# v_in_true_1:   0 1 2 3 4 ... N - 1
-			# v_in_true_2:   0 0 1 2 3 ... N - 2
-			# rnn_out_true:  1 2 3 4 5 ... N
+			v_in_0 = tf.tile(v_in[:, 0: 1, ...], [1, self.max_seq_len, 1, 1, 1])
+			v_in_1 = v_in
+			v_in_2 = tf.stack([v_in[:, 0, ...]] + tf.unstack(v_in, axis = 1)[: -1], axis = 1)
+			rnn_in = tf.concat([feature_rep, v_in_0, v_in_1, v_in_2], axis = 4)
+			# v_in_0:   0 0 0 0 0 ... 0
+			# v_in_1:   0 1 2 3 4 ... N - 1
+			# v_in_2:   0 0 1 2 3 ... N - 2
+			# rnn_out:  1 2 3 4 5 ... N
 			initial_state = self.stacked_lstm.zero_state(self.batch_size, tf.float32)
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
@@ -446,14 +443,14 @@ class PolygonRNN(object):
 		img           = tf.reshape(xx, [-1, 224, 224, 3])
 		boundary_true = tf.reshape(bb, [-1, self.v_out_res, self.v_out_res, 1])
 		vertices_true = tf.reshape(vv, [-1, self.v_out_res, self.v_out_res, 1])
-		v_in_true     = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_res, self.v_out_res, 1])
+		v_in          = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_res, self.v_out_res, 1])
 		v_out_true    = tf.reshape(oo, [-1, self.max_seq_len, self.v_out_res * self.v_out_res])
 		end_true      = tf.reshape(ee, [-1, self.max_seq_len, 1])
 		seq_len       = tf.reshape(ll, [-1])
 		rnn_out_true  = tf.concat([v_out_true, end_true], 2)
 
 		feature, loss_CNN = self.CNN(img, boundary_true, vertices_true)
-		logits , loss_RNN = self.RNN(feature, v_in_true, rnn_out_true, seq_len)
+		logits , loss_RNN = self.RNN(feature, v_in, rnn_out_true, seq_len)
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
 
@@ -639,7 +636,7 @@ if __name__ == '__main__':
 		lr = 0.0005
 		batch_size = 9
 		max_seq_len = 12
-		lstm_out_channel = [32, 16, 8]
+		lstm_out_channel = [32, 12]
 		v_out_res = 28
 
 	# Create data generator
