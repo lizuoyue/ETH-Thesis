@@ -230,7 +230,7 @@ class DataGenerator(object):
 			img = img.convert('L').filter(ImageFilter.GaussianBlur(BLUR))
 			img = np.array(img, np.float32)
 			img = np.minimum(img * (1.2 / np.max(img)), 1.0)
-			Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
+			# Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
 		else:
 			img = np.array(img, np.float32) / 255.0
 		return img
@@ -284,9 +284,9 @@ class DataGenerator(object):
 		# Adjust image and polygon
 		img_patch = img.crop((min_x, min_y, max_x, max_y))
 		img_patch = img_patch.resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
-		img_patch.show()
-		time.sleep(0.25)
-		img_patch_backup = img_patch
+		# img_patch.show()
+		# time.sleep(0.25)
+		# img_patch_backup = img_patch
 		img_patch = np.array(img_patch)[..., 0: 3] / 255.0
 		x_rate = self.img_size[0] / (max_x - min_x)
 		y_rate = self.img_size[1] / (max_y - min_y)
@@ -302,28 +302,28 @@ class DataGenerator(object):
 
 		start = random.randint(0, len(polygon_patch) - 1)
 		polygon_patch = polygon_patch[start:] + polygon_patch[:start]
-		self.showImagePolygon(img_patch_backup, [(x * 4, y * 4) for x, y in polygon_patch], rotate)
-		time.sleep(0.25)
+		# self.showImagePolygon(img_patch_backup, [(x * 4, y * 4) for x, y in polygon_patch], rotate)
+		# time.sleep(0.25)
 
 		# Draw boundary and vertices
 		boundary = Image.new('P', (self.resolution[0], self.resolution[1]), color = 0)
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_patch, fill = 0, outline = 255)
 		boundary = self.blur(boundary.rotate(rotate))
-		time.sleep(0.25)
+		# time.sleep(0.25)
 
 		vertices = Image.new('P', (self.resolution[0], self.resolution[1]), color = 0)
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_patch, fill = 255)
 		vertices = self.blur(vertices.rotate(rotate))
-		time.sleep(0.25)
+		# time.sleep(0.25)
 
 		# Get each single vertex
 		vertex_input = []
 		vertex_output = []
 		for i, (x, y) in enumerate(polygon_patch):
-			self.vertex_pool[int(y)][int(x)].rotate(rotate).show()
-			time.sleep(0.25)
+			# self.vertex_pool[int(y)][int(x)].rotate(rotate).show()
+			# time.sleep(0.25)
 			v = self.vertex_pool[int(y)][int(x)].rotate(rotate)
 			vertex_input.append(np.array(v, dtype = np.float32) / 255.0)
 			if i == 0:
@@ -345,10 +345,6 @@ class DataGenerator(object):
 		end = [0.0 for i in range(self.max_seq_len)]
 		end[seq_len] = 1.0
 		end = np.array(end)
-
-		print(seq_len)
-		print(np.sum(vertex_input))
-		print(np.sum(vertex_output))
 
 		# Return
 		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len
