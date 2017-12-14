@@ -173,6 +173,32 @@ class Preprocessor(object):
 
 				# Show image with polygon after shift
 				self.showImagePolygon(img, polygon)
+			elif False:
+				img = Image.open(building + 'img.png')
+				f = open(building + 'polygon.txt', 'r')
+				polygon = []
+				for line in f.readlines():
+					if line.strip() != '':
+						x, y = line.strip().split()
+						polygon.append((int(x), int(y)))
+				f.close()
+
+				f = open(building + 'shift.txt', 'r')
+				lines = f.readlines()
+				f.close()
+				shift_i, shift_j = lines[0].strip().split()
+				shift_i, shift_j = int(shift_i), int(shift_j)
+				after, before = lines[1].strip().split()
+				after, before = float(after), float(before)
+
+				if after > 0.8 and before < 0.7:
+					self.showImagePolygon(img, polygon)
+					time.sleep(1)
+
+					# Show image with polygon after shift
+					polygon = [(p[0] + shift_j, p[1] + shift_i) for p in polygon]
+					self.showImagePolygon(img, polygon)
+					input()
 			else:
 				#
 				if i < beg_idx or i >= end_idx:

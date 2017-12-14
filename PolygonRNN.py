@@ -626,20 +626,21 @@ if __name__ == '__main__':
 		os.makedirs('./tes/')
 
 	# Set parameters
-	lr = 0.0001
 	n_iter = 2000000
 	toy = True
 	data_path = '../Chicago.zip'
 	if not toy:
+		lr = 0.0001
 		batch_size = 9
 		max_seq_len = 24
 		lstm_out_channel = [32, 16, 8]
 		v_out_res = 56
 	else:
+		lr = 0.0005
 		batch_size = 9
 		max_seq_len = 12
 		lstm_out_channel = [32, 16, 8]
-		v_out_res = 56
+		v_out_res = 28
 
 	# Create data generator
 	obj = ut.DataGenerator(fake = toy, data_path = data_path, max_seq_len = max_seq_len, resolution = (v_out_res, v_out_res))

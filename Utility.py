@@ -42,7 +42,7 @@ def plotPolygon(img_size = (224, 224), resolution = None, num_vertices = 6):
 	polygon_s = polygon_s[first_idx:] + polygon_s[:first_idx]
 
 	# Draw polygon
-	color = (255, 0, 0)
+	color = (0, 204, 255)
 	org = Image.new('RGB', img_size, color = (255, 255, 255))
 	draw = ImageDraw.Draw(org)
 	draw.polygon(polygon, fill = color, outline = color)
