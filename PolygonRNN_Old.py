@@ -242,7 +242,7 @@ class PolyRNN(object):
 				inputs = rnn_input,
 				sequence_length = seq_len,
 				initial_state = initial_state,
-				dtype = tf.float32
+				dtype = tf.float32,
 			)
 			return self.FC(outputs, y_end_true[:, : -1, ...], seq_len)
 		else:
