@@ -495,7 +495,7 @@ def overlayMultiMask(img, mask, v_out_res):
 	merge = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
 	merge = np.array(overlay(img, mask[0], v_out_res)) / 255.0
 	for i in range(1, mask.shape[0]):
-		color = (153 * (i == 1), i % 2 * 255, (1 - i % 2) * 255)
+		color = (153 * (i == 1), (1 - i % 2) * 255, i % 2 * 255)
 		merge = np.array(overlay(merge, mask[i], v_out_res, color)) / 255.0
 	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
 
@@ -511,15 +511,16 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	blank = np.zeros((v_out_res, v_out_res))
 
 	# Polygon
-	polygon = [[] for i in range(img.shape[0])]
+	polygon = [None for i in range(img.shape[0])]
 	for i in range(v_out_pred.shape[0]):
 		v = v_in[i, 0]
 		r, c = np.unravel_index(v.argmax(), v.shape)
-		polygon.append((c, r))
+		polygon[i] = [(c, r)]
 		for j in range(seq_len[i] - 1):
-			v = v_out_pred[i, j]
-			r, c = np.unravel_index(v.argmax(), v.shape)
-			polygon[i].append((c, r))
+			if end_pred[i, j] <= v.max():
+				v = v_out_pred[i, j]
+				r, c = np.unravel_index(v.argmax(), v.shape)
+				polygon[i].append((c, r))
 
 	# 
 	for i in range(img.shape[0]):
@@ -535,6 +536,8 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 
 		link = Image.new('P', (v_out_res, v_out_res), color = 0)
 		draw = ImageDraw.Draw(link)
+		if len(polygon[i]) == 1:
+			polygon[i].append(polygon[i][0])
 		draw.polygon(polygon[i], fill = 0, outline = 255)
 		link = np.array(link) / 255.0
 		overlay(img[i], link, v_out_res).save(path + '/%d-4-vertices-link.png' % i)
