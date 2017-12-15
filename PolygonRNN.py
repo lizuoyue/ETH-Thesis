@@ -471,6 +471,7 @@ class PolygonRNN(object):
 		v_out_pred = self.RNN(feature, v_first = v_first, reuse = True)
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
+		v_out_pred = v_out_pred[..., 0]
 		return boundary, vertices, v_out_pred
 
 def overlay(img, mask, v_out_res, color = (255, 0, 0)):
@@ -494,7 +495,7 @@ def overlayMultiMask(img, mask, v_out_res):
 	merge = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
 	merge = np.array(overlay(img, mask[0], v_out_res)) / 255.0
 	for i in range(1, mask.shape[0]):
-		color = (0, i % 2 * 255, (1 - i % 2) * 255)
+		color = (153 * (i == 1), i % 2 * 255, (1 - i % 2) * 255)
 		merge = np.array(overlay(merge, mask[i], v_out_res, color)) / 255.0
 	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
 
@@ -512,33 +513,33 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	# Polygon
 	polygon = [[] for i in range(img.shape[0])]
 	for i in range(v_out_pred.shape[0]):
-		v0 = v_in[i, 0, ...]
-		r, c = np.unravel_index(v0.argmax(), v0.shape)
+		v = v_in[i, 0]
+		r, c = np.unravel_index(v.argmax(), v.shape)
 		polygon.append((c, r))
 		for j in range(seq_len[i] - 1):
-			v = v_out_pred[i, j, ...]
+			v = v_out_pred[i, j]
 			r, c = np.unravel_index(v.argmax(), v.shape)
 			polygon[i].append((c, r))
 
 	# 
 	for i in range(img.shape[0]):
+		vv = np.concatenate((v_in[i, 0: 1], v_out_pred[i, 0: seq_len[i] - 1]), axis = 0)
 		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
 		overlay(img[i], boundary[i], v_out_res).save(path + '/%d-1-bound.png' % i)
-		overlay(img[i], b_pred  [i], v_out_res).save(path + '/%d-1-bound-p.png' % i)
-		overlay(img[i], vertices[i], v_out_res).save(path + '/%d-2-vtx.png' % i)
-		overlay(img[i], v_pred  [i], v_out_res).save(path + '/%d-2-vtx-p.png' % i)
-		vv = np.concatenate((v_in[i, 0: 1, ...], v_out_pred[i, 0: seq_len[i] - 1, ...]), axis = 0)
-		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vtx.png' % i)
-		for j in range(seq_len[i]):
-			overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
+		overlay(img[i], b_pred  [i], v_out_res).save(path + '/%d-1-bound-pred.png' % i)
+		overlay(img[i], vertices[i], v_out_res).save(path + '/%d-2-vertices.png' % i)
+		overlay(img[i], v_pred  [i], v_out_res).save(path + '/%d-2-vertices-pred.png' % i)
+		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vertices-merge.png' % i)
+		# for j in range(seq_len[i]):
+		# 	overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 
-		bb = Image.new('P', (v_out_res, v_out_res), color = 0)
-		draw = ImageDraw.Draw(bb)
+		link = Image.new('P', (v_out_res, v_out_res), color = 0)
+		draw = ImageDraw.Draw(link)
 		draw.polygon(polygon[i], fill = 0, outline = 255)
-		bb = np.array(bb) / 255.0
-		overlay(img[i], bb, v_out_res).save(path + '/%d-4-vtx-link.png' % i)
+		link = np.array(link) / 255.0
+		overlay(img[i], link, v_out_res).save(path + '/%d-4-vertices-link.png' % i)
 
-		f = open(path + '/%d-5-end.txt' % i, 'w')
+		f = open(path + '/%d-5-end-prob.txt' % i, 'w')
 		for j in range(seq_len[i]):
 			f.write('%.6lf\n' % end_pred[i, j])
 		f.close()
@@ -555,15 +556,14 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 	batch_size = img.shape[0]
 	b_pred = b_pred[..., 0]
 	v_pred = v_pred[..., 0]
-	v_out_pred = v_out_pred[..., 0]
 	blank = np.zeros((v_out_res, v_out_res))
 
 	# Sequence length and polygon
 	polygon = [[] for i in range(batch_size)]
 	for i in range(v_out_pred.shape[0]):
 		for j in range(v_out_pred.shape[1]):
-			if np.sum(v_out_pred[i, j, ...]) >= 0.5:
-				v = v_out_pred[i, j, ...]
+			v = v_out_pred[i, j]
+			if v.sum() >= 0.5:
 				r, c = np.unravel_index(v.argmax(), v.shape)
 				polygon[i].append((c, r))
 			else:
@@ -572,20 +572,20 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 
 	#
 	for i in range(batch_size):
-		overlay(img[i], blank    , v_out_res).save(path + '/%d-0-img.png' % i)
-		overlay(img[i], b_pred[i], v_out_res).save(path + '/%d-1-bound-p.png' % i)
-		overlay(img[i], v_pred[i], v_out_res).save(path + '/%d-2-vtx-p.png' % i)
-		vv = v_out_pred[i, 0: seq_len[i], ...]
-		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vtx.png' % i)
-		for j in range(seq_len[i]):
-			overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
-		boundary = Image.new('P', (v_out_res, v_out_res), color = 0)
-		draw = ImageDraw.Draw(boundary)
+		vv = v_out_pred[i, 0: seq_len[i]]
+		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], b_pred[i]  , v_out_res).save(path + '/%d-1-bound-pred.png' % i)
+		overlay(img[i], v_pred[i]  , v_out_res).save(path + '/%d-2-vertices-pred.png' % i)
+		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vertices-merge.png' % i)
+		# for j in range(seq_len[i]):
+		# 	overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
+		link = Image.new('P', (v_out_res, v_out_res), color = 0)
+		draw = ImageDraw.Draw(link)
 		if len(polygon[i]) == 1:
 			polygon[i].append(polygon[i][0])
 		draw.polygon(polygon[i], fill = 0, outline = 255)
-		boundary = np.array(boundary) / 255.0
-		overlay(img[i], boundary, v_out_res).save(path + '/%d-4-vtx-link.png' % i)
+		link = np.array(link) / 255.0
+		overlay(img[i], link, v_out_res).save(path + '/%d-4-vertices-link.png' % i)
 
 	# 
 	return
@@ -672,7 +672,7 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		f = open('./PolygonRNN.out', 'a')
+		f = open('./PolygonRNN-%d.out' % v_out_res, 'a')
 		train_writer = Logger('./log/train/')
 		valid_writer = Logger('./log/valid/')
 
