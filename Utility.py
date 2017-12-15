@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFilter
 BLUR = 0.75
 TILE_SIZE = 256
 
-def plotPolygon(img_size = (224, 224), resolution = None, num_vertices = 6):
+def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
 
 	# Set image parameters
 	num_row = img_size[0]
@@ -397,7 +397,6 @@ if __name__ == '__main__':
 	img_patch, boundary, vertices, v_in, v_out, end, seq_len = dg.getDataBatch(mode = 'train', batch_size = 1)
 	print(np.sum(v_in[0,1] == v_out[0,0]))
 	print(np.sum(v_in[0,2] == v_out[0,1]))
-
 
 	# 
 	# boundary = Image.new('P', size, color = 0)
