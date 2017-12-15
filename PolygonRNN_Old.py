@@ -227,10 +227,10 @@ class PolyRNN(object):
 
 	def RNN(self, feature, y_true = None, y_end_true = None, seq_len = None, v_first = None, reuse = None):
 		if not reuse:
-			feature_rep = tf.tile(tf.reshape(feature, [-1, 1, 28, 28, 130]), [1, self.max_seq_len - 1, 1, 1, 1])
-			y_true_0 = tf.tile(y_true[:, 0: 1, ...], [1, self.max_seq_len - 1, 1, 1, 1])
-			y_true_1 = y_true[:, : -1, ...]
-			y_true_2 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[: -2], axis = 1)
+			feature_rep = tf.tile(tf.reshape(feature, [-1, 1, 28, 28, 130]), [1, self.max_seq_len, 1, 1, 1])
+			y_true_0 = tf.tile(y_true[:, 0: 1, ...], [1, self.max_seq_len, 1, 1, 1])
+			y_true_1 = y_true#[:, : -1, ...]
+			y_true_2 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[: -1], axis = 1)
 			rnn_input = tf.concat([feature_rep, y_true_0, y_true_1, y_true_2], axis = 4)
 			# y_true_1:   0 1 2 3 4 ... N - 2
 			# y_true_2:   0 0 1 2 3 ... N - 3
@@ -244,7 +244,7 @@ class PolyRNN(object):
 				initial_state = initial_state,
 				dtype = tf.float32
 			)
-			return self.FC(outputs, y_end_true[:, : -1, ...], seq_len)
+			return self.FC(outputs, y_end_true, seq_len)#[:, : -1, ...]
 		else:
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
@@ -267,7 +267,7 @@ class PolyRNN(object):
 
 	def FC(self, rnn_output, y_end_true = None, seq_len = None, reuse = None):
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len - 1, 28 * 28 * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, 28 * 28 * self.lstm_out_channel[-1]])
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, 28 * 28 * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
@@ -306,8 +306,8 @@ class PolyRNN(object):
 
 		# Return
 		y_end_pred = tf.nn.softmax(logits)
-		y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, self.max_seq_len - 1, 28, 28])
-		end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, self.max_seq_len - 1, 1])
+		y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, self.max_seq_len, 28, 28])
+		end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, self.max_seq_len, 1])
 		return loss_CNN, loss_RNN, boundary, vertices, y_pred, end_pred, summary
 
 	def Predict(self, xx):
