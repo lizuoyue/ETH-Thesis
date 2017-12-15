@@ -242,7 +242,7 @@ class PolyRNN(object):
 				inputs = rnn_input,
 				sequence_length = seq_len,
 				initial_state = initial_state,
-				dtype = tf.float32,
+				dtype = tf.float32
 			)
 			return self.FC(outputs, y_end_true[:, : -1, ...], seq_len)
 		else:
@@ -381,7 +381,7 @@ if __name__ == '__main__':
 		batch_size = 9
 		lstm_out_channel = [32, 16, 8]
 	else:
-		max_seq_len = 12
+		max_seq_len = 13
 		train_prob = 0.5
 		batch_size = 9
 		lstm_out_channel = [32, 12]
