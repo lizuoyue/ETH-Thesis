@@ -283,14 +283,13 @@ class PolyRNN(object):
 			idx = tf.argmax(logits, axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
-	def Train(self, xx, bb, vv, yy, ee, ll):
+	def Train(self, xx, bb, vv, ii, oo, ee, ll):
 		img           = tf.reshape(xx, [-1, 224, 224, 3])
 		boundary_true = tf.reshape(bb, [-1, 28, 28, 1])
 		vertices_true = tf.reshape(vv, [-1, 28, 28, 1])
-		y_true        = tf.reshape(yy, [-1, self.max_seq_len, 28, 28, 1])
-		end_true      = tf.reshape(ee, [-1, self.max_seq_len, 1, 1, 1])
+		y_true        = tf.reshape(ii, [-1, self.max_seq_len, 28, 28, 1])
 		seq_len       = tf.reshape(ll, [-1])
-		y_re          = tf.reshape(yy, [-1, self.max_seq_len, 28 * 28])
+		y_re          = tf.reshape(ii, [-1, self.max_seq_len, 28 * 28])
 		e_re          = tf.reshape(ee, [-1, self.max_seq_len, 1])
 		y_end_true    = tf.concat([y_re, e_re], 2)
 
@@ -394,10 +393,11 @@ if __name__ == '__main__':
 	xx = tf.placeholder(tf.float32)
 	bb = tf.placeholder(tf.float32)
 	vv = tf.placeholder(tf.float32)
-	yy = tf.placeholder(tf.float32)
+	ii = tf.placeholder(tf.float32)
+	oo = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
-	result = PolyRNNGraph.Train(xx, bb, vv, yy, ee, ll)
+	result = PolyRNNGraph.Train(xx, bb, vv, ii, oo, ee, ll)
 	pred = PolyRNNGraph.Predict(xx)
 
 	# for v in tf.global_variables():
@@ -421,8 +421,8 @@ if __name__ == '__main__':
 			iter_obj = range(n_iter)
 		for i in iter_obj:
 			# Get batch data and create feed dictionary
-			img, boundary, vertices, vertex, _, end, seq_len = obj.getDataBatch(batch_size, mode = 'train')
-			feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
+			img, boundary, vertices, vertex, aaaa, end, seq_len = obj.getDataBatch(batch_size, mode = 'train')
+			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: vertex, oo: aaaa, ee: end, ll: seq_len}
 
 			# Training and get result
 			sess.run(train, feed_dict)
@@ -440,8 +440,8 @@ if __name__ == '__main__':
 			# Save model and validate
 			if i % 200 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
-				img, boundary, vertices, vertex, _, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, yy: vertex, ee: end, ll: seq_len}
+				img, boundary, vertices, vertex, aaaa, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
+				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: vertex, oo: aaaa, ee: end, ll: seq_len}
 				loss_1, loss_2, b_pred, v_pred, y_pred, end_pred, summary = sess.run(result, feed_dict)
 				valid_writer.add_summary(summary, i)
 				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
