@@ -324,8 +324,8 @@ class PolyRNN(object):
 
 		# Return
 		y_end_pred = tf.nn.softmax(logits)
-		y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, self.max_seq_len - 1, 28, 28])
-		end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, self.max_seq_len - 1, 1])
+		y_pred = tf.reshape(y_end_pred[..., 0: 28 * 28], [-1, self.max_seq_len, 28, 28])
+		end_pred = tf.reshape(y_end_pred[..., 28 * 28], [-1, self.max_seq_len, 1])
 		return loss_CNN, loss_RNN, boundary, vertices, y_pred, end_pred, summary
 
 	def Predict(self, xx):
