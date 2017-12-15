@@ -344,7 +344,11 @@ class DataGenerator(object):
 		# Get end signal
 		seq_len = len(polygon_patch)
 		end = [0.0 for i in range(self.max_seq_len)]
-		end[seq_len] = 1.0
+		end[seq_len - 1] = 1.0
+		# seq_len = 6
+		# end ? ? ? ? ? ! ? ? ? ?
+		# out 1 2 3 4 5 ? ? ? ? ?
+		#  in 0 1 2 3 4 5 ? ? ? ?
 		end = np.array(end)
 
 		# Return
