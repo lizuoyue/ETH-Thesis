@@ -581,6 +581,8 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 			overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 		boundary = Image.new('P', (v_out_res, v_out_res), color = 0)
 		draw = ImageDraw.Draw(boundary)
+		if len(polygon[i]) == 1:
+			polygon[i].append(polygon[i][0])
 		draw.polygon(polygon[i], fill = 0, outline = 255)
 		boundary = np.array(boundary) / 255.0
 		overlay(img[i], boundary, v_out_res).save(path + '/%d-4-vtx-link.png' % i)
