@@ -495,7 +495,7 @@ def overlayMultiMask(img, mask, v_out_res):
 	merge = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
 	merge = np.array(overlay(img, mask[0], v_out_res)) / 255.0
 	for i in range(1, mask.shape[0]):
-		color = (153 * (i == 1), (1 - i % 2) * 255, i % 2 * 255)
+		color = (255 * (i == 1), 128 * (i == 1) + (1 - i % 2) * 255, i % 2 * 255 - 255 * (i == 1))
 		merge = np.array(overlay(merge, mask[i], v_out_res, color)) / 255.0
 	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
 
