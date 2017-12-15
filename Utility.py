@@ -192,6 +192,7 @@ class DataGenerator(object):
 			self.good_building_id_list.sort()
 			random.seed(0)
 			random.shuffle(self.good_building_id_list)
+			random.seed()
 			split = int(train_prob * len(self.good_building_id_list))
 			self.id_list_train = self.good_building_id_list[:split]
 			self.id_list_valid = self.good_building_id_list[split:]
