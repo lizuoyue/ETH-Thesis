@@ -393,11 +393,11 @@ class DataGenerator(object):
 if __name__ == '__main__':
 	for i in range(0):
 		plotPolygon(num_vertices = 7, show = True)
-	dg = DataGenerator(fake = False, data_path = '../Chicago.zip', max_seq_len = 24, resolution = (56, 56))
+	dg = DataGenerator(fake = True, data_path = '../Chicago.zip', max_seq_len = 12, resolution = (28, 28))
 	img_patch, boundary, vertices, v_in, v_out, end, seq_len = dg.getDataBatch(mode = 'train', batch_size = 1)
-	print(np.sum(v_in[0, seq_len[0] - 1] == v_out[0, seq_len[0] - 2]))
-	print(v_in.shape)
-	print(v_in[0, seq_len[0] - 1].shape)
+	print(np.sum(v_in[0,-1] == v_out[0,-1]))
+	print(v_in[0,-1])
+	print(np.sum(v_in[0,-1]))
 
 	# 
 	# boundary = Image.new('P', size, color = 0)
