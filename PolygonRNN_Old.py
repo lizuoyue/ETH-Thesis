@@ -244,7 +244,7 @@ class PolyRNN(object):
 				initial_state = initial_state,
 				dtype = tf.float32
 			)
-			return self.FC(outputs, y_end_true, seq_len)
+			return self.FC(outputs, y_end_true[:, : -1, ...], seq_len)
 		else:
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
