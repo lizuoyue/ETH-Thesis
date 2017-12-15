@@ -244,7 +244,7 @@ class PolyRNN(object):
 				initial_state = initial_state,
 				dtype = tf.float32
 			)
-			return self.FC(outputs, y_end_true[:, 1:, ...], seq_len)
+			return self.FC(outputs, y_end_true[:, :-1, ...], seq_len)
 		else:
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
@@ -289,7 +289,7 @@ class PolyRNN(object):
 		vertices_true = tf.reshape(vv, [-1, 28, 28, 1])
 		y_true        = tf.reshape(ii, [-1, self.max_seq_len, 28, 28, 1])
 		seq_len       = tf.reshape(ll, [-1])
-		y_re          = tf.reshape(ii, [-1, self.max_seq_len, 28 * 28])
+		y_re          = tf.reshape(oo, [-1, self.max_seq_len, 28 * 28])
 		e_re          = tf.reshape(ee, [-1, self.max_seq_len, 1])
 		y_end_true    = tf.concat([y_re, e_re], 2)
 
