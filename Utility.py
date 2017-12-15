@@ -395,9 +395,9 @@ if __name__ == '__main__':
 		plotPolygon(num_vertices = 7, show = True)
 	dg = DataGenerator(fake = True, data_path = '../Chicago.zip', max_seq_len = 12, resolution = (28, 28))
 	img_patch, boundary, vertices, v_in, v_out, end, seq_len = dg.getDataBatch(mode = 'train', batch_size = 1)
-	print(np.sum(v_in[0,-1] == v_out[0,-1]))
-	print(v_in[0,-1])
-	print(np.sum(v_in[0,-1]))
+	print(np.sum(v_in[0,1] == v_out[0,0]))
+	print(np.sum(v_in[0,2] == v_out[0,1]))
+
 
 	# 
 	# boundary = Image.new('P', size, color = 0)
