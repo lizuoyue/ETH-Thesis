@@ -227,10 +227,28 @@ class PolyRNN(object):
 
 	def RNN(self, feature, y_true = None, y_end_true = None, seq_len = None, v_first = None, reuse = None):
 		if not reuse:
-			feature_rep = tf.tile(tf.reshape(feature, [-1, 1, 28, 28, 130]), [1, self.max_seq_len - 1, 1, 1, 1])
-			y_true_0 = tf.tile(tf.reshape(y_true[:, 0, ...], [-1, 1, 28, 28, 1]), [1, self.max_seq_len - 1, 1, 1, 1])
-			y_true_1 = y_true[:, : -1, ...]
-			y_true_2 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[: -2], axis = 1)
+			# feature_rep = tf.tile(tf.reshape(feature, [-1, 1, 28, 28, 130]), [1, self.max_seq_len - 1, 1, 1, 1])
+			# y_true_0 = tf.tile(tf.reshape(y_true[:, 0, ...], [-1, 1, 28, 28, 1]), [1, self.max_seq_len - 1, 1, 1, 1])
+			# y_true_1 = y_true[:, : -1, ...]
+			# y_true_2 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[: -2], axis = 1)
+			# rnn_input = tf.concat([feature_rep, y_true_0, y_true_1, y_true_2], axis = 4)
+			# # y_true_1:   0 1 2 3 4 ... N - 2
+			# # y_true_2:   0 0 1 2 3 ... N - 3
+			# # y_true_0:   0 0 0 0 0 ... 0
+			# # y_end_true: 1 2 3 4 5 ... N - 1
+			# initial_state = self.stacked_lstm.zero_state(self.batch_size, tf.float32)
+			# outputs, state = tf.nn.dynamic_rnn(
+			# 	cell = self.stacked_lstm,
+			# 	inputs = rnn_input,
+			# 	sequence_length = seq_len,
+			# 	initial_state = initial_state,
+			# 	dtype = tf.float32
+			# )
+			# return self.FC(outputs, y_end_true[:, :-1, ...], seq_len)
+			feature_rep = tf.tile(tf.reshape(feature, [-1, 1, 28, 28, 130]), [1, self.max_seq_len, 1, 1, 1])
+			y_true_0 = tf.tile(y_true[:, 0: 1, ...], [1, self.max_seq_len, 1, 1, 1])
+			y_true_1 = y_true
+			y_true_2 = tf.stack([y_true[:, 0, ...]] + tf.unstack(y_true, axis = 1)[: -1], axis = 1)
 			rnn_input = tf.concat([feature_rep, y_true_0, y_true_1, y_true_2], axis = 4)
 			# y_true_1:   0 1 2 3 4 ... N - 2
 			# y_true_2:   0 0 1 2 3 ... N - 3
@@ -244,7 +262,7 @@ class PolyRNN(object):
 				initial_state = initial_state,
 				dtype = tf.float32
 			)
-			return self.FC(outputs, y_end_true[:, :-1, ...], seq_len)
+			return self.FC(outputs, y_end_true, seq_len)
 		else:
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
