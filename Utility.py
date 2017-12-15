@@ -385,7 +385,7 @@ class DataGenerator(object):
 			vertex_input = np.array(vertex_input)
 			vertex_output = np.array(vertex_output)
 			end = [0.0 for i in range(self.max_seq_len)]
-			end[seq_len] = 1.0
+			end[seq_len - 1] = 1.0
 			end = np.array(end)
 			res.append((img, boundary, vertices, vertex_input, vertex_output, end, seq_len))
 		return (np.array([item[i] for item in res]) for i in range(7))
