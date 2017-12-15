@@ -289,7 +289,7 @@ class PolyRNN(object):
 		vertices_true = tf.reshape(vv, [-1, 28, 28, 1])
 		y_true        = tf.reshape(ii, [-1, self.max_seq_len, 28, 28, 1])
 		seq_len       = tf.reshape(ll, [-1])
-		y_re          = tf.reshape(ii, [-1, self.max_seq_len, 28 * 28])
+		y_re          = tf.reshape(oo, [-1, self.max_seq_len, 28 * 28])
 		e_re          = tf.reshape(ee, [-1, self.max_seq_len, 1])
 		y_end_true    = tf.concat([y_re, e_re], 2)
 
