@@ -628,14 +628,14 @@ if __name__ == '__main__':
 
 	# Set parameters
 	n_iter = 2000000
-	toy = True
+	toy = False
 	data_path = '../Chicago.zip'
 	if not toy:
-		lr = 0.0001
+		lr = 0.0005
 		batch_size = 9
 		max_seq_len = 24
 		lstm_out_channel = [32, 16, 8]
-		v_out_res = 56
+		v_out_res = 28
 	else:
 		lr = 0.0005
 		batch_size = 9
