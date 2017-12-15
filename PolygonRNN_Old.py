@@ -285,7 +285,7 @@ class PolyRNN(object):
 
 	def FC(self, rnn_output, y_end_true = None, seq_len = None, reuse = None):
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len - 1, 28 * 28 * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, 28 * 28 * self.lstm_out_channel[-1]])
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, 28 * 28 * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
