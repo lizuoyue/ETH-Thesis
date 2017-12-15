@@ -381,7 +381,7 @@ if __name__ == '__main__':
 		batch_size = 9
 		lstm_out_channel = [32, 16, 8]
 	else:
-		max_seq_len = 24
+		max_seq_len = 12
 		train_prob = 0.5
 		batch_size = 9
 		lstm_out_channel = [32, 12]
