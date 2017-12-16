@@ -647,7 +647,7 @@ if __name__ == '__main__':
 		os.makedirs('./tes/')
 
 	# Set parameters
-	n_iter = 2000000
+	n_iter = 100000
 	toy = False
 	data_path = '../Chicago.zip'
 	if not toy:
