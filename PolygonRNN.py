@@ -734,11 +734,11 @@ if __name__ == '__main__':
 			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
 			# Save model
-			if i % 200 == 0:
+			if False:#i % 200 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
 
 			# Cross validation
-			if i % 200 == 0:
+			if False:#i % 200 == 0:
 				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
