@@ -9,28 +9,42 @@ ut = __import__('Utility')
 
 class PolygonRNN(object):
 
-	def __init__(self, batch_size, max_seq_len, lstm_out_channel, v_out_res):
-		assert(v_out_res == 28 or v_out_res == 56)
-		self.batch_size = batch_size
+	def __init__(self, max_seq_len, lstm_out_channel, v_out_res, train_batch_size, pred_batch_size):
+		# v_out_res: (col, row)
+		assert(v_out_res == (28, 28) or v_out_res == (56, 56))
+
+		# Parameters transferred in
 		self.max_seq_len = max_seq_len
 		self.lstm_out_channel = lstm_out_channel
 		self.v_out_res = v_out_res
+		self.train_batch_size = train_batch_size
+		self.pred_batch_size = pred_batch_size
+
+		# Parameters computed
+		self.res_num = self.v_out_res[1] * self.v_out_res[0]
 		self.lstm_in_channel = [133] + lstm_out_channel[: -1]
+
+		# Create multi-layer LSTM and inital state
 		self.stacked_lstm = tf.contrib.rnn.MultiRNNCell(
 			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
 		)
+		self.lstm_init_state = []
+		for i, c_out in enumerate(lstm_out_channel):
+			self.lstm_init_state.append(tf.get_variable('conv_lstm_cell_%d_c_h' % i, [2, self.v_out_res[1], self.v_out_res[0], c_out]))
+
+		# Create vertex pool for prediction
 		self.vertex_pool = []
-		for i in range(v_out_res):
-			for j in range(v_out_res):
-				self.vertex_pool.append(np.zeros((v_out_res, v_out_res), dtype = np.float32))
-				self.vertex_pool[i * v_out_res + j][i, j] = 1.0
-		self.vertex_pool.append(np.zeros((v_out_res, v_out_res), dtype = np.float32))
+		for i in range(v_out_res[1]):
+			for j in range(v_out_res[0]):
+				self.vertex_pool.append(np.zeros((v_out_res[1], v_out_res[0]), dtype = np.float32))
+				self.vertex_pool[i * v_out_res[0] + j][i, j] = 1.0
+		self.vertex_pool.append(np.zeros((v_out_res[1], v_out_res[0]), dtype = np.float32))
 		self.vertex_pool = np.array(self.vertex_pool)
 
 	def ConvLSTMCell(self, input_channels, output_channels):
 		return tf.contrib.rnn.ConvLSTMCell(
 			conv_ndims = 2,
-			input_shape = [self.v_out_res, self.v_out_res, input_channels],
+			input_shape = [self.v_out_res[1], self.v_out_res[0], input_channels],
 			output_channels = output_channels,
 			kernel_shape = [3, 3]
 		)
@@ -331,9 +345,9 @@ class PolygonRNN(object):
 			return feature
 
 	def CNN(self, img, boundary_true = None, vertices_true = None, reuse = None):
-		if self.v_out_res == 28:
+		if self.v_out_res == (28, 28):
 			feature = self.ModifiedVGG16For28(img, reuse)
-		if self.v_out_res == 56:
+		if self.v_out_res == (56, 56):
 			feature = self.ModifiedVGG16For56(img, reuse)
 		with tf.variable_scope('CNN', reuse = reuse):
 			boundary = tf.layers.conv2d(
@@ -350,31 +364,30 @@ class PolygonRNN(object):
 				padding = 'same',
 				activation = tf.sigmoid
 			)
-		num = self.v_out_res ** 2
 		if not reuse:
 			loss = 0.0
-			n_b = tf.reduce_sum(boundary_true) / self.batch_size
-			n_v = tf.reduce_sum(vertices_true) / self.batch_size
+			n_b = tf.reduce_sum(boundary_true) / self.train_batch_size
+			n_v = tf.reduce_sum(vertices_true) / self.train_batch_size
 			loss += tf.losses.log_loss(
 				labels = boundary_true,
 				predictions = boundary,
-				weights = (boundary_true * (num - 2 * n_b) + n_b)
+				weights = (boundary_true * (self.res_num - 2 * n_b) + n_b)
 			)
 			loss += tf.losses.log_loss(
 				labels = vertices_true,
 				predictions = vertices,
-				weights = (vertices_true * (num - 2 * n_v) + n_v))
-			loss /= 32
+				weights = (vertices_true * (self.res_num - 2 * n_v) + n_v))
+			loss /= 16
 			return tf.concat([feature, boundary, vertices], 3), loss
 		else:
-			idx = tf.argmax(tf.reshape(vertices, [-1, num]), axis = 1)
+			idx = tf.argmax(tf.reshape(vertices, [-1, self.res_num]), axis = 1)
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)
 			return tf.concat([feature, boundary, vertices], 3), v_first
 
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
 		if not reuse:
 			feature_rep = tf.tile(
-				tf.reshape(feature, [-1, 1, self.v_out_res, self.v_out_res, 130]),
+				tf.reshape(feature, [-1, 1, self.v_out_res[1], self.v_out_res[0], 130]),
 				[1, self.max_seq_len, 1, 1, 1]
 			)
 			v_in_0 = tf.tile(v_in[:, 0: 1, ...], [1, self.max_seq_len, 1, 1, 1])
@@ -385,7 +398,11 @@ class PolygonRNN(object):
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
-			initial_state = self.stacked_lstm.zero_state(self.batch_size, tf.float32)
+			# initial_state = self.stacked_lstm.zero_state(self.train_batch_size, tf.float32)
+			initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
+				c = tf.tile(self.lstm_init_state[i][0: 1], [self.train_batch_size, 1, 1, 1]),
+				h = tf.tile(self.lstm_init_state[i][1: 2], [self.train_batch_size, 1, 1, 1])
+			) for i in range(len(lstm_out_channel))])
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
 				inputs = rnn_input,
@@ -398,8 +415,12 @@ class PolygonRNN(object):
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
 			rnn_output = [None for i in range(self.max_seq_len)]
-			v[0] = tf.reshape(v_first, [-1, self.v_out_res, self.v_out_res, 1])
-			state[0] = self.stacked_lstm.zero_state(self.batch_size, tf.float32)
+			v[0] = tf.reshape(v_first, [-1, self.v_out_res[1], self.v_out_res[0], 1])
+			# state[0] = self.stacked_lstm.zero_state(self.pred_batch_size, tf.float32)
+			state[0] = tuple([tf.contrib.rnn.LSTMStateTuple(
+				c = tf.tile(self.lstm_init_state[i][0: 1], [self.pred_batch_size, 1, 1, 1]),
+				h = tf.tile(self.lstm_init_state[i][1: 2], [self.pred_batch_size, 1, 1, 1])
+			) for i in range(len(lstm_out_channel))])
 			for i in range(1, self.max_seq_len):
 				rnn_output[i], state[i] = self.stacked_lstm(
 					inputs = tf.concat([feature, v[0], v[max(i - 1, 0)], v[max(i - 2, 0)]], 3),
@@ -410,20 +431,19 @@ class PolygonRNN(object):
 						rnn_output = rnn_output[i],
 						reuse = True
 					),
-					[-1, self.v_out_res, self.v_out_res, 1]
+					[-1, self.v_out_res[1], self.v_out_res[0], 1]
 				)
 			return tf.stack(v, 1)
 
 	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, reuse = None):
-		num = self.v_out_res ** 2
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])
 		else:
-			output_reshape = tf.reshape(rnn_output, [-1, 1, num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(
 				inputs = output_reshape,
-				units = num + 1,
+				units = self.res_num + 1,
 				activation = None
 			)
 		if not reuse:
@@ -440,10 +460,10 @@ class PolygonRNN(object):
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
 		img           = tf.reshape(xx, [-1, 224, 224, 3])
-		boundary_true = tf.reshape(bb, [-1, self.v_out_res, self.v_out_res, 1])
-		vertices_true = tf.reshape(vv, [-1, self.v_out_res, self.v_out_res, 1])
-		v_in          = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_res, self.v_out_res, 1])
-		v_out_true    = tf.reshape(oo, [-1, self.max_seq_len, self.v_out_res * self.v_out_res])
+		boundary_true = tf.reshape(bb, [-1, self.v_out_res[1], self.v_out_res[0], 1])
+		vertices_true = tf.reshape(vv, [-1, self.v_out_res[1], self.v_out_res[0], 1])
+		v_in          = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_res[1], self.v_out_res[0], 1])
+		v_out_true    = tf.reshape(oo, [-1, self.max_seq_len, self.res_num])
 		end_true      = tf.reshape(ee, [-1, self.max_seq_len, 1])
 		seq_len       = tf.reshape(ll, [-1])
 		rnn_out_true  = tf.concat([v_out_true, end_true], 2)
@@ -456,11 +476,11 @@ class PolygonRNN(object):
 		# Return
 		rnn_pred = tf.nn.softmax(logits)
 		v_out_pred = tf.reshape(
-			rnn_pred[..., 0: self.v_out_res ** 2],
-			[-1, self.max_seq_len, self.v_out_res, self.v_out_res]
+			rnn_pred[..., 0: self.res_num],
+			[-1, self.max_seq_len, self.v_out_res[1], self.v_out_res[0]]
 		)
 		end_pred = tf.reshape(
-			rnn_pred[..., self.v_out_res ** 2],
+			rnn_pred[..., self.res_num],
 			[-1, self.max_seq_len, 1]
 		)
 		return loss_CNN, loss_RNN, boundary, vertices, v_out_pred, end_pred
@@ -499,7 +519,7 @@ def overlayMultiMask(img, mask, v_out_res):
 		merge = np.array(overlay(merge, mask[i], v_out_res, color)) / 255.0
 	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
 
-def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res):
+def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
@@ -525,14 +545,14 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	# 
 	for i in range(img.shape[0]):
 		vv = np.concatenate((v_in[i, 0: 1], v_out_pred[i, 0: seq_len[i] - 1]), axis = 0)
-		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
-		overlay(img[i], boundary[i], v_out_res).save(path + '/%d-1-bound.png' % i)
-		overlay(img[i], b_pred  [i], v_out_res).save(path + '/%d-1-bound-pred.png' % i)
-		overlay(img[i], vertices[i], v_out_res).save(path + '/%d-2-vertices.png' % i)
-		overlay(img[i], v_pred  [i], v_out_res).save(path + '/%d-2-vertices-pred.png' % i)
-		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vertices-merge.png' % i)
+		overlay(img[i], blank      , v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], boundary[i], v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-1-bound.png' % i)
+		overlay(img[i], b_pred  [i], v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-1-bound-pred.png' % i)
+		overlay(img[i], vertices[i], v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-2-vertices.png' % i)
+		overlay(img[i], v_pred  [i], v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-2-vertices-pred.png' % i)
+		overlayMultiMask(img[i], vv, v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-3-vertices-merge.png' % i)
 		# for j in range(seq_len[i]):
-		# 	overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
+		# 	overlay(img[i], vv[j], v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 
 		link = Image.new('P', (v_out_res, v_out_res), color = 0)
 		draw = ImageDraw.Draw(link)
@@ -540,7 +560,7 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 			polygon[i].append(polygon[i][0])
 		draw.polygon(polygon[i], fill = 0, outline = 255)
 		link = np.array(link) / 255.0
-		overlay(img[i], link, v_out_res).save(path + '/%d-4-vertices-link.png' % i)
+		overlay(img[i], link, v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-4-vertices-link.png' % i)
 
 		f = open(path + '/%d-5-end-prob.txt' % i, 'w')
 		for j in range(seq_len[i]):
@@ -550,7 +570,7 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	#
 	return
 
-def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
+def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info):
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
@@ -576,10 +596,10 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 	#
 	for i in range(batch_size):
 		vv = v_out_pred[i, 0: seq_len[i]]
-		overlay(img[i], blank      , v_out_res).save(path + '/%d-0-img.png' % i)
-		overlay(img[i], b_pred[i]  , v_out_res).save(path + '/%d-1-bound-pred.png' % i)
-		overlay(img[i], v_pred[i]  , v_out_res).save(path + '/%d-2-vertices-pred.png' % i)
-		overlayMultiMask(img[i], vv, v_out_res).save(path + '/%d-3-vertices-merge.png' % i)
+		overlay(img[i], blank      , v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], b_pred[i]  , v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-1-bound-pred.png' % i)
+		overlay(img[i], v_pred[i]  , v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-2-vertices-pred.png' % i)
+		overlayMultiMask(img[i], vv, v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-3-vertices-merge.png' % i)
 		# for j in range(seq_len[i]):
 		# 	overlay(img[i], vv[j], v_out_res).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 		link = Image.new('P', (v_out_res, v_out_res), color = 0)
@@ -588,7 +608,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 			polygon[i].append(polygon[i][0])
 		draw.polygon(polygon[i], fill = 0, outline = 255)
 		link = np.array(link) / 255.0
-		overlay(img[i], link, v_out_res).save(path + '/%d-4-vertices-link.png' % i)
+		overlay(img[i], link, v_out_res).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-4-vertices-link.png' % i)
 
 	# 
 	return
@@ -632,26 +652,29 @@ if __name__ == '__main__':
 	data_path = '../Chicago.zip'
 	if not toy:
 		lr = 0.0005
-		batch_size = 9
 		max_seq_len = 24
 		lstm_out_channel = [32, 16, 8]
-		v_out_res = 28
+		v_out_res = (28, 28)
+		train_batch_size = 9
+		pred_batch_size = 25
 	else:
 		lr = 0.0005
-		batch_size = 9
 		max_seq_len = 12
-		lstm_out_channel = [32, 16, 8]#[32, 12]
-		v_out_res = 56#28
+		lstm_out_channel = [32, 16, 8] # [32, 12]
+		v_out_res = (56, 56) # (28, 28)
+		train_batch_size = 9
+		pred_batch_size = 25
 
 	# Create data generator
-	obj = ut.DataGenerator(fake = toy, data_path = data_path, max_seq_len = max_seq_len, resolution = (v_out_res, v_out_res))
+	obj = ut.DataGenerator(fake = toy, data_path = data_path, max_seq_len = max_seq_len, resolution = v_out_res)
 
 	# Define graph
 	PolyRNNGraph = PolygonRNN(
-		batch_size = batch_size,
 		max_seq_len = max_seq_len,
 		lstm_out_channel = lstm_out_channel, 
-		v_out_res = v_out_res
+		v_out_res = v_out_res,
+		train_batch_size = train_batch_size,
+		pred_batch_size = pred_batch_size
 	)
 	xx = tf.placeholder(tf.float32)
 	bb = tf.placeholder(tf.float32)
@@ -690,7 +713,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, v_in, v_out, end, seq_len = obj.getDataBatch(batch_size, mode = 'train')
+			img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'train')
 			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
 
 			# Training and get result
@@ -706,7 +729,7 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Visualize
-			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res)
+			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
 			# Save model
 			if i % 200 == 0:
@@ -715,11 +738,11 @@ if __name__ == '__main__':
 			# Cross validation
 			if i % 200 == 0:
 				# Get validation batch data and create feed dictionary
-				img, boundary, vertices, v_in, v_out, end, seq_len = obj.getDataBatch(batch_size, mode = 'valid')
+				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
 
 				# Validation and get result
-				loss_1, loss_2, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
+				loss_CNN, loss_RNN, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
 				valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
 				valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
 				valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN, i)
@@ -730,11 +753,11 @@ if __name__ == '__main__':
 				f.flush()
 
 				# Visualize
-				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res)
+				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
 				# Prediction
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, v_out_res)
+				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
 		# End main loop
 		train_writer.close()

@@ -284,6 +284,7 @@ class DataGenerator(object):
 
 		# Adjust image and polygon
 		img_patch = img.crop((min_x, min_y, max_x, max_y))
+		patch_info = [img_patch.size[0], img_patch.size[1], rotate]
 		img_patch = img_patch.resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
 		# img_patch.show()
 		# time.sleep(0.25)
@@ -352,7 +353,7 @@ class DataGenerator(object):
 		end = np.array(end)
 
 		# Return
-		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len
+		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len, patch_info
 
 	def getDataBatch(self, batch_size, mode = None):
 		# Fake
@@ -373,7 +374,7 @@ class DataGenerator(object):
 			sel = np.random.choice(len(self.bad_id_list), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleData(self.bad_id_list[i]))
-		return (np.array([item[i] for item in res]) for i in range(7))
+		return (np.array([item[i] for item in res]) for i in range(8))
 
 	def getFakeDataBatch(self, batch_size):
 		res = []
@@ -392,14 +393,14 @@ class DataGenerator(object):
 			end = [0.0 for i in range(self.max_seq_len)]
 			end[seq_len - 1] = 1.0
 			end = np.array(end)
-			res.append((img, boundary, vertices, vertex_input, vertex_output, end, seq_len))
-		return (np.array([item[i] for item in res]) for i in range(7))
+			res.append((img, boundary, vertices, vertex_input, vertex_output, end, seq_len, [224, 224, 0]))
+		return (np.array([item[i] for item in res]) for i in range(8))
 
 if __name__ == '__main__':
 	for i in range(0):
 		plotPolygon(num_vertices = 7, show = True)
 	dg = DataGenerator(fake = True, data_path = '../Chicago.zip', max_seq_len = 12, resolution = (28, 28))
-	img_patch, boundary, vertices, v_in, v_out, end, seq_len = dg.getDataBatch(mode = 'train', batch_size = 1)
+	img_patch, boundary, vertices, v_in, v_out, end, seq_len, patch_info = dg.getDataBatch(mode = 'train', batch_size = 1)
 	print(np.sum(v_in[0,1] == v_out[0,0]))
 	print(np.sum(v_in[0,2] == v_out[0,1]))
 
