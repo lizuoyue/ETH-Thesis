@@ -698,7 +698,7 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		f = open('./PolygonRNN-%d.out' % v_out_res, 'a')
+		f = open('./PolygonRNN-%d.out' % v_out_res[1], 'a')
 		train_writer = Logger('./log/train/')
 		valid_writer = Logger('./log/valid/')
 
