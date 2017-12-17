@@ -646,7 +646,7 @@ if __name__ == '__main__':
 	if not os.path.exists('./val/'):
 		os.makedirs('./val/')
 	if not os.path.exists('./pre/'):
-		os.makedirs('./val/')
+		os.makedirs('./pre/')
 	if not os.path.exists('./tes/'):
 		os.makedirs('./tes/')
 
