@@ -645,6 +645,8 @@ if __name__ == '__main__':
 		os.makedirs('./res/')
 	if not os.path.exists('./val/'):
 		os.makedirs('./val/')
+	if not os.path.exists('./pre/'):
+		os.makedirs('./val/')
 	if not os.path.exists('./tes/'):
 		os.makedirs('./tes/')
 
@@ -656,7 +658,7 @@ if __name__ == '__main__':
 		lr = 0.0005
 		max_seq_len = 24
 		lstm_out_channel = [32, 16, 8]
-		v_out_res = (56, 56)
+		v_out_res = (28, 28)
 		train_batch_size = 9
 		pred_batch_size = 25
 	else:
@@ -757,10 +759,20 @@ if __name__ == '__main__':
 				# Visualize
 				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
-			# Prediction
+			# Prediction on validation set
 			if i % 200 == 0:
 				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
+				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
+
+				# 
+				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
+				visualize_pred('./pre', img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
+
+			# Prediction on test set
+			if i % 200 == 0:
+				# Get validation batch data and create feed dictionary
+				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
 
 				# 
