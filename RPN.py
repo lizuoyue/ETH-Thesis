@@ -127,26 +127,31 @@ class RPN(object):
 			)
 			return conv5_3
 
-	def CNN(self, img, boundary_true = None, vertices_true = None, reuse = None):
-		if self.v_out_res == (28, 28):
-			feature = self.ModifiedVGG16For28(img, reuse)
-		if self.v_out_res == (56, 56):
-			feature = self.ModifiedVGG16For56(img, reuse)
-		with tf.variable_scope('CNN', reuse = reuse):
-			boundary = tf.layers.conv2d(
+	def RPN(self, img, anchor_true = None, reuse = None):
+		feature = self.VGG16(img, reuse)
+		with tf.variable_scope('RPN', reuse = reuse):
+			rpn_conv = tf.layers.conv2d(
 				inputs = feature,
-				filters = 1,
-				kernel_size = (3, 3),
+				filters = 512,
+				kernel_size = self.rpn_kernel_size,
+				padding = 'same',
+				activation = tf.nn.relu
+			)
+			obj_prob = tf.layers.conv2d(
+				inputs = rpn_conv,
+				filters = 2 * self.k,
+				kernel_size = (1, 1),
 				padding = 'same',
 				activation = tf.sigmoid
 			)
-			vertices = tf.layers.conv2d(
-				inputs = tf.concat([feature, boundary], 3),
-				filters = 1,
-				kernel_size = (3, 3),
+			bbox_info = tf.layers.conv2d(
+				inputs = rpn_conv,
+				filters = 4 * self.k,
+				kernel_size = (1, 1),
 				padding = 'same',
-				activation = tf.sigmoid
+				activation = None
 			)
+
 		if not reuse:
 			loss = 0.0
 			n_b = tf.reduce_sum(boundary_true) / self.train_batch_size

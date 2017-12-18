@@ -10,8 +10,8 @@ TILE_SIZE = 256
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
 
 	# Set image parameters
-	num_row = img_size[0]
-	num_col = img_size[1]
+	num_row = img_size[1]
+	num_col = img_size[0]
 	half_x = math.floor(num_col / 2)
 	half_y = math.floor(num_row / 2)
 	dec_rate = (img_size[0] / resolution[0], img_size[1] / resolution[1])
@@ -86,6 +86,103 @@ def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
 
 	# Return
 	return img, boundary, vertices, vertex_list
+
+def intersection(seg1, seg2):
+	assert(seg1[0] <= seg1[1])
+	assert(seg2[0] <= seg2[1])
+	if seg1[1] < seg2[0] or seg2[1] < seg1[0]:
+		return 0
+	else:
+		li = [seg1[0], seg1[1], seg2[0], seg2[1]]
+		li.sort()
+		return li[2] - li[1]
+
+def lurd2xywh(lurd):
+	return (
+		math.floor((lurd[0] + lurd[2]) / 2),
+		math.floor((lurd[1] + lurd[3]) / 2),
+		math.fabs(lurd[2] - lurd[0]),
+		math.fabs(lurd[3] - lurd[1]),
+	)
+
+def xywh2lurd(xywh):
+	return (
+		xywh[0] - math.floor(xywh[2] / 2),
+		xywh[1] - math.floor(xywh[3] / 2),
+		xywh[0] + math.floor(xywh[2] / 2),
+		xywh[1] + math.floor(xywh[3] / 2),
+	)
+
+def scoreIoU(box, anchor):
+	union = box[2] * box[3] + anchor[2] * anchor[3]
+	box = xywh2lurd(box)
+	anchor = xywh2lurd(anchor)
+	inter_x = intersection((anchor[0], anchor[2]), (box[0], box[2]))
+	inter_y = intersection((anchor[1], anchor[3]), (box[1], box[3]))
+	if inter_x > 0 and inter_y > 0:
+		inter = inter_x * inter_y
+		return inter / (union - inter)
+	else:
+		return 0
+
+def scoreIoUaaaa(bbox, anchor):
+	for box in bbox:
+		scoreIoU(box, anchor)
+
+def drawEllipse(img_size = (960, 640), num_ellipse = 8):
+
+	# Set image parameters
+	max_x = img_size[0]
+	max_y = img_size[1]
+	half_x = math.floor(max_x / 2)
+	half_y = math.floor(max_y / 2)
+	img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
+
+	# Set parameters
+	epsilon = 1.0 / num_ellipse
+	center_rx = math.floor(max_x * 0.05) # <- Decide the track's center
+	center_ry = math.floor(max_y * 0.05)
+	track_size_x = math.floor(max_x * 0.35) # <- Decide the track's size
+	track_size_y = math.floor(max_y * 0.35)
+	delta_angle = np.pi * 2 * epsilon
+	angle = np.random.uniform(0.0, delta_angle) # <- Decide the track's first ellipsoid
+
+	# Determin the center of the track
+	center_x = half_x + np.random.randint(-center_rx, center_rx)
+	center_y = half_y + np.random.randint(-center_ry, center_ry)
+
+	# Draw ellipse
+	org = Image.new('RGB', img_size, color = (255, 255, 255))
+	draw = ImageDraw.Draw(org)
+	bbox = []
+	for i in range(num_ellipse):
+		color = tuple(np.random.randint(200, size = 3))
+		tx = track_size_x * np.random.uniform(0.8, 1.2) # <- Decide ellipse's size range
+		ty = track_size_y * np.random.uniform(0.8, 1.2)
+		px = math.floor(center_x + tx * np.cos(angle))
+		py = math.floor(center_y - ty * np.sin(angle))
+		rx = np.random.randint(10, math.floor(max_x * 0.15))
+		ry = np.random.randint(10, math.floor(max_y * 0.15))
+		draw.ellipse((px - rx, py - ry, px + rx, py + ry), fill = color)
+		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon)
+		lu = (max(px - rx, 0), max(py - ry, 0))
+		rd = (min(px + rx, max_x), min(py + ry, max_y))
+		# draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (255, 0, 0))
+		bbox.append(lurd2xywh(lu + rd))
+
+	# Add noise to the orginal image
+	noise = np.random.normal(0, 40, (max_y, max_x, 3))
+	background = np.array(org)
+	img = background + noise
+	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
+	# Image.fromarray(img).show()
+	img = np.array(img) / 255.0
+
+	anchor = [[]]
+
+	return img, bbox, anchor
+
+
 
 def lonLatToWorld(lon, lat):
 	# Truncating to 0.9999 effectively limits latitude to 89.189. This is
@@ -397,44 +494,11 @@ class DataGenerator(object):
 		return (np.array([item[i] for item in res]) for i in range(8))
 
 if __name__ == '__main__':
-	for i in range(0):
-		plotPolygon(num_vertices = 7, show = True)
-	dg = DataGenerator(fake = True, data_path = '../Chicago.zip', max_seq_len = 12, resolution = (28, 28))
-	img_patch, boundary, vertices, v_in, v_out, end, seq_len, patch_info = dg.getDataBatch(mode = 'train', batch_size = 1)
-	print(np.sum(v_in[0,1] == v_out[0,0]))
-	print(np.sum(v_in[0,2] == v_out[0,1]))
-
-	# 
-	# boundary = Image.new('P', size, color = 0)
-	# draw = ImageDraw.Draw(boundary)
-	# draw.polygon(polygon, fill = 0, outline = 255)
-	# draw.line(polygon + [polygon[0]], fill = 255, width = 3) # <- For thicker outline
-	# for point in polygon:
-		# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
-	# if save:
-		# boundary.save('../%s/%d/3-b.png' % (self.city_name, building_id))
-	# boundary = ut.pil2np(boundary, show)
-
-	# 
-	# vertices = Image.new('P', size, color = 0)
-	# draw = ImageDraw.Draw(vertices)
-	# draw.point(polygon, fill = 255)
-	# for point in polygon:
-		# draw.ellipse((point[0] - 1, point[1] - 1, point[0] + 1, point[1] + 1), fill = 255)
-	# if save:
-		# vertices.save('../%s/%d/4-v.png' % (self.city_name, building_id))
-	# vertices = ut.pil2np(vertices, show)
-
-	# 
-	# vertex_list = []
-	# for i in range(len(polygon_s)):
-	# 	vertex = Image.new('P', size_s, color = 0)
-	# 	draw = ImageDraw.Draw(vertex)
-	# 	draw.point([polygon_s[i]], fill = 255)
-	# 	if save:
-	# 		vertex.save('../%s/%d/5-v%s.png' % (self.city_name, building_id, str(i).zfill(2)))
-	# 	vertex = ut.pil2np(vertex, show)
-	# 	vertex_list.append(vertex)
-	# vertex_list.append(np.zeros(size_s, dtype = np.float32))
-	# vertex_list = np.array(vertex_list)
-
+	# for i in range(0):
+	# 	plotPolygon(num_vertices = 7, show = True)
+	# dg = DataGenerator(fake = True, data_path = '../Chicago.zip', max_seq_len = 12, resolution = (28, 28))
+	# img_patch, boundary, vertices, v_in, v_out, end, seq_len, patch_info = dg.getDataBatch(mode = 'train', batch_size = 1)
+	# print(np.sum(v_in[0,1] == v_out[0,0]))
+	# print(np.sum(v_in[0,2] == v_out[0,1]))
+	# drawEllipse()
+	print(scoreIoU((0, 0, 100, 100), (500, 0, 100, 100)))
