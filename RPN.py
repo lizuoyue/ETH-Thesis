@@ -228,7 +228,7 @@ if __name__ == '__main__':
 
 	# Set parameters
 	n_iter = 100000
-	lr = 0.0001
+	lr = 0.00002
 	train_batch_size = 5
 	pred_batch_size = 5
 	train_num_anchors = 256
