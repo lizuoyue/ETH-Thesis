@@ -184,7 +184,7 @@ class RPN(object):
 		bbox_pred = tf.stack(bbox_pred)
 		loss_1 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logit_pred, labels = anchor_cls))
 		loss_2 = self.smoothL1Loss(labels = anchor_box, predictions = bbox_pred, weights = anchor_cls[..., 0])
-		return loss_1, loss_2 * self.alpha
+		return loss_1 * 10, loss_2 * self.alpha * 10
 
 	def Predict(self, xx):
 		img = tf.reshape(xx, [self.pred_batch_size, 640, 960, 3])
@@ -228,9 +228,9 @@ if __name__ == '__main__':
 
 	# Set parameters
 	n_iter = 100000
-	lr = 0.0005
-	train_batch_size = 3
-	pred_batch_size = 3
+	lr = 0.0001
+	train_batch_size = 5
+	pred_batch_size = 5
 	train_num_anchors = 256
 
 	# Create data generator

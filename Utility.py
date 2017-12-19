@@ -569,15 +569,16 @@ class AnchorGenerator(object):
 							pass
 						else:
 							prob = obj_logit[idx, j, i, k]
+							prob = 1 / (1 + math.exp(prob[1] - prob[0]))
 							box_info = bbox_info[idx, j, i, k]
 							box = [None, None, None, None]
-							if 1 / (1 + math.exp(prob[1] - prob[0])) >= 0.6:
+							if prob >= 0.8:
 								box[0] = math.floor(box_info[0] * w + x)
 								box[1] = math.floor(box_info[1] * h + y)
 								box[2] = math.floor(math.exp(box_info[2]) * w)
 								box[3] = math.floor(math.exp(box_info[3]) * h)
 								l, u, r, d = xywh2lurd(tuple(box))
-								draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+								draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (int(255 * (prob - 0.8) * 5), 0, 0))
 			org.save(path + '/%d.png' % idx)
 
 if __name__ == '__main__':
