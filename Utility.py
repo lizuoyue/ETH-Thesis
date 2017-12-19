@@ -6,6 +6,11 @@ from PIL import Image, ImageDraw, ImageFilter
 
 BLUR = 0.75
 TILE_SIZE = 256
+ANCHOR_LIST = [
+	(128, 128), (90, 180), (180, 90),
+	(256, 256), (180, 360), (360, 180),
+	(384, 384), (270, 540), (540, 270),
+]
 
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
 
@@ -125,11 +130,17 @@ def scoreIoU(box, anchor):
 	else:
 		return 0
 
-def scoreIoUaaaa(bbox, anchor):
-	for box in bbox:
-		scoreIoU(box, anchor)
+def findBestBox(bbox, anchor, max_iou = 0.6, min_iou = 0.1):
+	li = [(scoreIoU(box, anchor), i) for i, box in enumerate(bbox)]
+	li.sort()
+	if li[-1][0] >= max_iou:
+		return li[-1][1]
+	elif li[-1][0] < min_iou:
+		return -1
+	else:
+		return None
 
-def drawEllipse(img_size = (960, 640), num_ellipse = 8):
+def plotEllipse(img_size = (960, 640), num_ellipse = 6):
 
 	# Set image parameters
 	max_x = img_size[0]
@@ -161,14 +172,56 @@ def drawEllipse(img_size = (960, 640), num_ellipse = 8):
 		ty = track_size_y * np.random.uniform(0.8, 1.2)
 		px = math.floor(center_x + tx * np.cos(angle))
 		py = math.floor(center_y - ty * np.sin(angle))
-		rx = np.random.randint(10, math.floor(max_x * 0.15))
-		ry = np.random.randint(10, math.floor(max_y * 0.15))
+		rx = np.random.randint(math.floor(max_x * 0.12), math.floor(max_x * 0.16))
+		ry = np.random.randint(math.floor(rx * 0.7), math.floor(rx * 1.3))
 		draw.ellipse((px - rx, py - ry, px + rx, py + ry), fill = color)
 		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon)
 		lu = (max(px - rx, 0), max(py - ry, 0))
 		rd = (min(px + rx, max_x), min(py + ry, max_y))
-		# draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (255, 0, 0))
-		bbox.append(lurd2xywh(lu + rd))
+		# draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (0, 255, 0))
+		bbox.append(list(lurd2xywh(lu + rd)))
+
+	pos_anchor = []
+	neg_anchor = []
+	for i in range(img_size_s[0]):
+		for j in range(img_size_s[1]):
+			x = i * 16 + 8
+			y = j * 16 + 8
+			for k, (w, h) in enumerate(ANCHOR_LIST):
+				l, u, r, d = xywh2lurd((x, y, w, h))
+				if l < 0 or u < 0 or r > max_x or d > max_y:
+					pass
+				else:
+					box_idx = findBestBox(bbox, (x, y, w, h))
+					if box_idx is not None:
+						if box_idx >= 0:
+							box = bbox[box_idx]
+							pos_anchor.append((
+								(j, i, k),
+								(x, y, w, h),
+								(1, 0),
+								(
+									(box[0] - x) / w,
+									(box[1] - y) / h,
+									math.log(box[2] / w),
+									math.log(box[3] / h),
+								)
+							))
+						else:
+							neg_anchor.append(((j, i, k), (x, y, w, h), (0, 1), (0, 0, 0, 0)))
+
+	# Random select
+	random.shuffle(pos_anchor)
+	random.shuffle(neg_anchor)
+	anchor = pos_anchor[: min(len(pos_anchor), 128)]
+	res = 256 - len(anchor)
+	anchor += neg_anchor[: res]
+	random.shuffle(anchor)
+
+	# Visualization
+	# for a in anchor:
+	# 	l, u, r, d = xywh2lurd(a[2])
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[0] * 255, 0, (1 - a[0]) * 255))
 
 	# Add noise to the orginal image
 	noise = np.random.normal(0, 40, (max_y, max_x, 3))
@@ -178,11 +231,7 @@ def drawEllipse(img_size = (960, 640), num_ellipse = 8):
 	# Image.fromarray(img).show()
 	img = np.array(img) / 255.0
 
-	anchor = [[]]
-
-	return img, bbox, anchor
-
-
+	return img, bbox, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
 
 def lonLatToWorld(lon, lat):
 	# Truncating to 0.9999 effectively limits latitude to 89.189. This is
@@ -493,6 +542,19 @@ class DataGenerator(object):
 			res.append((img, boundary, vertices, vertex_input, vertex_output, end, seq_len, [224, 224, 0]))
 		return (np.array([item[i] for item in res]) for i in range(8))
 
+class AnchorGenerator(object):
+	# num_col, num_row
+	def __init__(self):
+		pass
+
+	def getFakeDataBatch(self, batch_size):
+		res = []
+		num_e = np.random.choice(6, batch_size, replace = True) + 4
+		for num in num_e:
+			img, bbox, anchor_idx, anchor_prob, anchor_box = plotEllipse(num_ellipse = num)
+			res.append((img, bbox, anchor_idx, anchor_prob, anchor_box))
+		return (np.array([item[i] for item in res]) for i in range(5))
+
 if __name__ == '__main__':
 	# for i in range(0):
 	# 	plotPolygon(num_vertices = 7, show = True)
@@ -500,5 +562,6 @@ if __name__ == '__main__':
 	# img_patch, boundary, vertices, v_in, v_out, end, seq_len, patch_info = dg.getDataBatch(mode = 'train', batch_size = 1)
 	# print(np.sum(v_in[0,1] == v_out[0,0]))
 	# print(np.sum(v_in[0,2] == v_out[0,1]))
-	# drawEllipse()
-	print(scoreIoU((0, 0, 100, 100), (500, 0, 100, 100)))
+	for i in range(10):
+		drawEllipse()
+	# print(scoreIoU((0, 0, 100, 100), (5, 5, 100, 100)))
