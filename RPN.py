@@ -9,20 +9,21 @@ ut = __import__('Utility')
 
 class RPN(object):
 
-	def __init__(self):
+	def __init__(self, train_batch_size, train_num_anchors, k):
 		self.rpn_kernel_size = (3, 3)
-		self.train_batch_size = 8
-		self.train_num_anchors = 256
-		self.k = 9
+		self.train_batch_size = train_batch_size
+		self.pred_batch_size = 2
+		self.train_num_anchors = train_num_anchors
+		self.k = k
+		self.alpha = 10
 
 	def smoothL1Loss(self, labels, predictions, weights):
 		diff = predictions - labels
 		abs_diff = tf.abs(diff)
 		abs_diff_lt_1 = tf.less(abs_diff, 1)
-		loss = tf.reduce_sum(
-			tf.where(abs_diff_lt_1, 0.5 * tf.square(abs_diff), abs_diff - 0.5),
-		2) * weights
-		return tf.reduce_sum(loss)
+		val = tf.where(abs_diff_lt_1, 0.5 * tf.square(abs_diff), abs_diff - 0.5)
+		loss = tf.reduce_sum(val, 2) * weights
+		return tf.reduce_sum(loss) / self.train_batch_size / self.train_num_anchors
 
 	def VGG16(self, img, reuse = None):
 		with tf.variable_scope('VGG16', reuse = reuse):
@@ -141,7 +142,6 @@ class RPN(object):
 
 	def RPN(self, img, reuse = None):
 		feature = self.VGG16(img, reuse)
-		return feature
 		with tf.variable_scope('RPN', reuse = reuse):
 			rpn_conv = tf.layers.conv2d(
 				inputs = feature,
@@ -150,12 +150,12 @@ class RPN(object):
 				padding = 'same',
 				activation = tf.nn.relu
 			)
-			obj_prob = tf.layers.conv2d(
+			obj_logit = tf.layers.conv2d(
 				inputs = rpn_conv,
 				filters = 2 * self.k,
 				kernel_size = (1, 1),
 				padding = 'same',
-				activation = tf.sigmoid
+				activation = None
 			)
 			bbox_info = tf.layers.conv2d(
 				inputs = rpn_conv,
@@ -165,8 +165,8 @@ class RPN(object):
 				activation = None
 			)
 		return (
-			tf.reshape(obj_prob, [self.train_batch_size, 40, 60, self.k, 2]),
-			tf.reshape(bbox_info, [self.train_batch_size, 40, 60, self.k, 4]),
+			tf.reshape(obj_logit, [-1, 40, 60, self.k, 2]),
+			tf.reshape(bbox_info, [-1, 40, 60, self.k, 4]),
 		)
 
 	def Train(self, xx, aa, pp, tt):
@@ -174,21 +174,22 @@ class RPN(object):
 		anchor_idx = tf.reshape(aa, [self.train_batch_size, self.train_num_anchors, 3])
 		anchor_cls = tf.reshape(pp, [self.train_batch_size, self.train_num_anchors, 2])
 		anchor_box = tf.reshape(tt, [self.train_batch_size, self.train_num_anchors, 4])
-		# obj_prob, bbox_info = self.RPN(img)
-		return tf.reduce_sum(self.RPN(img))
-		prob_pred = []
+		obj_logit, bbox_info = self.RPN(img)
+		logit_pred = []
 		bbox_pred = []
-		for idx, prob, bbox in zip(tf.unstack(anchor_idx), tf.unstack(obj_prob), tf.unstack(bbox_info)):
-			prob_pred.append(tf.gather_nd(prob, idx))
+		for idx, logit, bbox in zip(tf.unstack(anchor_idx), tf.unstack(obj_logit), tf.unstack(bbox_info)):
+			logit_pred.append(tf.gather_nd(logit, idx))
 			bbox_pred.append(tf.gather_nd(bbox, idx))
-		prob_pred = tf.stack(prob_pred)
+		logit_pred = tf.stack(logit_pred)
 		bbox_pred = tf.stack(bbox_pred)
-		loss_1 = tf.losses.log_loss(labels = anchor_cls, predictions = prob_pred)
+		loss_1 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logit_pred, labels = anchor_cls))
 		loss_2 = self.smoothL1Loss(labels = anchor_box, predictions = bbox_pred, weights = anchor_cls[..., 0])
-		return loss_1, loss_2
+		return loss_1, loss_2 * self.alpha
 
 	def Predict(self, xx):
-		pass
+		img = tf.reshape(xx, [self.pred_batch_size, 640, 960, 3])
+		obj_logit, bbox_info = self.RPN(img, reuse = True)
+		return obj_logit, bbox_info
 
 class Logger(object):
 
@@ -214,10 +215,10 @@ class Logger(object):
 
 if __name__ == '__main__':
 	# Create new folder
-	# if not os.path.exists('./tmp/'):
-	# 	os.makedirs('./tmp/')
-	# if not os.path.exists('./res/'):
-	# 	os.makedirs('./res/')
+	if not os.path.exists('./tmp/'):
+		os.makedirs('./tmp/')
+	if not os.path.exists('./res/'):
+		os.makedirs('./res/')
 	# if not os.path.exists('./val/'):
 	# 	os.makedirs('./val/')
 	# if not os.path.exists('./pre/'):
@@ -228,12 +229,15 @@ if __name__ == '__main__':
 	# Set parameters
 	n_iter = 100000
 	lr = 0.0005
+	train_batch_size = 2
+	pred_batch_size = 2
+	train_num_anchors = 256
 
 	# Create data generator
 	obj = ut.AnchorGenerator()
 
 	# Define graph
-	RPNGraph = RPN()
+	RPNGraph = RPN(train_batch_size, train_num_anchors, 9)
 	xx = tf.placeholder(tf.float32)
 	aa = tf.placeholder(tf.int32)
 	pp = tf.placeholder(tf.float32)
@@ -246,7 +250,7 @@ if __name__ == '__main__':
 	# quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
-	train = optimizer.minimize(result)#[0] + result[1])
+	train = optimizer.minimize(result[0] + result[1])
 	saver = tf.train.Saver(max_to_keep = 3)
 	init = tf.global_variables_initializer()
 
@@ -268,12 +272,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(1)
-			# print(img.shape)
-			# print(bbox.shape)
-			# print(anchor_idx.shape)
-			# print(anchor_prob.shape)
-			# print(anchor_box.shape)
+			img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(train_batch_size)
 			feed_dict = {xx: img, aa: anchor_idx, pp: anchor_prob, tt: anchor_box}
 
 			# Training and get result
@@ -287,6 +286,12 @@ if __name__ == '__main__':
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
 			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
 			f.flush()
+
+			if i % 200 == 0:
+				img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(pred_batch_size)
+				feed_dict = {xx: img}
+				obj_logit, bbox_info = sess.run(pred, feed_dict)
+				obj.recover('./res', img, obj_logit, bbox_info)
 
 		# End main loop
 		# train_writer.close()

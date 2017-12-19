@@ -555,6 +555,31 @@ class AnchorGenerator(object):
 			res.append((img, bbox, anchor_idx, anchor_prob, anchor_box))
 		return (np.array([item[i] for item in res]) for i in range(5))
 
+	def recover(self, path, img, obj_logit, bbox_info):
+		for idx in range(obj_logit.shape[0]):
+			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
+			draw = ImageDraw.Draw(org)
+			for i in range(obj_logit.shape[2]):
+				for j in range(obj_logit.shape[1]):
+					x = i * 16 + 8
+					y = j * 16 + 8
+					for k, (w, h) in enumerate(ANCHOR_LIST):
+						l, u, r, d = xywh2lurd((x, y, w, h))
+						if l < 0 or u < 0 or r > img.shape[2] or d > img.shape[1]:
+							pass
+						else:
+							prob = obj_logit[idx, j, i, k]
+							box_info = bbox_info[idx, j, i, k]
+							box = [None, None, None, None]
+							if 1 / (1 + math.exp(prob[1] - prob[0])) >= 0.6:
+								box[0] = math.floor(box_info[0] * w + x)
+								box[1] = math.floor(box_info[1] * h + y)
+								box[2] = math.floor(math.exp(box_info[2]) * w)
+								box[3] = math.floor(math.exp(box_info[3]) * h)
+								l, u, r, d = xywh2lurd(tuple(box))
+								draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+			org.save(path + '/%d.png' % idx)
+
 if __name__ == '__main__':
 	# for i in range(0):
 	# 	plotPolygon(num_vertices = 7, show = True)
