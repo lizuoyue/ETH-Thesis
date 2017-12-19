@@ -141,6 +141,7 @@ class RPN(object):
 
 	def RPN(self, img, reuse = None):
 		feature = self.VGG16(img, reuse)
+		return feature
 		with tf.variable_scope('RPN', reuse = reuse):
 			rpn_conv = tf.layers.conv2d(
 				inputs = feature,
@@ -173,7 +174,8 @@ class RPN(object):
 		anchor_idx = tf.reshape(aa, [self.train_batch_size, self.train_num_anchors, 3])
 		anchor_cls = tf.reshape(pp, [self.train_batch_size, self.train_num_anchors, 2])
 		anchor_box = tf.reshape(tt, [self.train_batch_size, self.train_num_anchors, 4])
-		obj_prob, bbox_info = self.RPN(img)
+		# obj_prob, bbox_info = self.RPN(img)
+		return tf.reduce_sum(self.RPN(img))
 		prob_pred = []
 		bbox_pred = []
 		for idx, prob, bbox in zip(tf.unstack(anchor_idx), tf.unstack(obj_prob), tf.unstack(bbox_info)):
@@ -244,7 +246,7 @@ if __name__ == '__main__':
 	# quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
-	train = optimizer.minimize(result[0] + result[1])
+	train = optimizer.minimize(result)#[0] + result[1])
 	saver = tf.train.Saver(max_to_keep = 3)
 	init = tf.global_variables_initializer()
 
@@ -266,7 +268,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(8)
+			img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(1)
 			# print(img.shape)
 			# print(bbox.shape)
 			# print(anchor_idx.shape)
