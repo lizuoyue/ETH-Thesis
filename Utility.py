@@ -568,7 +568,7 @@ class AnchorGenerator(object):
 						if l < 0 or u < 0 or r > img.shape[2] or d > img.shape[1]:
 							pass
 						else:
-							prob = obj_logit[j, i, k]
+							prob = obj_logit[idx, j, i, k]
 							prob = 1 / (1 + math.exp(prob[1] - prob[0]))
 							li.append((prob, (j, i, k)))
 			li.sort()
