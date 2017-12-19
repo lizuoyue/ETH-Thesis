@@ -229,8 +229,8 @@ if __name__ == '__main__':
 	# Set parameters
 	n_iter = 100000
 	lr = 0.0005
-	train_batch_size = 2
-	pred_batch_size = 2
+	train_batch_size = 3
+	pred_batch_size = 3
 	train_num_anchors = 256
 
 	# Create data generator
@@ -286,6 +286,10 @@ if __name__ == '__main__':
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
 			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_1 + loss_2))
 			f.flush()
+
+			# Save model
+			if i % 200 == 0:
+				saver.save(sess, './tmp/model-%d.ckpt' % i)
 
 			if i % 200 == 0:
 				img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(pred_batch_size)
