@@ -9,10 +9,10 @@ ut = __import__('Utility')
 
 class RPN(object):
 
-	def __init__(self, train_batch_size, train_num_anchors, k):
+	def __init__(self, train_batch_size, train_num_anchors, pred_batch_size, k):
 		self.rpn_kernel_size = (3, 3)
 		self.train_batch_size = train_batch_size
-		self.pred_batch_size = 2
+		self.pred_batch_size = pred_batch_size
 		self.train_num_anchors = train_num_anchors
 		self.k = k
 		self.alpha = 10
@@ -237,7 +237,7 @@ if __name__ == '__main__':
 	obj = ut.AnchorGenerator()
 
 	# Define graph
-	RPNGraph = RPN(train_batch_size, train_num_anchors, 9)
+	RPNGraph = RPN(train_batch_size, train_num_anchors, pred_batch_size, 9)
 	xx = tf.placeholder(tf.float32)
 	aa = tf.placeholder(tf.int32)
 	pp = tf.placeholder(tf.float32)
