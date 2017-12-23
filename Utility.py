@@ -253,7 +253,7 @@ def plotSingleEllipse(img_size = (960, 640)):
 	org = Image.new('RGB', img_size, color = (255, 255, 255))
 	draw = ImageDraw.Draw(org)
 	bbox = []
-	color = (255, 0, 0) # tuple(np.random.randint(200, size = 3))
+	color = tuple(np.random.randint(200, size = 3)) # (255, 0, 0) # 
 	rx = np.random.randint(math.floor(max_x * 0.15), math.floor(max_x * 0.2))
 	ry = np.random.randint(math.floor(rx * 0.7), math.floor(rx * 1.3))
 	draw.ellipse((center_x - rx, center_y - ry, center_x + rx, center_y + ry), fill = color)
