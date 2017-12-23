@@ -20,8 +20,7 @@ class RPN(object):
 	def smoothL1Loss(self, labels, predictions, weights):
 		diff = predictions - labels
 		abs_diff = tf.abs(diff)
-		abs_diff_lt_1 = tf.less(abs_diff, 1)
-		val = tf.where(abs_diff_lt_1, 0.5 * tf.square(abs_diff), abs_diff - 0.5)
+		val = tf.where(tf.less(abs_diff, 1), 0.5 * tf.square(abs_diff), abs_diff - 0.5)
 		loss = tf.reduce_sum(val, 2) * weights
 		return tf.reduce_sum(loss) / self.train_batch_size / self.train_num_anchors
 
@@ -169,11 +168,11 @@ class RPN(object):
 			tf.reshape(bbox_info, [-1, 40, 60, self.k, 4]),
 		)
 
-	def Train(self, xx, aa, pp, tt):
-		img        = tf.reshape(xx, [self.train_batch_size, 640, 960, 3])
-		anchor_idx = tf.reshape(aa, [self.train_batch_size, self.train_num_anchors, 3])
-		anchor_cls = tf.reshape(pp, [self.train_batch_size, self.train_num_anchors, 2])
-		anchor_box = tf.reshape(tt, [self.train_batch_size, self.train_num_anchors, 4])
+	def Train(self, xx, aa, pp, tt, ll):
+		img         = tf.reshape(xx, [self.train_batch_size, 640, 960, 3])
+		anchor_idx  = tf.reshape(aa, [self.train_batch_size, self.train_num_anchors, 3])
+		anchor_cls  = tf.reshape(pp, [self.train_batch_size, self.train_num_anchors, 3])
+		anchor_box  = tf.reshape(tt, [self.train_batch_size, self.train_num_anchors, 4])
 		obj_logit, bbox_info = self.RPN(img)
 		logit_pred = []
 		bbox_pred = []
@@ -182,9 +181,10 @@ class RPN(object):
 			bbox_pred.append(tf.gather_nd(bbox, idx))
 		logit_pred = tf.stack(logit_pred)
 		bbox_pred = tf.stack(bbox_pred)
-		loss_1 = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = logit_pred, labels = anchor_cls))
+		loss_1 = tf.nn.softmax_cross_entropy_with_logits(logits = logit_pred, labels = anchor_cls[..., 0: 2])
+		loss_11 = tf.reduce_mean(loss_1 * anchor_cls[..., 2])
 		loss_2 = self.smoothL1Loss(labels = anchor_box, predictions = bbox_pred, weights = anchor_cls[..., 0])
-		return loss_1 * 10, loss_2 * self.alpha * 10
+		return loss_11 * 10, loss_2 * self.alpha * 10
 
 	def Predict(self, xx):
 		img = tf.reshape(xx, [self.pred_batch_size, 640, 960, 3])
@@ -242,7 +242,8 @@ if __name__ == '__main__':
 	aa = tf.placeholder(tf.int32)
 	pp = tf.placeholder(tf.float32)
 	tt = tf.placeholder(tf.float32)
-	result = RPNGraph.Train(xx, aa, pp, tt)
+	ll = tf.placeholder(tf.float32)
+	result = RPNGraph.Train(xx, aa, pp, tt, ll)
 	pred = RPNGraph.Predict(xx)
 
 	# for v in tf.global_variables():
@@ -257,7 +258,7 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		f = open('./loss.out', 'a')
+		f = open('./RPN-Loss.out', 'a')
 		# train_writer = Logger('./log/train/')
 		# valid_writer = Logger('./log/valid/')
 

@@ -130,7 +130,7 @@ def scoreIoU(box, anchor):
 	else:
 		return 0
 
-def findBestBox(bbox, anchor, max_iou = 0.6, min_iou = 0.1):
+def findBestBox(bbox, anchor, max_iou = 0.6, min_iou = 0.3):
 	li = [(scoreIoU(box, anchor), i) for i, box in enumerate(bbox)]
 	li.sort()
 	if li[-1][0] >= max_iou:
@@ -140,7 +140,7 @@ def findBestBox(bbox, anchor, max_iou = 0.6, min_iou = 0.1):
 	else:
 		return None
 
-def plotEllipse(img_size = (960, 640), num_ellipse = 6):
+def plotEllipse(img_size = (960, 640), num_ellipse = 1):
 
 	# Set image parameters
 	max_x = img_size[0]
@@ -199,7 +199,7 @@ def plotEllipse(img_size = (960, 640), num_ellipse = 6):
 							pos_anchor.append((
 								(j, i, k),
 								(x, y, w, h),
-								(1, 0),
+								[1, 0],
 								(
 									(box[0] - x) / w,
 									(box[1] - y) / h,
@@ -208,7 +208,7 @@ def plotEllipse(img_size = (960, 640), num_ellipse = 6):
 								)
 							))
 						else:
-							neg_anchor.append(((j, i, k), (x, y, w, h), (0, 1), (0, 0, 0, 0)))
+							neg_anchor.append(((j, i, k), (x, y, w, h), [0, 1], (0, 0, 0, 0)))
 
 	# Random select
 	random.shuffle(pos_anchor)
@@ -219,16 +219,107 @@ def plotEllipse(img_size = (960, 640), num_ellipse = 6):
 	random.shuffle(anchor)
 
 	# Visualization
-	# for a in anchor:
-	# 	l, u, r, d = xywh2lurd(a[2])
-	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[0] * 255, 0, (1 - a[0]) * 255))
+	for a in anchor:
+		l, u, r, d = xywh2lurd(a[1])
+		draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
 
 	# Add noise to the orginal image
 	noise = np.random.normal(0, 40, (max_y, max_x, 3))
 	background = np.array(org)
 	img = background + noise
 	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
-	# Image.fromarray(img).show()
+	Image.fromarray(img).show() ##############
+	img = np.array(img) / 255.0
+
+	return img, bbox, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
+
+def plotSingleEllipse(img_size = (960, 640)):
+	# Set image parameters
+	max_x = img_size[0]
+	max_y = img_size[1]
+	half_x = math.floor(max_x / 2)
+	half_y = math.floor(max_y / 2)
+	img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
+
+	# Set parameters
+	center_rx = math.floor(max_x * 0.05)
+	center_ry = math.floor(max_y * 0.05)
+
+	# Determin the center of the track
+	center_x = half_x + np.random.randint(-center_rx, center_rx)
+	center_y = half_y + np.random.randint(-center_ry, center_ry)
+
+	# Draw ellipse
+	org = Image.new('RGB', img_size, color = (255, 255, 255))
+	draw = ImageDraw.Draw(org)
+	bbox = []
+	color = (255, 0, 0) # tuple(np.random.randint(200, size = 3))
+	rx = np.random.randint(math.floor(max_x * 0.15), math.floor(max_x * 0.2))
+	ry = np.random.randint(math.floor(rx * 0.7), math.floor(rx * 1.3))
+	draw.ellipse((center_x - rx, center_y - ry, center_x + rx, center_y + ry), fill = color)
+	lu = (max(center_x - rx, 0), max(center_y - ry, 0))
+	rd = (min(center_x + rx, max_x), min(center_y + ry, max_y))
+	draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (0, 255, 0))
+	bbox.append(list(lurd2xywh(lu + rd)))
+
+	pos_anchor = []
+	neg_anchor = []
+	for i in range(img_size_s[0]):
+		for j in range(img_size_s[1]):
+			x = i * 16 + 8
+			y = j * 16 + 8
+			for k, (w, h) in enumerate(ANCHOR_LIST):
+				l, u, r, d = xywh2lurd((x, y, w, h))
+				if l < 0 or u < 0 or r > max_x or d > max_y:
+					pass
+				else:
+					box_idx = findBestBox(bbox, (x, y, w, h))
+					if box_idx is not None:
+						if box_idx >= 0:
+							box = bbox[box_idx]
+							pos_anchor.append((
+								(j, i, k),
+								(x, y, w, h),
+								[1, 0],
+								(
+									(box[0] - x) / w,
+									(box[1] - y) / h,
+									math.log(box[2] / w),
+									math.log(box[3] / h),
+								)
+							))
+						else:
+							neg_anchor.append(((j, i, k), (x, y, w, h), [0, 1], (0, 0, 0, 0)))
+
+	# Random select
+	random.shuffle(pos_anchor)
+	random.shuffle(neg_anchor)
+	anchor = pos_anchor[: min(len(pos_anchor), 128)]
+	res = 256 - len(anchor)
+	anchor += neg_anchor[: res]
+	random.shuffle(anchor)
+
+	pos_weight = len(pos_anchor) / (len(pos_anchor) + len(neg_anchor))
+	neg_weight = len(neg_anchor) / (len(pos_anchor) + len(neg_anchor))
+
+	# Weight
+	for a in anchor:
+		if a[2][0] == 1:
+			a[2].append(pos_weight)
+		else:
+			a[2].append(neg_weight)
+
+	# Visualization
+	# for a in anchor:
+	# 	l, u, r, d = xywh2lurd(a[1])
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
+
+	# Add noise to the orginal image
+	noise = np.random.normal(0, 40, (max_y, max_x, 3))
+	background = np.array(org)
+	img = background + noise
+	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
+	# Image.fromarray(img).show() ##############
 	img = np.array(img) / 255.0
 
 	return img, bbox, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
@@ -551,12 +642,10 @@ class AnchorGenerator(object):
 		res = []
 		num_e = np.random.choice(6, batch_size, replace = True) + 4
 		for num in num_e:
-			img, bbox, anchor_idx, anchor_prob, anchor_box = plotEllipse(num_ellipse = num)
-			res.append((img, bbox, anchor_idx, anchor_prob, anchor_box))
+			res.append(plotSingleEllipse()) # num_ellipse = num
 		return (np.array([item[i] for item in res]) for i in range(5))
 
 	def recover(self, path, img, obj_logit, bbox_info):
-		
 		for idx in range(obj_logit.shape[0]):
 			li = []
 			for i in range(obj_logit.shape[2]):
@@ -570,12 +659,13 @@ class AnchorGenerator(object):
 						else:
 							prob = obj_logit[idx, j, i, k]
 							prob = 1 / (1 + math.exp(prob[1] - prob[0]))
-							li.append((prob, (j, i, k)))
+							li.append((prob, (j, i, k), (x, y, w, h)))
 			li.sort()
 			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
-			for item in li[-300:]:
+			for item in li[-300: ]:
 				j, i, k = item[1]
+				x, y, w, h = item[2]
 				box_info = bbox_info[idx, j, i, k]
 				box = [None, None, None, None]
 				box[0] = math.floor(box_info[0] * w + x)
@@ -594,5 +684,5 @@ if __name__ == '__main__':
 	# print(np.sum(v_in[0,1] == v_out[0,0]))
 	# print(np.sum(v_in[0,2] == v_out[0,1]))
 	for i in range(10):
-		drawEllipse()
+		plotSingleEllipse()
 	# print(scoreIoU((0, 0, 100, 100), (5, 5, 100, 100)))
