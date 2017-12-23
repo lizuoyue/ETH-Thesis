@@ -7,9 +7,9 @@ from PIL import Image, ImageDraw, ImageFilter
 BLUR = 0.75
 TILE_SIZE = 256
 ANCHOR_LIST = [
+	(64, 64), (45, 90), (90, 45),
 	(128, 128), (90, 180), (180, 90),
 	(256, 256), (180, 360), (360, 180),
-	(384, 384), (270, 540), (540, 270),
 ]
 
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
@@ -130,7 +130,7 @@ def scoreIoU(box, anchor):
 	else:
 		return 0
 
-def findBestBox(bbox, anchor, max_iou = 0.6, min_iou = 0.3):
+def findBestBox(bbox, anchor, max_iou = 0.5, min_iou = 0.3):
 	li = [(scoreIoU(box, anchor), i) for i, box in enumerate(bbox)]
 	li.sort()
 	if li[-1][0] >= max_iou:
@@ -140,7 +140,7 @@ def findBestBox(bbox, anchor, max_iou = 0.6, min_iou = 0.3):
 	else:
 		return None
 
-def plotEllipse(img_size = (960, 640), num_ellipse = 1):
+def plotEllipse(img_size = (960, 640), num_ellipse = 6):
 
 	# Set image parameters
 	max_x = img_size[0]
@@ -172,7 +172,7 @@ def plotEllipse(img_size = (960, 640), num_ellipse = 1):
 		ty = track_size_y * np.random.uniform(0.8, 1.2)
 		px = math.floor(center_x + tx * np.cos(angle))
 		py = math.floor(center_y - ty * np.sin(angle))
-		rx = np.random.randint(math.floor(max_x * 0.12), math.floor(max_x * 0.16))
+		rx = np.random.randint(math.floor(max_x * 0.08), math.floor(max_x * 0.12))
 		ry = np.random.randint(math.floor(rx * 0.7), math.floor(rx * 1.3))
 		draw.ellipse((px - rx, py - ry, px + rx, py + ry), fill = color)
 		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon)
@@ -217,6 +217,15 @@ def plotEllipse(img_size = (960, 640), num_ellipse = 1):
 	res = 256 - len(anchor)
 	anchor += neg_anchor[: res]
 	random.shuffle(anchor)
+
+	# Weight
+	pos_weight = len(pos_anchor) / (len(pos_anchor) + len(neg_anchor))
+	neg_weight = len(neg_anchor) / (len(pos_anchor) + len(neg_anchor))
+	for a in anchor:
+		if a[2][0] == 1:
+			a[2].append(pos_weight)
+		else:
+			a[2].append(neg_weight)
 
 	# Visualization
 	for a in anchor:
@@ -299,10 +308,9 @@ def plotSingleEllipse(img_size = (960, 640)):
 	anchor += neg_anchor[: res]
 	random.shuffle(anchor)
 
+	# Weight
 	pos_weight = len(pos_anchor) / (len(pos_anchor) + len(neg_anchor))
 	neg_weight = len(neg_anchor) / (len(pos_anchor) + len(neg_anchor))
-
-	# Weight
 	for a in anchor:
 		if a[2][0] == 1:
 			a[2].append(pos_weight)
@@ -640,9 +648,9 @@ class AnchorGenerator(object):
 
 	def getFakeDataBatch(self, batch_size):
 		res = []
-		num_e = np.random.choice(6, batch_size, replace = True) + 4
+		num_e = np.random.choice(4, batch_size, replace = True) + 2
 		for num in num_e:
-			res.append(plotSingleEllipse()) # num_ellipse = num
+			res.append(plotEllipse(num_ellipse = num))
 		return (np.array([item[i] for item in res]) for i in range(5))
 
 	def recover(self, path, img, obj_logit, bbox_info):
@@ -663,7 +671,7 @@ class AnchorGenerator(object):
 			li.sort()
 			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
-			for item in li[-300: ]:
+			for item in li[-200: ]:
 				j, i, k = item[1]
 				x, y, w, h = item[2]
 				box_info = bbox_info[idx, j, i, k]
@@ -683,6 +691,7 @@ if __name__ == '__main__':
 	# img_patch, boundary, vertices, v_in, v_out, end, seq_len, patch_info = dg.getDataBatch(mode = 'train', batch_size = 1)
 	# print(np.sum(v_in[0,1] == v_out[0,0]))
 	# print(np.sum(v_in[0,2] == v_out[0,1]))
-	for i in range(10):
-		plotSingleEllipse()
+	num_e = list(np.random.choice(4, 9, replace = True) + 2)
+	for n in num_e:
+		plotEllipse(num_ellipse = n)
 	# print(scoreIoU((0, 0, 100, 100), (5, 5, 100, 100)))
