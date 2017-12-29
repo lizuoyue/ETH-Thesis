@@ -207,7 +207,7 @@ if __name__ == '__main__':
 	print('Totally %d areas.' % len(keys))
 	if len(sys.argv) == 4:
 		beg_idx = int(sys.argv[2])
-		end_idx = int(sys.argv[3])
+		end_idx = min(int(sys.argv[3]), len(keys))
 	else:
 		beg_idx = 0
 		end_idx = len(keys)
