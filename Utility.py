@@ -816,7 +816,7 @@ class AnchorGenerator(object):
 			boxes = non_max_suppression_fast(boxes, 0.7)
 			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
-			for i in range(boxes.shape[0])
+			for i in range(boxes.shape[0]):
 				l, u, r, d = tuple(list(box[i, :]))
 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 			org.save(path + '/%d.png' % idx)
