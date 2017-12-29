@@ -164,12 +164,12 @@ class RPN(object):
 				activation = None
 			)
 		return (
-			tf.reshape(obj_logit, [-1, 40, 60, self.k, 2]),
-			tf.reshape(bbox_info, [-1, 40, 60, self.k, 4]),
+			tf.reshape(obj_logit, [-1, 40, 40, self.k, 2]),
+			tf.reshape(bbox_info, [-1, 40, 40, self.k, 4]),
 		)
 
 	def Train(self, xx, aa, pp, tt, ll):
-		img         = tf.reshape(xx, [self.train_batch_size, 640, 960, 3])
+		img         = tf.reshape(xx, [self.train_batch_size, 640, 640, 3])
 		anchor_idx  = tf.reshape(aa, [self.train_batch_size, self.train_num_anchors, 3])
 		anchor_cls  = tf.reshape(pp, [self.train_batch_size, self.train_num_anchors, 3])
 		anchor_box  = tf.reshape(tt, [self.train_batch_size, self.train_num_anchors, 4])
@@ -187,7 +187,7 @@ class RPN(object):
 		return loss_11 * 10, loss_2 * self.alpha * 10
 
 	def Predict(self, xx):
-		img = tf.reshape(xx, [self.pred_batch_size, 640, 960, 3])
+		img = tf.reshape(xx, [self.pred_batch_size, 640, 640, 3])
 		obj_logit, bbox_info = self.RPN(img, reuse = True)
 		return obj_logit, bbox_info
 
@@ -234,7 +234,7 @@ if __name__ == '__main__':
 	train_num_anchors = 256
 
 	# Create data generator
-	obj = ut.AnchorGenerator()
+	obj = ut.AnchorGenerator(fake = False, data_path = '../Chicago_Area.zip')
 
 	# Define graph
 	RPNGraph = RPN(train_batch_size, train_num_anchors, pred_batch_size, 9)
@@ -273,7 +273,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(train_batch_size)
+			img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getDataBatch(train_batch_size, mode = 'train')
 			feed_dict = {xx: img, aa: anchor_idx, pp: anchor_prob, tt: anchor_box}
 
 			# Training and get result
@@ -293,7 +293,7 @@ if __name__ == '__main__':
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
 
 			if i % 200 == 0:
-				img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getFakeDataBatch(pred_batch_size)
+				img, bbox, anchor_idx, anchor_prob, anchor_box = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img}
 				obj_logit, bbox_info = sess.run(pred, feed_dict)
 				obj.recover('./res', img, obj_logit, bbox_info)

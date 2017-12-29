@@ -9,7 +9,7 @@ TILE_SIZE = 256
 ANCHOR_LIST = [
 	(64, 64), (45, 90), (90, 45),
 	(128, 128), (90, 180), (180, 90),
-	(256, 256), (180, 360), (360, 180),
+	(192, 192), (135, 270), (270, 135),
 ]
 
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
@@ -643,8 +643,132 @@ class DataGenerator(object):
 
 class AnchorGenerator(object):
 	# num_col, num_row
-	def __init__(self):
-		pass
+	def __init__(self, fake, data_path = None):
+		if fake:
+			self.fake = True
+		else:
+			self.fake = False
+			assert(data_path.endswith('.zip'))
+
+			# 
+			self.data_path = data_path.lstrip('./').replace('.zip', '')
+			self.archive = zipfile.ZipFile(data_path, 'r')
+			self.area_idx_set = set()
+			for filename in self.archive.namelist():
+				if filename.startswith('__MACOSX'):
+					continue
+				parts = filename.split('/')
+				if len(parts) == 3:
+					self.area_idx_set.add(parts[1])
+			print('Totally %d areas.' % len(self.area_idx_set))
+
+			#
+			train_prob = 0.8
+			self.area_idx_list = list(self.area_idx_set)
+			self.area_idx_list.sort()
+			random.seed(0)
+			random.shuffle(self.area_idx_list)
+			random.seed()
+			split = int(train_prob * len(self.area_idx_list))
+			self.idx_list_train = self.area_idx_list[:split]
+			self.idx_list_valid = self.area_idx_list[split:]
+			return
+
+	def getDataBatch(self, batch_size, mode = None):
+		# Fake
+		if self.fake:
+			return self.getFakeDataBatch(batch_size)
+
+		# Real
+		res = []
+		if mode == 'train':
+			sel = np.random.choice(len(self.idx_list_train), batch_size, replace = True)
+			for i in sel:
+				res.append(self.getSingleData(self.idx_list_train[i]))
+		if mode == 'valid':
+			sel = np.random.choice(len(self.idx_list_valid), batch_size, replace = True)
+			for i in sel:
+				res.append(self.getSingleData(self.idx_list_valid[i]))
+		return (np.array([item[i] for item in res]) for i in range(5))
+
+	def getSingleData(self, area_idx):
+		# Set path
+		path = self.data_path + '/' + area_idx
+
+		# Rotate
+		# rotate = random.choice([0, 90, 180, 270])
+
+		# 
+		img = Image.open(io.BytesIO(self.archive.read(path + '/img.png')))
+		org = np.array(img) / 255.0
+		org = org[..., 0: 3]
+		lines = self.archive.read(path + '/bboxes.txt').decode('utf-8').split('\n')
+		bboxes = []
+		for line in lines:
+			if line.strip() != '':
+				l, u, r, d = line.strip().split()
+				bboxes.append(list(lurd2xywh((int(l), int(u), int(r), int(d)))))
+
+		img_size = img.size
+		img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
+
+		pos_anchor = []
+		neg_anchor = []
+		for i in range(img_size_s[0]):
+			for j in range(img_size_s[1]):
+				x = i * 16 + 8
+				y = j * 16 + 8
+				for k, (w, h) in enumerate(ANCHOR_LIST):
+					l, u, r, d = xywh2lurd((x, y, w, h))
+					if l < 0 or u < 0 or r > img_size[0] or d > img_size[1]:
+						pass
+					else:
+						box_idx = findBestBox(bboxes, (x, y, w, h))
+						if box_idx is not None:
+							if box_idx >= 0:
+								box = bboxes[box_idx]
+								pos_anchor.append((
+									(j, i, k),
+									(x, y, w, h),
+									[1, 0],
+									(
+										(box[0] - x) / w,
+										(box[1] - y) / h,
+										math.log(box[2] / w),
+										math.log(box[3] / h),
+									)
+								))
+							else:
+								neg_anchor.append(((j, i, k), (x, y, w, h), [0, 1], (0, 0, 0, 0)))
+
+		# Random select
+		random.shuffle(pos_anchor)
+		random.shuffle(neg_anchor)
+		anchor = pos_anchor[: min(len(pos_anchor), 128)]
+		res = 256 - len(anchor)
+		anchor += neg_anchor[: res]
+		random.shuffle(anchor)
+
+		# Weight
+		pos_weight = len(pos_anchor) / (len(pos_anchor) + len(neg_anchor))
+		neg_weight = len(neg_anchor) / (len(pos_anchor) + len(neg_anchor))
+		for a in anchor:
+			if a[2][0] == 1:
+				a[2].append(pos_weight)
+			else:
+				a[2].append(neg_weight)
+
+		# Visualization
+		# draw = ImageDraw.Draw(img)
+		# for box in bboxes:
+		# 	l, u, r, d = xywh2lurd(box)
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+		# for a in pos_anchor:
+		# 	l, u, r, d = xywh2lurd(a[1])
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
+		# img.show()
+
+		return org, bboxes, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
 
 	def getFakeDataBatch(self, batch_size):
 		res = []
@@ -691,7 +815,9 @@ if __name__ == '__main__':
 	# img_patch, boundary, vertices, v_in, v_out, end, seq_len, patch_info = dg.getDataBatch(mode = 'train', batch_size = 1)
 	# print(np.sum(v_in[0,1] == v_out[0,0]))
 	# print(np.sum(v_in[0,2] == v_out[0,1]))
-	num_e = list(np.random.choice(4, 9, replace = True) + 2)
-	for n in num_e:
-		plotEllipse(num_ellipse = n)
+	# num_e = list(np.random.choice(4, 9, replace = True) + 2)
+	# for n in num_e:
+	# 	plotEllipse(num_ellipse = n)
 	# print(scoreIoU((0, 0, 100, 100), (5, 5, 100, 100)))
+	ag = AnchorGenerator(fake = False, data_path = '../Chicago_Area.zip')
+	ag.getDataBatch(4, mode = 'train')
