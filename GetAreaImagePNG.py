@@ -212,5 +212,6 @@ if __name__ == '__main__':
 		beg_idx = 0
 		end_idx = len(keys)
 	for i in range(beg_idx, end_idx):
+		print(i)
 		objDown.getAreaAerialImage(i, keys[i])
 
