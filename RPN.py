@@ -230,7 +230,7 @@ if __name__ == '__main__':
 	n_iter = 100000
 	lr = 0.00002
 	train_batch_size = 5
-	pred_batch_size = 5
+	pred_batch_size = 9
 	train_num_anchors = 256
 
 	# Create data generator

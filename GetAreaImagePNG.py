@@ -135,6 +135,7 @@ class AreaImageDownloader(object):
 			if l != r and u != d:
 				bboxes.append((l, u, r, d))
 		if not bboxes:
+			os.rmdir('../%s_Area/%d_%d' % (self.city_name, area_idx[0], area_idx[1]))
 			return
 
 		img.save('../%s_Area/%d_%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))

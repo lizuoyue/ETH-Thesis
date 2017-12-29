@@ -368,6 +368,10 @@ def norm(array):
 	else:
 		return (array - mi) / (ma - mi)
 
+def rotate(img_size, lurd):
+	l, u, r, d = lurd
+	return (img_size[1], img_size[0]), (u, img_size[0] - r, d, img_size[0] - l)
+
 class BoundingBox(object):
 	# size: (width, height)
 	def __init__(self, lon, lat, zoom, scale, size = (224, 224)):
@@ -696,21 +700,26 @@ class AnchorGenerator(object):
 		path = self.data_path + '/' + area_idx
 
 		# Rotate
-		# rotate = random.choice([0, 90, 180, 270])
+		n_rotate = random.choice([0, 1, 2, 3])
 
 		# 
 		img = Image.open(io.BytesIO(self.archive.read(path + '/img.png')))
-		org = np.array(img) / 255.0
-		org = org[..., 0: 3]
+		org_size = img.size
+		img = img.rotate(n_rotate * 90)
+		img_size = img.size
+		img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
+
+		org = np.array(img)[..., 0: 3] / 255.0
 		lines = self.archive.read(path + '/bboxes.txt').decode('utf-8').split('\n')
 		bboxes = []
 		for line in lines:
 			if line.strip() != '':
 				l, u, r, d = line.strip().split()
-				bboxes.append(list(lurd2xywh((int(l), int(u), int(r), int(d)))))
-
-		img_size = img.size
-		img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
+				l, u, r, d = int(l), int(u), int(r), int(d)
+				w, h = org_size
+				for _ in range(n_rotate):
+					(w, h), (l, u, r, d) = rotate((w, h), (l, u, r, d))
+				bboxes.append(list(lurd2xywh((l, u, r, d))))
 
 		pos_anchor = []
 		neg_anchor = []
@@ -759,14 +768,14 @@ class AnchorGenerator(object):
 				a[2].append(neg_weight)
 
 		# Visualization
-		# draw = ImageDraw.Draw(img)
-		# for box in bboxes:
-		# 	l, u, r, d = xywh2lurd(box)
-		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
-		# for a in pos_anchor:
-		# 	l, u, r, d = xywh2lurd(a[1])
-		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
-		# img.show()
+		draw = ImageDraw.Draw(img)
+		for box in bboxes:
+			l, u, r, d = xywh2lurd(box)
+			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+		for a in pos_anchor:
+			l, u, r, d = xywh2lurd(a[1])
+			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
+		img.show()
 
 		return org, bboxes, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
 
@@ -793,9 +802,8 @@ class AnchorGenerator(object):
 							prob = 1 / (1 + math.exp(prob[1] - prob[0]))
 							li.append((prob, (j, i, k), (x, y, w, h)))
 			li.sort()
-			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
-			draw = ImageDraw.Draw(org)
-			for item in li[-200: ]:
+			boxes = []
+			for item in li[-500: ]:
 				j, i, k = item[1]
 				x, y, w, h = item[2]
 				box_info = bbox_info[idx, j, i, k]
@@ -804,9 +812,71 @@ class AnchorGenerator(object):
 				box[1] = math.floor(box_info[1] * h + y)
 				box[2] = math.floor(math.exp(box_info[2]) * w)
 				box[3] = math.floor(math.exp(box_info[3]) * h)
-				l, u, r, d = xywh2lurd(tuple(box))
+				boxes.append(list(xywh2lurd(tuple(box))))
+			boxes = non_max_suppression_fast(boxes, 0.7)
+			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
+			draw = ImageDraw.Draw(org)
+			for i in range(boxes.shape[0])
+				l, u, r, d = tuple(list(box[i, :]))
 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 			org.save(path + '/%d.png' % idx)
+
+def non_max_suppression_fast(boxes, overlapThresh):
+	# if there are no boxes, return an empty list
+	if len(boxes) == 0:
+		return []
+	boxes = np.array(boxes)
+
+	# if the bounding boxes integers, convert them to floats --
+	# this is important since we'll be doing a bunch of divisions
+	if boxes.dtype.kind == "i":
+		boxes = boxes.astype("float")
+
+	# initialize the list of picked indexes	
+	pick = []
+
+	# grab the coordinates of the bounding boxes
+	x1 = boxes[:,0]
+	y1 = boxes[:,1]
+	x2 = boxes[:,2]
+	y2 = boxes[:,3]
+
+	# compute the area of the bounding boxes and sort the bounding
+	# boxes by the bottom-right y-coordinate of the bounding box
+	area = (x2 - x1 + 1) * (y2 - y1 + 1)
+	idxs = np.argsort(y2)
+
+	# keep looping while some indexes still remain in the indexes
+	# list
+	while len(idxs) > 0:
+		# grab the last index in the indexes list and add the
+		# index value to the list of picked indexes
+		last = len(idxs) - 1
+		i = idxs[last]
+		pick.append(i)
+
+		# find the largest (x, y) coordinates for the start of
+		# the bounding box and the smallest (x, y) coordinates
+		# for the end of the bounding box
+		xx1 = np.maximum(x1[i], x1[idxs[:last]])
+		yy1 = np.maximum(y1[i], y1[idxs[:last]])
+		xx2 = np.minimum(x2[i], x2[idxs[:last]])
+		yy2 = np.minimum(y2[i], y2[idxs[:last]])
+
+		# compute the width and height of the bounding box
+		w = np.maximum(0, xx2 - xx1 + 1)
+		h = np.maximum(0, yy2 - yy1 + 1)
+
+		# compute the ratio of overlap
+		overlap = (w * h) / area[idxs[:last]]
+
+		# delete all indexes from the index list that have
+		idxs = np.delete(idxs, np.concatenate(([last],
+			np.where(overlap > overlapThresh)[0])))
+
+	# return only the bounding boxes that were picked using the
+	# integer data type
+	return boxes[pick].astype("int")
 
 if __name__ == '__main__':
 	# for i in range(0):
