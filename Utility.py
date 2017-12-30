@@ -815,6 +815,7 @@ class AnchorGenerator(object):
 				box[2] = math.floor(math.exp(box_info[2]) * w)
 				box[3] = math.floor(math.exp(box_info[3]) * h)
 				boxes.append(list(xywh2lurd(tuple(box))))
+			boxes = np.array(boxes)
 			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
 			for i in range(boxes.shape[0]):
