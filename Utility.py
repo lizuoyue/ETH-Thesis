@@ -805,7 +805,7 @@ class AnchorGenerator(object):
 							li.append((prob, (j, i, k), (x, y, w, h)))
 			li.sort()
 			boxes = []
-			for item in li[-500: ]:
+			for item in li[-300: ]:
 				j, i, k = item[1]
 				x, y, w, h = item[2]
 				box_info = bbox_info[idx, j, i, k]
@@ -815,70 +815,12 @@ class AnchorGenerator(object):
 				box[2] = math.floor(math.exp(box_info[2]) * w)
 				box[3] = math.floor(math.exp(box_info[3]) * h)
 				boxes.append(list(xywh2lurd(tuple(box))))
-			boxes = non_max_suppression_fast(boxes, 0.7)
 			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
 			for i in range(boxes.shape[0]):
 				l, u, r, d = tuple(list(boxes[i, :]))
 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 			org.save(path + '/%d.png' % idx)
-
-def non_max_suppression_fast(boxes, overlapThresh):
-	# if there are no boxes, return an empty list
-	if len(boxes) == 0:
-		return []
-	boxes = np.array(boxes)
-
-	# if the bounding boxes integers, convert them to floats --
-	# this is important since we'll be doing a bunch of divisions
-	if boxes.dtype.kind == "i":
-		boxes = boxes.astype("float")
-
-	# initialize the list of picked indexes	
-	pick = []
-
-	# grab the coordinates of the bounding boxes
-	x1 = boxes[:,0]
-	y1 = boxes[:,1]
-	x2 = boxes[:,2]
-	y2 = boxes[:,3]
-
-	# compute the area of the bounding boxes and sort the bounding
-	# boxes by the bottom-right y-coordinate of the bounding box
-	area = (x2 - x1 + 1) * (y2 - y1 + 1)
-	idxs = np.argsort(y2)
-
-	# keep looping while some indexes still remain in the indexes
-	# list
-	while len(idxs) > 0:
-		# grab the last index in the indexes list and add the
-		# index value to the list of picked indexes
-		last = len(idxs) - 1
-		i = idxs[last]
-		pick.append(i)
-
-		# find the largest (x, y) coordinates for the start of
-		# the bounding box and the smallest (x, y) coordinates
-		# for the end of the bounding box
-		xx1 = np.maximum(x1[i], x1[idxs[:last]])
-		yy1 = np.maximum(y1[i], y1[idxs[:last]])
-		xx2 = np.minimum(x2[i], x2[idxs[:last]])
-		yy2 = np.minimum(y2[i], y2[idxs[:last]])
-
-		# compute the width and height of the bounding box
-		w = np.maximum(0, xx2 - xx1 + 1)
-		h = np.maximum(0, yy2 - yy1 + 1)
-
-		# compute the ratio of overlap
-		overlap = (w * h) / area[idxs[:last]]
-
-		# delete all indexes from the index list that have
-		idxs = np.delete(idxs, np.concatenate(([last],
-			np.where(overlap > overlapThresh)[0])))
-
-	# return only the bounding boxes that were picked using the
-	# integer data type
-	return boxes[pick].astype("int")
 
 if __name__ == '__main__':
 	# for i in range(0):
