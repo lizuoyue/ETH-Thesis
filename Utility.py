@@ -1,15 +1,18 @@
 import numpy as np 
 import math, random, time
-import io, glob, zipfile
+import os, io, glob, zipfile
 from PIL import Image, ImageDraw, ImageFilter
+if os.path.exists('../Python-Lib/'):
+	sys.path.insert(1, '../Python-Lib')
+import paramiko
 # PIL.ImageDraw: 0-based, (col_idx, row_idx) if taking image as matrix
 
 BLUR = 0.75
 TILE_SIZE = 256
 ANCHOR_LIST = [
-	(64, 64), (45, 90), (90, 45),
-	(128, 128), (90, 180), (180, 90),
-	(192, 192), (135, 270), (270, 135),
+	(90, 90), (104, 78), (78, 104),
+	(180, 180), (208, 156), (156, 208),
+	(270, 270), (312, 234), (234, 312),
 ]
 
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
@@ -647,35 +650,29 @@ class DataGenerator(object):
 
 class AnchorGenerator(object):
 	# num_col, num_row
-	def __init__(self, fake, data_path = None):
+	def __init__(self, fake, data_path):
 		if fake:
 			self.fake = True
 		else:
 			self.fake = False
-			assert(data_path.endswith('.zip'))
 
 			# 
-			self.data_path = data_path.lstrip('./').replace('.zip', '')
-			self.archive = zipfile.ZipFile(data_path, 'r')
-			self.area_idx_set = set()
-			for filename in self.archive.namelist():
-				if filename.startswith('__MACOSX'):
-					continue
-				parts = filename.split('/')
-				if len(parts) == 3:
-					self.area_idx_set.add(parts[1])
-			print('Totally %d areas.' % len(self.area_idx_set))
+			self.ssh = paramiko.SSHClient()
+			self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+			self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
+			self.sftp = self.ssh.open_sftp()
+
+			with open('./Area_List.txt', 'r') as f:
+				self.area_idx_list = eval(f.read())
+			print('Totally %d areas.' % len(self.area_idx_list))
 
 			#
 			train_prob = 0.8
-			self.area_idx_list = list(self.area_idx_set)
-			self.area_idx_list.sort()
-			random.seed(0)
-			random.shuffle(self.area_idx_list)
-			random.seed()
 			split = int(train_prob * len(self.area_idx_list))
 			self.idx_list_train = self.area_idx_list[:split]
 			self.idx_list_valid = self.area_idx_list[split:]
+
+			self.data_path = data_path
 			return
 
 	def getDataBatch(self, batch_size, mode = None):
@@ -703,14 +700,19 @@ class AnchorGenerator(object):
 		n_rotate = random.choice([0, 1, 2, 3])
 
 		# 
-		img = Image.open(io.BytesIO(self.archive.read(path + '/img.png')))
+		while True:
+			try:
+				img = Image.open(io.BytesIO(self.sftp.open(path + '/img.png').read()))
+				break
+			except:
+				print('Paramiko.')
 		org_size = img.size
 		img = img.rotate(n_rotate * 90)
 		img_size = img.size
 		img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
 
 		org = np.array(img)[..., 0: 3] / 255.0
-		lines = self.archive.read(path + '/bboxes.txt').decode('utf-8').split('\n')
+		lines = self.sftp.open(path + '/bboxes.txt').read().decode('utf-8').split('\n')
 		bboxes = []
 		for line in lines:
 			if line.strip() != '':
@@ -817,7 +819,7 @@ class AnchorGenerator(object):
 			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
 			for i in range(boxes.shape[0]):
-				l, u, r, d = tuple(list(box[i, :]))
+				l, u, r, d = tuple(list(boxes[i, :]))
 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 			org.save(path + '/%d.png' % idx)
 
@@ -889,5 +891,5 @@ if __name__ == '__main__':
 	# for n in num_e:
 	# 	plotEllipse(num_ellipse = n)
 	# print(scoreIoU((0, 0, 100, 100), (5, 5, 100, 100)))
-	ag = AnchorGenerator(fake = False, data_path = '../Chicago_Area.zip')
+	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
 	ag.getDataBatch(4, mode = 'train')

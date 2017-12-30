@@ -234,7 +234,7 @@ if __name__ == '__main__':
 	train_num_anchors = 256
 
 	# Create data generator
-	obj = ut.AnchorGenerator(fake = False, data_path = '../Chicago_Area.zip')
+	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
 
 	# Define graph
 	RPNGraph = RPN(train_batch_size, train_num_anchors, pred_batch_size, 9)
@@ -259,8 +259,8 @@ if __name__ == '__main__':
 	with tf.Session() as sess:
 		# Create loggers
 		f = open('./RPN-Loss.out', 'a')
-		# train_writer = Logger('./log/train/')
-		# valid_writer = Logger('./log/valid/')
+		train_writer = Logger('./log/train/')
+		valid_writer = Logger('./log/valid/')
 
 		# Restore weights
 		if len(sys.argv) > 1 and sys.argv[1] != None:
@@ -279,9 +279,9 @@ if __name__ == '__main__':
 			# Training and get result
 			sess.run(train, feed_dict)
 			loss_1, loss_2 = sess.run(result, feed_dict)
-			# train_writer.log_scalar('Loss CNN' , loss_CNN, i)
-			# train_writer.log_scalar('Loss RNN' , loss_RNN, i)
-			# train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN, i)
+			train_writer.log_scalar('Loss CNN' , loss_CNN, i)
+			train_writer.log_scalar('Loss RNN' , loss_RNN, i)
+			train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN, i)
 
 			# Write loss to file
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
@@ -299,7 +299,7 @@ if __name__ == '__main__':
 				obj.recover('./res', img, obj_logit, bbox_info)
 
 		# End main loop
-		# train_writer.close()
-		# valid_writer.close()
+		train_writer.close()
+		valid_writer.close()
 		f.close()
 
