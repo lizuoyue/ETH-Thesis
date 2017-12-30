@@ -279,9 +279,9 @@ if __name__ == '__main__':
 			# Training and get result
 			sess.run(train, feed_dict)
 			loss_1, loss_2 = sess.run(result, feed_dict)
-			train_writer.log_scalar('Loss CNN' , loss_CNN, i)
-			train_writer.log_scalar('Loss RNN' , loss_RNN, i)
-			train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN, i)
+			train_writer.log_scalar('Loss Class' , loss_1, i)
+			train_writer.log_scalar('Loss BBox' , loss_2, i)
+			train_writer.log_scalar('Loss Full', loss_1 + loss_2, i)
 
 			# Write loss to file
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_1 + loss_2))
