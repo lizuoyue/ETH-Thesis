@@ -429,17 +429,22 @@ class PolygonRNN(object):
 				v[i] = tf.reshape(
 					self.FC(
 						rnn_output = rnn_output[i],
+						last_two = (v[i - 1], v[max(i - 2, 0)]),
 						reuse = True
-					),
+					)
 					[-1, self.v_out_res[1], self.v_out_res[0], 1]
 				)
 			return tf.stack(v, 1)
 
-	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, reuse = None):
+	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, last_two = None, reuse = None):
 		if not reuse:
 			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
+			idx_0 = tf.argmax(tf.reshape(last_two[0], [-1, self.res_num]), axis = 1)
+			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
+			r0, c0 = tf.floor(idx_0 / self.v_out_res[0]), tf.mod(idx_0, self.v_out_res[0])
+			r1, c1 = tf.floor(idx_1 / self.v_out_res[0]), tf.mod(idx_1, self.v_out_res[0])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(
 				inputs = output_reshape,
@@ -455,7 +460,25 @@ class PolygonRNN(object):
 			) / tf.reduce_sum(seq_len)
 			return logits, loss
 		else:
-			idx = tf.argmax(logits, axis = 2)
+			angle = [] 
+			for i in range(self.pred_batch_size):
+				if r0[i] == r1[i] and c0[i] == c1[i]:
+					for j in range(self.v_out_res[1]):
+						for k in range(self.v_out_res[0]):
+							angle.append(1.0)
+				else:
+					for j in range(self.v_out_res[1]):
+						for k in range(self.v_out_res[0]):
+							vec_a = (r1[i] - r0[i], c1[i] - c0[i])
+							vec_b = (j - r1[i], k - c1[i])
+							norm_a = tf.sqrt(tf.square(vec_a[0]) + tf.square(vec_a[1]))
+							norm_b = tf.sqrt(tf.square(vec_b[0]) + tf.square(vec_b[1]))
+							cos = (vec_a[0] * vec_b[0] + vec_a[1] * vec_b[1]) / norm_a / norm_b
+							sin = tf.sqrt(1 - tf.square(cos))
+							angle.append(sin)
+				angle.append(1.0)
+			angle_score = tf.reshape(tf.stack(angle, 0), [-1, self.res_num + 1])
+			idx = tf.argmax(angle_score * tf.nn.softmax(logits), axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
