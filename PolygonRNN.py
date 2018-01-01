@@ -1,7 +1,7 @@
 import os, re, sys
 if os.path.exists('../Python-Lib/'):
 	sys.path.insert(1, '../Python-Lib')
-import io, glob
+import io, glob, math
 import numpy as np
 import tensorflow as tf
 from PIL import Image, ImageDraw
