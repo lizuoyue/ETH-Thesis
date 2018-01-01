@@ -421,7 +421,7 @@ class PolygonRNN(object):
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
 			rnn_output = [None for i in range(self.max_seq_len)]
-			v[0] = tf.reshape(v_first, [-1, self.v_out_res[1], self.v_out_res[0], 1])
+			v[0] = tf.reshape(v_first, [self.pred_batch_size, self.v_out_res[1], self.v_out_res[0], 1])
 			# state[0] = self.stacked_lstm.zero_state(self.pred_batch_size, tf.float32)
 			state[0] = tuple([tf.contrib.rnn.LSTMStateTuple(
 				c = tf.tile(self.lstm_init_state[i][0: 1], [self.pred_batch_size, 1, 1, 1]),
@@ -438,15 +438,15 @@ class PolygonRNN(object):
 						last_two = (v[i - 1], v[max(i - 2, 0)]),
 						reuse = True
 					),
-					[-1, self.v_out_res[1], self.v_out_res[0], 1]
+					[self.pred_batch_size, self.v_out_res[1], self.v_out_res[0], 1]
 				)
 			return tf.stack(v, 1)
 
 	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, last_two = None, reuse = None):
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [self.train_batch_size, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])
 		else:
-			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [self.pred_batch_size, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(
 				inputs = output_reshape,
