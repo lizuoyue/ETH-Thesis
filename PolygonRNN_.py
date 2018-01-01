@@ -41,13 +41,6 @@ class PolygonRNN(object):
 		self.vertex_pool.append(np.zeros((v_out_res[1], v_out_res[0]), dtype = np.float32))
 		self.vertex_pool = np.array(self.vertex_pool)
 
-		# Angle
-		self.angle_score = np.load('./Angle_Score.npy')
-		print(self.angle_score.shape)
-
-		print('PolygonRNN Initialization Done.')
-		return
-
 	def ConvLSTMCell(self, input_channels, output_channels):
 		return tf.contrib.rnn.ConvLSTMCell(
 			conv_ndims = 2,
@@ -436,14 +429,13 @@ class PolygonRNN(object):
 				v[i] = tf.reshape(
 					self.FC(
 						rnn_output = rnn_output[i],
-						last_two = (v[i - 1], v[max(i - 2, 0)]),
 						reuse = True
-					)
+					),
 					[-1, self.v_out_res[1], self.v_out_res[0], 1]
 				)
 			return tf.stack(v, 1)
 
-	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, last_two = None, reuse = None):
+	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, reuse = None):
 		if not reuse:
 			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])
 		else:
@@ -463,11 +455,7 @@ class PolygonRNN(object):
 			) / tf.reduce_sum(seq_len)
 			return logits, loss
 		else:
-			idx_0 = tf.argmax(tf.reshape(last_two[0], [-1, self.res_num]), axis = 1)
-			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
-			angle_idx = idx_0 * self.res_num + idx_1
-			angle_score = tf.gather(self.angle_score, angle_idx, axis = 0)
-			idx = tf.argmax(tf.nn.softmax(logits), axis = 2) # angle_score * 
+			idx = tf.argmax(logits, axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
@@ -672,7 +660,7 @@ if __name__ == '__main__':
 		lstm_out_channel = [32, 16, 8]
 		v_out_res = (28, 28)
 		train_batch_size = 9
-		pred_batch_size = 36
+		pred_batch_size = 25
 	else:
 		lr = 0.0005
 		max_seq_len = 12
