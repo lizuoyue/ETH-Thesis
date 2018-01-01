@@ -52,6 +52,9 @@ class PolygonRNN(object):
 				ab = b - a
 				norm_ab = np.sqrt(np.matmul(ab, ab))
 				for k in range(self.res_num):
+					if k == j:
+						self.angle_score[i * self.res_num + j, k] = 0
+						continue
 					c = np.array([math.floor(k / v_out_res[0]), k % v_out_res[0]])
 					bc = c - b
 					norm_bc = np.sqrt(np.matmul(bc, bc))
@@ -686,7 +689,7 @@ if __name__ == '__main__':
 		lstm_out_channel = [32, 16, 8]
 		v_out_res = (28, 28)
 		train_batch_size = 9
-		pred_batch_size = 25
+		pred_batch_size = 36
 	else:
 		lr = 0.0005
 		max_seq_len = 12
