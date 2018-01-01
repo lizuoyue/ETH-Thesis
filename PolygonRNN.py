@@ -7,6 +7,9 @@ import tensorflow as tf
 from PIL import Image, ImageDraw
 ut = __import__('Utility')
 
+angle = np.load('./Angle_Score.npy')
+angle_score = tf.placeholder(tf.float32)
+
 class PolygonRNN(object):
 
 	def __init__(self, max_seq_len, lstm_out_channel, v_out_res, train_batch_size, pred_batch_size):
@@ -42,10 +45,6 @@ class PolygonRNN(object):
 		self.vertex_pool = np.array(self.vertex_pool)
 
 		# Angle
-		self.angle_score = np.load('./Angle_Score.npy')
-		print(self.angle_score.shape)
-
-		print('PolygonRNN Initialization Done.')
 		return
 
 	def ConvLSTMCell(self, input_channels, output_channels):
@@ -466,8 +465,8 @@ class PolygonRNN(object):
 			idx_0 = tf.argmax(tf.reshape(last_two[0], [-1, self.res_num]), axis = 1)
 			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
 			angle_idx = idx_0 * self.res_num + idx_1
-			angle_score = tf.gather(self.angle_score, angle_idx, axis = 0)
-			idx = tf.argmax(angle_score * tf.nn.softmax(logits), axis = 2)
+			weight = tf.gather(angle_score, angle_idx, axis = 0)
+			idx = tf.argmax(weight * tf.nn.softmax(logits), axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
@@ -607,7 +606,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 				break
 	seq_len = [len(polygon[i]) for i in range(batch_size)]
 
-	#
+	# 
 	for i in range(batch_size):
 		vv = v_out_pred[i, 0: seq_len[i]]
 		overlay(img[i], blank      , shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-0-img.png' % i)
@@ -699,6 +698,7 @@ if __name__ == '__main__':
 	oo = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
+
 	result = PolyRNNGraph.Train(xx, bb, vv, ii, oo, ee, ll)
 	pred = PolyRNNGraph.Predict(xx)
 
@@ -755,7 +755,7 @@ if __name__ == '__main__':
 			if i % 200 == 0:
 				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'valid')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
+				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
 				# Validation and get result
 				loss_CNN, loss_RNN, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
@@ -775,7 +775,7 @@ if __name__ == '__main__':
 			if i % 200 == 0:
 				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
+				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
 				# 
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
@@ -785,7 +785,7 @@ if __name__ == '__main__':
 			if i % 200 == 0:
 				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
+				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
 				# 
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
