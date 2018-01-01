@@ -466,7 +466,7 @@ class PolygonRNN(object):
 			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
 			angle_idx = idx_0 * self.res_num + idx_1
 			weight = tf.gather(angle_score, angle_idx, axis = 0)
-			print(weight.shape)
+			print(angle_idx.shape)
 			print(tf.nn.softmax(logits).shape)
 			idx = tf.argmax(weight * tf.nn.softmax(logits), axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
