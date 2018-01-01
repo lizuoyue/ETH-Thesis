@@ -50,17 +50,15 @@ class PolygonRNN(object):
 					continue
 				b = np.array([math.floor(j / v_out_res[0]), j % v_out_res[0]])
 				ab = b - a
-				norm_ab = np.sqrt(np.matmul(ab, ab))
+				norm_ab = np.linalg.norm(ab)
 				for k in range(self.res_num):
 					if k == j:
 						self.angle_score[i * self.res_num + j, k] = 0
 						continue
 					c = np.array([math.floor(k / v_out_res[0]), k % v_out_res[0]])
 					bc = c - b
-					norm_bc = np.sqrt(np.matmul(bc, bc))
-					cos = np.matmul(ab, bc) / norm_ab / norm_bc
-					sin = np.sqrt(1 - cos * cos)
-					self.angle_score[i * self.res_num + j, k] = sin
+					norm_bc = np.linalg.norm(bc)
+					self.angle_score[i * self.res_num + j, k] = np.sqrt(1.0 - (np.matmul(ab, bc) / norm_ab / norm_bc) ** 2)
 
 		print('PolygonRNN Initialization Done.')
 		return
