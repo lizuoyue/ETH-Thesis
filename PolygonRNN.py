@@ -42,23 +42,7 @@ class PolygonRNN(object):
 		self.vertex_pool = np.array(self.vertex_pool)
 
 		# Angle
-		self.angle_score = np.ones((self.res_num * self.res_num, self.res_num + 1), np.float32)
-		for i in range(self.res_num):
-			a = np.array([math.floor(i / v_out_res[0]), i % v_out_res[0]])
-			for j in range(self.res_num):
-				if i == j:
-					continue
-				b = np.array([math.floor(j / v_out_res[0]), j % v_out_res[0]])
-				ab = b - a
-				norm_ab = np.linalg.norm(ab)
-				for k in range(self.res_num):
-					if k == j:
-						self.angle_score[i * self.res_num + j, k] = 0
-						continue
-					c = np.array([math.floor(k / v_out_res[0]), k % v_out_res[0]])
-					bc = c - b
-					norm_bc = np.linalg.norm(bc)
-					self.angle_score[i * self.res_num + j, k] = np.sqrt(1.0 - (np.matmul(ab, bc) / norm_ab / norm_bc) ** 2)
+		self.angle_score = np.load('./Angle_Score.npy')
 
 		print('PolygonRNN Initialization Done.')
 		return
