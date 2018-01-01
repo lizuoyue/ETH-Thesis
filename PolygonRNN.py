@@ -42,8 +42,8 @@ class PolygonRNN(object):
 		self.vertex_pool = np.array(self.vertex_pool)
 
 		# Angle
-		# self.angle_score = np.load('./Angle_Score.npy')
-		# print(self.angle_score.shape)
+		self.angle_score = np.load('./Angle_Score.npy')
+		print(self.angle_score.shape)
 
 		print('PolygonRNN Initialization Done.')
 		return
