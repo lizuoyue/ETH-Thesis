@@ -684,14 +684,14 @@ if __name__ == '__main__':
 		lr = 0.00025
 		max_seq_len = 24
 		lstm_out_channel = [32, 16, 8]
-		v_out_res = (56, 56) # (28, 28)
+		v_out_res = (28, 28)
 		train_batch_size = 9
 		pred_batch_size = 25
 	else:
 		lr = 0.0005
 		max_seq_len = 12
-		lstm_out_channel = [32, 16, 8] # [32, 12]
-		v_out_res = (56, 56) # (28, 28)
+		lstm_out_channel = [32, 16]
+		v_out_res = (56, 56)
 		train_batch_size = 9
 		pred_batch_size = 25
 
