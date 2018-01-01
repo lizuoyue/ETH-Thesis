@@ -43,6 +43,7 @@ class PolygonRNN(object):
 
 		# Angle
 		self.angle_score = np.load('./Angle_Score.npy')
+		print(self.angle_score.shape)
 
 		print('PolygonRNN Initialization Done.')
 		return
