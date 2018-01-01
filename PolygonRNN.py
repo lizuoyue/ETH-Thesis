@@ -438,7 +438,7 @@ class PolygonRNN(object):
 						rnn_output = rnn_output[i],
 						last_two = (v[i - 1], v[max(i - 2, 0)]),
 						reuse = True
-					)
+					),
 					[-1, self.v_out_res[1], self.v_out_res[0], 1]
 				)
 			return tf.stack(v, 1)
@@ -463,11 +463,11 @@ class PolygonRNN(object):
 			) / tf.reduce_sum(seq_len)
 			return logits, loss
 		else:
-			# idx_0 = tf.argmax(tf.reshape(last_two[0], [-1, self.res_num]), axis = 1)
-			# idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
-			# angle_idx = idx_0 * self.res_num + idx_1
-			# angle_score = tf.gather(self.angle_score, angle_idx, axis = 0)
-			idx = tf.argmax(logits, axis = 2) # angle_score * tf.nn.softmax(
+			idx_0 = tf.argmax(tf.reshape(last_two[0], [-1, self.res_num]), axis = 1)
+			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
+			angle_idx = idx_0 * self.res_num + idx_1
+			angle_score = tf.gather(self.angle_score, angle_idx, axis = 0)
+			idx = tf.argmax(angle_score * tf.nn.softmax(logits), axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
