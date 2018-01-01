@@ -467,17 +467,17 @@ class PolygonRNN(object):
 						for k in range(self.v_out_res[0]):
 							angle.append(1.0)
 				else:
+					vec_a = (tf.cast(r1[i] - r0[i], tf.float32), tf.cast(c1[i] - c0[i], tf.float32))
+					norm_a = tf.sqrt(tf.square(vec_a[0]) + tf.square(vec_a[1]))
 					for j in range(self.v_out_res[1]):
 						for k in range(self.v_out_res[0]):
-							vec_a = (r1[i] - r0[i], c1[i] - c0[i])
-							vec_b = (j - r1[i], k - c1[i])
-							norm_a = tf.sqrt(tf.square(vec_a[0]) + tf.square(vec_a[1]))
+							vec_b = (tf.cast(j - r1[i], tf.float32), tf.cast(k - c1[i], tf.float32))
 							norm_b = tf.sqrt(tf.square(vec_b[0]) + tf.square(vec_b[1]))
 							cos = (vec_a[0] * vec_b[0] + vec_a[1] * vec_b[1]) / norm_a / norm_b
 							sin = tf.sqrt(1 - tf.square(cos))
 							angle.append(sin)
 				angle.append(1.0)
-			angle_score = tf.reshape(tf.stack(angle, 0), [-1, self.res_num + 1])
+			angle_score = tf.reshape(tf.stack(angle, 0), [self.pred_batch_size, self.res_num + 1])
 			idx = tf.argmax(angle_score * tf.nn.softmax(logits), axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
