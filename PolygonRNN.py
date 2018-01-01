@@ -42,8 +42,8 @@ class PolygonRNN(object):
 		self.vertex_pool = np.array(self.vertex_pool)
 
 		# Angle
-		self.angle_score = np.load('./Angle_Score.npy')
-		print(self.angle_score.shape)
+		# self.angle_score = np.load('./Angle_Score.npy')
+		# print(self.angle_score.shape)
 
 		print('PolygonRNN Initialization Done.')
 		return
@@ -467,7 +467,7 @@ class PolygonRNN(object):
 			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
 			angle_idx = idx_0 * self.res_num + idx_1
 			angle_score = tf.gather(self.angle_score, angle_idx, axis = 0)
-			idx = tf.argmax(angle_score * tf.nn.softmax(logits), axis = 2)
+			idx = tf.argmax(tf.nn.softmax(logits), axis = 2) # angle_score * 
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
