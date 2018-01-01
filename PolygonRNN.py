@@ -58,6 +58,8 @@ class PolygonRNN(object):
 					cos = np.matmul(ab, bc) / norm_ab / norm_bc
 					sin = np.sqrt(1 - cos * cos)
 					self.angle_score[i * self.res_num + j, k] = sin
+
+		print('PolygonRNN Initialization Done.')
 		return
 
 	def ConvLSTMCell(self, input_channels, output_channels):
