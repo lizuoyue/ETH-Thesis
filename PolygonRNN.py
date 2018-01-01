@@ -41,6 +41,25 @@ class PolygonRNN(object):
 		self.vertex_pool.append(np.zeros((v_out_res[1], v_out_res[0]), dtype = np.float32))
 		self.vertex_pool = np.array(self.vertex_pool)
 
+		# Angle
+		self.angle_score = np.ones((self.res_num * self.res_num, self.res_num + 1), np.float32)
+		for i in range(self.res_num):
+			a = np.array([math.floor(i / v_out_res[0]), i % v_out_res[0]])
+			for j in range(self.res_num):
+				if i == j:
+					continue
+				b = np.array([math.floor(j / v_out_res[0]), j % v_out_res[0]])
+				ab = b - a
+				norm_ab = np.sqrt(np.matmul(ab, ab))
+				for k in range(self.res_num):
+					c = np.array([math.floor(k / v_out_res[0]), k % v_out_res[0]])
+					bc = c - b
+					norm_bc = np.sqrt(np.matmul(bc, bc))
+					cos = np.matmul(ab, bc) / norm_ab / norm_bc
+					sin = np.sqrt(1 - cos * cos)
+					self.angle_score[i * self.res_num + j, k] = sin
+		return
+
 	def ConvLSTMCell(self, input_channels, output_channels):
 		return tf.contrib.rnn.ConvLSTMCell(
 			conv_ndims = 2,
@@ -441,10 +460,6 @@ class PolygonRNN(object):
 			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
-			idx_0 = tf.argmax(tf.reshape(last_two[0], [-1, self.res_num]), axis = 1)
-			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
-			r0, c0 = tf.floor(idx_0 / self.v_out_res[0]), tf.mod(idx_0, self.v_out_res[0])
-			r1, c1 = tf.floor(idx_1 / self.v_out_res[0]), tf.mod(idx_1, self.v_out_res[0])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(
 				inputs = output_reshape,
@@ -460,24 +475,10 @@ class PolygonRNN(object):
 			) / tf.reduce_sum(seq_len)
 			return logits, loss
 		else:
-			angle = [] 
-			for i in range(self.pred_batch_size):
-				if r0[i] == r1[i] and c0[i] == c1[i]:
-					for j in range(self.v_out_res[1]):
-						for k in range(self.v_out_res[0]):
-							angle.append(1.0)
-				else:
-					vec_a = (tf.cast(r1[i] - r0[i], tf.float32), tf.cast(c1[i] - c0[i], tf.float32))
-					norm_a = tf.sqrt(tf.square(vec_a[0]) + tf.square(vec_a[1]))
-					for j in range(self.v_out_res[1]):
-						for k in range(self.v_out_res[0]):
-							vec_b = (tf.cast(j - r1[i], tf.float32), tf.cast(k - c1[i], tf.float32))
-							norm_b = tf.sqrt(tf.square(vec_b[0]) + tf.square(vec_b[1]))
-							cos = (vec_a[0] * vec_b[0] + vec_a[1] * vec_b[1]) / norm_a / norm_b
-							sin = tf.sqrt(1 - tf.square(cos))
-							angle.append(sin)
-				angle.append(1.0)
-			angle_score = tf.reshape(tf.stack(angle, 0), [self.pred_batch_size, self.res_num + 1])
+			idx_0 = tf.argmax(tf.reshape(last_two[0], [-1, self.res_num]), axis = 1)
+			idx_1 = tf.argmax(tf.reshape(last_two[1], [-1, self.res_num]), axis = 1)
+			angle_idx = idx_0 * self.res_num + idx_1
+			angle_score = tf.gather(self.angle_score, angle_idx, axis = 0)
 			idx = tf.argmax(angle_score * tf.nn.softmax(logits), axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
