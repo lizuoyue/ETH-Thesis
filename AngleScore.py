@@ -20,5 +20,8 @@ for i in range(res_num):
 			c = np.array([math.floor(k / v_out_res[0]), k % v_out_res[0]])
 			bc = c - b
 			norm_bc = np.linalg.norm(bc)
-			angle_score[i * res_num + j, k] = np.sqrt(np.maximum(1.0 - np.matmul(ab, bc) / norm_ab / norm_bc ** 2, 0.0))
+			cos = np.matmul(ab, bc) / norm_ab / norm_bc
+			sin = np.sqrt(np.maximum(1.0 - cos ** 2, 0.0))
+			assert(sin >= 0.0 and sin <= 1.0)
+			angle_score[i * res_num + j, k] = sin
 np.save('./Angle_Score.npy', angle_score)
