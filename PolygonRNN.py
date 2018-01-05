@@ -9,6 +9,7 @@ ut = __import__('Utility')
 
 angle = np.load('./Angle_Score.npy')
 angle_score = tf.placeholder(tf.float32)
+angle_score_reshape = tf.reshape(angle_score, [-1])
 
 class PolygonRNN(object):
 
@@ -44,7 +45,6 @@ class PolygonRNN(object):
 		self.vertex_pool.append(np.zeros((v_out_res[1], v_out_res[0]), dtype = np.float32))
 		self.vertex_pool = np.array(self.vertex_pool)
 
-		# Angle
 		return
 
 	def ConvLSTMCell(self, input_channels, output_channels):
@@ -390,6 +390,14 @@ class PolygonRNN(object):
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)
 			return tf.concat([feature, boundary, vertices], 3), v_first
 
+	def AngleLoss(self, v_in, idx):
+		input_idx = tf.argmax(tf.reshape(v_in, [self.train_batch_size, self.max_seq_len, self.res_num]), axis = 2)
+		idx_0 = input_idx[:, :-1, :]
+		idx_1 = input_idx[:, 1: , :]
+		idx_2 = idx[:, 1: , :]
+		index = (idx_0 * self.res + idx_1) * (self.res + 1) + idx_2
+		return 1 - tf.reduce_mean(tf.gather(angle_score_reshape, index, axis = 2))
+
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
 		if not reuse:
 			feature_rep = tf.tile(
@@ -416,7 +424,8 @@ class PolygonRNN(object):
 				initial_state = initial_state,
 				dtype = tf.float32
 			)
-			return self.FC(outputs, rnn_out_true, seq_len)
+			logits, loss, idx = self.FC(outputs, rnn_out_true, seq_len)
+			return logits, loss, self.AngleLoss(v_in, idx, seq_len)
 		else:
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
@@ -435,16 +444,15 @@ class PolygonRNN(object):
 				v[i] = tf.reshape(
 					self.FC(
 						rnn_output = rnn_output[i],
-						last_two = (v[i - 1], v[max(i - 2, 0)]),
 						reuse = True
 					),
 					[self.pred_batch_size, self.v_out_res[1], self.v_out_res[0], 1]
 				)
 			return tf.stack(v, 1)
 
-	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, last_two = None, reuse = None):
+	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, reuse = None):
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [self.train_batch_size, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [self.train_batch_size, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])	
 		else:
 			output_reshape = tf.reshape(rnn_output, [self.pred_batch_size, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
@@ -460,27 +468,24 @@ class PolygonRNN(object):
 					logits = logits
 				)
 			) / tf.reduce_sum(seq_len)
-			return logits, loss
+			idx = tf.argmax(logits, axis = 2)
+			return logits, loss, idx
 		else:
-			idx_0 = tf.argmax(tf.reshape(last_two[0], [self.pred_batch_size, 1, self.res_num]), axis = 2)
-			idx_1 = tf.argmax(tf.reshape(last_two[1], [self.pred_batch_size, 1, self.res_num]), axis = 2)
-			angle_idx = idx_0 * self.res_num + idx_1
-			weight = tf.gather(angle_score, angle_idx, axis = 0)
-			idx = tf.argmax(weight * tf.nn.softmax(logits), axis = 2)
+			idx = tf.argmax(logits, axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
-		img           = tf.reshape(xx, [-1, 224, 224, 3])
-		boundary_true = tf.reshape(bb, [-1, self.v_out_res[1], self.v_out_res[0], 1])
-		vertices_true = tf.reshape(vv, [-1, self.v_out_res[1], self.v_out_res[0], 1])
-		v_in          = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_res[1], self.v_out_res[0], 1])
-		v_out_true    = tf.reshape(oo, [-1, self.max_seq_len, self.res_num])
-		end_true      = tf.reshape(ee, [-1, self.max_seq_len, 1])
-		seq_len       = tf.reshape(ll, [-1])
+		img           = tf.reshape(xx, [self.train_batch_size, 224, 224, 3])
+		boundary_true = tf.reshape(bb, [self.train_batch_size, self.v_out_res[1], self.v_out_res[0], 1])
+		vertices_true = tf.reshape(vv, [self.train_batch_size, self.v_out_res[1], self.v_out_res[0], 1])
+		v_in          = tf.reshape(ii, [self.train_batch_size, self.max_seq_len, self.v_out_res[1], self.v_out_res[0], 1])
+		v_out_true    = tf.reshape(oo, [self.train_batch_size, self.max_seq_len, self.res_num])
+		end_true      = tf.reshape(ee, [self.train_batch_size, self.max_seq_len, 1])
+		seq_len       = tf.reshape(ll, [self.train_batch_size])
 		rnn_out_true  = tf.concat([v_out_true, end_true], 2)
 
 		feature, loss_CNN = self.CNN(img, boundary_true, vertices_true)
-		logits , loss_RNN = self.RNN(feature, v_in, rnn_out_true, seq_len)
+		logits , loss_RNN, loss_Angle = self.RNN(feature, v_in, rnn_out_true, seq_len)
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
 
@@ -494,7 +499,7 @@ class PolygonRNN(object):
 			rnn_pred[..., self.res_num],
 			[-1, self.max_seq_len, 1]
 		)
-		return loss_CNN, loss_RNN, boundary, vertices, v_out_pred, end_pred
+		return loss_CNN, loss_RNN, loss_Angle, boundary, vertices, v_out_pred, end_pred
 
 	def Predict(self, xx):
 		img = tf.reshape(xx, [-1, 224, 224, 3])
@@ -707,7 +712,7 @@ if __name__ == '__main__':
 	# quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
-	train = optimizer.minimize(result[0] + result[1])
+	train = optimizer.minimize(result[0] + result[1] + result[2])
 	saver = tf.train.Saver(max_to_keep = 3)
 	init = tf.global_variables_initializer()
 
@@ -734,10 +739,11 @@ if __name__ == '__main__':
 
 			# Training and get result
 			sess.run(train, feed_dict)
-			loss_CNN, loss_RNN, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
+			loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
 			train_writer.log_scalar('Loss CNN' , loss_CNN, i)
 			train_writer.log_scalar('Loss RNN' , loss_RNN, i)
-			train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN, i)
+			train_writer.log_scalar('Loss Angle', loss_Angle, i)
+			train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
 
 			# Write loss to file
 			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
@@ -758,10 +764,11 @@ if __name__ == '__main__':
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
 				# Validation and get result
-				loss_CNN, loss_RNN, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
+				loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
 				valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
 				valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
-				valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN, i)
+				valid_writer.log_scalar('Loss Angle', loss_Angle, i)
+				valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
 
 				# Write loss to file
 				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
