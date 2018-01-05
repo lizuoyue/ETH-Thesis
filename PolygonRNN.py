@@ -392,9 +392,9 @@ class PolygonRNN(object):
 
 	def AngleLoss(self, v_in, idx):
 		input_idx = tf.argmax(tf.reshape(v_in, [self.train_batch_size, self.max_seq_len, self.res_num]), axis = 2)
-		idx_0 = input_idx[:, :-1, :]
-		idx_1 = input_idx[:, 1: , :]
-		idx_2 = idx[:, 1: , :]
+		idx_0 = input_idx[:, :-1]
+		idx_1 = input_idx[:, 1: ]
+		idx_2 = idx[:, 1: ]
 		index = (idx_0 * self.res + idx_1) * (self.res + 1) + idx_2
 		return 1 - tf.reduce_mean(tf.gather(angle_score_reshape, index, axis = 2))
 
@@ -425,7 +425,7 @@ class PolygonRNN(object):
 				dtype = tf.float32
 			)
 			logits, loss, idx = self.FC(outputs, rnn_out_true, seq_len)
-			return logits, loss, self.AngleLoss(v_in, idx, seq_len)
+			return logits, loss, self.AngleLoss(v_in, idx)
 		else:
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
