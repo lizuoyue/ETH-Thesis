@@ -395,7 +395,7 @@ class PolygonRNN(object):
 		idx_0 = input_idx[:, :-1]
 		idx_1 = input_idx[:, 1: ]
 		idx_2 = idx[:, 1: ]
-		index = (idx_0 * self.res + idx_1) * (self.res + 1) + idx_2
+		index = (idx_0 * self.res_num + idx_1) * (self.res_num + 1) + idx_2
 		return 1 - tf.reduce_mean(tf.gather(angle_score_reshape, index, axis = 2))
 
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
