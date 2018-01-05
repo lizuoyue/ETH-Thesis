@@ -7,7 +7,7 @@ import tensorflow as tf
 from PIL import Image, ImageDraw
 ut = __import__('Utility')
 
-angle = np.load('./Angle_Score.npy')
+angle = 1 - np.load('./Angle_Score.npy')
 angle_score = tf.placeholder(tf.float32)
 angle_score_reshape = tf.reshape(angle_score, [-1, 1])
 
@@ -390,13 +390,13 @@ class PolygonRNN(object):
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)
 			return tf.concat([feature, boundary, vertices], 3), v_first
 
-	def AngleLoss(self, v_in, idx):
+	def AngleLoss(self, v_in, idx, seq_len):
 		input_idx = tf.argmax(tf.reshape(v_in, [self.train_batch_size, self.max_seq_len, self.res_num]), axis = 2)
 		idx_0 = input_idx[:, :-1]
 		idx_1 = input_idx[:, 1: ]
-		idx_2 = idx[:, 1: ]
+		idx_2 = idx      [:, 1: ]
 		index = (idx_0 * self.res_num + idx_1) * (self.res_num + 1) + idx_2
-		return 1 - tf.reduce_mean(tf.gather(angle_score_reshape, index, axis = 0))
+		return tf.reduce_sum(tf.gather(angle_score_reshape, index, axis = 0)) / (tf.reduce_sum(seq_len) - 2 * self.train_batch_size)
 
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
 		if not reuse:
@@ -425,7 +425,7 @@ class PolygonRNN(object):
 				dtype = tf.float32
 			)
 			logits, loss, idx = self.FC(outputs, rnn_out_true, seq_len)
-			return logits, loss, self.AngleLoss(v_in, idx)
+			return logits, loss, self.AngleLoss(v_in, idx, seq_len)
 		else:
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
