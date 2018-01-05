@@ -746,8 +746,8 @@ if __name__ == '__main__':
 			train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
 
 			# Write loss to file
-			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
-			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
+			print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
+			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
 			f.flush()
 
 			# Visualize
@@ -771,8 +771,8 @@ if __name__ == '__main__':
 				valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
 
 				# Write loss to file
-				print('Valid Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
-				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_CNN + loss_RNN))
+				print('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
+				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
 				f.flush()
 
 				# Visualize
