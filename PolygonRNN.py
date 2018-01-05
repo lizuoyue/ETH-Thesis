@@ -735,7 +735,7 @@ if __name__ == '__main__':
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
 			img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'train')
-			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len}
+			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
 			# Training and get result
 			sess.run(train, feed_dict)
