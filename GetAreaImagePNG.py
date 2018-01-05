@@ -9,9 +9,9 @@ bli = __import__('GetBuildingListOSM')
 CITY_DICT = {
 	'Chicago': {
 		'left-up-center': (-87.7976490, 41.960124),
-		'step': (0.000268966, 0.000200000),
-		'xrange': (0, 600),
-		'yrange': (0, 900),
+		'step': (0.000403449, 0.000300000),
+		'xrange': (0, 400),
+		'yrange': (0, 600),
 	}
 }
 
@@ -94,7 +94,7 @@ class AreaImageDownloader(object):
 			if inner_count / len(polygon) < 0.5:
 				polygon.reverse()
 
-		img.save('../%s_Area/%d_%d/merge.png' % (self.city_name, area_idx[0], area_idx[1]))
+		# img.save('../%s_Area/%d_%d/merge.png' % (self.city_name, area_idx[0], area_idx[1]))
 
 		# Save as text file to save storage
 		f = open('../%s_Area/%d_%d/polygons.txt' % (self.city_name, area_idx[0], area_idx[1]), 'w')
@@ -195,8 +195,8 @@ class AreaImageDownloader(object):
 			polygons.append(polygon)
 
 		# Save and return
-		# self.saveImagePolygons(img, polygons, area_idx)
-		self.saveImageBBoxes(img, polygons, area_idx)
+		self.saveImagePolygons(img, polygons, area_idx)
+		# self.saveImageBBoxes(img, polygons, area_idx)
 		return
 
 if __name__ == '__main__':
