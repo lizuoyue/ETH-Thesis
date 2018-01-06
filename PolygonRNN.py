@@ -397,9 +397,9 @@ class PolygonRNN(object):
 		idx_2 = idx      [:, 1: ]
 		# index = (idx_0 * self.res_num + idx_1) * (self.res_num + 1) + idx_2
 		# return tf.reduce_sum(tf.gather(angle_score_reshape, index, axis = 0)) / (tf.reduce_sum(seq_len) - 2 * self.train_batch_size)
-		p_0 = (tf.floor(idx_0 / self.v_out_res[0]), tf.cast(tf.mod(idx_0, v_out_res[0]), tf.float32))
-		p_1 = (tf.floor(idx_1 / self.v_out_res[0]), tf.cast(tf.mod(idx_1, v_out_res[0]), tf.float32))
-		p_2 = (tf.floor(idx_2 / self.v_out_res[0]), tf.cast(tf.mod(idx_2, v_out_res[0]), tf.float32))
+		p_0 = (tf.floor(idx_0 / self.v_out_res[0]), tf.cast(tf.mod(idx_0, v_out_res[0]), tf.float64))
+		p_1 = (tf.floor(idx_1 / self.v_out_res[0]), tf.cast(tf.mod(idx_1, v_out_res[0]), tf.float64))
+		p_2 = (tf.floor(idx_2 / self.v_out_res[0]), tf.cast(tf.mod(idx_2, v_out_res[0]), tf.float64))
 		loss = 0.0
 		for i in range(self.train_batch_size):
 			for j in range(self.max_seq_len - 1):
