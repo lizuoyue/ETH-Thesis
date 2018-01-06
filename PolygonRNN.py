@@ -403,9 +403,9 @@ class PolygonRNN(object):
 		loss = 0.0
 		for i in range(self.train_batch_size):
 			for j in range(self.max_seq_len - 1):
-				a = tf.convert_to_tensor([p_0[0][i, j], p_0[1][i, j]])
-				b = tf.convert_to_tensor([p_1[0][i, j], p_1[1][i, j]])
-				c = tf.convert_to_tensor([p_2[0][i, j], p_2[1][i, j]])
+				a = tf.concat([p_0[0][i, j], p_0[1][i, j]], 0)
+				b = tf.concat([p_1[0][i, j], p_1[1][i, j]], 0)
+				c = tf.concat([p_2[0][i, j], p_2[1][i, j]], 0)
 				ab = b - a
 				bc = c - b
 				norm_ab = tf.norm(ab)
