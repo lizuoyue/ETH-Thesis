@@ -488,12 +488,12 @@ class PolygonRNN(object):
 			idx = tf.argmax(logits, axis = 2)
 			return logits, loss, idx
 		else:
-			# idx_0 = tf.argmax(tf.reshape(last_two[0], [self.pred_batch_size, 1, self.res_num]), axis = 2)
-			# idx_1 = tf.argmax(tf.reshape(last_two[1], [self.pred_batch_size, 1, self.res_num]), axis = 2)
-			# angle_idx = idx_0 * self.res_num + idx_1
-			# weight = tf.gather(angle_score, angle_idx, axis = 0)
-			# idx = tf.argmax(weight * tf.nn.softmax(logits), axis = 2)
-			idx = tf.argmax(logits, axis = 2)
+			idx_0 = tf.argmax(tf.reshape(last_two[0], [self.pred_batch_size, 1, self.res_num]), axis = 2)
+			idx_1 = tf.argmax(tf.reshape(last_two[1], [self.pred_batch_size, 1, self.res_num]), axis = 2)
+			angle_idx = idx_0 * self.res_num + idx_1
+			weight = tf.gather(angle_score, angle_idx, axis = 0)
+			idx = tf.argmax(weight * tf.nn.softmax(logits), axis = 2)
+			# idx = tf.argmax(logits, axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
