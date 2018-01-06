@@ -401,7 +401,6 @@ class PolygonRNN(object):
 		p_1 = (tf.cast(tf.floor(idx_1 / self.v_out_res[0]), tf.float32), tf.cast(tf.mod(idx_1, v_out_res[0]), tf.float32))
 		p_2 = (tf.cast(tf.floor(idx_2 / self.v_out_res[0]), tf.float32), tf.cast(tf.mod(idx_2, v_out_res[0]), tf.float32))
 		loss = 0.0
-		return tf.reduce_sum(p_0[0]) + tf.reduce_sum(p_1[1])
 		for i in range(self.train_batch_size):
 			for j in range(self.max_seq_len - 1):
 				a = tf.stack([p_0[0][i, j], p_0[1][i, j]])
@@ -411,10 +410,12 @@ class PolygonRNN(object):
 				bc = c - b
 				norm_ab = tf.norm(ab)
 				norm_bc = tf.norm(bc)
-				cos = (ab[0] * bc[0] + ab[1] * bc[1]) / norm_ab / norm_bc
+				loss += norm_ab
+				loss += norm_bc
+				# cos = (ab[0] * bc[0] + ab[1] * bc[1]) / norm_ab / norm_bc
 				# sin = tf.sqrt(tf.maximum(1.5 - tf.square(cos), 0.0))
-				sin = 1.0 - tf.square(cos)
-				loss += tf.cast(sin, tf.float32)# * tf.cast(j < (seq_len[i] - 1), tf.float32)
+				# sin = 1.0 - tf.square(cos)
+				# loss += tf.cast(sin, tf.float32)# * tf.cast(j < (seq_len[i] - 1), tf.float32)
 		return loss
 
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
