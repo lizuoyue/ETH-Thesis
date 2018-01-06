@@ -698,7 +698,7 @@ if __name__ == '__main__':
 		lstm_out_channel = [32, 16, 8]
 		v_out_res = (28, 28)
 		train_batch_size = 9
-		pred_batch_size = 36
+		pred_batch_size = 49
 	else:
 		lr = 0.0005
 		max_seq_len = 12
