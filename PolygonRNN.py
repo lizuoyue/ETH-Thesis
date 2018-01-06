@@ -395,8 +395,25 @@ class PolygonRNN(object):
 		idx_0 = input_idx[:, :-1]
 		idx_1 = input_idx[:, 1: ]
 		idx_2 = idx      [:, 1: ]
-		index = (idx_0 * self.res_num + idx_1) * (self.res_num + 1) + idx_2
-		return tf.reduce_sum(tf.gather(angle_score_reshape, index, axis = 0)) / (tf.reduce_sum(seq_len) - 2 * self.train_batch_size)
+		# index = (idx_0 * self.res_num + idx_1) * (self.res_num + 1) + idx_2
+		# return tf.reduce_sum(tf.gather(angle_score_reshape, index, axis = 0)) / (tf.reduce_sum(seq_len) - 2 * self.train_batch_size)
+		p_0 = (tf.floor(idx_0 / self.v_out_res[0]), tf.mod(idx_0, v_out_res[0]))
+		p_1 = (tf.floor(idx_1 / self.v_out_res[0]), tf.mod(idx_1, v_out_res[0]))
+		p_2 = (tf.floor(idx_2 / self.v_out_res[0]), tf.mod(idx_2, v_out_res[0]))
+		loss = 0.0
+		for i in range(self.train_batch_size):
+			for j in range(self.max_seq_len - 1):
+				a = tf.convert_to_tensor([p_0[0][i, j], p_0[1][i, j]])
+				b = tf.convert_to_tensor([p_1[0][i, j], p_1[1][i, j]])
+				c = tf.convert_to_tensor([p_2[0][i, j], p_2[1][i, j]])
+				ab = b - a
+				bc = c - b
+				norm_ab = tf.norm(ab)
+				norm_bc = tf.norm(bc)
+				cos = tf.matmul(ab, bc) / norm_ab / norm_bc
+				sin = tf.sqrt(tf.maximum(1.0 - tf.square(cos), 0.0))
+				loss += sin * (j < (seq_len[i] - 1))
+		return loss
 
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
 		if not reuse:
