@@ -412,7 +412,7 @@ class PolygonRNN(object):
 				norm_bc = tf.norm(bc)
 				cos = (ab[0] * bc[0] + ab[1] * bc[1]) / norm_ab / norm_bc
 				sin = tf.sqrt(tf.maximum(1.0 - tf.square(cos), 0.0))
-				loss += sin * (j < (seq_len[i] - 1))
+				loss += sin * tf.cast(j < (seq_len[i] - 1), tf.float64)
 		return loss
 
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
