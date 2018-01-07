@@ -461,7 +461,8 @@ class PolygonRNN(object):
 				v[i] = tf.reshape(
 					self.FC(
 						rnn_output = rnn_output[i],
-						reuse = True
+						reuse = True,
+						last_two = (v[max(i - 1, 0)], v[max(i - 2, 0)]),
 					),
 					[self.pred_batch_size, self.v_out_res[1], self.v_out_res[0], 1]
 				)
@@ -747,6 +748,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in range(5):
 
+			# Prediction on validation set
 			# Get validation batch data and create feed dictionary
 			img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
 			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
@@ -755,6 +757,7 @@ if __name__ == '__main__':
 			b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
 			visualize_pred('./pre' + str(i), img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
+			# Prediction on test set
 			# Get validation batch data and create feed dictionary
 			img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
 			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}

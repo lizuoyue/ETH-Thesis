@@ -461,7 +461,8 @@ class PolygonRNN(object):
 				v[i] = tf.reshape(
 					self.FC(
 						rnn_output = rnn_output[i],
-						reuse = True
+						reuse = True,
+						last_two = (v[max(i - 1, 0)], v[max(i - 2, 0)]),
 					),
 					[self.pred_batch_size, self.v_out_res[1], self.v_out_res[0], 1]
 				)
