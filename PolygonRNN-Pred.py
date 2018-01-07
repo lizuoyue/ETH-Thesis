@@ -678,17 +678,6 @@ class Logger(object):
 		return
 
 if __name__ == '__main__':
-	# Create new folder
-	if not os.path.exists('./tmp/'):
-		os.makedirs('./tmp/')
-	if not os.path.exists('./res/'):
-		os.makedirs('./res/')
-	if not os.path.exists('./val/'):
-		os.makedirs('./val/')
-	if not os.path.exists('./pre/'):
-		os.makedirs('./pre/')
-	if not os.path.exists('./tes/'):
-		os.makedirs('./tes/')
 
 	# Set parameters
 	n_iter = 100000
