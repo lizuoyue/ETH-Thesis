@@ -468,7 +468,7 @@ class PolygonRNN(object):
 				)
 			return tf.stack(v, 1)
 
-	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, reuse = None):
+	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, reuse = None, last_two = None):
 		if not reuse:
 			output_reshape = tf.reshape(rnn_output, [self.train_batch_size, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])	
 		else:
