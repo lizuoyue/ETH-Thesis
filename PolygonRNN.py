@@ -392,9 +392,9 @@ class PolygonRNN(object):
 
 	def AngleLoss(self, v_in, idx, seq_len):
 		input_idx = tf.argmax(tf.reshape(v_in, [self.train_batch_size, self.max_seq_len, self.res_num]), axis = 2)
-		idx_0 = input_idx[:, :-1]
-		idx_1 = input_idx[:, 1: ]
-		idx_2 = idx      [:, 1: ]
+		idx_0 = input_idx[:, :-1] # 0 1 2 3 4 X X X X
+		idx_1 = input_idx[:, 1: ] # 1 2 3 4 X X X X X
+		idx_2 = idx      [:, 1: ] # 2 3 4 X X X X X X
 		# index = (idx_0 * self.res_num + idx_1) * (self.res_num + 1) + idx_2
 		# return tf.reduce_sum(tf.gather(angle_score_reshape, index, axis = 0)) / (tf.reduce_sum(seq_len) - 2 * self.train_batch_size)
 		p_0 = (tf.cast(tf.floor(idx_0 / self.v_out_res[0]), tf.float32), tf.cast(tf.mod(idx_0, v_out_res[0]), tf.float32))
@@ -402,7 +402,7 @@ class PolygonRNN(object):
 		p_2 = (tf.cast(tf.floor(idx_2 / self.v_out_res[0]), tf.float32), tf.cast(tf.mod(idx_2, v_out_res[0]), tf.float32))
 		loss = 0.0
 		for i in range(self.train_batch_size):
-			for j in range(self.max_seq_len - 1):
+			for j in range(self.max_seq_len - 2):
 				a = tf.stack([p_0[0][i, j], p_0[1][i, j]])
 				b = tf.stack([p_1[0][i, j], p_1[1][i, j]])
 				c = tf.stack([p_2[0][i, j], p_2[1][i, j]])
@@ -412,7 +412,7 @@ class PolygonRNN(object):
 				norm_bc = tf.norm(bc)
 				cos = (ab[0] * bc[0] + ab[1] * bc[1]) / norm_ab / norm_bc
 				sin = tf.sqrt(tf.maximum(1.0 - tf.square(cos), 0.0))
-				loss += tf.cond(tf.equal(norm_ab * norm_bc, 0), lambda: 1.0, lambda: sin) * tf.cast(j < (seq_len[i] - 1), tf.float32)
+				loss += tf.cond(tf.equal(norm_ab * norm_bc, 0), lambda: 1.0, lambda: 1.0 - sin) * tf.cast(j < (seq_len[i] - 2), tf.float32)
 		return loss / (tf.reduce_sum(seq_len) - 2 * self.train_batch_size)
 
 	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
