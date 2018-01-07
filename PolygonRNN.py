@@ -489,12 +489,12 @@ class PolygonRNN(object):
 			idx = tf.argmax(logits, axis = 2)
 			return logits, loss, idx
 		else:
-			idx_0 = tf.argmax(tf.reshape(last_two[0], [self.pred_batch_size, 1, self.res_num]), axis = 2)
-			idx_1 = tf.argmax(tf.reshape(last_two[1], [self.pred_batch_size, 1, self.res_num]), axis = 2)
-			angle_idx = idx_0 * self.res_num + idx_1
-			weight = tf.gather(angle_score, angle_idx, axis = 0)
-			idx = tf.argmax(weight * tf.nn.softmax(logits), axis = 2)
-			# idx = tf.argmax(logits, axis = 2)
+			# idx_0 = tf.argmax(tf.reshape(last_two[0], [self.pred_batch_size, 1, self.res_num]), axis = 2)
+			# idx_1 = tf.argmax(tf.reshape(last_two[1], [self.pred_batch_size, 1, self.res_num]), axis = 2)
+			# angle_idx = idx_0 * self.res_num + idx_1
+			# weight = tf.gather(angle_score, angle_idx, axis = 0)
+			# idx = tf.argmax(weight * tf.nn.softmax(logits), axis = 2)
+			idx = tf.argmax(logits, axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
 	def Train(self, xx, bb, vv, ii, oo, ee, ll):
@@ -611,6 +611,8 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	return
 
 def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info):
+	if not os.path.exists(path):
+		os.makedirs(path)
 	# Clear last files
 	for item in glob.glob(path + '/*'):
 		os.remove(item)
@@ -802,24 +804,24 @@ if __name__ == '__main__':
 				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
 			# Prediction on validation set
-			if i % 200 == 0:
+			if i % 2000 == 0:
 				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
 				# 
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_pred('./pre', img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
+				visualize_pred('./pre%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
 			# Prediction on test set
-			if i % 200 == 0:
+			if i % 2000 == 0:
 				# Get validation batch data and create feed dictionary
 				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
 				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
 				# 
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_pred('./tes', img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
+				visualize_pred('./tes%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
 		# End main loop
 		train_writer.close()
