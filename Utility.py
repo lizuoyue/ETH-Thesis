@@ -179,67 +179,63 @@ def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 		# draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (0, 255, 0))
 		bbox.append(list(lurd2xywh(lu + rd)))
 
+	anchor_cls = np.zeros([num_anchors, 2], np.int32)
+	anchor_box = np.zeros([num_anchors, 4], np.float32)
 	pos_anchor = []
 	neg_anchor = []
-	for i in range(img_size_s[0]):
-		for j in range(img_size_s[1]):
-			x = i * 16 + 8
-			y = j * 16 + 8
-			for k, (w, h) in enumerate(anchor_list):
+	shape = []
+	idx = -1
+	for i in range(img_size_s[1]):
+		for j in range(img_size_s[0]):
+			x = j * 16 + 8
+			y = i * 16 + 8
+			for k, (w, h) in enumerate(self.anchor_list):
+				idx += 1
 				l, u, r, d = xywh2lurd((x, y, w, h))
-				if l < 0 or u < 0 or r > max_x or d > max_y:
-					pass
-				else:
-					box_idx = findBestBox(bbox, (x, y, w, h))
+				shape.append((l, u, r, d))
+				if l >= 0 and u >= 0 and r < img_size[0] and d < img_size[1]:
+					box_idx = findBestBox(bboxes, (x, y, w, h))
 					if box_idx is not None:
 						if box_idx >= 0:
-							box = bbox[box_idx]
-							pos_anchor.append((
-								(j, i, k),
-								(x, y, w, h),
-								[1, 0],
-								(
-									(box[0] - x) / w,
-									(box[1] - y) / h,
-									math.log(box[2] / w),
-									math.log(box[3] / h),
-								)
-							))
+							pos_anchor.append(idx)
+							box = bboxes[box_idx]
+							anchor_box[idx, 0] = (box[0] - x) / w
+							anchor_box[idx, 1] = (box[1] - y) / h
+							anchor_box[idx, 2] = math.log(box[2] / w)
+							anchor_box[idx, 3] = math.log(box[3] / h)
 						else:
-							neg_anchor.append(((j, i, k), (x, y, w, h), [0, 1], (0, 0, 0, 0)))
+							neg_anchor.append(idx)
 
 	# Random select
-	random.shuffle(pos_anchor)
-	random.shuffle(neg_anchor)
-	anchor = pos_anchor[: min(len(pos_anchor), 128)]
-	res = 256 - len(anchor)
-	anchor += neg_anchor[: res]
-	random.shuffle(anchor)
-
-	# Weight
-	pos_weight = len(pos_anchor) / (len(pos_anchor) + len(neg_anchor))
-	neg_weight = len(neg_anchor) / (len(pos_anchor) + len(neg_anchor))
-	for a in anchor:
-		if a[2][0] == 1:
-			a[2].append(pos_weight)
-		else:
-			a[2].append(neg_weight)
+	if len(pos_anchor) > 0:
+		pos = np.random.choice(len(pos_anchor), min(128, len(pos_anchor)), replace = False)
+		anchor_cls[np.array(pos_anchor)[pos], 0] = 1
+	if len(neg_anchor) > 0:
+		neg = np.random.choice(len(neg_anchor), 256 - len(pos_anchor), replace = False)
+		anchor_cls[np.array(neg_anchor)[neg], 1] = 1
 
 	# Visualization
-	for a in anchor:
-		l, u, r, d = xywh2lurd(a[1])
-		draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
+	# draw = ImageDraw.Draw(img)
+	# for x, y, w, h in bboxes:
+	# 	l, u, r, d = xywh2lurd((x, y, w, h))
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+	# for idx in list(neg):
+	# 	l, u, r, d = shape[neg_anchor[idx]]
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+	# for idx in list(pos):
+	# 	l, u, r, d = shape[pos_anchor[idx]]
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+	# img.show()
 
 	# Add noise to the orginal image
 	noise = np.random.normal(0, 40, (max_y, max_x, 3))
 	background = np.array(org)
 	img = background + noise
 	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
-	Image.fromarray(img).show() ##############
+	# Image.fromarray(img).show() ##############
 	img = np.array(img) / 255.0
 
-	return img, bbox, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
-
+	return img, anchor_cls, anchor_box
 
 def lonLatToWorld(lon, lat):
 	# Truncating to 0.9999 effectively limits latitude to 89.189. This is
@@ -673,10 +669,10 @@ class AnchorGenerator(object):
 
 		# Random select
 		if len(pos_anchor) > 0:
-			pos = np.random.choice(len(pos_anchor), min(256, len(pos_anchor)), replace = False)
+			pos = np.random.choice(len(pos_anchor), min(128, len(pos_anchor)), replace = False)
 			anchor_cls[np.array(pos_anchor)[pos], 0] = 1
 		if len(neg_anchor) > 0:
-			neg = np.random.choice(len(neg_anchor), 512 - len(pos_anchor), replace = False)
+			neg = np.random.choice(len(neg_anchor), 256 - len(pos_anchor), replace = False)
 			anchor_cls[np.array(neg_anchor)[neg], 1] = 1
 
 		# Visualization
@@ -698,8 +694,8 @@ class AnchorGenerator(object):
 		res = []
 		num_e = np.random.choice(4, batch_size, replace = True) + 2
 		for num in num_e:
-			res.append(plotEllipse(num_ellipse = num))
-		return (np.array([item[i] for item in res]) for i in range(5))
+			res.append(plotEllipse(anchor_list = self.anchor_list, num_ellipse = num))
+		return (np.array([item[i] for item in res]) for i in range(3))
 
 	# def recover(self, path, img, obj_logit, bbox_info):
 	# 	for idx in range(obj_logit.shape[0]):
