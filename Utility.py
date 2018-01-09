@@ -163,7 +163,7 @@ def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 	# Draw ellipse
 	org = Image.new('RGB', img_size, color = (255, 255, 255))
 	draw = ImageDraw.Draw(org)
-	bbox = []
+	bboxes = []
 	for i in range(num_ellipse):
 		color = tuple(np.random.randint(200, size = 3))
 		tx = track_size_x * np.random.uniform(0.8, 1.2) # <- Decide ellipse's size range
@@ -177,7 +177,7 @@ def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 		lu = (max(px - rx, 0), max(py - ry, 0))
 		rd = (min(px + rx, max_x), min(py + ry, max_y))
 		# draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (0, 255, 0))
-		bbox.append(list(lurd2xywh(lu + rd)))
+		bboxes.append(list(lurd2xywh(lu + rd)))
 
 	num_anchors = img_size_s[0] * img_size_s[1] * len(anchor_list)
 	anchor_cls = np.zeros([num_anchors, 2], np.int32)
