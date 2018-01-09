@@ -179,6 +179,7 @@ def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 		# draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (0, 255, 0))
 		bbox.append(list(lurd2xywh(lu + rd)))
 
+	num_anchors = img_size_s[0] * img_size_s[1] * len(anchor_list)
 	anchor_cls = np.zeros([num_anchors, 2], np.int32)
 	anchor_box = np.zeros([num_anchors, 4], np.float32)
 	pos_anchor = []
@@ -189,7 +190,7 @@ def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 		for j in range(img_size_s[0]):
 			x = j * 16 + 8
 			y = i * 16 + 8
-			for k, (w, h) in enumerate(self.anchor_list):
+			for k, (w, h) in enumerate(anchor_list):
 				idx += 1
 				l, u, r, d = xywh2lurd((x, y, w, h))
 				shape.append((l, u, r, d))
