@@ -9,14 +9,8 @@ import paramiko
 
 BLUR = 0.75
 TILE_SIZE = 256
-ANCHOR_LIST = [
-	(90, 90), (104, 78), (78, 104),
-	(180, 180), (208, 156), (156, 208),
-	(270, 270), (312, 234), (234, 312),
-]
 
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
-
 	# Set image parameters
 	num_row = img_size[1]
 	num_col = img_size[0]
@@ -115,10 +109,10 @@ def lurd2xywh(lurd):
 
 def xywh2lurd(xywh):
 	return (
-		xywh[0] - math.floor(xywh[2] / 2),
-		xywh[1] - math.floor(xywh[3] / 2),
-		xywh[0] + math.floor(xywh[2] / 2),
-		xywh[1] + math.floor(xywh[3] / 2),
+		math.floor(xywh[0] - xywh[2] / 2),
+		math.floor(xywh[1] - xywh[3] / 2),
+		math.floor(xywh[0] + xywh[2] / 2),
+		math.floor(xywh[1] + xywh[3] / 2),
 	)
 
 def scoreIoU(box, anchor):
@@ -133,8 +127,10 @@ def scoreIoU(box, anchor):
 	else:
 		return 0
 
-def findBestBox(bbox, anchor, max_iou = 0.5, min_iou = 0.3):
+def findBestBox(bbox, anchor, max_iou = 0.5, min_iou = 0.2):
 	li = [(scoreIoU(box, anchor), i) for i, box in enumerate(bbox)]
+	if not li:
+		return None
 	li.sort()
 	if li[-1][0] >= max_iou:
 		return li[-1][1]
@@ -143,8 +139,7 @@ def findBestBox(bbox, anchor, max_iou = 0.5, min_iou = 0.3):
 	else:
 		return None
 
-def plotEllipse(img_size = (960, 640), num_ellipse = 6):
-
+def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 	# Set image parameters
 	max_x = img_size[0]
 	max_y = img_size[1]
@@ -190,7 +185,7 @@ def plotEllipse(img_size = (960, 640), num_ellipse = 6):
 		for j in range(img_size_s[1]):
 			x = i * 16 + 8
 			y = j * 16 + 8
-			for k, (w, h) in enumerate(ANCHOR_LIST):
+			for k, (w, h) in enumerate(anchor_list):
 				l, u, r, d = xywh2lurd((x, y, w, h))
 				if l < 0 or u < 0 or r > max_x or d > max_y:
 					pass
@@ -245,95 +240,6 @@ def plotEllipse(img_size = (960, 640), num_ellipse = 6):
 
 	return img, bbox, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
 
-def plotSingleEllipse(img_size = (960, 640)):
-	# Set image parameters
-	max_x = img_size[0]
-	max_y = img_size[1]
-	half_x = math.floor(max_x / 2)
-	half_y = math.floor(max_y / 2)
-	img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
-
-	# Set parameters
-	center_rx = math.floor(max_x * 0.05)
-	center_ry = math.floor(max_y * 0.05)
-
-	# Determin the center of the track
-	center_x = half_x + np.random.randint(-center_rx, center_rx)
-	center_y = half_y + np.random.randint(-center_ry, center_ry)
-
-	# Draw ellipse
-	org = Image.new('RGB', img_size, color = (255, 255, 255))
-	draw = ImageDraw.Draw(org)
-	bbox = []
-	color = tuple(np.random.randint(200, size = 3)) # (255, 0, 0) # 
-	rx = np.random.randint(math.floor(max_x * 0.15), math.floor(max_x * 0.2))
-	ry = np.random.randint(math.floor(rx * 0.7), math.floor(rx * 1.3))
-	draw.ellipse((center_x - rx, center_y - ry, center_x + rx, center_y + ry), fill = color)
-	lu = (max(center_x - rx, 0), max(center_y - ry, 0))
-	rd = (min(center_x + rx, max_x), min(center_y + ry, max_y))
-	draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (0, 255, 0))
-	bbox.append(list(lurd2xywh(lu + rd)))
-
-	pos_anchor = []
-	neg_anchor = []
-	for i in range(img_size_s[0]):
-		for j in range(img_size_s[1]):
-			x = i * 16 + 8
-			y = j * 16 + 8
-			for k, (w, h) in enumerate(ANCHOR_LIST):
-				l, u, r, d = xywh2lurd((x, y, w, h))
-				if l < 0 or u < 0 or r > max_x or d > max_y:
-					pass
-				else:
-					box_idx = findBestBox(bbox, (x, y, w, h))
-					if box_idx is not None:
-						if box_idx >= 0:
-							box = bbox[box_idx]
-							pos_anchor.append((
-								(j, i, k),
-								(x, y, w, h),
-								[1, 0],
-								(
-									(box[0] - x) / w,
-									(box[1] - y) / h,
-									math.log(box[2] / w),
-									math.log(box[3] / h),
-								)
-							))
-						else:
-							neg_anchor.append(((j, i, k), (x, y, w, h), [0, 1], (0, 0, 0, 0)))
-
-	# Random select
-	random.shuffle(pos_anchor)
-	random.shuffle(neg_anchor)
-	anchor = pos_anchor[: min(len(pos_anchor), 128)]
-	res = 256 - len(anchor)
-	anchor += neg_anchor[: res]
-	random.shuffle(anchor)
-
-	# Weight
-	pos_weight = len(pos_anchor) / (len(pos_anchor) + len(neg_anchor))
-	neg_weight = len(neg_anchor) / (len(pos_anchor) + len(neg_anchor))
-	for a in anchor:
-		if a[2][0] == 1:
-			a[2].append(pos_weight)
-		else:
-			a[2].append(neg_weight)
-
-	# Visualization
-	# for a in anchor:
-	# 	l, u, r, d = xywh2lurd(a[1])
-	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
-
-	# Add noise to the orginal image
-	noise = np.random.normal(0, 40, (max_y, max_x, 3))
-	background = np.array(org)
-	img = background + noise
-	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
-	# Image.fromarray(img).show() ##############
-	img = np.array(img) / 255.0
-
-	return img, bbox, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
 
 def lonLatToWorld(lon, lat):
 	# Truncating to 0.9999 effectively limits latitude to 89.189. This is
@@ -650,7 +556,7 @@ class DataGenerator(object):
 
 class AnchorGenerator(object):
 	# num_col, num_row
-	def __init__(self, fake, data_path):
+	def __init__(self, fake, data_path, anchor_list):
 		if fake:
 			self.fake = True
 		else:
@@ -662,17 +568,19 @@ class AnchorGenerator(object):
 			self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
 			self.sftp = self.ssh.open_sftp()
 
-			with open('./Area_List.txt', 'r') as f:
+			with open('./AreaIdxList.txt', 'r') as f:
 				self.area_idx_list = eval(f.read())
 			print('Totally %d areas.' % len(self.area_idx_list))
+			random.shuffle(self.area_idx_list)
 
 			#
-			train_prob = 0.8
+			train_prob = 0.95
 			split = int(train_prob * len(self.area_idx_list))
 			self.idx_list_train = self.area_idx_list[:split]
 			self.idx_list_valid = self.area_idx_list[split:]
 
 			self.data_path = data_path
+			self.anchor_list = anchor_list
 			return
 
 	def getDataBatch(self, batch_size, mode = None):
@@ -690,7 +598,7 @@ class AnchorGenerator(object):
 			sel = np.random.choice(len(self.idx_list_valid), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleData(self.idx_list_valid[i]))
-		return (np.array([item[i] for item in res]) for i in range(5))
+		return (np.array([item[i] for item in res]) for i in range(3))
 
 	def getSingleData(self, area_idx):
 		# Set path
@@ -710,76 +618,81 @@ class AnchorGenerator(object):
 		img = img.rotate(n_rotate * 90)
 		img_size = img.size
 		img_size_s = (math.floor(img_size[0] / 16), math.floor(img_size[1] / 16))
+		num_anchors = img_size_s[0] * img_size_s[1] * len(self.anchor_list)
 
 		org = np.array(img)[..., 0: 3] / 255.0
-		lines = self.sftp.open(path + '/bboxes.txt').read().decode('utf-8').split('\n')
-		bboxes = []
+		lines = self.sftp.open(path + '/polygons.txt').read().decode('utf-8').split('\n')
+		polygons = []
 		for line in lines:
 			if line.strip() != '':
-				l, u, r, d = line.strip().split()
-				l, u, r, d = int(l), int(u), int(r), int(d)
-				w, h = org_size
+				if line.strip() == '%':
+					polygons.append([])
+				else:
+					x, y = line.strip().split()
+					polygons[-1].append((int(x), int(y)))
+
+		bboxes = []
+		for polygon in polygons:
+			w, h = org_size
+			p = np.array(polygon, np.int32)
+			l = max(0, p[:, 0].min())
+			u = max(0, p[:, 1].min())
+			r = min(w, p[:, 0].max())
+			d = min(h, p[:, 1].max())
+			if r > l and d > u:
 				for _ in range(n_rotate):
 					(w, h), (l, u, r, d) = rotate((w, h), (l, u, r, d))
 				bboxes.append(list(lurd2xywh((l, u, r, d))))
 
+		anchor_cls = np.zeros([num_anchors, 2], np.int32)
+		anchor_box = np.zeros([num_anchors, 4], np.float32)
 		pos_anchor = []
 		neg_anchor = []
-		for i in range(img_size_s[0]):
-			for j in range(img_size_s[1]):
-				x = i * 16 + 8
-				y = j * 16 + 8
-				for k, (w, h) in enumerate(ANCHOR_LIST):
+		shape = []
+		idx = -1
+		for i in range(img_size_s[1]):
+			for j in range(img_size_s[0]):
+				x = j * 16 + 8
+				y = i * 16 + 8
+				for k, (w, h) in enumerate(self.anchor_list):
+					idx += 1
 					l, u, r, d = xywh2lurd((x, y, w, h))
-					if l < 0 or u < 0 or r > img_size[0] or d > img_size[1]:
-						pass
-					else:
+					shape.append((l, u, r, d))
+					if l >= 0 and u >= 0 and r < img_size[0] and d < img_size[1]:
 						box_idx = findBestBox(bboxes, (x, y, w, h))
 						if box_idx is not None:
 							if box_idx >= 0:
+								pos_anchor.append(idx)
 								box = bboxes[box_idx]
-								pos_anchor.append((
-									(j, i, k),
-									(x, y, w, h),
-									[1, 0],
-									(
-										(box[0] - x) / w,
-										(box[1] - y) / h,
-										math.log(box[2] / w),
-										math.log(box[3] / h),
-									)
-								))
+								anchor_box[idx, 0] = (box[0] - x) / w
+								anchor_box[idx, 1] = (box[1] - y) / h
+								anchor_box[idx, 2] = math.log(box[2] / w)
+								anchor_box[idx, 3] = math.log(box[3] / h)
 							else:
-								neg_anchor.append(((j, i, k), (x, y, w, h), [0, 1], (0, 0, 0, 0)))
+								neg_anchor.append(idx)
 
 		# Random select
-		random.shuffle(pos_anchor)
-		random.shuffle(neg_anchor)
-		anchor = pos_anchor[: min(len(pos_anchor), 128)]
-		res = 256 - len(anchor)
-		anchor += neg_anchor[: res]
-		random.shuffle(anchor)
-
-		# Weight
-		pos_weight = len(pos_anchor) / (len(pos_anchor) + len(neg_anchor))
-		neg_weight = len(neg_anchor) / (len(pos_anchor) + len(neg_anchor))
-		for a in anchor:
-			if a[2][0] == 1:
-				a[2].append(pos_weight)
-			else:
-				a[2].append(neg_weight)
+		if len(pos_anchor) > 0:
+			pos = np.random.choice(len(pos_anchor), min(256, len(pos_anchor)), replace = False)
+			anchor_cls[np.array(pos_anchor)[pos], 0] = 1
+		if len(neg_anchor) > 0:
+			neg = np.random.choice(len(neg_anchor), 512 - len(pos_anchor), replace = False)
+			anchor_cls[np.array(neg_anchor)[neg], 1] = 1
 
 		# Visualization
-		draw = ImageDraw.Draw(img)
-		for box in bboxes:
-			l, u, r, d = xywh2lurd(box)
-			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
-		for a in pos_anchor:
-			l, u, r, d = xywh2lurd(a[1])
-			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (a[2][0] * 255, 0, (1 - a[2][1]) * 255))
-		img.show()
+		# draw = ImageDraw.Draw(img)
+		# for x, y, w, h in bboxes:
+		# 	l, u, r, d = xywh2lurd((x, y, w, h))
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+		# for idx in list(neg):
+		# 	l, u, r, d = shape[neg_anchor[idx]]
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+		# for idx in list(pos):
+		# 	l, u, r, d = shape[pos_anchor[idx]]
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+		# img.show()
 
-		return org, bboxes, [list(a[0]) for a in anchor], [list(a[2]) for a in anchor], [list(a[3]) for a in anchor]
+		return org, anchor_cls, anchor_box
 
 	def getFakeDataBatch(self, batch_size):
 		res = []
@@ -788,51 +701,57 @@ class AnchorGenerator(object):
 			res.append(plotEllipse(num_ellipse = num))
 		return (np.array([item[i] for item in res]) for i in range(5))
 
-	def recover(self, path, img, obj_logit, bbox_info):
-		for idx in range(obj_logit.shape[0]):
-			li = []
-			for i in range(obj_logit.shape[2]):
-				for j in range(obj_logit.shape[1]):
-					x = i * 16 + 8
-					y = j * 16 + 8
-					for k, (w, h) in enumerate(ANCHOR_LIST):
-						l, u, r, d = xywh2lurd((x, y, w, h))
-						if l < 0 or u < 0 or r > img.shape[2] or d > img.shape[1]:
-							pass
-						else:
-							prob = obj_logit[idx, j, i, k]
-							prob = 1 / (1 + math.exp(prob[1] - prob[0]))
-							li.append((prob, (j, i, k), (x, y, w, h)))
-			li.sort()
-			boxes = []
-			for item in li[-300: ]:
-				j, i, k = item[1]
-				x, y, w, h = item[2]
-				box_info = bbox_info[idx, j, i, k]
-				box = [None, None, None, None]
-				box[0] = math.floor(box_info[0] * w + x)
-				box[1] = math.floor(box_info[1] * h + y)
-				box[2] = math.floor(math.exp(box_info[2]) * w)
-				box[3] = math.floor(math.exp(box_info[3]) * h)
-				boxes.append(list(xywh2lurd(tuple(box))))
-			boxes = np.array(boxes)
-			org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
+	# def recover(self, path, img, obj_logit, bbox_info):
+	# 	for idx in range(obj_logit.shape[0]):
+	# 		li = []
+	# 		for i in range(obj_logit.shape[2]):
+	# 			for j in range(obj_logit.shape[1]):
+	# 				x = i * 16 + 8
+	# 				y = j * 16 + 8
+	# 				for k, (w, h) in enumerate(self.anchor_list):
+	# 					l, u, r, d = xywh2lurd((x, y, w, h))
+	# 					if l < 0 or u < 0 or r > img.shape[2] or d > img.shape[1]:
+	# 						pass
+	# 					else:
+	# 						prob = obj_logit[idx, j, i, k]
+	# 						prob = 1 / (1 + math.exp(prob[1] - prob[0]))
+	# 						li.append((prob, (j, i, k), (x, y, w, h)))
+	# 		li.sort()
+	# 		boxes = []
+	# 		for item in li[-300: ]:
+	# 			j, i, k = item[1]
+	# 			x, y, w, h = item[2]
+	# 			box_info = bbox_info[idx, j, i, k]
+	# 			box = [None, None, None, None]
+	# 			box[0] = math.floor(box_info[0] * w + x)
+	# 			box[1] = math.floor(box_info[1] * h + y)
+	# 			box[2] = math.floor(math.exp(box_info[2]) * w)
+	# 			box[3] = math.floor(math.exp(box_info[3]) * h)
+	# 			boxes.append(list(xywh2lurd(tuple(box))))
+	# 		boxes = np.array(boxes)
+	# 		org = Image.fromarray(np.array(img[idx] * 255.0, dtype = np.uint8))
+	# 		draw = ImageDraw.Draw(org)
+	# 		for i in range(boxes.shape[0]):
+	# 			l, u, r, d = tuple(list(boxes[i, :]))
+	# 			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+	# 		org.save(path + '/%d.png' % idx)
+
+	def recover(self, path, img, res):
+		for i in range(img.shape[0]):
+			boxes = res[i]
+			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
-			for i in range(boxes.shape[0]):
-				l, u, r, d = tuple(list(boxes[i, :]))
+			for j in range(boxes.shape[0]):
+				l, u, r, d = tuple(list(boxes[j, :]))
 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-			org.save(path + '/%d.png' % idx)
+			org.save(path + '/%d.png' % i)
 
 if __name__ == '__main__':
-	# for i in range(0):
-	# 	plotPolygon(num_vertices = 7, show = True)
-	# dg = DataGenerator(fake = True, data_path = '../Chicago.zip', max_seq_len = 12, resolution = (28, 28))
-	# img_patch, boundary, vertices, v_in, v_out, end, seq_len, patch_info = dg.getDataBatch(mode = 'train', batch_size = 1)
-	# print(np.sum(v_in[0,1] == v_out[0,0]))
-	# print(np.sum(v_in[0,2] == v_out[0,1]))
-	# num_e = list(np.random.choice(4, 9, replace = True) + 2)
-	# for n in num_e:
-	# 	plotEllipse(num_ellipse = n)
-	# print(scoreIoU((0, 0, 100, 100), (5, 5, 100, 100)))
-	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
+	ANCHOR_SCALE = [60, 120, 180, 240, 300]
+	ANCHOR_SIZE  = [(1, 1), (1.414, 0.707), (0.707, 1.414)]
+	ANCHOR_LIST  = []
+	for scale in ANCHOR_SCALE:
+		for x, y in ANCHOR_SIZE:
+			ANCHOR_LIST.append((int(scale * x), int(scale * y)))
+	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', anchor_list = ANCHOR_LIST)
 	ag.getDataBatch(4, mode = 'train')
