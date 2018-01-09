@@ -555,6 +555,7 @@ class AnchorGenerator(object):
 	def __init__(self, fake, data_path, anchor_list):
 		if fake:
 			self.fake = True
+			self.anchor_list = anchor_list
 		else:
 			self.fake = False
 
