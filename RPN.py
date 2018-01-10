@@ -231,7 +231,7 @@ class RPN(object):
 		img = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
 		pred_logit, pred_info = self.RPN(img, reuse = True)
 		pred_scores = tf.nn.softmax(pred_logit)[..., 0]
-		boxes_x = tf.floor(pred_info[..., 0] * self.w + self.x),
+		boxes_x = tf.floor(pred_info[..., 0] * self.w + self.x)
 		boxes_y = tf.floor(pred_info[..., 1] * self.h + self.y)
 		boxes_w = tf.floor(tf.exp(pred_info[..., 2]) * self.w)
 		boxes_h = tf.floor(tf.exp(pred_info[..., 3]) * self.h)
@@ -239,7 +239,7 @@ class RPN(object):
 			tf.floor(boxes_y - boxes_h / 2),
 			tf.floor(boxes_x - boxes_w / 2),
 			tf.floor(boxes_y + boxes_h / 2),
-			tf.floor(boxes_x + boxes_w / 2),
+			tf.floor(boxes_x + boxes_w / 2)
 		], axis = 2)
 		res = []
 		for i in range(self.pred_batch_size):
