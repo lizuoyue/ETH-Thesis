@@ -242,8 +242,8 @@ class RPN(object):
 		res = []
 		for i in range(self.pred_batch_size):
 			indices = tf.image.non_max_suppression(
-				boxes = boxes_coo[i],
-				scores = scores[i],
+				boxes = tf.gather(boxes_coo[i], self.valid_anchor_idx),
+				scores = tf.gather(scores[i], self.valid_anchor_idx),
 				max_output_size = 30,
 				iou_threshold = 0.5
 			)
@@ -287,7 +287,7 @@ if __name__ == '__main__':
 	train_num_anchors = 256
 
 	# Create data generator
-	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', anchor_list = ANCHOR_LIST)
+	obj = ut.AnchorGenerator(fake = True, data_path = '/local/lizuoyue/Chicago_Area', anchor_list = ANCHOR_LIST)
 
 	# Define graph
 	RPNGraph = RPN(train_batch_size, pred_batch_size, train_num_anchors)
