@@ -207,7 +207,7 @@ class RPN(object):
 		indices = tf.where(tf.equal(tf.reduce_sum(anchor_cls, 2), 1)) # num_valid_anchors, 2
 		lo = tf.gather_nd(pred_logit, indices), # num_valid_anchors, 2
 		la = tf.gather_nd(anchor_cls, indices) # num_valid_anchors, 2
-		loss = tf.nn.softmax_cross_entropy_with_logits(logits = lo, labels = la)
+		loss = tf.losses.log_loss(predictions = tf.nn.softmax(lo), labels = la)
 		return tf.reduce_mean(loss)
 
 	def RPNBoxLoss(self, anchor_cls, anchor_box, pred_info):
@@ -246,7 +246,7 @@ class RPN(object):
 			indices = tf.image.non_max_suppression(
 				boxes = boxes,
 				scores = scores,
-				max_output_size = 25,
+				max_output_size = 50,
 				iou_threshold = 0.7,
 			)
 			res.append(tf.gather(boxes, indices))
