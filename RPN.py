@@ -205,16 +205,17 @@ class RPN(object):
 
 	def RPNClassLoss(self, anchor_cls, pred_logit):
 		indices = tf.where(tf.equal(tf.reduce_sum(anchor_cls, 2), 1)) # num_valid_anchors, 2
-		lo = tf.gather_nd(pred_logit, indices), # num_valid_anchors, 2
-		la = tf.gather_nd(anchor_cls, indices) # num_valid_anchors, 2
-		loss = tf.losses.log_loss(predictions = tf.nn.softmax(lo), labels = la)
+		logits = tf.gather_nd(pred_logit, indices) # num_valid_anchors, 2
+		labels = tf.gather_nd(anchor_cls, indices) # num_valid_anchors, 2
+		prob = tf.nn.softmax(logits)
+		loss = tf.losses.log_loss(predictions = prob, labels = labels)
 		return tf.reduce_mean(loss)
 
 	def RPNBoxLoss(self, anchor_cls, anchor_box, pred_info):
 		indices = tf.where(tf.equal(anchor_cls[..., 0], 1)) # num_pos_anchors, 2
-		la = tf.gather_nd(anchor_box, indices) # num_pos_anchors, 4
-		pd = tf.gather_nd(pred_info, indices) # num_pos_anchors, 4
-		return self.smoothL1Loss(labels = la, predictions = pd)
+		labels = tf.gather_nd(anchor_box, indices) # num_pos_anchors, 4
+		prob = tf.gather_nd(pred_info, indices) # num_pos_anchors, 4
+		return self.smoothL1Loss(labels = labels, predictions = prob)
 
 	def Train(self, xx, cc, bb):
 		img        = tf.reshape(xx, [self.train_batch_size, self.img_size[1], self.img_size[0], 3])
@@ -247,7 +248,7 @@ class RPN(object):
 				boxes = boxes,
 				scores = scores,
 				max_output_size = 50,
-				iou_threshold = 0.7,
+				iou_threshold = 0.7
 			)
 			res.append(tf.gather(boxes, indices))
 		return res
