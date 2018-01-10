@@ -44,6 +44,10 @@ class RPN(object):
 		self.anchor_info       = np.array(self.anchor_info, np.float32) # num_anchors, 4
 		self.anchor_info_rep   = np.array([self.anchor_info for _ in range(self.pred_batch_size)]) # pred_batch, num_anchors, 4
 		self.num_anchors       = self.img_size_s[1] * self.img_size_s[0] * self.anchors_per_pixel
+		self.x = self.anchor_info_rep[..., 0]
+		self.y = self.anchor_info_rep[..., 1]
+		self.w = self.anchor_info_rep[..., 2]
+		self.h = self.anchor_info_rep[..., 3]
 		return
 
 	def smoothL1Loss(self, labels, predictions):
@@ -200,7 +204,7 @@ class RPN(object):
 		)
 
 	def RPNClassLoss(self, anchor_cls, pred_logit):
-		indices = tf.where(tf.not_equal(tf.reduce_sum(anchor_cls, 2), 0)) # num_valid_anchors, 2
+		indices = tf.where(tf.equal(tf.reduce_sum(anchor_cls, 2), 1)) # num_valid_anchors, 2
 		loss = tf.nn.softmax_cross_entropy_with_logits(
 			logits = tf.gather_nd(pred_logit, indices), # num_valid_anchors, 2
 			labels = tf.gather_nd(anchor_cls, indices) # num_valid_anchors, 2
@@ -224,30 +228,30 @@ class RPN(object):
 		return loss_1, loss_2, loss_1 + self.alpha * loss_2
 
 	def Predict(self, xx):
-		img = tf.reshape(xx, [self.pred_batch_size, 640, 640, 3])
+		img = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
 		pred_logit, pred_info = self.RPN(img, reuse = True)
-		scores = tf.nn.softmax(pred_logit)[..., 0]
-		boxes = [None, None, None, None]
-		x, y, w, h = tuple(tf.unstack(self.anchor_info_rep, axis = 2))
-		boxes[0] = tf.floor(pred_info[..., 0] * w + x)
-		boxes[1] = tf.floor(pred_info[..., 1] * h + y)
-		boxes[2] = tf.floor(tf.exp(pred_info[..., 2]) * w)
-		boxes[3] = tf.floor(tf.exp(pred_info[..., 3]) * h)
+		pred_scores = tf.nn.softmax(pred_logit)[..., 0]
+		boxes_x = tf.floor(pred_info[..., 0] * self.w + self.x),
+		boxes_y = tf.floor(pred_info[..., 1] * self.h + self.y)
+		boxes_w = tf.floor(tf.exp(pred_info[..., 2]) * self.w)
+		boxes_h = tf.floor(tf.exp(pred_info[..., 3]) * self.h)
 		boxes_coo = tf.stack([
-			tf.floor(boxes[0] - boxes[2] / 2),
-			tf.floor(boxes[1] - boxes[3] / 2),
-			tf.floor(boxes[0] + boxes[2] / 2),
-			tf.floor(boxes[1] + boxes[3] / 2)
+			tf.floor(boxes_y - boxes_h / 2),
+			tf.floor(boxes_x - boxes_w / 2),
+			tf.floor(boxes_y + boxes_h / 2),
+			tf.floor(boxes_x + boxes_w / 2),
 		], axis = 2)
 		res = []
 		for i in range(self.pred_batch_size):
+			boxes = tf.gather(boxes_coo[i], self.valid_anchor_idx)
+			scores = tf.gather(pred_scores[i], self.valid_anchor_idx)
 			indices = tf.image.non_max_suppression(
-				boxes = tf.gather(boxes_coo[i], self.valid_anchor_idx),
-				scores = tf.gather(scores[i], self.valid_anchor_idx),
-				max_output_size = 30,
-				iou_threshold = 0.5
+				boxes = boxes,
+				scores = scores,
+				max_output_size = 10,
+				iou_threshold = 0.5,
 			)
-			res.append(tf.gather(boxes_coo[i], indices))
+			res.append(tf.gather(boxes, indices))
 		return res
 
 class Logger(object):

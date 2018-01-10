@@ -740,7 +740,7 @@ class AnchorGenerator(object):
 			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
 			for j in range(boxes.shape[0]):
-				l, u, r, d = tuple(list(boxes[j, :]))
+				u, l, d, r = tuple(list(boxes[j, :]))
 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 			org.save(path + '/%d.png' % i)
 
