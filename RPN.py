@@ -26,7 +26,7 @@ class RPN(object):
 		self.img_size          = (640, 640)
 		self.img_size_s        = (int(self.img_size[0] / 16), int(self.img_size[1] / 16))
 		self.valid_anchor_idx  = []
-		self.anchor_info       = []
+		anchor_info       = []
 		# From left to right, from up to down
 		idx = -1
 		for i in range(self.img_size_s[1]):
@@ -35,19 +35,19 @@ class RPN(object):
 				y = i * 16 + 8
 				for k, (w, h) in enumerate(ANCHOR_LIST):
 					idx += 1
-					self.anchor_info.append([x, y, w, h])
+					anchor_info.append([x, y, w, h])
 					l, u, r, d = ut.xywh2lurd((x, y, w, h))
 					if l >= 0 and u >= 0 and r < self.img_size[0] and d < self.img_size[1]:
 						self.valid_anchor_idx.append(idx)
 		print('Totally %d valid anchors.' % len(self.valid_anchor_idx))
+		anchor_info       = np.array(anchor_info, np.float32) # num_anchors, 4
+		anchor_info_rep   = np.array([anchor_info for _ in range(self.pred_batch_size)]) # pred_batch, num_anchors, 4
+		self.num_anchors  = self.img_size_s[1] * self.img_size_s[0] * self.anchors_per_pixel
+		self.x = anchor_info_rep[..., 0]
+		self.y = anchor_info_rep[..., 1]
+		self.w = anchor_info_rep[..., 2]
+		self.h = anchor_info_rep[..., 3]
 		self.valid_anchor_idx  = np.array(self.valid_anchor_idx, np.int32) # A list
-		self.anchor_info       = np.array(self.anchor_info, np.float32) # num_anchors, 4
-		self.anchor_info_rep   = np.array([self.anchor_info for _ in range(self.pred_batch_size)]) # pred_batch, num_anchors, 4
-		self.num_anchors       = self.img_size_s[1] * self.img_size_s[0] * self.anchors_per_pixel
-		self.x = self.anchor_info_rep[..., 0]
-		self.y = self.anchor_info_rep[..., 1]
-		self.w = self.anchor_info_rep[..., 2]
-		self.h = self.anchor_info_rep[..., 3]
 		return
 
 	def smoothL1Loss(self, labels, predictions):
