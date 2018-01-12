@@ -13,6 +13,11 @@ if os.path.exists('../Python-Lib/'):
 BLUR = 0.75
 TILE_SIZE = 256
 
+ANCHOR_SCALE   = [40, 80, 160, 320]
+ANCHOR_RATIO   = [0.5, 1, 2]
+FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
+FEATURE_STRIDE = [4, 8, 16, 32]
+
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
 	# Set image parameters
 	num_row = img_size[1]
@@ -251,7 +256,7 @@ def generateAnchors(scales, ratios, shape, feature_stride, anchor_stride):
 
 	# Reshape to get a list of (y, x) and a list of (h, w)
 	box_centers = np.stack(
-		[box_centers_y + feature_stride/2, box_centers_x+ feature_stride/2], axis=2).reshape([-1, 2])
+		[box_centers_y + feature_stride / 2, box_centers_x+ feature_stride / 2], axis=2).reshape([-1, 2])
 	box_sizes = np.stack([box_heights, box_widths], axis=2).reshape([-1, 2])
 
 	# Convert to corner coordinates (y1, x1, y2, x2)
@@ -274,7 +279,7 @@ def generatePyramidAnchors(scales, ratios, feature_shapes, feature_strides,
 	# [anchor_count, (y1, x1, y2, x2)]
 	anchors = []
 	for i in range(len(scales)):
-		anchors.append(generate_anchors(scales[i], ratios, feature_shapes[i],
+		anchors.append(generateAnchors(scales[i], ratios, feature_shapes[i],
 										feature_strides[i], anchor_stride))
 	return np.concatenate(anchors, axis=0)
 
@@ -812,13 +817,11 @@ class DataGenerator(object):
 
 class AnchorGenerator(object):
 	# num_col, num_row
-	def __init__(self, fake, data_path, anchor_para):
+	def __init__(self, fake, data_path):
 		if fake:
 			self.fake = True
-			self.anchor_scale, self.anchor_ratio = anchor_para
 		else:
 			self.fake = False
-			self.anchor_scale, self.anchor_ratio = anchor_para
 
 			# 
 			self.ssh = paramiko.SSHClient()
@@ -839,7 +842,7 @@ class AnchorGenerator(object):
 
 			self.data_path = data_path
 
-		self.anchors = generateAnchors(self.anchor_scale, self.anchor_ratio, [40, 40], 16, 1)
+		self.anchors = generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
 		return
 
 	def getDataBatch(self, batch_size, mode = None):
@@ -904,12 +907,13 @@ class AnchorGenerator(object):
 				gt_boxes.append([u, l, d, r])
 
 		anchor_cls = np.zeros([num_anchors, 2], np.int32)
-		rpn_bbox = np.zeros([num_anchors, 4], np.int32)
+		anchor_box = np.zeros([num_anchors, 4], np.int32)
 		if len(gt_boxes) > 0:
 			gt_boxes = np.array(gt_boxes)
 			rpn_match, rpn_bbox = buildRPNTargets(org.shape, self.anchors, gt_boxes)
 			anchor_cls[rpn_match == 1, 0] = 1
 			anchor_cls[rpn_match == -1, 1] = 1
+			anchor_box[np.abs(rpn_match) == 1, :] = rpn_bbox
 		# anchor_box = np.zeros([num_anchors, 4], np.float32)
 		# pos_anchor = []
 		# neg_anchor = []
@@ -957,7 +961,7 @@ class AnchorGenerator(object):
 		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
 		# img.show()
 
-		return org, anchor_cls, rpn_bbox
+		return org, anchor_cls, anchor_box
 
 	def getFakeDataBatch(self, batch_size):
 		res = []
@@ -1012,7 +1016,5 @@ class AnchorGenerator(object):
 			org.save(path + '/%d.png' % i)
 
 if __name__ == '__main__':
-	ANCHOR_SCALE = [60, 120, 180, 240, 300]
-	ANCHOR_RATIO = [0.5, 1, 2]
-	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', anchor_para = (ANCHOR_SCALE, ANCHOR_RATIO))
+	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
 	ag.getDataBatch(4, mode = 'train')

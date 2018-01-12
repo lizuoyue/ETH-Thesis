@@ -4,8 +4,13 @@ if os.path.exists('../Python-Lib/'):
 import io, glob
 import numpy as np
 import tensorflow as tf
+import Utility as ut
 from PIL import Image, ImageDraw
-ut = __import__('Utility')
+
+ANCHOR_SCALE   = [40, 80, 160, 320]
+ANCHOR_RATIO   = [0.5, 1, 2]
+FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
+FEATURE_STRIDE = [4, 8, 16, 32]
 
 class RPN(object):
 
@@ -13,34 +18,10 @@ class RPN(object):
 		self.train_batch_size  = train_batch_size
 		self.pred_batch_size   = pred_batch_size
 		self.train_num_anchors = train_num_anchors
-		self.anchors_per_pixel = len(ANCHOR_LIST)
-		self.rpn_kernel_size   = (3, 3)
 		self.alpha             = 10
 		self.img_size          = (640, 640)
-		self.img_size_s        = (int(self.img_size[0] / 16), int(self.img_size[1] / 16))
-		self.valid_anchor_idx  = []
-		anchor_info       = []
-		# From left to right, from up to down
-		idx = -1
-		for i in range(self.img_size_s[1]):
-			for j in range(self.img_size_s[0]):
-				x = j * 16 + 8
-				y = i * 16 + 8
-				for k, (w, h) in enumerate(ANCHOR_LIST):
-					idx += 1
-					anchor_info.append([x, y, w, h])
-					l, u, r, d = ut.xywh2lurd((x, y, w, h))
-					if l >= 0 and u >= 0 and r < self.img_size[0] and d < self.img_size[1]:
-						self.valid_anchor_idx.append(idx)
-		print('Totally %d valid anchors.' % len(self.valid_anchor_idx))
-		anchor_info       = np.array(anchor_info, np.float32) # num_anchors, 4
-		anchor_info_rep   = np.array([anchor_info for _ in range(self.pred_batch_size)]) # pred_batch, num_anchors, 4
-		self.num_anchors  = self.img_size_s[1] * self.img_size_s[0] * self.anchors_per_pixel
-		self.x = anchor_info_rep[..., 0]
-		self.y = anchor_info_rep[..., 1]
-		self.w = anchor_info_rep[..., 2]
-		self.h = anchor_info_rep[..., 3]
-		self.valid_anchor_idx  = np.array(self.valid_anchor_idx, np.int32) # A list
+		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
+		self.num_anchors       = self.anchors.shape[0]
 		return
 
 	def smoothL1Loss(self, labels, predictions):
@@ -161,89 +142,164 @@ class RPN(object):
 				padding = 'same',
 				activation = tf.nn.relu
 			)
-			return conv5_3
+			return conv3_3, conv4_3, conv5_3
 
-	def RPN(self, img, reuse = None):
-		feature = self.VGG16(img, reuse)
+	def FPN(self, img, reuse = None):
+		c2, c3, c4 = self.VGG16(img, reuse)
+		with tf.variable_scope('FPN', reuse = reuse):
+			p4 = tf.layers.conv2d(
+				inputs = c4,
+				filters = 256,
+				kernel_size = (1, 1),
+				padding = 'same',
+				activation = tf.nn.relu
+			)
+			p3 = tf.layers.conv2d(
+				inputs = c3,
+				filters = 256,
+				kernel_size = (1, 1),
+				padding = 'same',
+				activation = tf.nn.relu) + tf.image.resize_images(
+				images = p4,
+				size = [80, 80]
+			)
+			p2 = tf.layers.conv2d(
+				inputs = c2,
+				filters = 256,
+				kernel_size = (1, 1),
+				padding = 'same',
+				activation = tf.nn.relu) + tf.image.resize_images(
+				images = p3,
+				size = [160, 160]
+			)
+			p2_conv = tf.layers.conv2d(
+				inputs = p2,
+				filters = 256,
+				kernel_size = (3, 3),
+				padding = 'same',
+				activation = tf.nn.relu
+			)
+			p3_conv = tf.layers.conv2d(
+				inputs = p3,
+				filters = 256,
+				kernel_size = (3, 3),
+				padding = 'same',
+				activation = tf.nn.relu
+			)
+			p4_conv = tf.layers.conv2d(
+				inputs = p4,
+				filters = 256,
+				kernel_size = (3, 3),
+				padding = 'same',
+				activation = tf.nn.relu
+			)
+			p5_pool = tf.layers.max_pooling2d(
+				inputs = p4_conv,
+				pool_size = (2, 2),
+				strides = 2
+			)
+		return [p2_conv, p3_conv, p4_conv, p5_pool]
+
+	def RPNLayer(self, feature, anchors_per_pixel, reuse = None):
+		"""
+			feature: [batch_size, height, width, num_channels]
+		"""
+		num_anchors = feature.shape[1] * feature.shape[2] * anchors_per_pixel
 		with tf.variable_scope('RPN', reuse = reuse):
 			rpn_conv = tf.layers.conv2d(
 				inputs = feature,
 				filters = 512,
-				kernel_size = self.rpn_kernel_size,
+				kernel_size = (3, 3),
 				padding = 'same',
 				activation = tf.nn.relu
 			)
 			bbox_logit = tf.layers.conv2d(
 				inputs = rpn_conv,
-				filters = 2 * self.anchors_per_pixel,
+				filters = 2 * anchors_per_pixel,
 				kernel_size = (1, 1),
 				padding = 'valid',
 				activation = None
 			)
-			bbox_info = tf.layers.conv2d(
+			bbox_delta = tf.layers.conv2d(
 				inputs = rpn_conv,
-				filters = 4 * self.anchors_per_pixel,
+				filters = 4 * anchors_per_pixel,
 				kernel_size = (1, 1),
 				padding = 'valid',
 				activation = None
 			)
-		if reuse:
-			batch_size = self.pred_batch_size
-		else:
-			batch_size = self.train_batch_size
 		return (
-			tf.reshape(bbox_logit, [batch_size, self.num_anchors, 2]),
-			tf.reshape(bbox_info,  [batch_size, self.num_anchors, 4]),
+			tf.reshape(bbox_logit, [-1, num_anchors, 2]),
+			tf.reshape(bbox_delta,  [-1, num_anchors, 4]),
 		)
 
-	def RPNClassLoss(self, anchor_cls, pred_logit):
-		indices = tf.where(tf.equal(tf.reduce_sum(anchor_cls, 2), 1)) # num_valid_anchors, 2
-		logits = tf.gather_nd(pred_logit, indices) # num_valid_anchors, 2
-		labels = tf.gather_nd(anchor_cls, indices) # num_valid_anchors, 2
-		prob = tf.nn.softmax(logits)
-		loss = tf.losses.log_loss(predictions = prob, labels = labels)
-		return tf.reduce_mean(loss)
+	def RPN(self, img, reuse = None):
+		p2, p3, p4, p5     = self.FPN(img, reuse)
+		p2_logit, p2_delta = self.RPNLayer(p2, 3, reuse)
+		p3_logit, p3_delta = self.RPNLayer(p3, 3, True)
+		p4_logit, p4_delta = self.RPNLayer(p4, 3, True)
+		p5_logit, p5_delta = self.RPNLayer(p5, 3, True)
+		logit = tf.concat([p2_logit, p3_logit, p4_logit, p5_logit], axis = 1)
+		delta = tf.concat([p2_delta, p3_delta, p4_delta, p5_delta], axis = 1)
+		return logit, delta
 
-	def RPNBoxLoss(self, anchor_cls, anchor_box, pred_info):
-		indices = tf.where(tf.equal(anchor_cls[..., 0], 1)) # num_pos_anchors, 2
-		labels = tf.gather_nd(anchor_box, indices) # num_pos_anchors, 4
-		prob = tf.gather_nd(pred_info, indices) # num_pos_anchors, 4
-		return self.smoothL1Loss(labels = labels, predictions = prob)
+	def RPNClassLoss(self, anchor_class, pred_logit):
+		indices = tf.where(tf.equal(tf.reduce_sum(anchor_class, 2), 1)) # num_valid_anchors, 2
+		logits = tf.gather_nd(pred_logit, indices) # num_valid_anchors, 2
+		labels = tf.gather_nd(anchor_class, indices) # num_valid_anchors, 2
+		return tf.reduce_mean(tf.losses.log_loss(labels = labels, predictions = tf.nn.softmax(logits)))
+
+	def RPNDeltaLoss(self, anchor_class, anchor_delta, pred_delta):
+		indices = tf.where(tf.equal(anchor_class[..., 0], 1)) # num_pos_anchors, 2
+		labels = tf.gather_nd(anchor_delta, indices) # num_pos_anchors, 4
+		return self.smoothL1Loss(labels = labels, predictions = tf.gather_nd(pred_delta, indices))
+
+	def ApplyDeltaToAnchor(self, anchors, deltas):
+		"""
+		anchors: [N, (y1, x1, y2     , x2     )]
+		deltas : [N, (dy, dx, log(dh), log(dw))]
+		"""
+		# 
+		h  = anchors[:, 2] - anchors[:, 0]
+		w  = anchors[:, 3] - anchors[:, 1]
+		cy = anchors[:, 0] + 0.5 * h
+		cx = anchors[:, 1] + 0.5 * w
+		# 
+		cy += deltas[:, 0] * h
+		cx += deltas[:, 1] * w
+		h  *= tf.exp(deltas[:, 2])
+		w  *= tf.exp(deltas[:, 3])
+		# 
+		y1 = cy - 0.5 * h
+		x1 = cx - 0.5 * w
+		y2 = y1 + h
+		x2 = x1 + w
+		return tf.stack([y1, x1, y2, x2], axis = 1)
 
 	def Train(self, xx, cc, bb):
-		img        = tf.reshape(xx, [self.train_batch_size, self.img_size[1], self.img_size[0], 3])
-		anchor_cls = tf.reshape(cc, [self.train_batch_size, self.num_anchors, 2])
-		anchor_box = tf.reshape(bb, [self.train_batch_size, self.num_anchors, 4])
-		pred_logit, pred_info = self.RPN(img)
-		loss_1 = self.RPNClassLoss(anchor_cls, pred_logit)
-		loss_2 = self.RPNBoxLoss(anchor_cls, anchor_box, pred_info)
+		img          = tf.reshape(xx, [self.train_batch_size, self.img_size[1], self.img_size[0], 3])
+		anchor_class = tf.reshape(cc, [self.train_batch_size, self.num_anchors, 2])
+		anchor_delta = tf.reshape(bb, [self.train_batch_size, self.num_anchors, 4])
+		pred_logit, pred_delta = self.RPN(img)
+		loss_1 = self.RPNClassLoss(anchor_class, pred_logit)
+		loss_2 = self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
 		return loss_1, loss_2, loss_1 + self.alpha * loss_2
 
 	def Predict(self, xx):
-		img = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
-		pred_logit, pred_info = self.RPN(img, reuse = True)
-		pred_scores = tf.nn.softmax(pred_logit)[..., 0]
-		boxes_x = tf.floor(pred_info[..., 0] * self.w + self.x)
-		boxes_y = tf.floor(pred_info[..., 1] * self.h + self.y)
-		boxes_w = tf.floor(tf.exp(pred_info[..., 2]) * self.w)
-		boxes_h = tf.floor(tf.exp(pred_info[..., 3]) * self.h)
-		boxes_coo = tf.stack([
-			tf.floor(boxes_y - boxes_h / 2),
-			tf.floor(boxes_x - boxes_w / 2),
-			tf.floor(boxes_y + boxes_h / 2),
-			tf.floor(boxes_x + boxes_w / 2)
-		], axis = 2)
+		img        = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
+		pred_logit, pred_delta = self.RPN(img, reuse = True)
+		pred_score = tf.nn.softmax(pred_logit)[..., 0]
+		pred_box   = tf.stack([self.ApplyDeltaToAnchor(self.anchors, pred_delta[i]) for i in range(self.pred_batch_size)])
 		res = []
 		for i in range(self.pred_batch_size):
-			boxes = tf.gather(boxes_coo[i], self.valid_anchor_idx)
-			scores = tf.gather(pred_scores[i], self.valid_anchor_idx)
+			# box = tf.gather(pred_box[i], self.valid_anchor_idx)
+			# score = tf.gather(pred_score[i], self.valid_anchor_idx)
 			indices = tf.image.non_max_suppression(
-				boxes = boxes,
-				scores = scores,
+				boxes = pred_box[i], # box
+				scores = pred_score[i], # score
 				max_output_size = 50,
 				iou_threshold = 0.7
 			)
-			res.append(tf.gather(boxes, indices))
+			res.append(tf.gather(pred_box[i], indices))
 		return res
 
 class Logger(object):
@@ -276,24 +332,22 @@ if __name__ == '__main__':
 		os.makedirs('./res/')
 
 	# Set parameters
-	n_iter            = 100000
-	lr                = 0.00005
+	n_iter			= 100000
+	lr				= 0.00005
 	train_batch_size  = 4
 	pred_batch_size   = 9
 	train_num_anchors = 256
 
 	# Create data generator
-	ANCHOR_SCALE = [60, 120, 180, 240, 300]
-	ANCHOR_RATIO = [0.5, 1, 2]
-	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', anchor_para = (ANCHOR_SCALE, ANCHOR_RATIO))
+	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
 
 	# Define graph
 	RPNGraph = RPN(train_batch_size, pred_batch_size, train_num_anchors)
-	xx = tf.placeholder(tf.float32)
-	cc = tf.placeholder(tf.int32)
-	bb = tf.placeholder(tf.float32)
-	result = RPNGraph.Train(xx, cc, bb)
-	pred = RPNGraph.Predict(xx)
+	xx	   = tf.placeholder(tf.float32)
+	cc	   = tf.placeholder(tf.int32)
+	bb	   = tf.placeholder(tf.float32)
+	result   = RPNGraph.Train(xx, cc, bb)
+	pred	 = RPNGraph.Predict(xx)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
