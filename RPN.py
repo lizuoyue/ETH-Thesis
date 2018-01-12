@@ -7,13 +7,6 @@ import tensorflow as tf
 from PIL import Image, ImageDraw
 ut = __import__('Utility')
 
-ANCHOR_SCALE = [60, 120, 180, 240, 300]
-ANCHOR_SIZE  = [(1, 1), (1.414, 0.707), (0.707, 1.414)]
-ANCHOR_LIST  = []
-for scale in ANCHOR_SCALE:
-	for x, y in ANCHOR_SIZE:
-		ANCHOR_LIST.append((int(scale * x), int(scale * y)))
-
 class RPN(object):
 
 	def __init__(self, train_batch_size, pred_batch_size, train_num_anchors):
@@ -290,7 +283,9 @@ if __name__ == '__main__':
 	train_num_anchors = 256
 
 	# Create data generator
-	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', anchor_list = ANCHOR_LIST)
+	ANCHOR_SCALE = [60, 120, 180, 240, 300]
+	ANCHOR_RATIO = [0.5, 1, 2]
+	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', anchor_para = (ANCHOR_SCALE, ANCHOR_RATIO))
 
 	# Define graph
 	RPNGraph = RPN(train_batch_size, pred_batch_size, train_num_anchors)
