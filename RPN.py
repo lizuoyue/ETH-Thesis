@@ -239,7 +239,7 @@ class RPN(object):
 
 	def smoothL1Loss(self, labels, predictions):
 		diff = tf.abs(predictions - labels)
-		val = 10 * tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
+		val = 100 * tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
 		return tf.reduce_mean(val)
 
 	def RPNClassLoss(self, anchor_class, pred_logit):
@@ -282,7 +282,7 @@ class RPN(object):
 		pred_logit, pred_delta = self.RPN(img)
 		loss_1 = self.RPNClassLoss(anchor_class, pred_logit)
 		loss_2 = self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
-		return loss_1, self.alpha * loss_2, (loss_1 + self.alpha * loss_2)
+		return 3 * loss_1, 3 * self.alpha * loss_2, 3 * (loss_1 + self.alpha * loss_2)
 
 	def Predict(self, xx):
 		img        = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
