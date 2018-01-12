@@ -24,11 +24,6 @@ class RPN(object):
 		self.num_anchors       = self.anchors.shape[0]
 		return
 
-	def smoothL1Loss(self, labels, predictions):
-		diff = tf.abs(predictions - labels)
-		val = tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
-		return tf.reduce_sum(val) / self.train_batch_size / self.train_num_anchors
-
 	def VGG16(self, img, reuse = None):
 		with tf.variable_scope('VGG16', reuse = reuse):
 			conv1_1 = tf.layers.conv2d(
@@ -241,6 +236,11 @@ class RPN(object):
 		logit = tf.concat([p2_logit, p3_logit, p4_logit, p5_logit], axis = 1)
 		delta = tf.concat([p2_delta, p3_delta, p4_delta, p5_delta], axis = 1)
 		return logit, delta
+
+	def smoothL1Loss(self, labels, predictions):
+		diff = tf.abs(predictions - labels)
+		val = tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
+		return tf.reduce_mean(val)
 
 	def RPNClassLoss(self, anchor_class, pred_logit):
 		indices = tf.where(tf.equal(tf.reduce_sum(anchor_class, 2), 1)) # num_valid_anchors, 2
