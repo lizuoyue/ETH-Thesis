@@ -1,7 +1,7 @@
 import os, re, sys
 if os.path.exists('../Python-Lib/'):
 	sys.path.insert(1, '../Python-Lib')
-import io, glob
+import io, glob, time
 import numpy as np
 import tensorflow as tf
 import Utility as ut
@@ -375,20 +375,24 @@ if __name__ == '__main__':
 
 		# Main loop
 		for i in iter_obj:
+			init_time = time.time()
 			# Get training batch data and create feed dictionary
 			img, anchor_cls, anchor_box = obj.getDataBatch(train_batch_size, mode = 'train')
 			feed_dict = {xx: img, cc: anchor_cls, bb: anchor_box}
+			time_1 = time.time()
 
 			# Training and get result
 			sess.run(train, feed_dict)
+			time_2 = time.time()
 			loss_1, loss_2, loss_3 = sess.run(result, feed_dict)
+			time_3 = time.time()
 			train_writer.log_scalar('Loss Class', loss_1, i)
 			train_writer.log_scalar('Loss BBox' , loss_2, i)
 			train_writer.log_scalar('Loss Full' , loss_3, i)
 
 			# Write loss to file
-			print('Train Iter %d, %.6lf, %.6lf, %.6lf' % (i, loss_1, loss_2, loss_3))
-			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf\n' % (i, loss_1, loss_2, loss_3))
+			print('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf, %.3lf' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1, time_3 - time_2))
+			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf, %.3lf\n' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1, time_3 - time_2))
 			f.flush()
 
 			# Save model
