@@ -296,7 +296,7 @@ class RPN(object):
 			indices = tf.image.non_max_suppression(
 				boxes = pred_box[i], # box
 				scores = pred_score[i], # score
-				max_output_size = 50,
+				max_output_size = 40,
 				iou_threshold = 0.7
 			)
 			res.append(tf.gather(pred_box[i], indices))
