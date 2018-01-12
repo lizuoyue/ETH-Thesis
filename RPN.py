@@ -18,7 +18,7 @@ class RPN(object):
 		self.train_batch_size  = train_batch_size
 		self.pred_batch_size   = pred_batch_size
 		self.train_num_anchors = train_num_anchors
-		self.alpha             = 10
+		self.alpha             = 60
 		self.img_size          = (640, 640)
 		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
 		self.num_anchors       = self.anchors.shape[0]
@@ -282,7 +282,7 @@ class RPN(object):
 		pred_logit, pred_delta = self.RPN(img)
 		loss_1 = self.RPNClassLoss(anchor_class, pred_logit)
 		loss_2 = self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
-		return loss_1, loss_2, loss_1 + self.alpha * loss_2
+		return 10 * loss_1, 10 * self.alpha * loss_2, 10 * (loss_1 + self.alpha * loss_2)
 
 	def Predict(self, xx):
 		img        = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
