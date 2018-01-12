@@ -18,7 +18,7 @@ class RPN(object):
 		self.train_batch_size  = train_batch_size
 		self.pred_batch_size   = pred_batch_size
 		self.train_num_anchors = train_num_anchors
-		self.alpha             = 60
+		self.alpha             = 10
 		self.img_size          = (640, 640)
 		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
 		self.num_anchors       = self.anchors.shape[0]
@@ -239,7 +239,7 @@ class RPN(object):
 
 	def smoothL1Loss(self, labels, predictions):
 		diff = tf.abs(predictions - labels)
-		val = tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
+		val = 10 * tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
 		return tf.reduce_mean(val)
 
 	def RPNClassLoss(self, anchor_class, pred_logit):
@@ -333,7 +333,7 @@ if __name__ == '__main__':
 
 	# Set parameters
 	n_iter			= 100000
-	lr				= 0.00005
+	lr				= 0.0001
 	train_batch_size  = 4
 	pred_batch_size   = 9
 	train_num_anchors = 256
