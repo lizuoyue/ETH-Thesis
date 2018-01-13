@@ -179,6 +179,7 @@ def applyBoxesDeltas(boxes, deltas):
 	boxes: [N, (y1, x1, y2, x2)]. Note that (y2, x2) is outside the box.
 	deltas: [N, (dy, dx, log(dh), log(dw))]
 	"""
+	deltas *= np.array([0.1, 0.1, 0.2, 0.2])
 	boxes = boxes.astype(np.float32)
 	# Convert to y, x, h, w
 	height = boxes[:, 2] - boxes[:, 0]
@@ -220,7 +221,7 @@ def boxRefinement(box, gt_box):
 	dh = np.log(gt_height / height)
 	dw = np.log(gt_width / width)
 
-	return np.stack([dy, dx, dh, dw], axis=1)
+	return np.stack([dy, dx, dh, dw], axis=1) / np.array([0.1, 0.1, 0.2, 0.2])
 
 ############################################################
 #  Anchors
@@ -283,7 +284,7 @@ def generatePyramidAnchors(scales, ratios, feature_shapes, feature_strides,
 										feature_strides[i], anchor_stride))
 	return np.concatenate(anchors, axis=0)
 
-def buildRPNTargets(image_shape, anchors, gt_boxes):
+def buildRPNTargets(anchors, gt_boxes):
 	"""Given the anchors and GT boxes, compute overlaps and identify positive
 	anchors and deltas to refine them to match their corresponding GT boxes.
 
@@ -298,7 +299,7 @@ def buildRPNTargets(image_shape, anchors, gt_boxes):
 	# RPN Match: 1 = positive anchor, -1 = negative anchor, 0 = neutral
 	rpn_match = np.zeros([anchors.shape[0]], dtype=np.int32)
 	# RPN bounding boxes: [max anchors per image, (dy, dx, log(dh), log(dw))]
-	rpn_bbox = np.zeros((256, 4))
+	rpn_bbox = np.zeros((anchors.shape[0], 4), dtype = np.float32)
 
 	# Compute overlaps [num_anchors, num_gt_boxes]
 	overlaps = computeOverlaps(anchors, gt_boxes)
@@ -342,47 +343,12 @@ def buildRPNTargets(image_shape, anchors, gt_boxes):
 	# For positive anchors, compute shift and scale needed to transform them
 	# to match the corresponding GT boxes.
 	ids = np.where(rpn_match == 1)[0]
-	ix = 0  # index into rpn_bbox
 	# TODO: use box_refinment() rather than duplicating the code here
 	for i, a in zip(ids, anchors[ids]):
-		# Closest gt box (it might have IoU < 0.7)
+		# # Closest gt box (it might have IoU < 0.7)
 		gt = gt_boxes[anchor_iou_argmax[i]]
-
-		# Convert coordinates to center plus width/height.
-		# GT Box
-		gt_h = gt[2] - gt[0]
-		gt_w = gt[3] - gt[1]
-		gt_center_y = gt[0] + 0.5 * gt_h
-		gt_center_x = gt[1] + 0.5 * gt_w
-		# Anchor
-		a_h = a[2] - a[0]
-		a_w = a[3] - a[1]
-		a_center_y = a[0] + 0.5 * a_h
-		a_center_x = a[1] + 0.5 * a_w
-
-		# Compute the bbox refinement that the RPN should predict.
-		rpn_bbox[ix] = [
-			(gt_center_y - a_center_y) / a_h,
-			(gt_center_x - a_center_x) / a_w,
-			np.log(gt_h / a_h),
-			np.log(gt_w / a_w),
-		]
-
-		# Normalize
-		ix += 1
-
+		rpn_bbox[i,:] = boxRefinement(np.array([a]), np.array([gt]))
 	return rpn_match, rpn_bbox
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -905,15 +871,15 @@ class AnchorGenerator(object):
 				for _ in range(n_rotate):
 					(w, h), (l, u, r, d) = rotate((w, h), (l, u, r, d))
 				gt_boxes.append([u, l, d, r])
+		if len(gt_boxes) == 0:
+			gt_boxes = [[]]
+		gt_boxes = np.array(gt_boxes)
 
 		anchor_cls = np.zeros([num_anchors, 2], np.int32)
-		anchor_box = np.zeros([num_anchors, 4], np.int32)
-		if len(gt_boxes) > 0:
-			gt_boxes = np.array(gt_boxes)
-			rpn_match, rpn_bbox = buildRPNTargets(org.shape, self.anchors, gt_boxes)
-			anchor_cls[rpn_match == 1, 0] = 1
-			anchor_cls[rpn_match == -1, 1] = 1
-			anchor_box[np.abs(rpn_match) == 1, :] = rpn_bbox
+		rpn_match, anchor_box = buildRPNTargets(self.anchors, gt_boxes)
+		anchor_cls[rpn_match == 1, 0] = 1
+		anchor_cls[rpn_match == -1, 1] = 1
+
 		# anchor_box = np.zeros([num_anchors, 4], np.float32)
 		# pos_anchor = []
 		# neg_anchor = []
@@ -959,6 +925,19 @@ class AnchorGenerator(object):
 		# for idx in list(pos):
 		# 	l, u, r, d = shape[pos_anchor[idx]]
 		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+		# img.show()
+
+		# idx = anchor_cls[:,0] == 1
+		# gt_anchor = self.anchors[idx, :]
+		# gt = applyBoxesDeltas(gt_anchor, anchor_box[idx, :])
+		# draw = ImageDraw.Draw(img)
+		# for u, l, d, r in gt_boxes:
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (0, 0, 255), outline = (0, 0, 255))
+		# for i in range(gt.shape[0]):
+		# 	u, l, d, r = tuple(gt[i])
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+		# 	u, l, d, r = tuple(gt_anchor[i])
+		# 	draw.polygon([(l-1, u-1), (r+1, u-1), (r+1, d+1), (l-1, d+1)], outline = (255, 0, 0))
 		# img.show()
 
 		return org, anchor_cls, anchor_box
@@ -1018,3 +997,6 @@ class AnchorGenerator(object):
 if __name__ == '__main__':
 	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
 	ag.getDataBatch(4, mode = 'train')
+
+
+

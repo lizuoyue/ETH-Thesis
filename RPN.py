@@ -240,7 +240,7 @@ class RPN(object):
 	def smoothL1Loss(self, labels, predictions):
 		diff = tf.abs(predictions - labels)
 		val = 100 * tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
-		return tf.reduce_mean(val)
+		return tf.reduce_sum(val)
 
 	def RPNClassLoss(self, anchor_class, pred_logit):
 		indices = tf.where(tf.equal(tf.reduce_sum(anchor_class, 2), 1)) # num_valid_anchors, 2
