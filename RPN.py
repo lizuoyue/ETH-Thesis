@@ -21,6 +21,14 @@ class RPN(object):
 		self.alpha             = 10
 		self.img_size          = (640, 640)
 		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
+		self.all_idx           = np.array([i for i in range(self.anchors.shape[0])])
+		self.valid_idx         = self.all_idx[
+			(self.anchors[:,0] >= 0) &
+			(self.anchors[:,1] >= 0) &
+			(self.anchors[:,2] < 640) &
+			(self.anchors[:,3] < 640)
+		]
+		print(self.valid_idx.shape[0])
 		self.num_anchors       = self.anchors.shape[0]
 		return
 
@@ -246,7 +254,11 @@ class RPN(object):
 		indices = tf.where(tf.equal(tf.reduce_sum(anchor_class, 2), 1)) # num_valid_anchors, 2
 		logits = tf.gather_nd(pred_logit, indices) # num_valid_anchors, 2
 		labels = tf.gather_nd(anchor_class, indices) # num_valid_anchors, 2
-		return tf.reduce_mean(tf.losses.log_loss(labels = labels, predictions = tf.nn.softmax(logits)))
+		pos_num = tf.reduce_sum(labels[:, 0])
+		neg_num = tf.reduce_sum(labels[:, 1])
+		total_num = pos_num + neg_num
+		w = tf.stack([labels[:, 0] * neg_num / total_num, labels[:, 1] * pos_num / total_num], axis = 1)
+		return tf.reduce_mean(tf.losses.log_loss(labels = labels, predictions = tf.nn.softmax(logits), weights = w))
 
 	def RPNDeltaLoss(self, anchor_class, anchor_delta, pred_delta):
 		indices = tf.where(tf.equal(anchor_class[..., 0], 1)) # num_pos_anchors, 2
@@ -282,7 +294,7 @@ class RPN(object):
 		pred_logit, pred_delta = self.RPN(img)
 		loss_1 = self.RPNClassLoss(anchor_class, pred_logit)
 		loss_2 = self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
-		return 10 * loss_1, self.alpha * loss_2, 10 * loss_1 + self.alpha * loss_2
+		return 20 * loss_1, self.alpha * loss_2, 20 * loss_1 + self.alpha * loss_2
 
 	def Predict(self, xx):
 		img        = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
@@ -291,15 +303,15 @@ class RPN(object):
 		pred_box   = tf.stack([self.ApplyDeltaToAnchor(self.anchors, pred_delta[i]) for i in range(self.pred_batch_size)])
 		res = []
 		for i in range(self.pred_batch_size):
-			# box = tf.gather(pred_box[i], self.valid_anchor_idx)
-			# score = tf.gather(pred_score[i], self.valid_anchor_idx)
+			box = tf.gather(pred_box[i], self.valid_idx)
+			score = tf.gather(pred_score[i], self.valid_idx)
 			indices = tf.image.non_max_suppression(
-				boxes = pred_box[i], # box
-				scores = pred_score[i], # score
+				boxes = box, # pred_box[i]
+				scores = score, # pred_score[i]
 				max_output_size = 40,
 				iou_threshold = 0.7
 			)
-			res.append(tf.gather(pred_box[i], indices))
+			res.append(tf.gather(box, indices)) # pred_box[i]
 		return res
 
 class Logger(object):
