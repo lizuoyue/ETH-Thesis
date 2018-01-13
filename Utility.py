@@ -300,6 +300,8 @@ def buildRPNTargets(anchors, gt_boxes):
 	rpn_match = np.zeros([anchors.shape[0]], dtype=np.int32)
 	# RPN bounding boxes: [max anchors per image, (dy, dx, log(dh), log(dw))]
 	rpn_bbox = np.zeros((anchors.shape[0], 4), dtype = np.float32)
+	if gt_boxes.shape[0] == 0:
+		return rpn_match, rpn_bbox
 
 	# Compute overlaps [num_anchors, num_gt_boxes]
 	overlaps = computeOverlaps(anchors, gt_boxes)
@@ -872,8 +874,9 @@ class AnchorGenerator(object):
 					(w, h), (l, u, r, d) = rotate((w, h), (l, u, r, d))
 				gt_boxes.append([u, l, d, r])
 		if len(gt_boxes) == 0:
-			gt_boxes = [[]]
-		gt_boxes = np.array(gt_boxes)
+			gt_boxes = np.zeros((0, 4), np.int32)
+		else:
+			gt_boxes = np.array(gt_boxes)
 
 		anchor_cls = np.zeros([num_anchors, 2], np.int32)
 		rpn_match, anchor_box = buildRPNTargets(self.anchors, gt_boxes)
@@ -996,7 +999,7 @@ class AnchorGenerator(object):
 
 if __name__ == '__main__':
 	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
-	ag.getDataBatch(4, mode = 'train')
+	ag.getDataBatch(20, mode = 'train')
 
 
 
