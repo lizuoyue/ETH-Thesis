@@ -264,10 +264,10 @@ class RPN(object):
 		cy = anchors[:, 0] + 0.5 * h
 		cx = anchors[:, 1] + 0.5 * w
 		# 
-		cy += deltas[:, 0] * h
-		cx += deltas[:, 1] * w
-		h  *= tf.exp(deltas[:, 2])
-		w  *= tf.exp(deltas[:, 3])
+		cy += deltas[:, 0] * h * 0.1
+		cx += deltas[:, 1] * w * 0.1
+		h  *= tf.exp(deltas[:, 2] * 0.2)
+		w  *= tf.exp(deltas[:, 3] * 0.2)
 		# 
 		y1 = cy - 0.5 * h
 		x1 = cx - 0.5 * w
