@@ -303,8 +303,14 @@ class RPN(object):
 		pred_box   = tf.stack([self.ApplyDeltaToAnchor(self.anchors, pred_delta[i]) for i in range(self.pred_batch_size)])
 		res = []
 		for i in range(self.pred_batch_size):
-			box = tf.gather(pred_box[i], self.valid_idx)
-			score = tf.gather(pred_score[i], self.valid_idx)
+			box_valid = tf.gather(pred_box[i], self.valid_idx)
+			score_valid = tf.gather(pred_score[i], self.valid_idx)
+			idx_top = tf.nn.top_k(score_valid, 6000).indices
+			box_top = tf.gather(box_valid, idx_top)
+			score_top = tf.gather(score_valid, idx_top)
+			idx = tf.where(score_top >= 0.5)
+			box = tf.gather(box_top, idx)[:, 0, :]
+			score = tf.gather(score_top, idx)[:, 0]
 			indices = tf.image.non_max_suppression(
 				boxes = box, # pred_box[i]
 				scores = score, # pred_score[i]
@@ -408,10 +414,10 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Save model
-			if i % 200 == 0:
+			if i % 100 == 0:
 				saver.save(sess, './tmp/model-%d.ckpt' % i)
 
-			if i % 200 == 0:
+			if i % 100 == 0:
 				img, anchor_cls, anchor_box = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img}
 				res = sess.run(pred, feed_dict)
