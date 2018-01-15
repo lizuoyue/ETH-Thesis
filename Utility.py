@@ -13,10 +13,15 @@ if os.path.exists('../Python-Lib/'):
 BLUR = 0.75
 TILE_SIZE = 256
 
-ANCHOR_SCALE   = [40, 80, 160, 320]
-ANCHOR_RATIO   = [0.5, 1, 2]
-FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
+ANCHOR_SCALE   = [16, 32, 64, 128]
+ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
+FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
+
+# ANCHOR_SCALE   = [40, 80, 160, 320]
+# ANCHOR_RATIO   = [0.5, 1, 2]
+# FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
+# FEATURE_STRIDE = [4, 8, 16, 32]
 
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
 	# Set image parameters
@@ -835,12 +840,12 @@ class AnchorGenerator(object):
 		path = self.data_path + '/' + area_idx
 
 		# Rotate
-		n_rotate = random.choice([0, 1, 2, 3])
+		n_rotate = 0 # random.choice([0, 1, 2, 3])
 
 		# 
 		while True:
 			try:
-				img = Image.open(io.BytesIO(self.sftp.open(path + '/img.png').read()))
+				img = Image.open(io.BytesIO(self.sftp.open(path + '/img.png').read())).resize((256, 256), resample = Image.BICUBIC)
 				break
 			except:
 				print('Paramiko.')

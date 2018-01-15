@@ -7,10 +7,15 @@ import tensorflow as tf
 import Utility as ut
 from PIL import Image, ImageDraw
 
-ANCHOR_SCALE   = [40, 80, 160, 320]
+ANCHOR_SCALE   = [16, 32, 64, 128]
 ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
-FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
+FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
+
+# ANCHOR_SCALE   = [40, 80, 160, 320]
+# ANCHOR_RATIO   = [0.5, 1, 2]
+# FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
+# FEATURE_STRIDE = [4, 8, 16, 32]
 
 class RPN(object):
 
@@ -18,15 +23,15 @@ class RPN(object):
 		self.train_batch_size  = train_batch_size
 		self.pred_batch_size   = pred_batch_size
 		self.train_num_anchors = train_num_anchors
-		self.alpha             = 10
-		self.img_size          = (640, 640)
+		# self.img_size          = (640, 640)
+		self.img_size          = (256, 256)
 		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
 		self.all_idx           = np.array([i for i in range(self.anchors.shape[0])])
 		self.valid_idx         = self.all_idx[
 			(self.anchors[:, 0] >= 0) &
 			(self.anchors[:, 1] >= 0) &
-			(self.anchors[:, 2] < 640) &
-			(self.anchors[:, 3] < 640)
+			(self.anchors[:, 2] < self.img_size[1]) &
+			(self.anchors[:, 3] < self.img_size[0])
 		]
 		self.num_anchors       = self.anchors.shape[0]
 		print('%d of %d anchors are valid.' % (self.valid_idx.shape[0], self.num_anchors))
@@ -164,7 +169,7 @@ class RPN(object):
 				padding = 'same',
 				activation = tf.nn.relu) + tf.image.resize_images(
 				images = p4,
-				size = [80, 80]
+				size = FEATURE_SHAPE[1]
 			)
 			p2 = tf.layers.conv2d(
 				inputs = c2,
@@ -173,7 +178,7 @@ class RPN(object):
 				padding = 'same',
 				activation = tf.nn.relu) + tf.image.resize_images(
 				images = p3,
-				size = [160, 160]
+				size = FEATURE_SHAPE[0]
 			)
 			p2_conv = tf.layers.conv2d(
 				inputs = p2,
@@ -211,7 +216,7 @@ class RPN(object):
 		with tf.variable_scope('RPN', reuse = reuse):
 			rpn_conv = tf.layers.conv2d(
 				inputs = feature,
-				filters = 512,
+				filters = 256, # 512
 				kernel_size = (3, 3),
 				padding = 'same',
 				activation = tf.nn.relu
@@ -292,9 +297,9 @@ class RPN(object):
 		anchor_class = tf.reshape(cc, [self.train_batch_size, self.num_anchors, 2])
 		anchor_delta = tf.reshape(bb, [self.train_batch_size, self.num_anchors, 4])
 		pred_logit, pred_delta = self.RPN(img)
-		loss_1 = self.RPNClassLoss(anchor_class, pred_logit)
-		loss_2 = self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
-		return 20 * loss_1, self.alpha * loss_2, 20 * loss_1 + self.alpha * loss_2
+		loss_1 = 20 * self.RPNClassLoss(anchor_class, pred_logit)
+		loss_2 = 10 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
+		return loss_1, loss_2, loss_1 + loss_2
 
 	def Predict(self, xx):
 		img        = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
