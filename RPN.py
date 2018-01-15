@@ -297,7 +297,7 @@ class RPN(object):
 		anchor_class = tf.reshape(cc, [self.train_batch_size, self.num_anchors, 2])
 		anchor_delta = tf.reshape(bb, [self.train_batch_size, self.num_anchors, 4])
 		pred_logit, pred_delta = self.RPN(img)
-		loss_1 = 20 * self.RPNClassLoss(anchor_class, pred_logit)
+		loss_1 = 200 * self.RPNClassLoss(anchor_class, pred_logit)
 		loss_2 = 10 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
 		return loss_1, loss_2, loss_1 + loss_2
 
@@ -356,7 +356,7 @@ if __name__ == '__main__':
 
 	# Set parameters
 	n_iter			= 100000
-	lr				= 0.00005
+	lr				= 0.00002
 	train_batch_size  = 9
 	pred_batch_size   = 16
 	train_num_anchors = 256
