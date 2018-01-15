@@ -14,7 +14,7 @@ BLUR = 0.75
 TILE_SIZE = 256
 
 ANCHOR_SCALE   = [16, 32, 64, 128]
-ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
+ANCHOR_RATIO   = [1.0 / 3, 1.0 / 2, 1, 2, 3]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
@@ -411,46 +411,58 @@ def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 		ry = np.random.randint(math.floor(rx * 0.7), math.floor(rx * 1.3))
 		draw.ellipse((px - rx, py - ry, px + rx, py + ry), fill = color)
 		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon)
-		lu = (max(px - rx, 0), max(py - ry, 0))
-		rd = (min(px + rx, max_x), min(py + ry, max_y))
+		l, u = (max(px - rx, 0), max(py - ry, 0))
+		r, d = (min(px + rx, max_x), min(py + ry, max_y))
 		# draw.polygon([lu, (rd[0], lu[1]), rd, (lu[0], rd[1])], outline = (0, 255, 0))
-		bboxes.append(list(lurd2xywh(lu + rd)))
+		# bboxes.append(list(lurd2xywh(lu + rd)))
+		bboxes.append([u, l, d, r])
 
-	num_anchors = img_size_s[0] * img_size_s[1] * len(anchor_list)
+	if len(bboxes) == 0:
+		bboxes = np.zeros((0, 4), np.int32)
+	else:
+		bboxes = np.array(bboxes)
+
+	num_anchors = anchor_list.shape[0]
 	anchor_cls = np.zeros([num_anchors, 2], np.int32)
-	anchor_box = np.zeros([num_anchors, 4], np.float32)
-	pos_anchor = []
-	neg_anchor = []
-	shape = []
-	idx = -1
-	for i in range(img_size_s[1]):
-		for j in range(img_size_s[0]):
-			x = j * 16 + 8
-			y = i * 16 + 8
-			for k, (w, h) in enumerate(anchor_list):
-				idx += 1
-				l, u, r, d = xywh2lurd((x, y, w, h))
-				shape.append((l, u, r, d))
-				if l >= 0 and u >= 0 and r < img_size[0] and d < img_size[1]:
-					box_idx = findBestBox(bboxes, (x, y, w, h))
-					if box_idx is not None:
-						if box_idx >= 0:
-							pos_anchor.append(idx)
-							box = bboxes[box_idx]
-							anchor_box[idx, 0] = (box[0] - x) / w
-							anchor_box[idx, 1] = (box[1] - y) / h
-							anchor_box[idx, 2] = math.log(box[2] / w)
-							anchor_box[idx, 3] = math.log(box[3] / h)
-						else:
-							neg_anchor.append(idx)
+	rpn_match, anchor_box = buildRPNTargets(anchor_list, bboxes)
+	anchor_cls[rpn_match == 1, 0] = 1
+	anchor_cls[rpn_match == -1, 1] = 1
 
-	# Random select
-	if len(pos_anchor) > 0:
-		pos = np.random.choice(len(pos_anchor), min(128, len(pos_anchor)), replace = False)
-		anchor_cls[np.array(pos_anchor)[pos], 0] = 1
-	if len(neg_anchor) > 0:
-		neg = np.random.choice(len(neg_anchor), 256 - len(pos_anchor), replace = False)
-		anchor_cls[np.array(neg_anchor)[neg], 1] = 1
+	# num_anchors = img_size_s[0] * img_size_s[1] * len(anchor_list)
+	# anchor_cls = np.zeros([num_anchors, 2], np.int32)
+	# anchor_box = np.zeros([num_anchors, 4], np.float32)
+	# pos_anchor = []
+	# neg_anchor = []
+	# shape = []
+	# idx = -1
+	# for i in range(img_size_s[1]):
+	# 	for j in range(img_size_s[0]):
+	# 		x = j * 16 + 8
+	# 		y = i * 16 + 8
+	# 		for k, (w, h) in enumerate(anchor_list):
+	# 			idx += 1
+	# 			l, u, r, d = xywh2lurd((x, y, w, h))
+	# 			shape.append((l, u, r, d))
+	# 			if l >= 0 and u >= 0 and r < img_size[0] and d < img_size[1]:
+	# 				box_idx = findBestBox(bboxes, (x, y, w, h))
+	# 				if box_idx is not None:
+	# 					if box_idx >= 0:
+	# 						pos_anchor.append(idx)
+	# 						box = bboxes[box_idx]
+	# 						anchor_box[idx, 0] = (box[0] - x) / w
+	# 						anchor_box[idx, 1] = (box[1] - y) / h
+	# 						anchor_box[idx, 2] = math.log(box[2] / w)
+	# 						anchor_box[idx, 3] = math.log(box[3] / h)
+	# 					else:
+	# 						neg_anchor.append(idx)
+
+	# # Random select
+	# if len(pos_anchor) > 0:
+	# 	pos = np.random.choice(len(pos_anchor), min(128, len(pos_anchor)), replace = False)
+	# 	anchor_cls[np.array(pos_anchor)[pos], 0] = 1
+	# if len(neg_anchor) > 0:
+	# 	neg = np.random.choice(len(neg_anchor), 256 - len(pos_anchor), replace = False)
+	# 	anchor_cls[np.array(neg_anchor)[neg], 1] = 1
 
 	# Visualization
 	# draw = ImageDraw.Draw(img)
@@ -470,8 +482,21 @@ def plotEllipse(anchor_list, img_size = (640, 640), num_ellipse = 6):
 	background = np.array(org)
 	img = background + noise
 	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
-	# Image.fromarray(img).show() ##############
+	# img = Image.fromarray(img)#.show() ##############
 	img = np.array(img) / 255.0
+
+	# idx = anchor_cls[:, 0] == 1
+	# gt_anchor = anchor_list[idx, :]
+	# gt = applyBoxesDeltas(gt_anchor, anchor_box[idx, :])
+	# draw = ImageDraw.Draw(img)
+	# for u, l, d, r in bboxes:
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (0, 0, 255), outline = (0, 0, 255))
+	# for i in range(gt.shape[0]):
+	# 	u, l, d, r = tuple(gt[i])
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+	# 	u, l, d, r = tuple(gt_anchor[i])
+	# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+	# img.show()
 
 	return img, anchor_cls, anchor_box
 
@@ -935,19 +960,19 @@ class AnchorGenerator(object):
 		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
 		# img.show()
 
-		# idx = anchor_cls[:,0] == 1
-		# gt_anchor = self.anchors[idx, :]
-		# gt = applyBoxesDeltas(gt_anchor, anchor_box[idx, :])
-		# draw = ImageDraw.Draw(img)
-		# for u, l, d, r in gt_boxes:
-		# 	u, l, d, r = u / 2.5, l / 2.5, d / 2.5, r / 2.5
-		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (0, 0, 255), outline = (0, 0, 255))
-		# for i in range(gt.shape[0]):
-		# 	u, l, d, r = tuple(gt[i])
-		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
-		# 	u, l, d, r = tuple(gt_anchor[i])
-		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-		# img.show()
+		idx = anchor_cls[:, 0] == 1
+		gt_anchor = self.anchors[idx, :]
+		gt = applyBoxesDeltas(gt_anchor, anchor_box[idx, :])
+		draw = ImageDraw.Draw(img)
+		for u, l, d, r in gt_boxes:
+			u, l, d, r = u / 2.5, l / 2.5, d / 2.5, r / 2.5
+			draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (0, 0, 255), outline = (0, 0, 255))
+		for i in range(gt.shape[0]):
+			u, l, d, r = tuple(gt[i])
+			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+			u, l, d, r = tuple(gt_anchor[i])
+			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+		img.show()
 
 		return org, anchor_cls, anchor_box
 
@@ -955,7 +980,7 @@ class AnchorGenerator(object):
 		res = []
 		num_e = np.random.choice(4, batch_size, replace = True) + 2
 		for num in num_e:
-			res.append(plotEllipse(anchor_list = self.anchor_list, num_ellipse = num))
+			res.append(plotEllipse(anchor_list = self.anchors, num_ellipse = num, img_size = (256, 256)))
 		return (np.array([item[i] for item in res]) for i in range(3))
 
 	# def recover(self, path, img, obj_logit, bbox_info):
@@ -1004,8 +1029,9 @@ class AnchorGenerator(object):
 			org.save(path + '/%d.png' % i)
 
 if __name__ == '__main__':
-	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
+	ag = AnchorGenerator(fake = True, data_path = '/local/lizuoyue/Chicago_Area')
 	ag.getDataBatch(8, mode = 'train')
+	# print(ag.anchors)
 
 
 

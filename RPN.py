@@ -8,7 +8,7 @@ import Utility as ut
 from PIL import Image, ImageDraw
 
 ANCHOR_SCALE   = [16, 32, 64, 128]
-ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
+ANCHOR_RATIO   = [1.0 / 3, 1.0 / 2, 1, 2, 3]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
@@ -27,12 +27,13 @@ class RPN(object):
 		self.img_size          = (256, 256)
 		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
 		self.all_idx           = np.array([i for i in range(self.anchors.shape[0])])
-		self.valid_idx         = self.all_idx[
-			(self.anchors[:, 0] >= 0) &
-			(self.anchors[:, 1] >= 0) &
-			(self.anchors[:, 2] < self.img_size[1]) &
-			(self.anchors[:, 3] < self.img_size[0])
-		]
+		# self.valid_idx         = self.all_idx[
+		# 	(self.anchors[:, 0] >= 0) &
+		# 	(self.anchors[:, 1] >= 0) &
+		# 	(self.anchors[:, 2] < self.img_size[1]) &
+		# 	(self.anchors[:, 3] < self.img_size[0])
+		# ]
+		self.valid_idx         = self.all_idx
 		self.num_anchors       = self.anchors.shape[0]
 		print('%d of %d anchors are valid.' % (self.valid_idx.shape[0], self.num_anchors))
 		return
@@ -216,7 +217,7 @@ class RPN(object):
 		with tf.variable_scope('RPN', reuse = reuse):
 			rpn_conv = tf.layers.conv2d(
 				inputs = feature,
-				filters = 256, # 512
+				filters = 512,
 				kernel_size = (3, 3),
 				padding = 'same',
 				activation = tf.nn.relu
@@ -310,10 +311,10 @@ class RPN(object):
 		for i in range(self.pred_batch_size):
 			box_valid = tf.gather(pred_box[i], self.valid_idx)
 			score_valid = tf.gather(pred_score[i], self.valid_idx)
-			idx_top = tf.nn.top_k(score_valid, 1000).indices
+			idx_top = tf.nn.top_k(score_valid, 2000).indices
 			box_top = tf.gather(box_valid, idx_top)
 			score_top = tf.gather(score_valid, idx_top)
-			idx = tf.where(score_top >= 0.7)
+			idx = tf.where(score_top >= 0.5)
 			box = tf.gather(box_top, idx)[:, 0, :]
 			score = tf.gather(score_top, idx)[:, 0]
 			indices = tf.image.non_max_suppression(
@@ -362,7 +363,7 @@ if __name__ == '__main__':
 	train_num_anchors = 256
 
 	# Create data generator
-	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
+	obj = ut.AnchorGenerator(fake = True, data_path = '/local/lizuoyue/Chicago_Area')
 
 	# Define graph
 	RPNGraph = RPN(train_batch_size, pred_batch_size, train_num_anchors)
