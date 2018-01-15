@@ -33,6 +33,7 @@ if __name__ == '__main__':
 
 				gt_boxes = []
 				for polygon in polygons:
+					w, h = 640, 640
 					p = np.array(polygon, np.int32)
 					l = max(0, p[:, 0].min())
 					u = max(0, p[:, 1].min())
