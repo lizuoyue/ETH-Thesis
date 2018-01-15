@@ -8,7 +8,7 @@ import Utility as ut
 from PIL import Image, ImageDraw
 
 ANCHOR_SCALE   = [40, 80, 160, 320]
-ANCHOR_RATIO   = [0.5, 1, 2]
+ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
 FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
@@ -23,13 +23,13 @@ class RPN(object):
 		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
 		self.all_idx           = np.array([i for i in range(self.anchors.shape[0])])
 		self.valid_idx         = self.all_idx[
-			(self.anchors[:,0] >= 0) &
-			(self.anchors[:,1] >= 0) &
-			(self.anchors[:,2] < 640) &
-			(self.anchors[:,3] < 640)
+			(self.anchors[:, 0] >= 0) &
+			(self.anchors[:, 1] >= 0) &
+			(self.anchors[:, 2] < 640) &
+			(self.anchors[:, 3] < 640)
 		]
-		print(self.valid_idx.shape[0])
 		self.num_anchors       = self.anchors.shape[0]
+		print('%d of %d anchors are valid.' % (self.valid_idx.shape[0], self.num_anchors))
 		return
 
 	def VGG16(self, img, reuse = None):
@@ -237,10 +237,10 @@ class RPN(object):
 
 	def RPN(self, img, reuse = None):
 		p2, p3, p4, p5     = self.FPN(img, reuse)
-		p2_logit, p2_delta = self.RPNLayer(p2, 3, reuse)
-		p3_logit, p3_delta = self.RPNLayer(p3, 3, True)
-		p4_logit, p4_delta = self.RPNLayer(p4, 3, True)
-		p5_logit, p5_delta = self.RPNLayer(p5, 3, True)
+		p2_logit, p2_delta = self.RPNLayer(p2, len(ANCHOR_RATIO), reuse)
+		p3_logit, p3_delta = self.RPNLayer(p3, len(ANCHOR_RATIO), True)
+		p4_logit, p4_delta = self.RPNLayer(p4, len(ANCHOR_RATIO), True)
+		p5_logit, p5_delta = self.RPNLayer(p5, len(ANCHOR_RATIO), True)
 		logit = tf.concat([p2_logit, p3_logit, p4_logit, p5_logit], axis = 1)
 		delta = tf.concat([p2_delta, p3_delta, p4_delta, p5_delta], axis = 1)
 		return logit, delta
@@ -308,7 +308,7 @@ class RPN(object):
 			idx_top = tf.nn.top_k(score_valid, 6000).indices
 			box_top = tf.gather(box_valid, idx_top)
 			score_top = tf.gather(score_valid, idx_top)
-			idx = tf.where(score_top >= 0.5)
+			idx = tf.where(score_top >= 0.7)
 			box = tf.gather(box_top, idx)[:, 0, :]
 			score = tf.gather(score_top, idx)[:, 0]
 			indices = tf.image.non_max_suppression(
@@ -352,8 +352,8 @@ if __name__ == '__main__':
 	# Set parameters
 	n_iter			= 100000
 	lr				= 0.00005
-	train_batch_size  = 4
-	pred_batch_size   = 9
+	train_batch_size  = 9
+	pred_batch_size   = 16
 	train_num_anchors = 256
 
 	# Create data generator
