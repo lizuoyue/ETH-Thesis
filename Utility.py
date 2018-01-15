@@ -868,7 +868,7 @@ class AnchorGenerator(object):
 
 		gt_boxes = []
 		for polygon in polygons:
-			w, h = org_size
+			w, h = (640, 640)
 			p = np.array(polygon, np.int32)
 			l = max(0, p[:, 0].min())
 			u = max(0, p[:, 1].min())
@@ -940,12 +940,13 @@ class AnchorGenerator(object):
 		# gt = applyBoxesDeltas(gt_anchor, anchor_box[idx, :])
 		# draw = ImageDraw.Draw(img)
 		# for u, l, d, r in gt_boxes:
+		# 	u, l, d, r = u / 2.5, l / 2.5, d / 2.5, r / 2.5
 		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (0, 0, 255), outline = (0, 0, 255))
 		# for i in range(gt.shape[0]):
 		# 	u, l, d, r = tuple(gt[i])
 		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
 		# 	u, l, d, r = tuple(gt_anchor[i])
-		# 	draw.polygon([(l-1, u-1), (r+1, u-1), (r+1, d+1), (l-1, d+1)], outline = (255, 0, 0))
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 		# img.show()
 
 		return org, anchor_cls, anchor_box
@@ -1004,7 +1005,7 @@ class AnchorGenerator(object):
 
 if __name__ == '__main__':
 	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
-	ag.getDataBatch(20, mode = 'train')
+	ag.getDataBatch(8, mode = 'train')
 
 
 
