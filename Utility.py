@@ -884,7 +884,7 @@ class AnchorGenerator(object):
 			gt_boxes = np.array(gt_boxes)
 
 		anchor_cls = np.zeros([num_anchors, 2], np.int32)
-		rpn_match, anchor_box = buildRPNTargets(self.anchors, gt_boxes)
+		rpn_match, anchor_box = buildRPNTargets(self.anchors * 2.5, gt_boxes)
 		anchor_cls[rpn_match == 1, 0] = 1
 		anchor_cls[rpn_match == -1, 1] = 1
 
