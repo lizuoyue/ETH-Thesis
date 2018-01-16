@@ -892,6 +892,7 @@ class AnchorGenerator(object):
 					polygons[-1].append((int(x), int(y)))
 
 		gt_boxes = []
+		pad = 0
 		for polygon in polygons:
 			w, h = (640, 640)
 			p = np.array(polygon, np.int32)
@@ -902,7 +903,7 @@ class AnchorGenerator(object):
 			if r > l and d > u:
 				for _ in range(n_rotate):
 					(w, h), (l, u, r, d) = rotate((w, h), (l, u, r, d))
-				gt_boxes.append([u, l, d, r])
+				gt_boxes.append([u - pad, l - pad, d + pad, r + pad])
 		if len(gt_boxes) == 0:
 			gt_boxes = np.zeros((0, 4), np.int32)
 		else:
@@ -1029,7 +1030,7 @@ class AnchorGenerator(object):
 			org.save(path + '/%d.png' % i)
 
 if __name__ == '__main__':
-	ag = AnchorGenerator(fake = True, data_path = '/local/lizuoyue/Chicago_Area')
+	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
 	ag.getDataBatch(8, mode = 'train')
 	# print(ag.anchors)
 
