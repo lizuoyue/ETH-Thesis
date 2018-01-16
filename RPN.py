@@ -363,7 +363,7 @@ if __name__ == '__main__':
 	train_num_anchors = 256
 
 	# Create data generator
-	obj = ut.AnchorGenerator(fake = True, data_path = '/local/lizuoyue/Chicago_Area')
+	obj = ut.AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
 
 	# Define graph
 	RPNGraph = RPN(train_batch_size, pred_batch_size, train_num_anchors)
