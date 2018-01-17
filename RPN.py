@@ -311,17 +311,17 @@ class RPN(object):
 		for i in range(self.pred_batch_size):
 			box_valid = tf.gather(pred_box[i], self.valid_idx)
 			score_valid = tf.gather(pred_score[i], self.valid_idx)
-			idx_top = tf.nn.top_k(score_valid, 2000).indices
+			idx_top = tf.nn.top_k(score_valid, 1000).indices
 			box_top = tf.gather(box_valid, idx_top)
 			score_top = tf.gather(score_valid, idx_top)
-			idx = tf.where(score_top >= 0.5)
+			idx = tf.where(score_top >= 0.7)
 			box = tf.gather(box_top, idx)[:, 0, :]
 			score = tf.gather(score_top, idx)[:, 0]
 			indices = tf.image.non_max_suppression(
 				boxes = box, # pred_box[i]
 				scores = score, # pred_score[i]
 				max_output_size = 40,
-				iou_threshold = 0.7
+				iou_threshold = 0.5
 			)
 			res.append(tf.gather(box, indices)) # pred_box[i]
 		return res
