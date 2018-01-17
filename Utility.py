@@ -815,17 +815,18 @@ class DataGenerator(object):
 
 class AnchorGenerator(object):
 	# num_col, num_row
-	def __init__(self, fake, data_path):
+	def __init__(self, fake, data_path, from_server):
 		if fake:
 			self.fake = True
 		else:
 			self.fake = False
-
+			self.from_server = from_server
 			# 
-			# self.ssh = paramiko.SSHClient()
-			# self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-			# self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
-			# self.sftp = self.ssh.open_sftp()
+			if from_server:
+				self.ssh = paramiko.SSHClient()
+				self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+				self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
+				self.sftp = self.ssh.open_sftp()
 
 			with open('./AreaIdxList.txt', 'r') as f:
 				self.area_idx_list = eval(f.read())
@@ -868,13 +869,20 @@ class AnchorGenerator(object):
 		n_rotate = 0 # random.choice([0, 1, 2, 3])
 
 		# 
-		# while True:
-		# 	try:
-		# 		img = Image.open(io.BytesIO(self.sftp.open(path + '/img.png').read())).resize((256, 256), resample = Image.BICUBIC)
-		# 		break
-		# 	except:
-		# 		print('Paramiko.')
-		img = Image.open(path + '/img.png').resize((256, 256), resample = Image.BICUBIC)
+		if self.from_server:
+			while True:
+				try:
+					img = Image.open(io.BytesIO(self.sftp.open(path + '/img.png').read())).resize((256, 256), resample = Image.BICUBIC)
+					lines = self.sftp.open(path + '/polygons.txt').read().decode('utf-8').split('\n')
+					break
+				except:
+					print('Try again.')
+		else:
+			img = Image.open(path + '/img.png').resize((256, 256), resample = Image.BICUBIC)
+			f = open(path + '/polygons.txt', 'r')
+			lines = f.readlines()
+			f.close()
+
 		org_size = img.size
 		img = img.rotate(n_rotate * 90)
 		img_size = img.size
@@ -882,10 +890,7 @@ class AnchorGenerator(object):
 		num_anchors = self.anchors.shape[0]
 
 		org = np.array(img)[..., 0: 3] / 255.0
-		# lines = self.sftp.open(path + '/polygons.txt').read().decode('utf-8').split('\n')
-		f = open(path + '/polygons.txt', 'r')
-		lines = f.readlines()
-		f.close()
+
 		polygons = []
 		for line in lines:
 			if line.strip() != '':
@@ -1034,7 +1039,7 @@ class AnchorGenerator(object):
 			org.save(path + '/%d.png' % i)
 
 if __name__ == '__main__':
-	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area')
+	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', from_server = True)
 	ag.getDataBatch(8, mode = 'train')
 	# print(ag.anchors)
 
