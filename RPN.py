@@ -406,17 +406,15 @@ if __name__ == '__main__':
 			time_1 = time.time()
 
 			# Training and get result
-			sess.run(train, feed_dict)
+			_, (loss_1, loss_2, loss_3) = sess.run([train, result], feed_dict)
 			time_2 = time.time()
-			loss_1, loss_2, loss_3 = sess.run(result, feed_dict)
-			time_3 = time.time()
 			train_writer.log_scalar('Loss Class', loss_1, i)
 			train_writer.log_scalar('Loss BBox' , loss_2, i)
 			train_writer.log_scalar('Loss Full' , loss_3, i)
 
 			# Write loss to file
-			print('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf, %.3lf' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1, time_3 - time_2))
-			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf, %.3lf\n' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1, time_3 - time_2))
+			print('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1))
+			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf\n' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1))
 			f.flush()
 
 			# Save model
