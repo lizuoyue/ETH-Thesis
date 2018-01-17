@@ -822,10 +822,10 @@ class AnchorGenerator(object):
 			self.fake = False
 
 			# 
-			self.ssh = paramiko.SSHClient()
-			self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-			self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
-			self.sftp = self.ssh.open_sftp()
+			# self.ssh = paramiko.SSHClient()
+			# self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+			# self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
+			# self.sftp = self.ssh.open_sftp()
 
 			with open('./AreaIdxList.txt', 'r') as f:
 				self.area_idx_list = eval(f.read())
@@ -868,12 +868,13 @@ class AnchorGenerator(object):
 		n_rotate = 0 # random.choice([0, 1, 2, 3])
 
 		# 
-		while True:
-			try:
-				img = Image.open(io.BytesIO(self.sftp.open(path + '/img.png').read())).resize((256, 256), resample = Image.BICUBIC)
-				break
-			except:
-				print('Paramiko.')
+		# while True:
+		# 	try:
+		# 		img = Image.open(io.BytesIO(self.sftp.open(path + '/img.png').read())).resize((256, 256), resample = Image.BICUBIC)
+		# 		break
+		# 	except:
+		# 		print('Paramiko.')
+		img = Image.open(path + '/img.png')
 		org_size = img.size
 		img = img.rotate(n_rotate * 90)
 		img_size = img.size
@@ -881,7 +882,10 @@ class AnchorGenerator(object):
 		num_anchors = self.anchors.shape[0]
 
 		org = np.array(img)[..., 0: 3] / 255.0
-		lines = self.sftp.open(path + '/polygons.txt').read().decode('utf-8').split('\n')
+		# lines = self.sftp.open(path + '/polygons.txt').read().decode('utf-8').split('\n')
+		f = open(path + '/polygons.txt', 'r')
+		lines = f.readlines()
+		f.close()
 		polygons = []
 		for line in lines:
 			if line.strip() != '':
