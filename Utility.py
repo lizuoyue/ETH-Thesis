@@ -874,7 +874,7 @@ class AnchorGenerator(object):
 		# 		break
 		# 	except:
 		# 		print('Paramiko.')
-		img = Image.open(path + '/img.png')
+		img = Image.open(path + '/img.png').resize((256, 256), resample = Image.BICUBIC)
 		org_size = img.size
 		img = img.rotate(n_rotate * 90)
 		img_size = img.size
