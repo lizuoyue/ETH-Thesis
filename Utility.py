@@ -875,7 +875,6 @@ class AnchorGenerator(object):
 		# 	except:
 		# 		print('Paramiko.')
 		img = Image.open(path + '/img.png').resize((256, 256), resample = Image.BICUBIC)
-		print('aaaaaaaaaaaaa')
 		org_size = img.size
 		img = img.rotate(n_rotate * 90)
 		img_size = img.size
@@ -966,19 +965,19 @@ class AnchorGenerator(object):
 		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
 		# img.show()
 
-		idx = anchor_cls[:, 0] == 1
-		gt_anchor = self.anchors[idx, :]
-		gt = applyBoxesDeltas(gt_anchor, anchor_box[idx, :])
-		draw = ImageDraw.Draw(img)
-		for u, l, d, r in gt_boxes:
-			u, l, d, r = u / 2.5, l / 2.5, d / 2.5, r / 2.5
-			draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (0, 0, 255), outline = (0, 0, 255))
-		for i in range(gt.shape[0]):
-			u, l, d, r = tuple(gt[i])
-			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
-			u, l, d, r = tuple(gt_anchor[i])
-			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-		img.show()
+		# idx = anchor_cls[:, 0] == 1
+		# gt_anchor = self.anchors[idx, :]
+		# gt = applyBoxesDeltas(gt_anchor, anchor_box[idx, :])
+		# draw = ImageDraw.Draw(img)
+		# for u, l, d, r in gt_boxes:
+		# 	u, l, d, r = u / 2.5, l / 2.5, d / 2.5, r / 2.5
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (0, 0, 255), outline = (0, 0, 255))
+		# for i in range(gt.shape[0]):
+		# 	u, l, d, r = tuple(gt[i])
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (0, 255, 0))
+		# 	u, l, d, r = tuple(gt_anchor[i])
+		# 	draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+		# img.show()
 
 		return org, anchor_cls, anchor_box
 
