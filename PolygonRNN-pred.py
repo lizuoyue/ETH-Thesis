@@ -677,7 +677,7 @@ if __name__ == '__main__':
 	init = tf.global_variables_initializer()
 	# Launch graph
 	with tf.Session() as sess:
-		saver.restore(sess, './polygontmp/model-%s.ckpt' % sys.argv[1])
+		saver.restore(sess, './polygon_temp/model-%s.ckpt' % sys.argv[1])
 		# Main loop
 		for i in range(10000):
 			# Get training batch data and create feed dictionary
