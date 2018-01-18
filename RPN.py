@@ -311,17 +311,17 @@ class RPN(object):
 		for i in range(self.pred_batch_size):
 			box_valid = tf.gather(pred_box[i], self.valid_idx)
 			score_valid = tf.gather(pred_score[i], self.valid_idx)
-			idx_top = tf.nn.top_k(score_valid, 1000).indices
+			idx_top = tf.nn.top_k(score_valid, 500).indices
 			box_top = tf.gather(box_valid, idx_top)
 			score_top = tf.gather(score_valid, idx_top)
-			idx = tf.where(score_top >= 0.7)
+			idx = tf.where(score_top >= 0.8)
 			box = tf.gather(box_top, idx)[:, 0, :]
 			score = tf.gather(score_top, idx)[:, 0]
 			indices = tf.image.non_max_suppression(
 				boxes = box, # pred_box[i]
 				scores = score, # pred_score[i]
 				max_output_size = 40,
-				iou_threshold = 0.5
+				iou_threshold = 0.4
 			)
 			res.append(tf.gather(box, indices)) # pred_box[i]
 		return res
@@ -385,9 +385,9 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		f = open('./RPN-Loss.out', 'a')
-		train_writer = Logger('./log/train/')
-		valid_writer = Logger('./log/valid/')
+		# f = open('./RPN-Loss.out', 'a')
+		# train_writer = Logger('./log/train/')
+		# valid_writer = Logger('./log/valid/')
 
 		# Restore weights
 		if len(sys.argv) > 1 and sys.argv[1] != None:
@@ -399,36 +399,38 @@ if __name__ == '__main__':
 
 		# Main loop
 		for i in iter_obj:
-			init_time = time.time()
+			# init_time = time.time()
 			# Get training batch data and create feed dictionary
-			img, anchor_cls, anchor_box = obj.getDataBatch(train_batch_size, mode = 'train')
-			feed_dict = {xx: img, cc: anchor_cls, bb: anchor_box}
-			time_1 = time.time()
+			# img, anchor_cls, anchor_box = obj.getDataBatch(train_batch_size, mode = 'train')
+			# feed_dict = {xx: img, cc: anchor_cls, bb: anchor_box}
+			# time_1 = time.time()
 
 			# Training and get result
-			_, (loss_1, loss_2, loss_3) = sess.run([train, result], feed_dict)
-			time_2 = time.time()
-			train_writer.log_scalar('Loss Class', loss_1, i)
-			train_writer.log_scalar('Loss BBox' , loss_2, i)
-			train_writer.log_scalar('Loss Full' , loss_3, i)
+			# _, (loss_1, loss_2, loss_3) = sess.run([train, result], feed_dict)
+			# time_2 = time.time()
+			# train_writer.log_scalar('Loss Class', loss_1, i)
+			# train_writer.log_scalar('Loss BBox' , loss_2, i)
+			# train_writer.log_scalar('Loss Full' , loss_3, i)
 
 			# Write loss to file
-			print('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1))
-			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf\n' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1))
-			f.flush()
+			# print('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1))
+			# f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, with time %.3lf, %.3lf\n' % (i, loss_1, loss_2, loss_3, time_1 - init_time, time_2 - time_1))
+			# f.flush()
 
 			# Save model
-			if i % 100 == 0:
-				saver.save(sess, './tmp/model-%d.ckpt' % i)
+			# if i % 100 == 0:
+			# 	saver.save(sess, './tmp/model-%d.ckpt' % i)
 
-			if i % 100 == 0:
+			if True:#i % 100 == 0:
 				img, anchor_cls, anchor_box = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img}
 				res = sess.run(pred, feed_dict)
-				obj.recover('./res', img, res)
+				obj.recover('./res%d' % i, img, res)
+			if i - int(sys.argv[1]) >= 20:
+				break
 
 		# End main loop
-		train_writer.close()
-		valid_writer.close()
-		f.close()
+		# train_writer.close()
+		# valid_writer.close()
+		# f.close()
 
