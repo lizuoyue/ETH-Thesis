@@ -850,16 +850,19 @@ class AnchorGenerator(object):
 			return self.getFakeDataBatch(batch_size)
 
 		# Real
+		idx = []
 		res = []
 		if mode == 'train':
 			sel = np.random.choice(len(self.idx_list_train), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleData(self.idx_list_train[i]))
+				idx.append(self.idx_list_train[i])
 		if mode == 'valid':
 			sel = np.random.choice(len(self.idx_list_valid), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleData(self.idx_list_valid[i]))
-		return (np.array([item[i] for item in res]) for i in range(3))
+				idx.append(self.idx_list_valid[i])
+		return idx, (np.array([item[i] for item in res]) for i in range(3))
 
 	def getSingleData(self, area_idx):
 		# Set path
@@ -1028,16 +1031,19 @@ class AnchorGenerator(object):
 	# 			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 	# 		org.save(path + '/%d.png' % idx)
 
-	def recover(self, path, img, res):
+	def recover(self, idx, path, img, res):
 		for i in range(img.shape[0]):
 			boxes = res[i]
 			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
+			f = open(path + '/%s.txt' % idx[i], 'w')
 			for j in range(boxes.shape[0]):
 				u, l, d, r = tuple(list(boxes[j, :]))
 				if (r - l) * (d - u) > 400:
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-			org.save(path + '/%d.png' % i)
+					f.write('%d %d %d %d\n' % (u, l, d, r))
+			f.close()
+			org.save(path + '/%s.png' % idx[i])
 
 if __name__ == '__main__':
 	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', from_server = True)

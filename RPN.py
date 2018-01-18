@@ -401,7 +401,7 @@ if __name__ == '__main__':
 		for i in iter_obj:
 			# init_time = time.time()
 			# Get training batch data and create feed dictionary
-			# img, anchor_cls, anchor_box = obj.getDataBatch(train_batch_size, mode = 'train')
+			# _, (img, anchor_cls, anchor_box) = obj.getDataBatch(train_batch_size, mode = 'train')
 			# feed_dict = {xx: img, cc: anchor_cls, bb: anchor_box}
 			# time_1 = time.time()
 
@@ -423,13 +423,11 @@ if __name__ == '__main__':
 
 			if True:#i % 100 == 0:
 				print(i)
-				img, anchor_cls, anchor_box = obj.getDataBatch(pred_batch_size, mode = 'valid')
+				idx, (img, anchor_cls, anchor_box) = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img}
 				res = sess.run(pred, feed_dict)
-				if not os.path.exists('./res%d/' % i):
-					os.makedirs('./res%d/' % i)
-				obj.recover('./res%d' % i, img, res)
-			if i - int(sys.argv[1]) >= 20:
+				obj.recover('./res', idx, img, res)
+			if i - int(sys.argv[1]) >= 30:
 				break
 
 		# End main loop
