@@ -1045,10 +1045,21 @@ class AnchorGenerator(object):
 			f.close()
 			org.save(path + '/%s.png' % idx[i])
 
+
+
+class AreaGenerator(object):
+	def __init__(self, data_path):
+		self.data_path = data_path
+		self.d = {}
+		for item in glob.glob(data_path + '/*.txt'):
+			print(item)		
+
+
 if __name__ == '__main__':
-	ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', from_server = True)
-	ag.getDataBatch(8, mode = 'train')
+	# ag = AnchorGenerator(fake = False, data_path = '/local/lizuoyue/Chicago_Area', from_server = True)
+	# ag.getDataBatch(8, mode = 'train')
 	# print(ag.anchors)
+	a = AreaGenerator('./res')
 
 
 
