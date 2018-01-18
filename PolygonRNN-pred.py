@@ -637,7 +637,7 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 		w = x2-x1
 		h = y2-y1
 		new_p = overlay(patches[i], link, shape).resize(size = (w, h), resample = Image.BICUBIC)
-		img[y1:y2,x1:x2,...] = np.array(new_p[...,0:3])
+		img[y1:y2,x1:x2,...] = np.array(new_p)[...,0:3]
 
 	Image.fromarray(img).save(filename)
 	# 
