@@ -1068,7 +1068,7 @@ class AreaGenerator(object):
 		for u, l, d, r in self.info[self.idx_list[i]]:
 			y1, x1, y2, x2 = u*2.5, l*2.5, d*2.5, r*2.5
 			h, w = y2 - y1, x2 - x1
-			y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * pad))
+			y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * self.pad))
 			if y1 < y2 and x1 < x2:
 				patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, ...]).resize((224, 224), resample = Image.BICUBIC)))
 				org_info.append([y1, x1, y2, x2])
