@@ -669,7 +669,7 @@ if __name__ == '__main__':
 	oo = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
-	pp = tf.placeholder(tf.float32)
+	pp = tf.placeholder(tf.int32)
 
 	result = PolyRNNGraph.Train(xx, bb, vv, ii, oo, ee, ll)
 	pred = PolyRNNGraph.Predict(xx, pp)
