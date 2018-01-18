@@ -606,18 +606,10 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 	#
 	return
 
-def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info):
-	if not os.path.exists(path):
-		os.makedirs(path)
-	# Clear last files
-	for item in glob.glob(path + '/*'):
-		os.remove(item)
-
+def visualize_pred(img, patches, v_out_pred, org_info, filename):
 	# Reshape
-	batch_size = img.shape[0]
-	b_pred = b_pred[..., 0]
-	v_pred = v_pred[..., 0]
-	shape = ((v_out_res[1], v_out_res[0]))
+	batch_size = patches.shape[0]
+	shape = (28, 28)
 	blank = np.zeros(shape)
 
 	# Sequence length and polygon
@@ -634,21 +626,20 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
 	# 
 	for i in range(batch_size):
-		vv = v_out_pred[i, 0: seq_len[i]]
-		overlay(img[i], blank      , shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-0-img.png' % i)
-		overlay(img[i], b_pred[i]  , shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-1-bound-pred.png' % i)
-		overlay(img[i], v_pred[i]  , shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-2-vertices-pred.png' % i)
-		overlayMultiMask(img[i], vv, shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-3-vertices-merge.png' % i)
-		# for j in range(seq_len[i]):
-		# 	overlay(img[i], vv[j], shape).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 		link = Image.new('P', shape, color = 0)
 		draw = ImageDraw.Draw(link)
 		if len(polygon[i]) == 1:
 			polygon[i].append(polygon[i][0])
 		draw.polygon(polygon[i], fill = 0, outline = 255)
 		link = np.array(link) / 255.0
-		overlay(img[i], link, shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-4-vertices-link.png' % i)
 
+		y1,x1,y2,x2=org_info[i]
+		w = x2-x1
+		h = y2-y1
+		new_p = overlay(patches[i], link, shape).resize(size = (w, h), resample = Image.BICUBIC)
+		img[y1:y2,x1:x2,...] = np.array(new_p)
+
+	Image.fromarray(img).save(filename)
 	# 
 	return
 
@@ -681,80 +672,20 @@ if __name__ == '__main__':
 
 	result = PolyRNNGraph.Train(xx, bb, vv, ii, oo, ee, ll)
 	pred = PolyRNNGraph.Predict(xx)
+	ag = AreaGenerator('./res')
 
 	init = tf.global_variables_initializer()
 	# Launch graph
 	with tf.Session() as sess:
 		saver.restore(sess, './polygontmp/model-%s.ckpt' % sys.argv[1])
 		# Main loop
-		for i in range(:
+		for i in range(10000):
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'train')
-			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
-
-			# Training and get result
-			sess.run(train, feed_dict)
-			loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
-			train_writer.log_scalar('Loss CNN' , loss_CNN, i)
-			train_writer.log_scalar('Loss RNN' , loss_RNN, i)
-			train_writer.log_scalar('Loss Angle', loss_Angle, i)
-			train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
-
-			# Write loss to file
-			print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			f.flush()
-
-			# Visualize
-			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
-
-			# Save model
-			if i % 200 == 0:
-				saver.save(sess, './tmp/model-%d.ckpt' % i)
-
-			# Cross validation
-			if i % 200 == 0:
-				# Get validation batch data and create feed dictionary
-				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'valid')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
-
-				# Validation and get result
-				loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
-				valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
-				valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
-				valid_writer.log_scalar('Loss Angle', loss_Angle, i)
-				valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
-
-				# Write loss to file
-				print('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-				f.flush()
-
-				# Visualize
-				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
-
-			# Prediction on validation set
-			if i % 2000 == 0:
-				# Get validation batch data and create feed dictionary
-				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
-
-				# 
+			if not ag.end:
+				img, patches, org_info = ag.getDataBatch(train_batch_size, mode = 'train')
+				feed_dict = {xx: patches}
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_pred('./pre%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
-
-			# Prediction on test set
-			if i % 2000 == 0:
-				# Get validation batch data and create feed dictionary
-				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
-
-				# 
-				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_pred('./tes%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
-
-		# End main loop
-		train_writer.close()
-		valid_writer.close()
-		f.close()
+				visualize_pred(img, patches, v_out_pred, org_info, './result/%d.png' % i)
+			else:
+				break
 
