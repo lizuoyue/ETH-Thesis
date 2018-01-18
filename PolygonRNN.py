@@ -759,49 +759,49 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'train')
-			feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
+			# img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'train')
+			# feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
-			# Training and get result
-			sess.run(train, feed_dict)
-			loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
-			train_writer.log_scalar('Loss CNN' , loss_CNN, i)
-			train_writer.log_scalar('Loss RNN' , loss_RNN, i)
-			train_writer.log_scalar('Loss Angle', loss_Angle, i)
-			train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
+			# # Training and get result
+			# sess.run(train, feed_dict)
+			# loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
+			# train_writer.log_scalar('Loss CNN' , loss_CNN, i)
+			# train_writer.log_scalar('Loss RNN' , loss_RNN, i)
+			# train_writer.log_scalar('Loss Angle', loss_Angle, i)
+			# train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
 
-			# Write loss to file
-			print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			f.flush()
+			# # Write loss to file
+			# print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
+			# f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
+			# f.flush()
 
-			# Visualize
-			visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
+			# # Visualize
+			# visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
-			# Save model
-			if i % 200 == 0:
-				saver.save(sess, './tmp/model-%d.ckpt' % i)
+			# # Save model
+			# if i % 200 == 0:
+			# 	saver.save(sess, './tmp/model-%d.ckpt' % i)
 
-			# Cross validation
-			if i % 200 == 0:
-				# Get validation batch data and create feed dictionary
-				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'valid')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
+			# # Cross validation
+			# if i % 200 == 0:
+			# 	# Get validation batch data and create feed dictionary
+			# 	img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'valid')
+			# 	feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
-				# Validation and get result
-				loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
-				valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
-				valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
-				valid_writer.log_scalar('Loss Angle', loss_Angle, i)
-				valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
+			# 	# Validation and get result
+			# 	loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
+			# 	valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
+			# 	valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
+			# 	valid_writer.log_scalar('Loss Angle', loss_Angle, i)
+			# 	valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
 
-				# Write loss to file
-				print('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-				f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-				f.flush()
+			# 	# Write loss to file
+			# 	print('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
+			# 	f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
+			# 	f.flush()
 
-				# Visualize
-				visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
+			# 	# Visualize
+			# 	visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
 			# Prediction on validation set
 			if i % 2000 == 0:
