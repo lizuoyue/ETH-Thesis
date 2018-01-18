@@ -636,13 +636,12 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 		polygon = [(c / 28.0 * w + x1, r / 28.0 * h + y1) for c, r in polygon]
 		draw.polygon(polygon, fill = 0, outline = 255)
 	alpha = np.array(link, dtype = np.uint8)
-	alpha = Image.fromarray(np.concatenate([
-			np.ones((alpha.shape[0], alpha.shape[1], 1)) * 255,
-			np.ones((alpha.shape[0], alpha.shape[1], 1)) * 0,
-			np.ones((alpha.shape[0], alpha.shape[1], 1)) * 0,
-			np.reshape(alpha, (alpha.shape[0], alpha.shape[1], 1))
-		], axis = 2
-	), mode = 'RGBA')
+	alpha = Image.fromarray(np.stack([
+		np.ones((640, 640), dtype = np.uint8) * 255,
+		np.ones((640, 640), dtype = np.uint8) * 0,
+		np.ones((640, 640), dtype = np.uint8) * 0,
+		alpha
+	], axis = 2), mode = 'RGBA')
 	alpha.save(filename)
 	# print(org.size)
 	# print(alpha.size)
