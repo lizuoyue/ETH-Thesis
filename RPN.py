@@ -426,6 +426,7 @@ if __name__ == '__main__':
 				idx, (img, anchor_cls, anchor_box) = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img}
 				res = sess.run(pred, feed_dict)
+				print(idx)
 				obj.recover('./res', idx, img, res)
 			if i - int(sys.argv[1]) >= 30:
 				break
