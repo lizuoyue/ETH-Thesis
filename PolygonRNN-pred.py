@@ -411,7 +411,7 @@ class PolygonRNN(object):
 				loss += tf.cond(tf.equal(norm_ab * norm_bc, 0), lambda: 1.0, lambda: 1.0 - sin) * tf.cast(j < (seq_len[i] - 2), tf.float32)
 		return loss / (tf.reduce_sum(seq_len) - 2 * self.train_batch_size)
 
-	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None):
+	def RNN(self, feature, v_in = None, rnn_out_true = None, seq_len = None, v_first = None, reuse = None, pp = None):
 		if not reuse:
 			feature_rep = tf.tile(
 				tf.reshape(feature, [-1, 1, self.v_out_res[1], self.v_out_res[0], 130]),
@@ -446,8 +446,8 @@ class PolygonRNN(object):
 			v[0] = tf.reshape(v_first, [-1, self.v_out_res[1], self.v_out_res[0], 1])
 			# state[0] = self.stacked_lstm.zero_state(self.pred_batch_size, tf.float32)
 			state[0] = tuple([tf.contrib.rnn.LSTMStateTuple(
-				c = tf.tile(self.lstm_init_state[i][0: 1], [self.pred_batch_size, 1, 1, 1]),
-				h = tf.tile(self.lstm_init_state[i][1: 2], [self.pred_batch_size, 1, 1, 1])
+				c = tf.tile(self.lstm_init_state[i][0: 1], pp), # [self.pred_batch_size, 1, 1, 1]
+				h = tf.tile(self.lstm_init_state[i][1: 2], pp)
 			) for i in range(len(lstm_out_channel))])
 			for i in range(1, self.max_seq_len):
 				rnn_output[i], state[i] = self.stacked_lstm(
@@ -520,10 +520,10 @@ class PolygonRNN(object):
 		)
 		return loss_CNN, loss_RNN, loss_Angle, boundary, vertices, v_out_pred, end_pred
 
-	def Predict(self, xx):
+	def Predict(self, xx, pp):
 		img = tf.reshape(xx, [-1, 224, 224, 3])
 		feature, v_first = self.CNN(img, reuse = True)
-		v_out_pred = self.RNN(feature, v_first = v_first, reuse = True)
+		v_out_pred = self.RNN(feature, v_first = v_first, reuse = True, pp = pp)
 		boundary = feature[..., -2: -1]
 		vertices = feature[..., -1:]
 		v_out_pred = v_out_pred[..., 0]
@@ -669,9 +669,10 @@ if __name__ == '__main__':
 	oo = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
+	pp = tf.placeholder(tf.float32)
 
 	result = PolyRNNGraph.Train(xx, bb, vv, ii, oo, ee, ll)
-	pred = PolyRNNGraph.Predict(xx)
+	pred = PolyRNNGraph.Predict(xx, pp)
 	ag = ut.AreaGenerator('./res')
 
 	saver = tf.train.Saver()
@@ -684,8 +685,8 @@ if __name__ == '__main__':
 			# Get training batch data and create feed dictionary
 			if not ag.end:
 				img, patches, org_info = ag.getData()
-				feed_dict = {xx: patches}
-				PolyRNNGraph.pred_batch_size = patches.shape[0]
+				rep = [patches.shape[0], 1, 1, 1]
+				feed_dict = {xx: patches, pp: rep}
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
 				visualize_pred(img, patches, v_out_pred, org_info, './result/%d.png' % i)
 			else:
