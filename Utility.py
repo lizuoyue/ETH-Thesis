@@ -1061,6 +1061,7 @@ class AreaGenerator(object):
 		self.idx_list.sort()
 		self.pad = 0.2
 		self.i = 0
+		self.end = False
 
 	def getData(self):
 		img = Image.open('../Chicago_Area/%s/img.png' % self.idx_list[self.i])
