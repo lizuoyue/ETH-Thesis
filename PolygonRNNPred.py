@@ -642,10 +642,10 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 		np.ones((640, 640), dtype = np.uint8) * 0,
 		alpha
 	], axis = 2), mode = 'RGBA')
-	alpha.save(filename)
+	# alpha.save(filename)
 	# print(org.size)
 	# print(alpha.size)
-	# Image.alpha_composite(org, alpha)
+	Image.alpha_composite(org, alpha).save(filename)
 
 	# 
 	return
