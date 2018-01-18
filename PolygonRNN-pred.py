@@ -672,7 +672,7 @@ if __name__ == '__main__':
 
 	result = PolyRNNGraph.Train(xx, bb, vv, ii, oo, ee, ll)
 	pred = PolyRNNGraph.Predict(xx)
-	ag = AreaGenerator('./res')
+	ag = ut.AreaGenerator('./res')
 
 	init = tf.global_variables_initializer()
 	# Launch graph
