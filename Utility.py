@@ -1065,7 +1065,7 @@ class AreaGenerator(object):
 
 	def getData(self):
 		img = Image.open('../Chicago_Area/%s/img.png' % self.idx_list[self.i])
-		img = np.array(img)[..., 0: 3]
+		img = np.array(img)
 		patches = []
 		org_info = []
 		for u, l, d, r in self.info[self.idx_list[self.i]]:
@@ -1073,7 +1073,7 @@ class AreaGenerator(object):
 			h, w = y2 - y1, x2 - x1
 			y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * self.pad))
 			if y1 < y2 and x1 < x2:
-				patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, ...]).resize((224, 224), resample = Image.BICUBIC))/255.0)
+				patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize((224, 224), resample = Image.BICUBIC))/255.0)
 				org_info.append([y1, x1, y2, x2])
 		num = len(patches)
 		for i in range(40 - num):

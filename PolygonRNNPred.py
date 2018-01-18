@@ -608,38 +608,40 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 
 def visualize_pred(img, patches, v_out_pred, org_info, filename):
 	# Reshape
+	org = Image.fromarray(img)
 	batch_size = len(org_info)
 	shape = (28, 28)
 	blank = np.zeros(shape)
 
 	# Sequence length and polygon
-	polygon = [[] for i in range(batch_size)]
+	polygons = [[] for i in range(batch_size)]
 	for i in range(batch_size):
 		for j in range(v_out_pred.shape[1]):
 			v = v_out_pred[i, j]
 			if v.sum() >= 0.5:
 				r, c = np.unravel_index(v.argmax(), v.shape)
-				polygon[i].append((c, r))
+				polygons[i].append((c, r))
 			else:
 				break
-	seq_len = [len(polygon[i]) for i in range(batch_size)]
+	seq_len = [len(polygons[i]) for i in range(batch_size)]
 
 	# 
+	draw = ImageDraw.Draw(org)
 	for i in range(batch_size):
-		link = Image.new('P', shape, color = 0)
-		draw = ImageDraw.Draw(link)
-		if len(polygon[i]) == 1:
-			polygon[i].append(polygon[i][0])
-		draw.polygon(polygon[i], fill = 0, outline = 255)
-		link = np.array(link) / 255.0
-
+		polygon = polygons[i]
+		if len(polygon) == 1:
+			polygon.append(polygon[0])
 		y1,x1,y2,x2=org_info[i]
 		w = x2-x1
 		h = y2-y1
-		new_p = overlay(patches[i], link, shape).resize(size = (w, h), resample = Image.BICUBIC)
-		img[y1:y2,x1:x2,...] = np.array(new_p)[...,0:3]
+		polygon = [(c / 224.0 * w, r / 224.0 * h) for c, r in polygon]
+		draw.polygon(polygon, fill = (0, 0, 0, 0), outline = (255, 0, 0, 128))
 
-	Image.fromarray(img).save(filename)
+		
+	# new_p = overlay(patches[i], link, shape).resize(size = (w, h), resample = Image.BICUBIC)
+	# img[y1:y2,x1:x2,...] = np.array(new_p)[...,0:3]
+
+	org.save(filename)
 	# 
 	return
 
