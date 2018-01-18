@@ -426,8 +426,8 @@ if __name__ == '__main__':
 				img, anchor_cls, anchor_box = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img}
 				res = sess.run(pred, feed_dict)
-				if not os.path.exists('./res/' % i):
-					os.makedirs('./res/' % i)
+				if not os.path.exists('./res%d/' % i):
+					os.makedirs('./res%d/' % i)
 				obj.recover('./res%d' % i, img, res)
 			if i - int(sys.argv[1]) >= 20:
 				break
