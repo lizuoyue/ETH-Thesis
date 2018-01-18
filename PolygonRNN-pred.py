@@ -683,7 +683,7 @@ if __name__ == '__main__':
 		for i in range(10000):
 			# Get training batch data and create feed dictionary
 			if not ag.end:
-				img, patches, org_info = ag.getDataBatch(train_batch_size, mode = 'train')
+				img, patches, org_info = ag.getData()
 				feed_dict = {xx: patches}
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
 				visualize_pred(img, patches, v_out_pred, org_info, './result/%d.png' % i)
