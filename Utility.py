@@ -1035,7 +1035,7 @@ class AnchorGenerator(object):
 			draw = ImageDraw.Draw(org)
 			for j in range(boxes.shape[0]):
 				u, l, d, r = tuple(list(boxes[j, :]))
-				if (r - l) * (d - u) > 200:
+				if (r - l) * (d - u) > 400:
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 			org.save(path + '/%d.png' % i)
 
