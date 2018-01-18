@@ -645,6 +645,8 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 		),
 		axis = 2
 	), mode = 'RGBA')
+	print(org.size)
+	print(alpha.size)
 	Image.alpha_composite(org, alpha).save(filename)
 
 	# 
