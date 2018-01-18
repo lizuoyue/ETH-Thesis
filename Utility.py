@@ -1075,6 +1075,9 @@ class AreaGenerator(object):
 			if y1 < y2 and x1 < x2:
 				patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, ...]).resize((224, 224), resample = Image.BICUBIC)))
 				org_info.append([y1, x1, y2, x2])
+		num = len(patches)
+		for i in range(40 - num):
+			patches.append(np.zeros((224, 224, 3)))
 		self.i += 1
 		self.end = self.i == len(self.idx_list)
 		return img, np.array(patches), org_info
