@@ -1036,6 +1036,7 @@ class AnchorGenerator(object):
 			boxes = res[i]
 			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
+			print(idx[i])
 			f = open(path + '/%s.txt' % idx[i], 'w')
 			for j in range(boxes.shape[0]):
 				u, l, d, r = tuple(list(boxes[j, :]))
