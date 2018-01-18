@@ -352,8 +352,8 @@ if __name__ == '__main__':
 	# Create new folder
 	if not os.path.exists('./tmp/'):
 		os.makedirs('./tmp/')
-	if not os.path.exists('./res/'):
-		os.makedirs('./res/')
+	if not os.path.exists('./res-rpn/'):
+		os.makedirs('./res-rpn/')
 
 	# Set parameters
 	n_iter			= 100000
