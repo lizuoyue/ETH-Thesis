@@ -1039,7 +1039,7 @@ class AnchorGenerator(object):
 			f = open(path + '/%s.txt' % idx[i], 'w')
 			for j in range(boxes.shape[0]):
 				u, l, d, r = tuple(list(boxes[j, :]))
-				if (r - l) * (d - u) > 400:
+				if (r - l) * (d - u) > 24*24:
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 					f.write('%d %d %d %d\n' % (u, l, d, r))
 			f.close()
