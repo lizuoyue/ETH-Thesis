@@ -1050,9 +1050,29 @@ class AnchorGenerator(object):
 class AreaGenerator(object):
 	def __init__(self, data_path):
 		self.data_path = data_path
-		self.d = {}
+		self.info = {}
 		for item in glob.glob(data_path + '/*.txt'):
-			print(item.replace(data_path + '/', '').replace('.txt', ''))		
+			with open(item, 'r') as f:
+				boxes = [line.strip().split() for line in f.readlines()]
+				boxes = [[int(item) for item in line] for line in boxes]
+			idx = item.replace(data_path + '/', '').replace('.txt', '')
+			self.info[idx] = boxes
+		self.idx_list = list(self.info.keys())
+		self.idx_list.sort()
+		self.pad = 0.2
+	def getData(self, i):
+		img = Image.open('../Chicago_Area/%s/img.png' % self.idx_list[i])
+		img = np.array(img)[..., 0: 3]
+		patches = []
+		org_info = []
+		for u, l, d, r in self.info[self.idx_list[i]]:
+			y1, x1, y2, x2 = u*2.5, l*2.5, d*2.5, r*2.5
+			h, w = y2 - y1, x2 - x1
+			y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * pad))
+			if y1 < y2 and x1 < x2:
+				patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, ...]).resize((224, 224), resample = Image.BICUBIC)))
+				org_info.append([y1, x1, y2, x2])
+		return img, patches, org_info
 
 
 if __name__ == '__main__':
@@ -1060,6 +1080,7 @@ if __name__ == '__main__':
 	# ag.getDataBatch(8, mode = 'train')
 	# print(ag.anchors)
 	a = AreaGenerator('./res')
+	a.getData(10)
 
 
 
