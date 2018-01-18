@@ -391,7 +391,7 @@ if __name__ == '__main__':
 
 		# Restore weights
 		if len(sys.argv) > 1 and sys.argv[1] != None:
-			saver.restore(sess, './tmp/model-%s.ckpt' % sys.argv[1])
+			saver.restore(sess, './tmp-rpn/model-%s.ckpt' % sys.argv[1])
 			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
 		else:
 			sess.run(init)
@@ -426,7 +426,7 @@ if __name__ == '__main__':
 				idx, (img, anchor_cls, anchor_box) = obj.getDataBatch(pred_batch_size, mode = 'valid')
 				feed_dict = {xx: img}
 				res = sess.run(pred, feed_dict)
-				obj.recover('./res', idx, img, res)
+				obj.recover('./res-rpn', idx, img, res)
 			if i - int(sys.argv[1]) >= 30:
 				break
 

@@ -674,13 +674,13 @@ if __name__ == '__main__':
 
 	result = PolyRNNGraph.Train(xx, bb, vv, ii, oo, ee, ll)
 	pred = PolyRNNGraph.Predict(xx)
-	ag = ut.AreaGenerator('./res')
+	ag = ut.AreaGenerator('./res-rpn')
 
 	saver = tf.train.Saver()
 	init = tf.global_variables_initializer()
 	# Launch graph
 	with tf.Session() as sess:
-		saver.restore(sess, './polygon_temp/model-%s.ckpt' % sys.argv[1])
+		saver.restore(sess, './tmp-poly/model-%s.ckpt' % sys.argv[1])
 		# Main loop
 		for i in range(10000):
 			# Get training batch data and create feed dictionary
