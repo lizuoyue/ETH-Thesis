@@ -614,7 +614,7 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 
 	# Sequence length and polygon
 	polygon = [[] for i in range(batch_size)]
-	for i in range(v_out_pred.shape[0]):
+	for i in range(batch_size):
 		for j in range(v_out_pred.shape[1]):
 			v = v_out_pred[i, j]
 			if v.sum() >= 0.5:
