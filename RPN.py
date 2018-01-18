@@ -321,7 +321,7 @@ class RPN(object):
 				boxes = box, # pred_box[i]
 				scores = score, # pred_score[i]
 				max_output_size = 40,
-				iou_threshold = 0.3
+				iou_threshold = 0.2
 			)
 			res.append(tf.gather(box, indices)) # pred_box[i]
 		return res
