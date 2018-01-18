@@ -1052,7 +1052,7 @@ class AreaGenerator(object):
 		self.data_path = data_path
 		self.d = {}
 		for item in glob.glob(data_path + '/*.txt'):
-			print(item)		
+			print(item.replace(data_path + '/', '').replace('.txt', ''))		
 
 
 if __name__ == '__main__':
