@@ -610,8 +610,6 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 	# Reshape
 	org = Image.fromarray(img)
 	batch_size = len(org_info)
-	shape = (28, 28)
-	blank = np.zeros(shape)
 
 	# Sequence length and polygon
 	polygons = [[] for i in range(batch_size)]
@@ -626,7 +624,7 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 	seq_len = [len(polygons[i]) for i in range(batch_size)]
 
 	# 
-	link = Image.new('P', shape, color = 0)
+	link = Image.new('P', (640, 640), color = 0)
 	draw = ImageDraw.Draw(link)
 	for i in range(batch_size):
 		polygon = polygons[i]
