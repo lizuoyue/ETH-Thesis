@@ -446,8 +446,8 @@ class PolygonRNN(object):
 			v[0] = tf.reshape(v_first, [-1, self.v_out_res[1], self.v_out_res[0], 1])
 			# state[0] = self.stacked_lstm.zero_state(self.pred_batch_size, tf.float32)
 			state[0] = tuple([tf.contrib.rnn.LSTMStateTuple(
-				c = tf.tile(self.lstm_init_state[i][0: 1], [v[0].shape[0], 1, 1, 1]),
-				h = tf.tile(self.lstm_init_state[i][1: 2], [v[0].shape[0], 1, 1, 1])
+				c = tf.tile(self.lstm_init_state[i][0: 1], [self.pred_batch_size, 1, 1, 1]),
+				h = tf.tile(self.lstm_init_state[i][1: 2], [self.pred_batch_size, 1, 1, 1])
 			) for i in range(len(lstm_out_channel))])
 			for i in range(1, self.max_seq_len):
 				rnn_output[i], state[i] = self.stacked_lstm(
@@ -685,6 +685,7 @@ if __name__ == '__main__':
 			if not ag.end:
 				img, patches, org_info = ag.getData()
 				feed_dict = {xx: patches}
+				PolyRNNGraph.pred_batch_size = patches.shape[0]
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
 				visualize_pred(img, patches, v_out_pred, org_info, './result/%d.png' % i)
 			else:
