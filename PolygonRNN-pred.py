@@ -653,6 +653,7 @@ if __name__ == '__main__':
 	v_out_res = (28, 28)
 	train_batch_size = 9
 	pred_batch_size = 49
+	saver = tf.train.Saver()
 
 	# Define graph
 	PolyRNNGraph = PolygonRNN(
