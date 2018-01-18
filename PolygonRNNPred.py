@@ -608,6 +608,7 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 
 def visualize_pred(img, patches, v_out_pred, org_info, filename):
 	# Reshape
+	org = Image.fromarray(img)
 	batch_size = len(org_info)
 	shape = (28, 28)
 	blank = np.zeros(shape)
@@ -646,7 +647,7 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 		),
 		axis = 2
 	), mode = 'RGBA')
-	Image.alpha_composite(img, alpha).save(filename)
+	Image.alpha_composite(org, alpha).save(filename)
 
 	# 
 	return
