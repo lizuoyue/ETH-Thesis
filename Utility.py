@@ -1059,7 +1059,7 @@ class AreaGenerator(object):
 			self.info[idx] = boxes
 		self.idx_list = list(self.info.keys())
 		self.idx_list.sort()
-		self.pad = 0.2
+		self.pad = 0.3
 		self.i = 0
 		self.end = False
 

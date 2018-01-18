@@ -689,7 +689,6 @@ if __name__ == '__main__':
 				feed_dict = {xx: patches}
 				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
 				visualize_pred(img, patches, v_out_pred, org_info, './result/%d.png' % i)
-				break
 			else:
 				break
 
