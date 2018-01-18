@@ -608,7 +608,6 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 
 def visualize_pred(img, patches, v_out_pred, org_info, filename):
 	# Reshape
-	org = Image.fromarray(img)
 	batch_size = len(org_info)
 	shape = (28, 28)
 	blank = np.zeros(shape)
@@ -626,7 +625,8 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 	seq_len = [len(polygons[i]) for i in range(batch_size)]
 
 	# 
-	draw = ImageDraw.Draw(org)
+	link = Image.new('P', shape, color = 0)
+	draw = ImageDraw.Draw(link)
 	for i in range(batch_size):
 		polygon = polygons[i]
 		if len(polygon) == 1:
@@ -634,14 +634,20 @@ def visualize_pred(img, patches, v_out_pred, org_info, filename):
 		y1,x1,y2,x2=org_info[i]
 		w = x2-x1
 		h = y2-y1
-		polygon = [(c / 224.0 * w, r / 224.0 * h) for c, r in polygon]
-		draw.polygon(polygon, fill = (0, 0, 0, 0), outline = (255, 0, 0, 128))
+		polygon = [(c / 28.0 * w + x1, r / 28.0 * h + y1) for c, r in polygon]
+		draw.polygon(polygon, fill = 0, outline = 255)
+	alpha = np.array(link, dtype = np.uint8)
+	alpha = Image.fromarray(np.concatenate(
+		(
+			np.ones((alpha.shape[0], alpha.shape[1], 1)) * 255,
+			np.ones((alpha.shape[0], alpha.shape[1], 1)) * 0,
+			np.ones((alpha.shape[0], alpha.shape[1], 1)) * 0,
+			np.reshape(alpha, (alpha.shape[0], alpha.shape[1], 1))
+		),
+		axis = 2
+	), mode = 'RGBA')
+	Image.alpha_composite(img, alpha).save(filename)
 
-		
-	# new_p = overlay(patches[i], link, shape).resize(size = (w, h), resample = Image.BICUBIC)
-	# img[y1:y2,x1:x2,...] = np.array(new_p)[...,0:3]
-
-	org.save(filename)
 	# 
 	return
 
