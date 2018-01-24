@@ -119,9 +119,9 @@ def VGG16(img, reuse = None):
 		return pool2, pool3, conv3_3, conv4_3, conv5_3
 
 
-def PolygonFeature(vgg_result, reuse = None):
+def PolygonRNNFeature(vgg_result, reuse = None):
 	pool2, pool3, _, conv4_3, conv5_3 = vgg_result
-	with tf.variable_scope('PolygonFeature', reuse = reuse):
+	with tf.variable_scope('PolygonRNNFeature', reuse = reuse):
 		part1_pool = tf.layers.max_pooling2d(
 			inputs = pool2,
 			pool_size = (2, 2),
@@ -169,9 +169,9 @@ def PolygonFeature(vgg_result, reuse = None):
 		return feature
 
 
-def PyramidFeature(vgg_result, reuse = None):
+def PyramidAnchorFeature(vgg_result, reuse = None):
 	_, _, c2, c3, c4 = vgg_result
-	with tf.variable_scope('PyramidFeature', reuse = reuse):
+	with tf.variable_scope('PyramidAnchorFeature', reuse = reuse):
 		p4 = tf.layers.conv2d(
 			inputs = c4,
 			filters = 256,
@@ -226,13 +226,13 @@ def PyramidFeature(vgg_result, reuse = None):
 	return [p2_conv, p3_conv, p4_conv, p5_pool]
 
 
-def RPNLayer(feature, anchors_per_pixel, reuse = None):
+def RPNSingleLayer(feature, anchors_per_pixel, reuse = None):
 	"""
 		feature: [batch_size, height, width, num_channels]
 		anchors_per_pixel: scalar
 	"""
 	num_anchors = feature.shape[1] * feature.shape[2] * anchors_per_pixel
-	with tf.variable_scope('RPNLayer', reuse = reuse):
+	with tf.variable_scope('RPNSingleLayer', reuse = reuse):
 		rpn_conv = tf.layers.conv2d(
 			inputs = feature,
 			filters = 512,

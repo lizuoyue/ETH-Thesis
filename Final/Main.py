@@ -15,71 +15,91 @@ FEATURE_STRIDE = [4, 8, 16, 32]
 class PolygonRNN(object):
 
 	def __init__(self, max_seq_len, lstm_out_channel, v_out_res):
-		self.anchors           = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
-		self.all_idx           = np.array([i for i in range(self.anchors.shape[0])])
-		self.valid_idx         = self.all_idx
-		self.num_anchors       = self.anchors.shape[0]
-
-		self.max_seq_len = max_seq_len
+		"""
+			max_seq_len:      scalar
+			lstm_out_channel: list of int numbers
+			v_out_res:        list [n_row, n_col]
+		"""
+		# RolygonRNN parameters
+		self.max_seq_len      = max_seq_len
 		self.lstm_out_channel = lstm_out_channel
-		self.v_out_res = v_out_res # n_col, n_row
+		self.lstm_in_channel  = [133] + lstm_out_channel[: -1]
+		self.v_out_res        = v_out_res
+		self.v_out_nrow       = self.v_out_res[0]
+		self.v_out_ncol       = self.v_out_res[1]
+		self.res_num          = self.v_out_nrow * self.v_out_ncol
 
-		# Parameters computed
-		self.res_num = self.v_out_res[1] * self.v_out_res[0]
-		self.lstm_in_channel = [133] + lstm_out_channel[: -1]
+		# RPN parameters
+		self.anchors          = ut.generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
+		self.valid_idx        = np.array([i for i in range(self.anchors.shape[0])])
+		self.num_anchors      = self.anchors.shape[0]
 
-		# Create multi-layer LSTM and inital state
+		# Multi-layer LSTM and inital state
 		self.stacked_lstm = tf.contrib.rnn.MultiRNNCell(
 			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
 		)
-		self.lstm_init_state = []
-		for i, c_out in enumerate(lstm_out_channel):
-			self.lstm_init_state.append(tf.get_variable('conv_lstm_cell_%d_c_h' % i, [2, self.v_out_res[1], self.v_out_res[0], c_out]))
+		self.lstm_init_state = [
+			tf.get_variable('conv_lstm_cell_%d_c_h' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
+			for i, c_out in enumerate(lstm_out_channel)
+		]
 
-		# Create vertex pool for prediction
+		# Vertex pool for prediction
 		self.vertex_pool = []
-		for i in range(v_out_res[1]):
-			for j in range(v_out_res[0]):
-				self.vertex_pool.append(np.zeros((v_out_res[1], v_out_res[0]), dtype = np.float32))
-				self.vertex_pool[i * v_out_res[0] + j][i, j] = 1.0
-		self.vertex_pool.append(np.zeros((v_out_res[1], v_out_res[0]), dtype = np.float32))
+		for i in range(self.v_out_nrow):
+			for j in range(self.v_out_ncol):
+				self.vertex_pool.append(np.zeros(self.v_out_res, dtype = np.float32))
+				self.vertex_pool[-1][i, j] = 1.0
+		self.vertex_pool.append(np.zeros(self.v_out_res, dtype = np.float32))
 		self.vertex_pool = np.array(self.vertex_pool)
 
+		# Return
 		return
 
+
 	def ConvLSTMCell(self, input_channels, output_channels):
+		"""
+			input_channels: scalar
+			output_channels: scalar
+		"""
+		# Return
 		return tf.contrib.rnn.ConvLSTMCell(
 			conv_ndims = 2,
-			input_shape = [self.v_out_res[1], self.v_out_res[0], input_channels],
+			input_shape = [self.v_out_nrow, self.v_out_ncol, input_channels],
 			output_channels = output_channels,
 			kernel_shape = [3, 3]
 		)
 
+
 	def applyDeltaToAnchor(self, anchors, deltas):
 		"""
-		anchors: [N, (y1, x1, y2     , x2     )]
-		deltas : [N, (dy, dx, log(dh), log(dw))]
+			anchors: [batch, N, (y1, x1, y2     , x2     )]
+			deltas : [batch, N, (dy, dx, log(dh), log(dw))]
 		"""
+		#
+		h  = anchors[..., 2] - anchors[..., 0]
+		w  = anchors[..., 3] - anchors[..., 1]
+		cy = anchors[..., 0] + 0.5 * h
+		cx = anchors[..., 1] + 0.5 * w
+
 		# 
-		h  = anchors[:, 2] - anchors[:, 0]
-		w  = anchors[:, 3] - anchors[:, 1]
-		cy = anchors[:, 0] + 0.5 * h
-		cx = anchors[:, 1] + 0.5 * w
-		# 
-		cy += deltas[:, 0] * h * 0.1
-		cx += deltas[:, 1] * w * 0.1
-		h  *= tf.exp(deltas[:, 2] * 0.2)
-		w  *= tf.exp(deltas[:, 3] * 0.2)
+		cy += deltas[..., 0] * h * 0.1
+		cx += deltas[..., 1] * w * 0.1
+		h  *= tf.exp(deltas[..., 2] * 0.2)
+		w  *= tf.exp(deltas[..., 3] * 0.2)
+
 		# 
 		y1 = cy - 0.5 * h
 		x1 = cx - 0.5 * w
 		y2 = y1 + h
 		x2 = x1 + w
-		return tf.stack([y1, x1, y2, x2], axis = 1)
+
+		# Return
+		return tf.stack([y1, x1, y2, x2], axis = 2)
+
 
 	def CNN(self, images, gt_boundary = None, gt_vertices = None, reuse = None):
 		batch_size = tf.cast(tf.shape(images)[0], tf.float32)
-		feature = PolygonFeature(VGG16(images, True), reuse)
+		feature = PolygonRNNFeature(VGG16(images, True), reuse)
 		with tf.variable_scope('CNN', reuse = reuse):
 			boundary = tf.layers.conv2d(
 				inputs = feature,
@@ -117,10 +137,10 @@ class PolygonRNN(object):
 
 
 	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, v_first = None, reuse = None):
-		batch_size = tf.concat([[tf.shape(feature)[0]], [1, 1, 1]], 0)
+		batch_size_1 = tf.concat([[tf.shape(feature)[0]], [1, 1, 1]], 0)
 		if not reuse:
 			feature_rep = tf.tile(
-				tf.reshape(feature, [-1, 1, self.v_out_res[1], self.v_out_res[0], 130]),
+				tf.reshape(feature, [-1, 1, self.v_out_nrow, self.v_out_ncol, 130]),
 				[1, self.max_seq_len, 1, 1, 1]
 			)
 			v_in_0 = tf.tile(v_in[:, 0: 1, ...], [1, self.max_seq_len, 1, 1, 1])
@@ -132,8 +152,8 @@ class PolygonRNN(object):
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
 			initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
-				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
-				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size_1),
+				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size_1)
 			) for i in range(len(lstm_out_channel))])
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
@@ -145,13 +165,14 @@ class PolygonRNN(object):
 			logits, loss, idx = self.FC(outputs, gt_rnn_out, gt_seq_len)
 			return logits, loss
 		else:
+			batch_size_2 = tf.concat([[tf.shape(feature)[0]], [self.v_out_nrow, self.v_out_ncol, 1]], 0)
 			v = [None for i in range(self.max_seq_len)]
 			state = [None for i in range(self.max_seq_len)]
 			rnn_output = [None for i in range(self.max_seq_len)]
-			v[0] = tf.reshape(v_first, [batch_size, self.v_out_res[1], self.v_out_res[0], 1])
+			v[0] = tf.reshape(v_first, batch_size_2)
 			state[0] = tuple([tf.contrib.rnn.LSTMStateTuple(
-				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
-				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size_1),
+				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size_1)
 			) for i in range(len(lstm_out_channel))])
 			for i in range(1, self.max_seq_len):
 				rnn_output[i], state[i] = self.stacked_lstm(
@@ -164,11 +185,12 @@ class PolygonRNN(object):
 						reuse = True,
 						last_two = (v[max(i - 1, 0)], v[max(i - 2, 0)]),
 					),
-					[-1, self.v_out_res[1], self.v_out_res[0], 1]
+					[-1, self.v_out_nrow, self.v_out_ncol, 1]
 				)
 			return tf.stack(v, 1)
 
-	def FC(self, rnn_output, rnn_out_true = None, seq_len = None, reuse = None, last_two = None):
+
+	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None, last_two = None):
 		if not reuse:
 			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])	
 		else:
@@ -182,30 +204,33 @@ class PolygonRNN(object):
 		if not reuse:
 			loss = tf.reduce_sum(
 				tf.nn.softmax_cross_entropy_with_logits(
-					labels = rnn_out_true,
+					labels = gt_rnn_out,
 					logits = logits
 				)
-			) / tf.reduce_sum(seq_len)
+			) / tf.reduce_sum(gt_seq_len)
 			idx = tf.argmax(logits, axis = 2)
 			return logits, loss, idx
 		else:
 			idx = tf.argmax(logits, axis = 2)
 			return tf.gather(self.vertex_pool, idx, axis = 0)
 
+
 	def smoothL1Loss(self, labels, predictions):
 		diff = tf.abs(predictions - labels)
 		val = tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
 		return tf.reduce_mean(val)
 
+
 	def RPN(self, images, reuse = None):
-		p2, p3, p4, p5 = PyramidFeature(VGG16(images, reuse), reuse)
-		p2_logit, p2_delta = RPNLayer(p2, len(ANCHOR_RATIO))
-		p3_logit, p3_delta = RPNLayer(p3, len(ANCHOR_RATIO), reuse = True)
-		p4_logit, p4_delta = RPNLayer(p4, len(ANCHOR_RATIO), reuse = True)
-		p5_logit, p5_delta = RPNLayer(p5, len(ANCHOR_RATIO), reuse = True)
+		p2, p3, p4, p5 = PyramidAnchorFeature(VGG16(images, reuse), reuse)
+		p2_logit, p2_delta = RPNSingleLayer(p2, len(ANCHOR_RATIO), reuse)
+		p3_logit, p3_delta = RPNSingleLayer(p3, len(ANCHOR_RATIO), reuse = True)
+		p4_logit, p4_delta = RPNSingleLayer(p4, len(ANCHOR_RATIO), reuse = True)
+		p5_logit, p5_delta = RPNSingleLayer(p5, len(ANCHOR_RATIO), reuse = True)
 		logit = tf.concat([p2_logit, p3_logit, p4_logit, p5_logit], axis = 1)
 		delta = tf.concat([p2_delta, p3_delta, p4_delta, p5_delta], axis = 1)
 		return logit, delta
+
 
 	def RPNClassLoss(self, anchor_class, pred_logit):
 		indices = tf.where(tf.equal(tf.reduce_sum(anchor_class, 2), 1)) # num_valid_anchors, 2
@@ -217,28 +242,34 @@ class PolygonRNN(object):
 		w = tf.stack([labels[:, 0] * neg_num / total_num, labels[:, 1] * pos_num / total_num], axis = 1)
 		return tf.reduce_mean(tf.losses.log_loss(labels = labels, predictions = tf.nn.softmax(logits), weights = w))
 
+
 	def RPNDeltaLoss(self, anchor_class, anchor_delta, pred_delta):
 		indices = tf.where(tf.equal(anchor_class[..., 0], 1)) # num_pos_anchors, 2
 		labels = tf.gather_nd(anchor_delta, indices) # num_pos_anchors, 4
 		return self.smoothL1Loss(labels = labels, predictions = tf.gather_nd(pred_delta, indices))
 
+
 	def train(self, aa, cc, dd, pp, ii, bb, vv, oo, ee, ll):
-		images        = tf.reshape(aa, [-1, 256, 256, 3])
+		#
+		images        = tf.reshape(aa, [-1, 640, 640, 3])
 		anchor_class  = tf.reshape(cc, [-1, self.num_anchors, 2])
 		anchor_delta  = tf.reshape(dd, [-1, self.num_anchors, 4])
 		patches       = tf.reshape(pp, [-1, 256, 256, 3])
-		v_in          = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_res[1], self.v_out_res[0], 1])
-		gt_boundary   = tf.reshape(bb, [-1, self.v_out_res[1], self.v_out_res[0], 1])
-		gt_vertices   = tf.reshape(vv, [-1, self.v_out_res[1], self.v_out_res[0], 1])
+		v_in          = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_nrow, self.v_out_ncol, 1])
+		gt_boundary   = tf.reshape(bb, [-1, self.v_out_nrow, self.v_out_ncol, 1])
+		gt_vertices   = tf.reshape(vv, [-1, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_v_out      = tf.reshape(oo, [-1, self.max_seq_len, self.res_num])
 		gt_end        = tf.reshape(ee, [-1, self.max_seq_len, 1])
 		gt_seq_len    = tf.reshape(ll, [-1])
 		gt_rnn_out    = tf.concat([gt_v_out, gt_end], 2)
 
+		# RPN part
 		pred_logit, pred_delta = self.RPN(images)
-		loss_class = 200 * self.RPNClassLoss(anchor_class, pred_logit)
-		loss_delta =  10 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
-		feature, loss_CNN = self.CNN(images, gt_boundary, gt_vertices)
+		loss_class = 400 * self.RPNClassLoss(anchor_class, pred_logit)
+		loss_delta = 0.1 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
+
+		# PolygonRNN part
+		feature, loss_CNN = self.CNN(patches, gt_boundary, gt_vertices)
 		logits , loss_RNN = self.RNN(feature, v_in, gt_rnn_out, gt_seq_len)
 
 		# Return
@@ -246,42 +277,62 @@ class PolygonRNN(object):
 		pred_vertices = feature[..., -1:]
 		pred_rnn      = tf.nn.softmax(logits)
 		pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num],
-			[-1, self.max_seq_len, self.v_out_res[1], self.v_out_res[0]]
+			[-1, self.max_seq_len, self.v_out_nrow, self.v_out_ncol]
 		)
 		pred_end      = tf.reshape(pred_rnn[..., self.res_num],
 			[-1, self.max_seq_len, 1]
 		)
 		return loss_class, loss_delta, loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end
 
-	def predict(self, aa):
-		img        = tf.reshape(xx, [self.pred_batch_size, self.img_size[1], self.img_size[0], 3])
+	def predict_rpn(self, aa):
+		#
+		images     = tf.reshape(aa, [-1, 640, 640, 3])
+		img        = tf.image.resize_images(images = images, size = [256, 256])
+		batch_size = tf.shape(images)[0]
+
+		#
 		pred_logit, pred_delta = self.RPN(img, reuse = True)
 		pred_score = tf.nn.softmax(pred_logit)[..., 0]
-		pred_box   = tf.stack([self.ApplyDeltaToAnchor(self.anchors, pred_delta[i]) for i in range(self.pred_batch_size)])
-		res = []
-		for i in range(self.pred_batch_size):
-			box_valid = tf.gather(pred_box[i], self.valid_idx)
-			score_valid = tf.gather(pred_score[i], self.valid_idx)
-			idx_top = tf.nn.top_k(score_valid, 500).indices
-			box_top = tf.gather(box_valid, idx_top)
-			score_top = tf.gather(score_valid, idx_top)
-			idx = tf.where(score_top >= 0.99)
-			box = tf.gather(box_top, idx)[:, 0, :]
-			score = tf.gather(score_top, idx)[:, 0]
-			indices = tf.image.non_max_suppression(
-				boxes = box, # pred_box[i]
-				scores = score, # pred_score[i]
-				max_output_size = 40,
-				iou_threshold = 0.15
-			)
-			res.append(tf.gather(box, indices)) # pred_box[i]
-		img = tf.reshape(xx, [-1, 224, 224, 3])
+		anchors_rep = tf.tile(tf.expand_dims(self.anchors, 0), [batch_size, 1, 1])
+		pred_bbox  = self.applyDeltaToAnchor(anchors_rep, pred_delta)
+
+		#
+		return pred_score, pred_bbox
+
+	def predict_polygon(self, pp):
+		#
+		img  = tf.reshape(pp, [-1, 256, 256, 3])
+
+		#
 		feature, v_first = self.CNN(img, reuse = True)
-		v_out_pred = self.RNN(feature, v_first = v_first, reuse = True)
-		boundary = feature[..., -2: -1]
-		vertices = feature[..., -1:]
-		v_out_pred = v_out_pred[..., 0]
-		return boundary, vertices, v_out_pred
+		pred_v_out = self.RNN(feature, v_first = v_first, reuse = True)
+
+		# Return
+		pred_boundary = feature[..., -2: -1]
+		pred_vertices = feature[..., -1:]
+		pred_v_out = pred_v_out[..., 0]
+		return pred_boundary, pred_vertices, pred_v_out
+
+		# #
+		# res = []
+		# for b, s in zip(tf.unstack(pred_bbox), tf.unstack(pred_score)):
+		# 	box_valid = tf.gather(b, self.valid_idx)
+		# 	score_valid = tf.gather(s, self.valid_idx)
+		# 	idx_top = tf.nn.top_k(score_valid, 500).indices
+		# 	box_top = tf.gather(box_valid, idx_top)
+		# 	score_top = tf.gather(score_valid, idx_top)
+		# 	idx = tf.where(score_top >= 0.99)
+		# 	box = tf.gather(box_top, idx)[:, 0, :]
+		# 	score = tf.gather(score_top, idx)[:, 0]
+		# 	indices = tf.image.non_max_suppression(
+		# 		boxes = box,
+		# 		scores = score,
+		# 		max_output_size = 40,
+		# 		iou_threshold = 0.15
+		# 	)
+		# 	res.append(tf.gather(box, indices))
+		
+		
 
 class Logger(object):
 
@@ -307,8 +358,8 @@ class Logger(object):
 
 if __name__ == '__main__':
 	# Create new folder
-	# if not os.path.exists('./tmp/'):
-	# 	os.makedirs('./tmp/')
+	if not os.path.exists('./model/'):
+		os.makedirs('./model/')
 	# if not os.path.exists('./res/'):
 	# 	os.makedirs('./res/')
 	# if not os.path.exists('./val/'):
@@ -320,18 +371,15 @@ if __name__ == '__main__':
 
 	# Set parameters
 	n_iter = 100000
-	toy = False
 	data_path = '../Chicago.zip'
-	if not toy:
-		lr = 0.0005
-		max_seq_len = 24
-		lstm_out_channel = [32, 16, 8]
-		v_out_res = (32, 32)
-		train_batch_size = 9
-		pred_batch_size = 49
+	lr = 0.0005
+	max_seq_len = 10
+	lstm_out_channel = [32, 16, 8]
+	v_out_res = (32, 32)
+	train_batch_size = 4
 
 	# Create data generator
-	# obj = ut.DataGenerator(fake = toy, data_path = data_path, max_seq_len = max_seq_len, resolution = v_out_res)
+	obj = ut.DataGenerator()
 
 	# Define graph
 	PolyRNNGraph = PolygonRNN(
@@ -350,15 +398,16 @@ if __name__ == '__main__':
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
 
-	result = PolyRNNGraph.train(aa, cc, dd, pp, ii, bb, vv, oo, ee, ll)
-	pred = PolyRNNGraph.predict()
+	train_res     = PolyRNNGraph.train(aa, cc, dd, pp, ii, bb, vv, oo, ee, ll)
+	pred_rpn_res  = PolyRNNGraph.predict_rpn(aa)
+	pred_poly_res = PolyRNNGraph.predict_polygon(pp)
 
-	for v in tf.global_variables():
-		print(v.name)
-	quit()
+	# for v in tf.global_variables():
+	# 	print(v.name)
+	# quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
-	train = optimizer.minimize(result[0] + result[1] + result[2])
+	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
 	saver = tf.train.Saver(max_to_keep = 3)
 	init = tf.global_variables_initializer()
 
@@ -371,7 +420,7 @@ if __name__ == '__main__':
 
 		# Restore weights
 		if len(sys.argv) > 1 and sys.argv[1] != None:
-			saver.restore(sess, './tmp/model-%s.ckpt' % sys.argv[1])
+			saver.restore(sess, './model/model-%s.ckpt' % sys.argv[1])
 			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
 		else:
 			sess.run(init)
@@ -380,28 +429,35 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			# img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'train')
-			# feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
+			(img, anchor_cls, anchor_box, patch, boundary, vertices, v_in, v_out, end, seq_len), num_p = obj.getFakeDataBatch(train_batch_size)
+			feed_dict = {
+				aa: img, cc: anchor_cls, dd: anchor_box,
+				pp: patch, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len
+			}
 
-			# # Training and get result
-			# sess.run(train, feed_dict)
-			# loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
-			# train_writer.log_scalar('Loss CNN' , loss_CNN, i)
-			# train_writer.log_scalar('Loss RNN' , loss_RNN, i)
-			# train_writer.log_scalar('Loss Angle', loss_Angle, i)
-			# train_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
-
-			# # Write loss to file
-			# print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			# f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			# f.flush()
+			# Training and get result
+			init_time = time.time()
+			_, (loss_class, loss_delta, loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
+			cost_time = time.time() - init_time
+			train_writer.log_scalar('Loss Class', loss_class, i)
+			train_writer.log_scalar('Loss Delta', loss_delta, i)
+			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
+			train_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
+			train_writer.log_scalar('Loss RPN'  , loss_class + loss_delta, i)
+			train_writer.log_scalar('Loss Poly' , loss_CNN   + loss_RNN  , i)
+			train_writer.log_scalar('Loss Full' , loss_class + loss_delta + loss_CNN + loss_RNN, i)
+			
+			# Write loss to file
+			print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
+			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
+			f.flush()
 
 			# # Visualize
 			# visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
 			# # Save model
-			# if i % 200 == 0:
-			# 	saver.save(sess, './tmp/model-%d.ckpt' % i)
+			if i % 200 == 0:
+				saver.save(sess, './model/model-%d.ckpt' % i)
 
 			# # Cross validation
 			# if i % 200 == 0:
@@ -425,24 +481,24 @@ if __name__ == '__main__':
 			# 	visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
 
 			# Prediction on validation set
-			if i % 2000 == 0:
-				# Get validation batch data and create feed dictionary
-				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
+			# if i % 2000 == 0:
+			# 	# Get validation batch data and create feed dictionary
+			# 	img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
+			# 	feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
-				# 
-				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_pred('./pre%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
+			# 	# 
+			# 	b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
+			# 	visualize_pred('./pre%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
-			# Prediction on test set
-			if i % 2000 == 0:
-				# Get validation batch data and create feed dictionary
-				img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
-				feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
+			# # Prediction on test set
+			# if i % 2000 == 0:
+			# 	# Get validation batch data and create feed dictionary
+			# 	img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
+			# 	feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
 
-				# 
-				b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-				visualize_pred('./tes%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
+			# 	# 
+			# 	b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
+			# 	visualize_pred('./tes%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
 		# End main loop
 		train_writer.close()

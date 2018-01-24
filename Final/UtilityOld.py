@@ -311,6 +311,9 @@ class BoundingBox(object):
 		px, py = lonLatToPixel(lon, lat, self.z)
 		return math.floor(px - self.center_px + self.size[0] / 2), math.floor(py - self.center_py + self.size[1] / 2)
 
+
+
+
 class DataGenerator(object):
 	# num_col, num_row
 	def __init__(self, fake, data_path = None, max_seq_len = None, img_size = (224, 224), resolution = None):

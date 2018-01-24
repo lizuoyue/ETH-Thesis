@@ -11,25 +11,27 @@ ANCHOR_RATIO   = [1.0 / 3, 1.0 / 2, 1, 2, 3]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
-def randomPolygon(num_vertices, center, max_radius):
+def randomPolygon(img_size, num_vertices, center, max_radius):
 	epsilon = 1.0 / num_vertices
 	delta_angle = np.pi * 2 * epsilon
 	angle = np.random.uniform(0.0, delta_angle)
 	polygon = [] # counterclockwise
 	for i in range(num_vertices):
-		if i % 2 == 0:#np.random.randint(0, 2):
+		if np.random.randint(0, 2):
 			r = max_radius * np.random.uniform(0.8, 1.0)
 		else:
-			r = max_radius * np.random.uniform(0.4, 0.6)
+			r = max_radius * np.random.uniform(0.3, 0.5)
 		px = math.floor(center[0] + r * np.cos(angle))
 		py = math.floor(center[1] - r * np.sin(angle))
+		px = min(max(0, px), img_size[0])
+		py = min(max(0, py), img_size[1])
 		polygon.append((px, py))
 		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon)
 	first_idx = random.choice([i for i in range(num_vertices)])
 	polygon = polygon[first_idx:] + polygon[:first_idx]
 	return polygon
 
-def plotPolygons(img_size = (640, 640), num_polygons = 6):
+def plotPolygons(img_size = (640, 640), num_polygons = 6, show = False):
 	num_row = img_size[1]
 	num_col = img_size[0]
 	half_x = math.floor(num_col / 2)
@@ -51,9 +53,9 @@ def plotPolygons(img_size = (640, 640), num_polygons = 6):
 		r = track_size * np.random.uniform(0.8, 1.0)
 		px = math.floor(center_x + r * np.cos(angle))
 		py = math.floor(center_y - r * np.sin(angle))
-		num_vertices = np.random.randint(4, 10)
-		max_radius = 25 + num_vertices * 8
-		polygons.append(randomPolygon(num_vertices, [px, py], max_radius))
+		num_vertices = np.random.randint(4, 8)
+		max_radius = 35 + num_vertices * 6
+		polygons.append(randomPolygon(img_size, num_vertices, [px, py], max_radius))
 		angle += delta_angle * np.random.uniform(1 - epsilon, 1 + epsilon)
 
 	# Draw polygon
@@ -70,8 +72,9 @@ def plotPolygons(img_size = (640, 640), num_polygons = 6):
 	img = background + noise
 	img = np.array((img - np.amin(img)) / (np.amax(img) - np.amin(img)) * 255.0, dtype = np.uint8)
 	img = np.array(img / 255.0)
-	Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
-	return
+	if show:
+		Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).show()
+	return img, polygons
 
 ############################################################
 #  Bounding Boxes
@@ -239,7 +242,7 @@ def generateAnchors(scales, ratios, shape, feature_stride, anchor_stride):
 	# Convert to corner coordinates (y1, x1, y2, x2)
 	boxes = np.concatenate([box_centers - 0.5 * box_sizes,
 							box_centers + 0.5 * box_sizes], axis=1)
-	return boxes
+	return np.array(boxes, dtype=np.float32)
 
 def generatePyramidAnchors(scales, ratios, feature_shapes, feature_strides,
 							 anchor_stride):
@@ -328,9 +331,139 @@ def buildRPNTargets(anchors, gt_boxes):
 		rpn_bbox[i,:] = boxRefinement(np.array([a]), np.array([gt]))
 	return rpn_match, rpn_bbox
 
+def polygons2bboxes(polygons):
+	"""
+		polygons: list of [(x, y), ..., (x, y)]
+	"""
+	bboxes = []
+	for polygon in polygons:
+		p = np.array(polygon)
+		x1 = p[:, 0].min()
+		y1 = p[:, 1].min()
+		x2 = p[:, 0].max()
+		y2 = p[:, 1].max()
+		bboxes.append([y1, x1, y2, x2])
+	return np.array(bboxes)
+
+def img2patches(img, bboxes, polygons, show = False):
+	"""
+		img: [nrow, ncol, 3]
+		bboxes: [N, 4]
+	"""
+	pad = 0.1
+	resize = (256, 256)
+	resolution = (32, 32)
+
+	res = []
+	for i in range(bboxes.shape[0]):
+		y1, x1, y2, x2 = bboxes[i]
+		w, h = x2 - x1, y2 - y1
+		delta_w, delta_h = int(w * pad), int(h * pad)
+		x1 = max(0, int(x1 - delta_w))
+		y1 = max(0, int(y1 - delta_h))
+		x2 = min(img.shape[1], int(x2 + delta_w))
+		y2 = min(img.shape[0], int(y2 + delta_h))
+
+		patch = Image.fromarray(np.array(img[y1: y2, x1: x2, :] * 255, np.uint8)).resize(resize)
+		polygon = [((x - x1) * 256 / (x2 - x1), (y - y1) * 256 / (y2 - y1)) for x, y in polygons[i]]
+		polygon_s = [(x / 8, y / 8) for x, y in polygon]
+		if show:
+			draw = ImageDraw.Draw(patch)
+			draw.polygon(polygon, outline = (255, 0, 0))
+			patch.show()
+			time.sleep(0.25)
+		patch = np.array(patch) / 255.0
+
+		boundary = Image.new('P', resolution, color = 0)
+		draw = ImageDraw.Draw(boundary)
+		draw.polygon(polygon_s, fill = 0, outline = 255)
+		if show:
+			boundary.show()
+			time.sleep(0.25)
+		boundary = np.array(boundary) / 255.0
+
+		vertices = Image.new('P', resolution, color = 0)
+		draw = ImageDraw.Draw(vertices)
+		draw.point(polygon_s, fill = 255)
+		if show:
+			vertices.show()
+			time.sleep(0.25)
+		vertices = np.array(vertices) / 255.0
+
+		v_in = []
+		seq_len = len(polygon)
+		for i in range(seq_len):
+			vertex = Image.new('P', resolution, color = 0)
+			draw = ImageDraw.Draw(vertex)
+			draw.point([polygon_s[i]], fill = 255)
+			v_in.append(np.array(vertex) / 255.0)
+			if show:
+				vertex.show()
+				time.sleep(0.25)
+		while len(v_in) < 10:
+			v_in.append(np.zeros(resolution, np.float32))
+		v_out = v_in[1: ] + [np.zeros(resolution, np.float32)]
+		v_in = np.array(v_in)
+		v_out = np.array(v_out)
+
+		end = [0.0 for i in range(10)]
+		end[seq_len - 1] = 1.0
+		end = np.array(end)
+
+		res.append((patch, boundary, vertices, v_in, v_out, end, seq_len))
+	return tuple([np.array([item[i] for item in res]) for i in range(7)])
+
+#################################################################################
+
+class DataGenerator(object):
+	def __init__(self):
+		self.anchors = generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
+		return
+
+	def getFakeDataBatch(self, batch_size):
+		res_a = []
+		res_b = []
+		num_p = np.random.choice(8, batch_size, replace = True) + 1
+		for num in num_p:
+			#
+			img, polygons = plotPolygons(num_polygons = num)
+			bboxes = polygons2bboxes(polygons)
+			rpn_match, anchor_box = buildRPNTargets(self.anchors, bboxes)
+			anchor_cls = np.zeros([self.anchors.shape[0], 2], np.int32)
+			anchor_cls[rpn_match == 1, 0] = 1
+			anchor_cls[rpn_match == -1, 1] = 1
+
+			#
+			res_a.append((img, anchor_cls, anchor_box))
+			res_b.append(img2patches(img, bboxes, polygons))
+		res_a = tuple([np.array([item[i] for item in res_a]) for i in range(3)])
+		res_b = tuple([np.concatenate([item[i] for item in res_b], 0) for i in range(7)])
+		return res_a + res_b, num_p
+		
+
+	# def recover(self, path, idx, img, res):
+	# 	for i in range(img.shape[0]):
+	# 		boxes = res[i]
+	# 		org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
+	# 		draw = ImageDraw.Draw(org)
+	# 		f = open(path + '/%s.txt' % idx[i], 'w')
+	# 		for j in range(boxes.shape[0]):
+	# 			u, l, d, r = tuple(list(boxes[j, :]))
+	# 			if (r - l) * (d - u) > 24*24:
+	# 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+	# 				f.write('%d %d %d %d\n' % (u, l, d, r))
+	# 		f.close()
+	# 		org.save(path + '/%s.png' % idx[i])
+
+
 if __name__ == '__main__':
-	for i in range(8):
-		plotPolygons(num_polygons = i)
+	for i in range(0):
+		plotPolygons(num_polygons = i, show = True)
+	dg = DataGenerator()
+	item, num_p = dg.getFakeDataBatch(4)
+	print(num_p)
+	for i in range(10):
+		print(item[i].shape)
 
 
 
