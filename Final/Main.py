@@ -1,6 +1,6 @@
 import os, sys, glob, time
-if os.path.exists('../Python-Lib/'):
-	sys.path.insert(1, '../Python-Lib')
+if os.path.exists('../../Python-Lib/'):
+	sys.path.insert(1, '../../Python-Lib')
 import numpy as np
 import tensorflow as tf
 from PIL import Image, ImageDraw
