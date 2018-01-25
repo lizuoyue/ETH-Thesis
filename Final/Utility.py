@@ -443,7 +443,7 @@ class DataGenerator(object):
 		
 	def recover(self, path, img, res):
 		for i in range(img.shape[0]):
-			boxes = res[i]
+			boxes = res[i] * 2.5
 			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
 			draw = ImageDraw.Draw(org)
 			f = open(path + '/_%s.txt' % i, 'w')
