@@ -7,8 +7,8 @@ from PIL import Image, ImageDraw
 from Model import *
 import Utility as ut
 
-ANCHOR_SCALE   = [16, 32, 64, 128]
-ANCHOR_RATIO   = [1.0 / 3, 1.0 / 2, 1, 2, 3]
+ANCHOR_SCALE   = [10, 20, 40, 80] # [16, 32, 64, 128]
+ANCHOR_RATIO   = [0.5, 1, 2] # [1.0 / 3, 1.0 / 2, 1, 2, 3]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
@@ -266,7 +266,7 @@ class PolygonRNN(object):
 
 		# RPN part
 		pred_logit, pred_delta = self.RPN(img)
-		loss_class = 40 * self.RPNClassLoss(anchor_class, pred_logit)
+		loss_class = 80 * self.RPNClassLoss(anchor_class, pred_logit)
 		loss_delta = 10 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
 
 		# PolygonRNN part
@@ -274,14 +274,14 @@ class PolygonRNN(object):
 		logits , loss_RNN = self.RNN(feature, v_in, gt_rnn_out, gt_seq_len)
 
 		# Return
-		pred_boundary = feature[..., -2: -1]
-		pred_vertices = feature[..., -1:]
+		pred_boundary = feature[..., -2]
+		pred_vertices = feature[..., -1]
 		pred_rnn      = tf.nn.softmax(logits)
 		pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num],
 			[-1, self.max_seq_len, self.v_out_nrow, self.v_out_ncol]
 		)
 		pred_end      = tf.reshape(pred_rnn[..., self.res_num],
-			[-1, self.max_seq_len, 1]
+			[-1, self.max_seq_len]
 		)
 
 		pred_score = tf.nn.softmax(pred_logit)[..., 0]
@@ -322,7 +322,7 @@ class PolygonRNN(object):
 		pred_bbox  = self.applyDeltaToAnchor(anchors_rep, pred_delta)
 
 		#
-		res = []
+		pred_box = []
 		for i in range(4):
 			box_valid = tf.gather(pred_bbox[i], self.valid_idx)
 			score_valid = tf.gather(pred_score[i], self.valid_idx)
@@ -338,8 +338,8 @@ class PolygonRNN(object):
 				max_output_size = 40,
 				iou_threshold = 0.15
 			)
-			res.append(tf.gather(box, indices))
-		return res # pred_score, pred_bbox
+			pred_box.append(tf.gather(box, indices))
+		return pred_box # pred_score, pred_bbox
 
 	def predict_polygon(self, pp):
 		#
@@ -402,9 +402,6 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 		os.remove(item)
 
 	# Reshape
-	b_pred = b_pred[..., 0]
-	v_pred = v_pred[..., 0]
-	end_pred = end_pred[..., 0]
 	shape = ((v_out_res[1], v_out_res[0]))
 	blank = np.zeros(shape)
 
@@ -457,8 +454,6 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 
 	# Reshape
 	batch_size = img.shape[0]
-	b_pred = b_pred[..., 0]
-	v_pred = v_pred[..., 0]
 	shape = ((v_out_res[1], v_out_res[0]))
 	blank = np.zeros(shape)
 
@@ -628,7 +623,11 @@ if __name__ == '__main__':
 
 			# Visualize
 			if i % 20 == 0:
-				visualize('./res-train', patch, boundary, vertices, v_in, pred_boundary, pred_vertices, pred_v_out, pred_end, seq_len, (32, 32))
+				(img, anchor_cls, anchor_box, patch, boundary, vertices, v_in, v_out, end, seq_len), num_p = obj.getFakeDataBatch(train_batch_size)
+				feed_dict = {aa: img, pp: patch}
+				pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
+				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
+				visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (32, 32))
 				obj.recover('./res-train', img, pred_box)
 
 			# Save model

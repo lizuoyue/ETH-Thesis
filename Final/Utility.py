@@ -6,8 +6,8 @@ from PIL import Image, ImageDraw, ImageFilter
 if os.path.exists('../Python-Lib/'):
 	sys.path.insert(1, '../Python-Lib')
 
-ANCHOR_SCALE   = [16, 32, 64, 128]
-ANCHOR_RATIO   = [1.0 / 3, 1.0 / 2, 1, 2, 3]
+ANCHOR_SCALE   = [10, 20, 40, 80] # [16, 32, 64, 128]
+ANCHOR_RATIO   = [0.5, 1, 2] # [1.0 / 3, 1.0 / 2, 1, 2, 3]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
@@ -432,6 +432,7 @@ class DataGenerator(object):
 			anchor_cls = np.zeros([self.anchors.shape[0], 2], np.int32)
 			anchor_cls[rpn_match == 1, 0] = 1
 			anchor_cls[rpn_match == -1, 1] = 1
+			# print(np.sum(rpn_match == 1))
 
 			#
 			res_a.append((img, anchor_cls, anchor_delta))
@@ -448,9 +449,9 @@ class DataGenerator(object):
 			f = open(path + '/_%s.txt' % i, 'w')
 			for j in range(boxes.shape[0]):
 				u, l, d, r = tuple(list(boxes[j, :]))
-				if (r - l) * (d - u) > 24*24:
-					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-					f.write('%d %d %d %d\n' % (u, l, d, r))
+				# if (r - l) * (d - u) > 24*24:
+				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+				f.write('%d %d %d %d\n' % (u, l, d, r))
 			f.close()
 			org.save(path + '/_%s.png' % i)
 
