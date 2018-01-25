@@ -1,6 +1,6 @@
 import os, sys, glob, time
-if os.path.exists('../Python-Lib/'):
-	sys.path.insert(1, '../Python-Lib')
+if os.path.exists('../../Python-Lib/'):
+	sys.path.insert(1, '../../Python-Lib')
 import numpy as np
 import tensorflow as tf
 from PIL import Image, ImageDraw
@@ -251,7 +251,8 @@ class PolygonRNN(object):
 
 	def train(self, aa, cc, dd, pp, ii, bb, vv, oo, ee, ll):
 		#
-		images        = tf.reshape(aa, [-1, 640, 640, 3])
+		images        = tf.reshape(aa, [4, 640, 640, 3])
+		img           = tf.image.resize_images(images = images, size = [256, 256])
 		anchor_class  = tf.reshape(cc, [-1, self.num_anchors, 2])
 		anchor_delta  = tf.reshape(dd, [-1, self.num_anchors, 4])
 		patches       = tf.reshape(pp, [-1, 256, 256, 3])
@@ -264,9 +265,9 @@ class PolygonRNN(object):
 		gt_rnn_out    = tf.concat([gt_v_out, gt_end], 2)
 
 		# RPN part
-		pred_logit, pred_delta = self.RPN(images)
-		loss_class = 400 * self.RPNClassLoss(anchor_class, pred_logit)
-		loss_delta = 0.1 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
+		pred_logit, pred_delta = self.RPN(img)
+		loss_class = 40 * self.RPNClassLoss(anchor_class, pred_logit)
+		loss_delta = 10 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
 
 		# PolygonRNN part
 		feature, loss_CNN = self.CNN(patches, gt_boundary, gt_vertices)
@@ -282,11 +283,35 @@ class PolygonRNN(object):
 		pred_end      = tf.reshape(pred_rnn[..., self.res_num],
 			[-1, self.max_seq_len, 1]
 		)
-		return loss_class, loss_delta, loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end
+
+		pred_score = tf.nn.softmax(pred_logit)[..., 0]
+		anchors_rep = tf.tile(tf.expand_dims(self.anchors, 0), [4, 1, 1])
+		pred_bbox  = self.applyDeltaToAnchor(anchors_rep, pred_delta)
+
+		#
+		pred_box = []
+		for i in range(4):
+			box_valid = tf.gather(pred_bbox[i], self.valid_idx)
+			score_valid = tf.gather(pred_score[i], self.valid_idx)
+			idx_top = tf.nn.top_k(score_valid, 500).indices
+			box_top = tf.gather(box_valid, idx_top)
+			score_top = tf.gather(score_valid, idx_top)
+			idx = tf.where(score_top >= 0.99)
+			box = tf.gather(box_top, idx)[:, 0, :]
+			score = tf.gather(score_top, idx)[:, 0]
+			indices = tf.image.non_max_suppression(
+				boxes = box,
+				scores = score,
+				max_output_size = 40,
+				iou_threshold = 0.15
+			)
+			pred_box.append(tf.gather(box, indices))
+
+		return loss_class, loss_delta, loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end, pred_box
 
 	def predict_rpn(self, aa):
 		#
-		images     = tf.reshape(aa, [-1, 640, 640, 3])
+		images     = tf.reshape(aa, [4, 640, 640, 3])
 		img        = tf.image.resize_images(images = images, size = [256, 256])
 		batch_size = tf.shape(images)[0]
 
@@ -297,7 +322,24 @@ class PolygonRNN(object):
 		pred_bbox  = self.applyDeltaToAnchor(anchors_rep, pred_delta)
 
 		#
-		return pred_score, pred_bbox
+		res = []
+		for i in range(4):
+			box_valid = tf.gather(pred_bbox[i], self.valid_idx)
+			score_valid = tf.gather(pred_score[i], self.valid_idx)
+			idx_top = tf.nn.top_k(score_valid, 500).indices
+			box_top = tf.gather(box_valid, idx_top)
+			score_top = tf.gather(score_valid, idx_top)
+			idx = tf.where(score_top >= 0.99)
+			box = tf.gather(box_top, idx)[:, 0, :]
+			score = tf.gather(score_top, idx)[:, 0]
+			indices = tf.image.non_max_suppression(
+				boxes = box,
+				scores = score,
+				max_output_size = 40,
+				iou_threshold = 0.15
+			)
+			res.append(tf.gather(box, indices))
+		return res # pred_score, pred_bbox
 
 	def predict_polygon(self, pp):
 		#
@@ -308,31 +350,163 @@ class PolygonRNN(object):
 		pred_v_out = self.RNN(feature, v_first = v_first, reuse = True)
 
 		# Return
-		pred_boundary = feature[..., -2: -1]
-		pred_vertices = feature[..., -1:]
+		pred_boundary = feature[..., -2]
+		pred_vertices = feature[..., -1]
 		pred_v_out = pred_v_out[..., 0]
 		return pred_boundary, pred_vertices, pred_v_out
 
-		# #
-		# res = []
-		# for b, s in zip(tf.unstack(pred_bbox), tf.unstack(pred_score)):
-		# 	box_valid = tf.gather(b, self.valid_idx)
-		# 	score_valid = tf.gather(s, self.valid_idx)
-		# 	idx_top = tf.nn.top_k(score_valid, 500).indices
-		# 	box_top = tf.gather(box_valid, idx_top)
-		# 	score_top = tf.gather(score_valid, idx_top)
-		# 	idx = tf.where(score_top >= 0.99)
-		# 	box = tf.gather(box_top, idx)[:, 0, :]
-		# 	score = tf.gather(score_top, idx)[:, 0]
-		# 	indices = tf.image.non_max_suppression(
-		# 		boxes = box,
-		# 		scores = score,
-		# 		max_output_size = 40,
-		# 		iou_threshold = 0.15
-		# 	)
-		# 	res.append(tf.gather(box, indices))
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def overlay(img, mask, shape, color = (255, 0, 0)):
+	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
+	alpha = np.array(mask * 128.0, dtype = np.uint8)
+	alpha = np.concatenate(
+		(
+			np.ones((shape[0], shape[1], 1)) * color[0],
+			np.ones((shape[0], shape[1], 1)) * color[1],
+			np.ones((shape[0], shape[1], 1)) * color[2],
+			np.reshape(alpha, (shape[0], shape[1], 1))
+		),
+		axis = 2
+	)
+	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
+	alpha = alpha.resize((256, 256), resample = Image.BICUBIC)
+	merge = Image.alpha_composite(org, alpha)
+	return merge
+
+def overlayMultiMask(img, mask, shape):
+	merge = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
+	merge = np.array(overlay(img, mask[0], shape)) / 255.0
+	for i in range(1, mask.shape[0]):
+		color = (255 * (i == 1), 128 * (i == 1) + (1 - i % 2) * 255, i % 2 * 255 - 255 * (i == 1))
+		merge = np.array(overlay(merge, mask[i], shape, color)) / 255.0
+	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
+
+def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res):
+	# Clear last files
+	for item in glob.glob(path + '/*'):
+		os.remove(item)
+
+	# Reshape
+	b_pred = b_pred[..., 0]
+	v_pred = v_pred[..., 0]
+	end_pred = end_pred[..., 0]
+	shape = ((v_out_res[1], v_out_res[0]))
+	blank = np.zeros(shape)
+
+	# Polygon
+	polygon = [None for i in range(img.shape[0])]
+	for i in range(v_out_pred.shape[0]):
+		v = v_in[i, 0]
+		r, c = np.unravel_index(v.argmax(), v.shape)
+		polygon[i] = [(c, r)]
+		for j in range(seq_len[i] - 1):
+			if end_pred[i, j] <= v.max():
+				v = v_out_pred[i, j]
+				r, c = np.unravel_index(v.argmax(), v.shape)
+				polygon[i].append((c, r))
+
+	# 
+	for i in range(img.shape[0]):
+		vv = np.concatenate((v_in[i, 0: 1], v_out_pred[i, 0: seq_len[i] - 1]), axis = 0)
+		overlay(img[i], blank      , shape).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], boundary[i], shape).save(path + '/%d-1-bound.png' % i)
+		overlay(img[i], b_pred  [i], shape).save(path + '/%d-1-bound-pred.png' % i)
+		overlay(img[i], vertices[i], shape).save(path + '/%d-2-vertices.png' % i)
+		overlay(img[i], v_pred  [i], shape).save(path + '/%d-2-vertices-pred.png' % i)
+		overlayMultiMask(img[i], vv, shape).save(path + '/%d-3-vertices-merge.png' % i)
+		# for j in range(seq_len[i]):
+		# 	overlay(img[i], vv[j], shape).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
+
+		link = Image.new('P', shape, color = 0)
+		draw = ImageDraw.Draw(link)
+		if len(polygon[i]) == 1:
+			polygon[i].append(polygon[i][0])
+		draw.polygon(polygon[i], fill = 0, outline = 255)
+		link = np.array(link) / 255.0
+		overlay(img[i], link, shape).save(path + '/%d-4-vertices-link.png' % i)
+
+		f = open(path + '/%d-5-end-prob.txt' % i, 'w')
+		for j in range(seq_len[i]):
+			f.write('%.6lf\n' % end_pred[i, j])
+		f.close()
+
+	#
+	return
+
+def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
+	if not os.path.exists(path):
+		os.makedirs(path)
+	# Clear last files
+	for item in glob.glob(path + '/*'):
+		os.remove(item)
+
+	# Reshape
+	batch_size = img.shape[0]
+	b_pred = b_pred[..., 0]
+	v_pred = v_pred[..., 0]
+	shape = ((v_out_res[1], v_out_res[0]))
+	blank = np.zeros(shape)
+
+	# Sequence length and polygon
+	polygon = [[] for i in range(batch_size)]
+	for i in range(v_out_pred.shape[0]):
+		for j in range(v_out_pred.shape[1]):
+			v = v_out_pred[i, j]
+			if v.sum() >= 0.5:
+				r, c = np.unravel_index(v.argmax(), v.shape)
+				polygon[i].append((c, r))
+			else:
+				break
+	seq_len = [len(polygon[i]) for i in range(batch_size)]
+
+	# 
+	for i in range(batch_size):
+		vv = v_out_pred[i, 0: seq_len[i]]
+		overlay(img[i], blank      , shape).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], b_pred[i]  , shape).save(path + '/%d-1-bound-pred.png' % i)
+		overlay(img[i], v_pred[i]  , shape).save(path + '/%d-2-vertices-pred.png' % i)
+		overlayMultiMask(img[i], vv, shape).save(path + '/%d-3-vertices-merge.png' % i)
+		# for j in range(seq_len[i]):
+		# 	overlay(img[i], vv[j], shape).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
+		link = Image.new('P', shape, color = 0)
+		draw = ImageDraw.Draw(link)
+		if len(polygon[i]) == 1:
+			polygon[i].append(polygon[i][0])
+		draw.polygon(polygon[i], fill = 0, outline = 255)
+		link = np.array(link) / 255.0
+		overlay(img[i], link, shape).save(path + '/%d-4-vertices-link.png' % i)
+
+	# 
+	return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Logger(object):
 
@@ -360,8 +534,8 @@ if __name__ == '__main__':
 	# Create new folder
 	if not os.path.exists('./model/'):
 		os.makedirs('./model/')
-	# if not os.path.exists('./res/'):
-	# 	os.makedirs('./res/')
+	if not os.path.exists('./res-train/'):
+		os.makedirs('./res-train/')
 	# if not os.path.exists('./val/'):
 	# 	os.makedirs('./val/')
 	# if not os.path.exists('./pre/'):
@@ -437,7 +611,7 @@ if __name__ == '__main__':
 
 			# Training and get result
 			init_time = time.time()
-			_, (loss_class, loss_delta, loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
+			_, (loss_class, loss_delta, loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end, pred_box) = sess.run([train, train_res], feed_dict)
 			cost_time = time.time() - init_time
 			train_writer.log_scalar('Loss Class', loss_class, i)
 			train_writer.log_scalar('Loss Delta', loss_delta, i)
@@ -452,10 +626,12 @@ if __name__ == '__main__':
 			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
 			f.flush()
 
-			# # Visualize
-			# visualize('./res', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
+			# Visualize
+			if i % 20 == 0:
+				visualize('./res-train', patch, boundary, vertices, v_in, pred_boundary, pred_vertices, pred_v_out, pred_end, seq_len, (32, 32))
+				obj.recover('./res-train', img, pred_box)
 
-			# # Save model
+			# Save model
 			if i % 200 == 0:
 				saver.save(sess, './model/model-%d.ckpt' % i)
 

@@ -781,20 +781,6 @@ class AnchorGenerator(object):
 	# 			draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 	# 		org.save(path + '/%d.png' % idx)
 
-	def recover(self, path, idx, img, res):
-		for i in range(img.shape[0]):
-			boxes = res[i]
-			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
-			draw = ImageDraw.Draw(org)
-			f = open(path + '/%s.txt' % idx[i], 'w')
-			for j in range(boxes.shape[0]):
-				u, l, d, r = tuple(list(boxes[j, :]))
-				if (r - l) * (d - u) > 24*24:
-					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-					f.write('%d %d %d %d\n' % (u, l, d, r))
-			f.close()
-			org.save(path + '/%s.png' % idx[i])
-
 
 
 class AreaGenerator(object):

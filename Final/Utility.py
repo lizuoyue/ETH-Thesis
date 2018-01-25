@@ -297,13 +297,13 @@ def buildRPNTargets(anchors, gt_boxes):
 	# matched to them. Skip boxes in crowd areas.
 	anchor_iou_argmax = np.argmax(overlaps, axis=1)
 	anchor_iou_max = overlaps[np.arange(overlaps.shape[0]), anchor_iou_argmax]
-	rpn_match[(anchor_iou_max < 0.3)] = -1
+	rpn_match[(anchor_iou_max < 0.2)] = -1
 	# 2. Set an anchor for each GT box (regardless of IoU value).
 	# TODO: If multiple anchors have the same IoU match all of them
 	gt_iou_argmax = np.argmax(overlaps, axis=0)
 	rpn_match[gt_iou_argmax] = 1
 	# 3. Set anchors with high overlap as positive.
-	rpn_match[anchor_iou_max >= 0.7] = 1
+	rpn_match[anchor_iou_max >= 0.5] = 1
 
 	# Subsample to balance positive and negative anchors
 	# Don't let positives be more than half the anchors
@@ -428,32 +428,31 @@ class DataGenerator(object):
 			#
 			img, polygons = plotPolygons(num_polygons = num)
 			bboxes = polygons2bboxes(polygons)
-			rpn_match, anchor_box = buildRPNTargets(self.anchors, bboxes)
+			rpn_match, anchor_delta = buildRPNTargets(self.anchors, np.array(bboxes, np.float32) / 2.5)
 			anchor_cls = np.zeros([self.anchors.shape[0], 2], np.int32)
 			anchor_cls[rpn_match == 1, 0] = 1
 			anchor_cls[rpn_match == -1, 1] = 1
 
 			#
-			res_a.append((img, anchor_cls, anchor_box))
+			res_a.append((img, anchor_cls, anchor_delta))
 			res_b.append(img2patches(img, bboxes, polygons))
 		res_a = tuple([np.array([item[i] for item in res_a]) for i in range(3)])
 		res_b = tuple([np.concatenate([item[i] for item in res_b], 0) for i in range(7)])
 		return res_a + res_b, num_p
 		
-
-	# def recover(self, path, idx, img, res):
-	# 	for i in range(img.shape[0]):
-	# 		boxes = res[i]
-	# 		org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
-	# 		draw = ImageDraw.Draw(org)
-	# 		f = open(path + '/%s.txt' % idx[i], 'w')
-	# 		for j in range(boxes.shape[0]):
-	# 			u, l, d, r = tuple(list(boxes[j, :]))
-	# 			if (r - l) * (d - u) > 24*24:
-	# 				draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-	# 				f.write('%d %d %d %d\n' % (u, l, d, r))
-	# 		f.close()
-	# 		org.save(path + '/%s.png' % idx[i])
+	def recover(self, path, img, res):
+		for i in range(img.shape[0]):
+			boxes = res[i]
+			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
+			draw = ImageDraw.Draw(org)
+			f = open(path + '/_%s.txt' % i, 'w')
+			for j in range(boxes.shape[0]):
+				u, l, d, r = tuple(list(boxes[j, :]))
+				if (r - l) * (d - u) > 24*24:
+					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+					f.write('%d %d %d %d\n' % (u, l, d, r))
+			f.close()
+			org.save(path + '/_%s.png' % i)
 
 
 if __name__ == '__main__':
@@ -461,9 +460,9 @@ if __name__ == '__main__':
 		plotPolygons(num_polygons = i, show = True)
 	dg = DataGenerator()
 	item, num_p = dg.getFakeDataBatch(4)
-	print(num_p)
-	for i in range(10):
-		print(item[i].shape)
+	# print(num_p)
+	# for i in range(10):
+	# 	print(item[i].shape)
 
 
 
