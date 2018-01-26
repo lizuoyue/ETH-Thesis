@@ -7,8 +7,8 @@ from PIL import Image, ImageDraw
 from Model import *
 import Utility as ut
 
-ANCHOR_SCALE   = [10, 20, 40, 80] # [16, 32, 64, 128]
-ANCHOR_RATIO   = [0.5, 1, 2] # [1.0 / 3, 1.0 / 2, 1, 2, 3]
+ANCHOR_SCALE   = [16, 32, 64, 128]
+ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
@@ -255,7 +255,7 @@ class PolygonRNN(object):
 		img           = tf.image.resize_images(images = images, size = [256, 256])
 		anchor_class  = tf.reshape(cc, [-1, self.num_anchors, 2])
 		anchor_delta  = tf.reshape(dd, [-1, self.num_anchors, 4])
-		patches       = tf.reshape(pp, [-1, 256, 256, 3])
+		patches       = tf.reshape(pp, [-1, 224, 224, 3])
 		v_in          = tf.reshape(ii, [-1, self.max_seq_len, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_boundary   = tf.reshape(bb, [-1, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_vertices   = tf.reshape(vv, [-1, self.v_out_nrow, self.v_out_ncol, 1])
@@ -266,7 +266,7 @@ class PolygonRNN(object):
 
 		# RPN part
 		pred_logit, pred_delta = self.RPN(img)
-		loss_class = 80 * self.RPNClassLoss(anchor_class, pred_logit)
+		loss_class = 30 * self.RPNClassLoss(anchor_class, pred_logit)
 		loss_delta = 10 * self.RPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
 
 		# PolygonRNN part
@@ -343,7 +343,7 @@ class PolygonRNN(object):
 
 	def predict_polygon(self, pp):
 		#
-		img  = tf.reshape(pp, [-1, 256, 256, 3])
+		img  = tf.reshape(pp, [-1, 224, 224, 3])
 
 		#
 		feature, v_first = self.CNN(img, reuse = True)
@@ -540,15 +540,17 @@ if __name__ == '__main__':
 
 	# Set parameters
 	n_iter = 100000
-	data_path = '../Chicago.zip'
+	building_path = '../../Chicago.zip'
+	area_path = '/local/lizuoyue/Chicago_Area'
+	max_seq_len = 24
 	lr = 0.0005
-	max_seq_len = 10
 	lstm_out_channel = [32, 16, 8]
-	v_out_res = (32, 32)
-	train_batch_size = 4
+	v_out_res = (28, 28)
+	area_batch_size = 4
+	building_batch_size = 12
 
 	# Create data generator
-	obj = ut.DataGenerator()
+	obj = ut.DataGenerator(building_path, area_path, max_seq_len, (224, 224), v_out_res)
 
 	# Define graph
 	PolyRNNGraph = PolygonRNN(
@@ -598,7 +600,8 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			(img, anchor_cls, anchor_box, patch, boundary, vertices, v_in, v_out, end, seq_len), num_p = obj.getFakeDataBatch(train_batch_size)
+			img, anchor_cls, anchor_box = obj.getAreasBatch(area_batch_size, mode = 'train')
+			patch, boundary, vertices, v_in, v_out, end, seq_len = obj.getBuildingsBatch(building_batch_size, mode = 'train')
 			feed_dict = {
 				aa: img, cc: anchor_cls, dd: anchor_box,
 				pp: patch, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len
@@ -623,57 +626,18 @@ if __name__ == '__main__':
 
 			# Visualize
 			if i % 20 == 0:
-				(img, anchor_cls, anchor_box, patch, boundary, vertices, v_in, v_out, end, seq_len), num_p = obj.getFakeDataBatch(train_batch_size)
-				feed_dict = {aa: img, pp: patch}
+				img, anchor_cls, anchor_box = obj.getAreasBatch(area_batch_size, mode = 'valid')
+				feed_dict = {aa: img}
 				pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
-				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-				visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (32, 32))
 				obj.recover('./res-train', img, pred_box)
+				org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
+				feed_dict = {pp: patch}
+				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
+				visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (28, 28))
 
 			# Save model
 			if i % 200 == 0:
 				saver.save(sess, './model/model-%d.ckpt' % i)
-
-			# # Cross validation
-			# if i % 200 == 0:
-			# 	# Get validation batch data and create feed dictionary
-			# 	img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(train_batch_size, mode = 'valid')
-			# 	feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
-
-			# 	# Validation and get result
-			# 	loss_CNN, loss_RNN, loss_Angle, b_pred, v_pred, v_out_pred, end_pred = sess.run(result, feed_dict)
-			# 	valid_writer.log_scalar('Loss CNN' , loss_CNN, i)
-			# 	valid_writer.log_scalar('Loss RNN' , loss_RNN, i)
-			# 	valid_writer.log_scalar('Loss Angle', loss_Angle, i)
-			# 	valid_writer.log_scalar('Loss Full', loss_CNN + loss_RNN + loss_Angle, i)
-
-			# 	# Write loss to file
-			# 	print('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			# 	f.write('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf\n' % (i, loss_CNN, loss_RNN, loss_Angle, loss_CNN + loss_RNN + loss_Angle))
-			# 	f.flush()
-
-			# 	# Visualize
-			# 	visualize('./val', img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info)
-
-			# Prediction on validation set
-			# if i % 2000 == 0:
-			# 	# Get validation batch data and create feed dictionary
-			# 	img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'valid')
-			# 	feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
-
-			# 	# 
-			# 	b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-			# 	visualize_pred('./pre%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
-
-			# # Prediction on test set
-			# if i % 2000 == 0:
-			# 	# Get validation batch data and create feed dictionary
-			# 	img, boundary, vertices, v_in, v_out, end, seq_len, patch_info = obj.getDataBatch(pred_batch_size, mode = 'test')
-			# 	feed_dict = {xx: img, bb: boundary, vv: vertices, ii: v_in, oo: v_out, ee: end, ll: seq_len, angle_score: angle}
-
-			# 	# 
-			# 	b_pred, v_pred, v_out_pred = sess.run(pred, feed_dict)
-			# 	visualize_pred('./tes%d' % i, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
 		# End main loop
 		train_writer.close()
