@@ -625,15 +625,18 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Visualize
-			if i % 20 == 0:
-				img, anchor_cls, anchor_box = obj.getAreasBatch(area_batch_size, mode = 'valid')
-				feed_dict = {aa: img}
-				pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
-				obj.recover('./res-train', img, pred_box)
-				org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
-				feed_dict = {pp: patch}
-				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-				visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (28, 28))
+			try:
+				if i % 20 == 0:
+					img, anchor_cls, anchor_box = obj.getAreasBatch(area_batch_size, mode = 'valid')
+					feed_dict = {aa: img}
+					pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
+					obj.recover('./res-train', img, pred_box)
+					org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
+					feed_dict = {pp: patch}
+					pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
+					visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (28, 28))
+			except:
+				print('error!')
 
 			# Save model
 			if i % 200 == 0:

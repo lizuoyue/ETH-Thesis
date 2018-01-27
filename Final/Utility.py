@@ -682,7 +682,7 @@ class DataGenerator(object):
 			img = np.array(org)
 			boxes = bbox * 2.5
 			for j in range(boxes.shape[0]):
-				y1, x1, y2, x2 = tuple(list(boxes[i, :]))
+				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
 				y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * self.pad))
 				if y1 < y2 and x1 < x2:
@@ -697,7 +697,7 @@ class DataGenerator(object):
 			draw = ImageDraw.Draw(org)
 			# f = open(path + '/_%s.txt' % i, 'w')
 			for j in range(boxes.shape[0]):
-				u, l, d, r = tuple(list(boxes[j, :]))
+				u, l, d, r = tuple(list(boxes[j]))
 				if (r - l) * (d - u) > 24 * 24:
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 				# f.write('%d %d %d %d\n' % (u, l, d, r))
@@ -713,6 +713,9 @@ if __name__ == '__main__':
 		print(item.shape)
 	for item in item2:
 		print(item.shape)
-
+	a, b, c = dg.getPatchesFromAreas([np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]])])
+	print(len(a))
+	print(b.shape)
+	print(len(c))
 
 
