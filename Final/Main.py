@@ -632,9 +632,9 @@ if __name__ == '__main__':
 				org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
 				feed_dict = {pp: patch}
 				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-				obj.recover('./res-train', img, pred_box)
+				obj.recover('./res-train', org_img, pred_box)
 				visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (28, 28))
-				obj.recoverGlobal('./res-train', img, org_info, pred_v_out)
+				obj.recoverGlobal('./res-train', org_img, org_info, pred_v_out)
 
 			# Save model
 			if i % 200 == 0:
