@@ -692,8 +692,9 @@ class DataGenerator(object):
 
 	def recover(self, path, imgs, res):
 		for i, img in enumerate(imgs):
+			a = img.copy()
 			boxes = res[i] * 2.5
-			draw = ImageDraw.Draw(img)
+			draw = ImageDraw.Draw(a)
 			# f = open(path + '/_%s.txt' % i, 'w')
 			for j in range(boxes.shape[0]):
 				u, l, d, r = tuple(list(boxes[j]))
@@ -701,7 +702,7 @@ class DataGenerator(object):
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 				# f.write('%d %d %d %d\n' % (u, l, d, r))
 			# f.close()
-			img.save(path + '/_%s.png' % i)
+			a.save(path + '/_%s.png' % i)
 
 	def recoverGlobal(self, path, img, org_info, pred_v_out):
 		# Sequence length and polygon
@@ -711,7 +712,7 @@ class DataGenerator(object):
 		for i in range(pred_v_out.shape[0]):
 			idx, y1, x1, y2, x2 = org_info[i]
 			w, h = x2 - x1, y2 - y1
-			draw = ImageDraw.Draw(img[i])
+			draw = ImageDraw.Draw(img[idx])
 			for j in range(pred_v_out.shape[1]):
 				v = pred_v_out[i, j]
 				if v.sum() >= 0.5:
@@ -721,7 +722,8 @@ class DataGenerator(object):
 					polygons[i].append(polygons[i][0])
 					break
 			draw.line(polygons[i], fill = (255, 0, 0), width = 3)
-			img[i].save(path + '/___%s.png' % i)
+		for i, im in enumerate(img):
+			im.save(path + '/___%s.png' % i)
 
 if __name__ == '__main__':
 	dg = DataGenerator(building_path = '../../Chicago.zip', area_path = '/local/lizuoyue/Chicago_Area', max_seq_len = 24, img_size = (224, 224), resolution = (28, 28))
