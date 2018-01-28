@@ -691,7 +691,7 @@ class DataGenerator(object):
 		return self.area_imgs, np.array(patches), org_info
 
 	def recover(self, path, imgs, res):
-		for img in imgs:
+		for i, img in enumerate(imgs):
 			boxes = res[i] * 2.5
 			draw = ImageDraw.Draw(img)
 			# f = open(path + '/_%s.txt' % i, 'w')
