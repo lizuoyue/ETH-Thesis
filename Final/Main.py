@@ -625,7 +625,7 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Visualize
-			if i % 20 == 0:
+			if i % 20 == 1:
 				img, anchor_cls, anchor_box = obj.getAreasBatch(area_batch_size, mode = 'valid')
 				feed_dict = {aa: img}
 				pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
