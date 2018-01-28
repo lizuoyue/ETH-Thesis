@@ -690,11 +690,10 @@ class DataGenerator(object):
 					org_info.append([i, y1, x1, y2, x2])
 		return self.area_imgs, np.array(patches), org_info
 
-	def recover(self, path, img, res):
-		for i in range(img.shape[0]):
+	def recover(self, path, imgs, res):
+		for img in imgs:
 			boxes = res[i] * 2.5
-			org = Image.fromarray(np.array(img[i] * 255.0, dtype = np.uint8))
-			draw = ImageDraw.Draw(org)
+			draw = ImageDraw.Draw(img)
 			# f = open(path + '/_%s.txt' % i, 'w')
 			for j in range(boxes.shape[0]):
 				u, l, d, r = tuple(list(boxes[j]))
@@ -702,8 +701,27 @@ class DataGenerator(object):
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 				# f.write('%d %d %d %d\n' % (u, l, d, r))
 			# f.close()
-			org.save(path + '/_%s.png' % i)
+			img.save(path + '/_%s.png' % i)
 
+	def recoverGlobal(self, path, img, org_info, pred_v_out):
+		# Sequence length and polygon
+		batch_size = len(org_info)
+		assert(len(org_info) == pred_v_out.shape[0])
+		polygons = [[] for i in range(batch_size)]
+		for i in range(pred_v_out.shape[0]):
+			idx, y1, x1, y2, x2 = org_info[i]
+			w, h = x2 - x1, y2 - y1
+			draw = ImageDraw.Draw(img[i])
+			for j in range(pred_v_out.shape[1]):
+				v = pred_v_out[i, j]
+				if v.sum() >= 0.5:
+					r, c = np.unravel_index(v.argmax(), v.shape)
+					polygons[i].append((c/28*w+x1, r/28*h+y1))
+				else:
+					polygons[i].append(polygons[i][0])
+					break
+			draw.line(polygons[i], fill = (255, 0, 0), width = 3)
+			img[i].save(path + '/___%s.png' % i)
 
 if __name__ == '__main__':
 	dg = DataGenerator(building_path = '../../Chicago.zip', area_path = '/local/lizuoyue/Chicago_Area', max_seq_len = 24, img_size = (224, 224), resolution = (28, 28))
