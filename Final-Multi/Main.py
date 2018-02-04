@@ -12,6 +12,8 @@ ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
+CHOOSE_TOP_K = 5
+
 class PolygonRNN(object):
 
 	def __init__(self, max_seq_len, lstm_out_channel, v_out_res):
@@ -131,7 +133,7 @@ class PolygonRNN(object):
 			loss /= 16
 			return tf.concat([feature, boundary, vertices], 3), loss
 		else:
-			idx = tf.nn.top_k(tf.reshape(vertices, [-1, self.res_num]), k = 8).indices
+			idx = tf.nn.top_k(tf.reshape(vertices, [-1, self.res_num]), k = CHOOSE_TOP_K).indices
 			# idx = tf.argmax(tf.reshape(vertices, [-1, self.res_num]), axis = 1)
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)
 			return tf.concat([feature, boundary, vertices], 3), tf.transpose(v_first, perm = [1, 0, 2, 3])
@@ -348,7 +350,7 @@ class PolygonRNN(object):
 
 		#
 		feature, v_first = self.CNN(img, reuse = True)
-		pred_v_out = tf.stack([self.RNN(feature, v_first = v_first[i], reuse = True) for i in range(8)])
+		pred_v_out = tf.stack([self.RNN(feature, v_first = v_first[i], reuse = True) for i in range(CHOOSE_TOP_K)])
 
 		# Return
 		pred_boundary = feature[..., -2]
