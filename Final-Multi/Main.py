@@ -157,7 +157,7 @@ class PolygonRNN(object):
 			initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
 				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
-			) for i in range(len(lstm_out_channel))])
+			) for i in range(len(self.lstm_out_channel))])
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
 				inputs = rnn_input,
@@ -178,12 +178,12 @@ class PolygonRNN(object):
 				tuple([tf.contrib.rnn.LSTMStateTuple(
 					c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 					h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
-				) for i in range(len(lstm_out_channel))])
+				) for i in range(len(self.lstm_out_channel))])
 			for j in range(CHOOSE_TOP_K)]
 
 			#
 			for i in range(1, self.max_seq_len):
-				prob, time, st_c, st_h = [], [], [], []
+				prob, time, cell = [], [], [[[], []] for item in self.lstm_out_channel]
 				for j in range(CHOOSE_TOP_K):
 					last_prob = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, CHOOSE_TOP_K])
 					v_first = rnn_time[j][..., 0: 1]
@@ -194,9 +194,9 @@ class PolygonRNN(object):
 					prob_new, time_new = self.FC(rnn_output = outputs, reuse = True)
 					time_new = tf.transpose(time_new, [0, 2, 3, 1])
 					prob.append(last_prob + prob_new)
-					for item in states:
-						st_c.append(tf.tile(tf.expand_dims(item[0], 1), [1, CHOOSE_TOP_K, 1, 1, 1]))
-						st_h.append(tf.tile(tf.expand_dims(item[1], 1), [1, CHOOSE_TOP_K, 1, 1, 1]))
+					for k, item in enumerate(states):
+						for l in [0, 1]:
+							cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, CHOOSE_TOP_K, 1, 1, 1]))
 					for k in range(CHOOSE_TOP_K):
 						time.append(tf.concat([rnn_time[j], time_new[..., k: k + 1]], 3))
 				prob = tf.concat(prob, 1)
@@ -204,14 +204,15 @@ class PolygonRNN(object):
 				idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, CHOOSE_TOP_K]), idx], 2)
 				time = tf.stack(time, 1)
 				ret = tf.gather_nd(time, idx)
-				st_c = [tf.gather_nd(item, idx) for item in st_c]
-				st_h = [tf.gather_nd(item, idx) for item in st_h]
+				for k, item in enumerate(states):
+					for l in [0, 1]:
+						cell[k][l] = tf.gather_nd(tf.concat(cell[k][l], 1), idx)
 
 				# Update every timeline
 				for j in range(CHOOSE_TOP_K):
 					rnn_prob[j] = val[..., j]
 					rnn_time[j] = ret[:, j, ...]
-					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = c[:, j], h = h[:, j]) for c, h in zip(st_c, st_h)])
+					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in cell])
 			return tf.stack(rnn_time, 1)
 
 
