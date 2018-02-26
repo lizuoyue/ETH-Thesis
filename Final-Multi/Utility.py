@@ -749,6 +749,7 @@ class DataGenerator(object):
 						polygons[i].append(polygons[i][0])
 						break
 				draw.line(polygons[i], fill = tableau20[kk], width = 2)
+			break
 		for i, im in enumerate(img):
 			im.save(path + '/%d_%d.png' % (base, i))
 

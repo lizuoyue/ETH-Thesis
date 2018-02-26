@@ -378,7 +378,7 @@ class PolygonRNN(object):
 
 		pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
 		# print(pred_v_out.shape) CHOOSE_TOP_K ? 24 28 28
-		return pred_boundary, pred_vertices, pred_v_out[0, ...]
+		return pred_boundary, pred_vertices, pred_v_out
 
 
 
