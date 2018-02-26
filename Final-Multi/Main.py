@@ -659,8 +659,8 @@ if __name__ == '__main__':
 				path = './res-train'#-%d' % (int((i - 1) / 20) % 10)
 				if not os.path.exists(path):
 					os.makedirs(path)
-				for item in glob.glob(path + '/*'):
-					os.remove(item)
+				# for item in glob.glob(path + '/*'):
+				# 	os.remove(item)
 				obj.recover(path, org_img, pred_box, i)
 				obj.recoverGlobal(path, org_img, org_info, pred_v_out, i)
 
