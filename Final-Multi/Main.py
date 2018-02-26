@@ -133,14 +133,14 @@ class PolygonRNN(object):
 			loss /= 16
 			return tf.concat([feature, boundary, vertices], 3), loss
 		else:
-			idx = tf.nn.top_k(tf.reshape(vertices, [-1, self.res_num]), k = CHOOSE_TOP_K).indices
+			val, idx = tf.nn.top_k(tf.reshape(vertices, [-1, self.res_num]), k = CHOOSE_TOP_K)
 			# idx = tf.argmax(tf.reshape(vertices, [-1, self.res_num]), axis = 1)
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)
-			return tf.concat([feature, boundary, vertices], 3), tf.transpose(v_first, perm = [1, 0, 2, 3])
+			return tf.concat([feature, boundary, vertices], 3), (v_first, val)
 
 
-	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, v_first = None, reuse = None):
-		batch_size_1 = tf.concat([[tf.shape(feature)[0]], [1, 1, 1]], 0)
+	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, v_first_with_prob = None, reuse = None):
+		batch_size = tf.concat([[tf.shape(feature)[0]], [1, 1, 1]], 0)
 		if not reuse:
 			feature_rep = tf.tile(
 				tf.reshape(feature, [-1, 1, self.v_out_nrow, self.v_out_ncol, 130]),
@@ -155,8 +155,8 @@ class PolygonRNN(object):
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
 			initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
-				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size_1),
-				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size_1)
+				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
+				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
 			) for i in range(len(lstm_out_channel))])
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
@@ -168,32 +168,54 @@ class PolygonRNN(object):
 			logits, loss, idx = self.FC(outputs, gt_rnn_out, gt_seq_len)
 			return logits, loss
 		else:
-			batch_size_2 = tf.concat([[tf.shape(feature)[0]], [self.v_out_nrow, self.v_out_ncol, 1]], 0)
-			v = [None for i in range(self.max_seq_len)]
-			state = [None for i in range(self.max_seq_len)]
-			rnn_output = [None for i in range(self.max_seq_len)]
-			v[0] = tf.reshape(v_first, batch_size_2)
-			state[0] = tuple([tf.contrib.rnn.LSTMStateTuple(
-				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size_1),
-				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size_1)
-			) for i in range(len(lstm_out_channel))])
+			v_first, prob = v_first_with_prob
+			log_prob = tf.log(prob)
+
+			# current prob, time line, current state
+			rnn_prob = [log_prob[:, j] for j in range(CHOOSE_TOP_K)]
+			rnn_time = [tf.expand_dims(v_first[:, j, ...], 3) for j in range(CHOOSE_TOP_K)]
+			rnn_stat = [
+				tuple([tf.contrib.rnn.LSTMStateTuple(
+					c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
+					h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+				) for i in range(len(lstm_out_channel))])
+			for j in range(CHOOSE_TOP_K)]
+
+			#
 			for i in range(1, self.max_seq_len):
-				rnn_output[i], state[i] = self.stacked_lstm(
-					inputs = tf.concat([feature, v[0], v[max(i - 1, 0)], v[max(i - 2, 0)]], 3),
-					state = state[i - 1]
-				)
-				v[i] = tf.reshape(
-					self.FC(
-						rnn_output = rnn_output[i],
-						reuse = True,
-						last_two = (v[max(i - 1, 0)], v[max(i - 2, 0)]),
-					),
-					[-1, self.v_out_nrow, self.v_out_ncol, 1]
-				)
-			return tf.stack(v, 1)
+				prob, time, st_c, st_h = [], [], [], []
+				for j in range(CHOOSE_TOP_K):
+					last_prob = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, CHOOSE_TOP_K])
+					v_first = rnn_time[j][..., 0: 1]
+					v_last_ = rnn_time[j][..., i - 1: i]
+					v__last = rnn_time[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
+					inputs = tf.concat([feature, v_first, v_last_, v__last], 3)
+					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
+					prob_new, time_new = self.FC(rnn_output = outputs, reuse = True)
+					time_new = tf.transpose(time_new, [0, 2, 3, 1])
+					prob.append(last_prob + prob_new)
+					for item in states:
+						st_c.append(tf.tile(tf.expand_dims(item[0], 1), [1, CHOOSE_TOP_K, 1, 1, 1]))
+						st_h.append(tf.tile(tf.expand_dims(item[1], 1), [1, CHOOSE_TOP_K, 1, 1, 1]))
+					for k in range(CHOOSE_TOP_K):
+						time.append(tf.concat([rnn_time[j], time_new[..., k: k + 1]], 3))
+				prob = tf.concat(prob, 1)
+				val, idx = tf.nn.top_k(prob, k = CHOOSE_TOP_K)
+				idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, CHOOSE_TOP_K]), idx], 2)
+				time = tf.stack(time, 1)
+				ret = tf.gather_nd(time, idx)
+				st_c = [tf.gather_nd(item, idx) for item in st_c]
+				st_h = [tf.gather_nd(item, idx) for item in st_h]
+
+				# Update every timeline
+				for j in range(CHOOSE_TOP_K):
+					rnn_prob[j] = val[..., j]
+					rnn_time[j] = ret[:, j, ...]
+					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = c[:, j], h = h[:, j]) for c, h in zip(st_c, st_h)])
+			return tf.stack(rnn_time, 1)
 
 
-	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None, last_two = None):
+	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None):
 		if not reuse:
 			output_reshape = tf.reshape(rnn_output, [-1, self.max_seq_len, self.res_num * self.lstm_out_channel[-1]])	
 		else:
@@ -214,8 +236,10 @@ class PolygonRNN(object):
 			idx = tf.argmax(logits, axis = 2)
 			return logits, loss, idx
 		else:
-			idx = tf.argmax(logits, axis = 2)
-			return tf.gather(self.vertex_pool, idx, axis = 0)
+			prob = tf.nn.softmax(logits)
+			val, idx = tf.nn.top_k(prob[:, 0, :], k = CHOOSE_TOP_K)
+			ret = tf.gather(self.vertex_pool, idx, axis = 0)
+			return tf.log(val), ret
 
 
 	def smoothL1Loss(self, labels, predictions):
@@ -349,13 +373,14 @@ class PolygonRNN(object):
 		img  = tf.reshape(pp, [-1, 224, 224, 3])
 
 		#
-		feature, v_first = self.CNN(img, reuse = True)
-		pred_v_out = tf.stack([self.RNN(feature, v_first = v_first[i], reuse = True) for i in range(CHOOSE_TOP_K)])
+		feature, v_first_with_prob = self.CNN(img, reuse = True)
+		pred_v_out = self.RNN(feature, v_first_with_prob = v_first_with_prob, reuse = True)
 
 		# Return
 		pred_boundary = feature[..., -2]
 		pred_vertices = feature[..., -1]
-		pred_v_out = pred_v_out[..., 0]
+
+		pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
 		# print(pred_v_out.shape) 8 ? 24 28 28
 		return pred_boundary, pred_vertices, pred_v_out
 
