@@ -710,7 +710,7 @@ class DataGenerator(object):
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 				# f.write('%d %d %d %d\n' % (u, l, d, r))
 			# f.close()
-			a.save(path + '/%d_%d.png' % (base, i))
+			a.save(path + '/%d_%d.jpg' % (base, i))
 
 	def recoverGlobal(self, path, img, org_info, pred_v_out, base):
 		# Sequence length and polygon
