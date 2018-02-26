@@ -12,7 +12,7 @@ ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
 FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
-CHOOSE_TOP_K = 5
+CHOOSE_TOP_K = 6
 
 class PolygonRNN(object):
 
@@ -141,6 +141,10 @@ class PolygonRNN(object):
 
 	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, v_first_with_prob = None, reuse = None):
 		batch_size = tf.concat([[tf.shape(feature)[0]], [1, 1, 1]], 0)
+		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
+			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
+			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+		) for i in range(len(self.lstm_out_channel))])
 		if not reuse:
 			feature_rep = tf.tile(
 				tf.reshape(feature, [-1, 1, self.v_out_nrow, self.v_out_ncol, 130]),
@@ -154,10 +158,6 @@ class PolygonRNN(object):
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
-			initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
-				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
-				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
-			) for i in range(len(self.lstm_out_channel))])
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
 				inputs = rnn_input,
@@ -174,18 +174,13 @@ class PolygonRNN(object):
 			# current prob, time line, current state
 			rnn_prob = [log_prob[:, j] for j in range(CHOOSE_TOP_K)]
 			rnn_time = [tf.expand_dims(v_first[:, j, ...], 3) for j in range(CHOOSE_TOP_K)]
-			rnn_stat = [
-				tuple([tf.contrib.rnn.LSTMStateTuple(
-					c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
-					h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
-				) for i in range(len(self.lstm_out_channel))])
-			for j in range(CHOOSE_TOP_K)]
+			rnn_stat = [initial_state for j in range(CHOOSE_TOP_K)]
 
-			#
+			# beam search
 			for i in range(1, self.max_seq_len):
 				prob, time, cell = [], [], [[[], []] for item in self.lstm_out_channel]
 				for j in range(CHOOSE_TOP_K):
-					last_prob = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, CHOOSE_TOP_K])
+					prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, CHOOSE_TOP_K])
 					v_first = rnn_time[j][..., 0: 1]
 					v_last_ = rnn_time[j][..., i - 1: i]
 					v__last = rnn_time[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
@@ -193,7 +188,7 @@ class PolygonRNN(object):
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new = self.FC(rnn_output = outputs, reuse = True)
 					time_new = tf.transpose(time_new, [0, 2, 3, 1])
-					prob.append(last_prob + prob_new)
+					prob.append(prob_last + prob_new)
 					for k, item in enumerate(states):
 						for l in [0, 1]:
 							cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, CHOOSE_TOP_K, 1, 1, 1]))
@@ -382,8 +377,8 @@ class PolygonRNN(object):
 		pred_vertices = feature[..., -1]
 
 		pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
-		# print(pred_v_out.shape) 8 ? 24 28 28
-		return pred_boundary, pred_vertices, pred_v_out
+		# print(pred_v_out.shape) CHOOSE_TOP_K ? 24 28 28
+		return pred_boundary, pred_vertices, pred_v_out[0, ...]
 
 
 
@@ -661,13 +656,13 @@ if __name__ == '__main__':
 				feed_dict = {pp: patch}
 				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
 				# visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (28, 28))
-				path = './res-train-%d' % (int((i - 1) / 20) % 10)
+				path = './res-train'#-%d' % (int((i - 1) / 20) % 10)
 				if not os.path.exists(path):
 					os.makedirs(path)
 				for item in glob.glob(path + '/*'):
 					os.remove(item)
-				obj.recover(path, org_img, pred_box)
-				obj.recoverGlobal(path, org_img, org_info, pred_v_out)
+				obj.recover(path, org_img, pred_box, i)
+				obj.recoverGlobal(path, org_img, org_info, pred_v_out, i)
 
 			# Save model
 			if i % 200 == 0:

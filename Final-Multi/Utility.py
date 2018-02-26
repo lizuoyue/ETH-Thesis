@@ -13,7 +13,7 @@ FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
 FEATURE_STRIDE = [4, 8, 16, 32]
 
 tableau20 = [
-	(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),  
+	(255, 0, 0), (31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),  
 	(44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),  
 	(148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),  
 	(227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),  
@@ -698,7 +698,7 @@ class DataGenerator(object):
 					org_info.append([i, y1, x1, y2, x2])
 		return self.area_imgs, np.array(patches), org_info
 
-	def recover(self, path, imgs, res):
+	def recover(self, path, imgs, res, base):
 		for i, img in enumerate(imgs):
 			a = img.copy()
 			boxes = res[i] * 2.5
@@ -710,9 +710,9 @@ class DataGenerator(object):
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
 				# f.write('%d %d %d %d\n' % (u, l, d, r))
 			# f.close()
-			a.save(path + '/_%s.png' % i)
+			a.save(path + '/%d_%d.png' % (base, i))
 
-	def recoverGlobal(self, path, img, org_info, pred_v_out):
+	def recoverGlobal(self, path, img, org_info, pred_v_out, base):
 		# Sequence length and polygon
 		# batch_size = len(org_info)
 		# assert(len(org_info) == pred_v_out.shape[0])
@@ -750,7 +750,7 @@ class DataGenerator(object):
 						break
 				draw.line(polygons[i], fill = tableau20[kk], width = 2)
 		for i, im in enumerate(img):
-			im.save(path + '/___%s.png' % i)
+			im.save(path + '/%d_%d.png' % (base, i))
 
 if __name__ == '__main__':
 	dg = DataGenerator(building_path = '../../Chicago.zip', area_path = '/local/lizuoyue/Chicago_Area', max_seq_len = 24, img_size = (224, 224), resolution = (28, 28))
