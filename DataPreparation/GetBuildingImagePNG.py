@@ -142,5 +142,6 @@ if __name__ == '__main__':
 	for i, building_id in enumerate(id_list):
 		if i < idx_beg or i >= idx_end:
 			continue
+		print(i)
 		objDown.getBuildingAerialImage(i, building_id, objCons.getBuilding(building_id))
 
