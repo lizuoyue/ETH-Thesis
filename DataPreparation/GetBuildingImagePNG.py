@@ -1,6 +1,6 @@
 import io, os, sys
 import numpy as np
-import requests, math
+import requests, math, random
 import Config, UtilityGeography, GetBuildingListOSM
 from PIL import Image, ImageDraw
 
@@ -30,13 +30,13 @@ class BuildingImageDownloader(object):
 		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 		draw = ImageDraw.Draw(mask)
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-		# merge = Image.alpha_composite(roadmap, mask)
-		img.save('../Buildings%s/%d/img.png' % (self.city_name, building_id))
-		roadmap.save('../Buildings%s/%d/roadmap.png' % (self.city_name, building_id))
-		# mask.save('../Buildings%s/%d/mask.png' % (self.city_name, building_id))
-		# merge.save('../Buildings%s/%d/merge-2.png' % (self.city_name, building_id))
-		# merge = Image.alpha_composite(img, mask)
-		# merge.save('../Buildings%s/%d/merge-1.png' % (self.city_name, building_id))
+		merge = Image.alpha_composite(roadmap, mask)
+		img.save('../../Buildings%s/%d/img.png' % (self.city_name, building_id))
+		roadmap.save('../../Buildings%s/%d/roadmap.png' % (self.city_name, building_id))
+		mask.save('../../Buildings%s/%d/mask.png' % (self.city_name, building_id))
+		merge.save('../../Buildings%s/%d/merge-2.png' % (self.city_name, building_id))
+		merge = Image.alpha_composite(img, mask)
+		merge.save('../../Buildings%s/%d/merge-1.png' % (self.city_name, building_id))
 
 		# Decide the order of vertices
 		inner_count = 0
@@ -50,7 +50,7 @@ class BuildingImageDownloader(object):
 			polygon.reverse()
 
 		# Save as text file to save storage
-		with open('../Buildings%s/%d/polygon.txt' % (self.city_name, building_id), 'w') as f:
+		with open('../../Buildings%s/%d/polygon.txt' % (self.city_name, building_id), 'w') as f:
 			for vertex in polygon:
 				f.write('%d %d\n' % vertex)
 		return
@@ -78,8 +78,8 @@ class BuildingImageDownloader(object):
 		size = patch_size + pad * 2
 
 		# Create new folder
-		if not os.path.exists('../Buildings%s/%d' % (self.city_name, building_id)):
-			os.makedirs('../Buildings%s/%d' % (self.city_name, building_id))
+		if not os.path.exists('../../Buildings%s/%d' % (self.city_name, building_id)):
+			os.makedirs('../../Buildings%s/%d' % (self.city_name, building_id))
 
 		# Get image from Google Map API
 		google_roadmap_edge_color = '0x00ff00'
@@ -139,6 +139,8 @@ if __name__ == '__main__':
 	objCons = GetBuildingListOSM.BuildingListConstructor((4, 20), './BuildingList-%s.npy' % city_name)
 	objDown = BuildingImageDownloader('./GoogleMapsAPIsKeys.txt', city_name)
 	id_list = objCons.getBuildingIDListSorted()
+	if True:
+		random.shuffle(id_list)
 	for i, building_id in enumerate(id_list):
 		if i < idx_beg or i >= idx_end:
 			continue
