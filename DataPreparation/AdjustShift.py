@@ -117,7 +117,7 @@ class PolygonShiftProcessor(object):
 		self.building_list.sort()
 		return
 
-	def shift(self, building_idx, alphas = [0.971, 1, 1.030, 1.061, 1.093], show = False):
+	def shift(self, building_idx, alphas = [1, 1.05], show = False):
 		# 
 		var_d, edge_d, map_d, corner_d, dist_d, ground_d = {}, {}, {}, {}, {}, {}
 		path = self.building_list[building_idx]
