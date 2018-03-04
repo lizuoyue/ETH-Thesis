@@ -195,5 +195,5 @@ if __name__ == '__main__':
 	city_name, idx_beg, idx_end = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
 	obj = PolygonShiftProcessor(city_name)
 	for i in range(idx_beg, min(idx_end, len(obj.building_list))):
-		obj.shift(i, show = True)
+		obj.shift(i, show = False)
 
