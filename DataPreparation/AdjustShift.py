@@ -172,7 +172,7 @@ class PolygonShiftProcessor(object):
 		) for k in keys]
 		score, (idx, shift_i, shift_j) = min(li, key = lambda x: x[0])
 		edge_score = edge_d[(idx, shift_i, shift_j)]
-		print(idx, shift_i, shift_j, score, edge_score)
+		# print(idx, shift_i, shift_j, score, edge_score)
 
 		with open(self.building_list[building_idx] + 'shift.txt', 'w') as f:
 			f.write('%d %d %d\n' % (idx, shift_i, shift_j))
@@ -195,5 +195,6 @@ if __name__ == '__main__':
 	city_name, idx_beg, idx_end = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
 	obj = PolygonShiftProcessor(city_name)
 	for i in range(idx_beg, min(idx_end, len(obj.building_list))):
+		print(i)
 		obj.shift(i, show = False)
 
