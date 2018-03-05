@@ -117,7 +117,7 @@ class PolygonShiftProcessor(object):
 		self.building_list.sort()
 		return
 
-	def shift(self, building_idx, alphas = [1, 1.05], show = False):
+	def shift(self, building_idx, alphas = [1, 1.02, 1.04], show = False):
 		# 
 		var_d, edge_d, map_d, corner_d, dist_d, ground_d = {}, {}, {}, {}, {}, {}
 		path = self.building_list[building_idx]
@@ -165,7 +165,7 @@ class PolygonShiftProcessor(object):
 		li = [(
 			23 * (   var_d[k] - min_v) / (max_v - min_v + 1) + \
 			99 * (  edge_d[k] - min_e) / (max_e - min_e + 1) + \
-			47 * (   map_d[k] - min_m) / (max_m - min_m + 1) + \
+			37 * (   map_d[k] - min_m) / (max_m - min_m + 1) + \
 			10 * (corner_d[k] - min_c) / (max_c - min_c + 1) + \
 			18 * (  dist_d[k] - min_d) / (max_d - min_d + 1) + \
 			27 * (ground_d[k] - min_g) / (max_g - min_g + 1),  k
@@ -175,7 +175,7 @@ class PolygonShiftProcessor(object):
 		# print(idx, shift_i, shift_j, score, edge_score)
 
 		with open(self.building_list[building_idx] + 'shift.txt', 'w') as f:
-			f.write('%d %d %d\n' % (idx, shift_i, shift_j))
+			f.write('%.2lf %d %d\n' % (alphas[idx], shift_i, shift_j))
 			f.write('%lf %lf\n' % (score, edge_score))
 
 		if show:
@@ -185,8 +185,8 @@ class PolygonShiftProcessor(object):
 			draw = ImageDraw.Draw(mask)
 			draw.polygon(new_poly, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
 			merge = Image.alpha_composite(img, mask)
-			merge.show()
-
+			# merge.show()
+			merge.save('../../%d.png' % building_idx)
 		return
 
 
