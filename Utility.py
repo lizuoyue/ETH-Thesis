@@ -23,6 +23,35 @@ FEATURE_STRIDE = [4, 8, 16, 32]
 # FEATURE_SHAPE  = [[160, 160], [80, 80], [40, 40], [20, 20]]
 # FEATURE_STRIDE = [4, 8, 16, 32]
 
+
+
+def getPolygonShift(self):
+		self.building_shift = {}
+		for bid in self.cons.getBuildingIDListSorted():
+			try:
+				with open('../../Buildings%s/%d/shift.txt' % (self.city_name, bid), 'r') as f:
+					lines = f.readlines()
+					alpha, shift_i, shift_j = lines[0].strip().split()
+					self.building_shift[bid] = (float(alpha), int(shift_i), int(shift_j))
+			except:
+				self.building_shift[bid] = (1, 0, 0)
+		return
+
+
+
+def applyAlphaShiftToPolygon(polygon, alpha, shift_i, shift_j):
+	polygon_i = np.array([v[1] for v in polygon], np.float32)
+	polygon_j = np.array([v[0] for v in polygon], np.float32)
+	if alpha != 1:
+		c_i = (polygon_i.min() + polygon_i.max()) / 2
+		c_j = (polygon_j.min() + polygon_j.max()) / 2
+		polygon_i = polygon_i * alpha + c_i * (1 - alpha)
+		polygon_j = polygon_j * alpha + c_j * (1 - alpha)
+	polygon_i = np.array(polygon_i, np.int32)
+	polygon_j = np.array(polygon_j, np.int32)
+	polygon = [(polygon_j[k] + shift_j, polygon_i[k] + shift_i) for k in range(len(polygon))]
+	return polygon
+
 def plotPolygon(img_size = (224, 224), resolution = (28, 28), num_vertices = 6):
 	# Set image parameters
 	num_row = img_size[1]
