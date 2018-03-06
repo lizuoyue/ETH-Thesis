@@ -42,6 +42,7 @@ class BoundingBox(object):
 		px, py = lonLatToPixel(lon, lat, self.z)
 		return math.floor(px - self.c_px + self.width / 2), math.floor(py - self.c_py + self.height / 2)
 
+
 if __name__ == '__main__':
 	zoom = 18
 	patch_size = 2048

@@ -11,7 +11,6 @@ def normalize2D(p):
 	return (p[0] / l, p[1] / l)
 
 class BuildingImageDownloader(object):
-
 	def __init__(self, keys_filename, city_name):
 		self.city_name = city_name
 		with open(keys_filename, 'r') as f:

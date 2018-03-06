@@ -1,88 +1,68 @@
-import io, os, sys
+import io, os, sys, glob
 import numpy as np
-import requests, math
+import requests, math, random
+import Config, UtilityGeography, GetBuildingListOSM
 from PIL import Image, ImageDraw
-ut = __import__('Utility')
-bli = __import__('GetBuildingListOSM')
 
-# center=41.960124,-87.7976490&zoom=19&size=320x320
-CITY_DICT = {
-	'Chicago': {
-		'left-up-center': (-87.7976490, 41.960124),
-		'step': (0.000403449, 0.000300000),
-		'xrange': (0, 400),
-		'yrange': (0, 600),
-	}
-}
+config = Config.Config()
+
+def normalize2D(p):
+	l = math.sqrt(p[0] ** 2 + p[1] ** 2)
+	return (p[0] / l, p[1] / l)
 
 class AreaImageDownloader(object):
-
-	def __init__(self, google_keys_filename, city_name):
-		f = open(google_keys_filename, 'r')
-		self.keys = [item.strip() for item in f.readlines()]
-		f.close()
+	def __init__(self, keys_filename, city_name):
 		self.city_name = city_name
-		self.cons = bli.BuildingListConstructor(range_vertices = (4, 15), filename = './BuildingList-%s.npy' % city_name)
+		with open(keys_filename, 'r') as f:
+			self.keys = [item.strip() for item in f.readlines()]
+		self.cons = GetBuildingListOSM.BuildingListConstructor(num_vertices_range = (4, 20), filename = './BuildingList-%s.npy' % city_name)
 		self.building_area = {}
 		self.area_building = {}
-		self.zoom = 19
-		self.scale = 2
-		self.size = (640, 640)
-		self.pad = 100
-		self.city = CITY_DICT[city_name]
-		self.size_g = (int(math.floor((self.size[0] + self.pad * 2) / self.scale)), int(math.floor((self.size[1] + self.pad * 2) / self.scale)))
 
-		for k in self.cons.building:
+		self.city_info = config.CITY_AREA[city_name]
+
+		for bid in self.cons.getBuildingIDListSorted():
 			min_lon, max_lon = 200.0, -200.0
 			min_lat, max_lat = 100.0, -100.0
-			for lon, lat in self.cons.building[k]:
+			for lon, lat in self.cons.building[bid]:
 				min_lon = min(lon, min_lon)
 				min_lat = min(lat, min_lat)
 				max_lon = max(lon, max_lon)
 				max_lat = max(lat, max_lat)
 			c_lon = (min_lon + max_lon) / 2.0
 			c_lat = (min_lat + max_lat) / 2.0
-			x_idx = round((c_lon - self.city['left-up-center'][0]) / self.city['step'][0])
-			y_idx = round((self.city['left-up-center'][1] - c_lat) / self.city['step'][1])
-			self.building_area[k] = []
-			# if x_idx >= self.city['xrange'][0] and y_idx >= self.city['yrange'][0] and x_idx < self.city['xrange'][1] and y_idx < self.city['yrange'][1]:
-			for xx in range(max(0, x_idx - 2), min(self.city['xrange'][1], x_idx + 3)):
-				for yy in range(max(0, y_idx - 2), min(self.city['yrange'][1], y_idx + 3)):
-					self.building_area[k].append((xx, yy))
+			x_idx = round((c_lon - self.city_info['center'][0]) / self.city_info['step'][0])
+			y_idx = round((c_lat - self.city_info['center'][1]) / self.city_info['step'][1])
+			self.building_area[bid] = []
+			x1, x2 = self.city_info['xrange']
+			y1, y2 = self.city_info['yrange']
+			for x in range(max(x1, x_idx - 2), min(x2 - 1, x_idx + 3)):
+				for y in range(max(y1, y_idx - 2), min(y2 - 1, y_idx + 3)):
+					self.building_area[bid].append((x - x1, y - y1))
 
-		for k in self.building_area:
-			li = self.building_area[k]
-			for xx, yy in li:
-				if (xx, yy) in self.area_building:
-					self.area_building[(xx, yy)].append(k)
+		for bid in self.building_area:
+			for x, y in self.building_area[bid]:
+				if (x, y) in self.area_building:
+					self.area_building[(x, y)].append(bid)
 				else:
-					self.area_building[(xx, yy)] = [k]
+					self.area_building[(x, y)] = [bid]
 
-		# print(self.area_building)
+		print('Totally %d areas.' % (len(self.area_building)))
 		return
 
-	def norm(self, p):
-		l = math.sqrt(p[0] ** 2 + p[1] ** 2)
-		return (p[0] / l, p[1] / l)
-
 	def centerRight(self, p1, p2, l):
-		direction = (p1[1] - p2[1], p2[0] - p1[0])
-		direction = self.norm(direction)
+		direction = normalize2D((p1[1] - p2[1], p2[0] - p1[0]))
 		x = math.floor((p1[0] + p2[0]) / 2 + l * direction[0])
 		y = math.floor((p1[1] + p2[1]) / 2 + l * direction[1])
 		return (x, y)
 
-	def saveImagePolygons(self, img, polygons, area_idx):
-		# Save images
+	def saveImagePolygons(self, img, roadmap, polygons, area_idx):
 		img = Image.fromarray(img)
-		img.save('../%s_Area/%d_%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))
-
-		for polygon in polygons:
+		roadmap = Image.fromarray(roadmap)
+		for bid, polygon in polygons:
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
 			draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-			img = Image.alpha_composite(img, mask)
-
 			# Decide the order of vertices
 			inner_count = 0
 			for i in range(len(polygon)):
@@ -94,125 +74,115 @@ class AreaImageDownloader(object):
 			if inner_count / len(polygon) < 0.5:
 				polygon.reverse()
 
-		# img.save('../%s_Area/%d_%d/merge.png' % (self.city_name, area_idx[0], area_idx[1]))
+		img.save('../../Areas%s/%d-%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))
+		roadmap.save('../../Areas%s/%d-%d/roadmap.png' % (self.city_name, area_idx[0], area_idx[1]))
+
+		if False:
+			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
+			draw = ImageDraw.Draw(mask)
+			for bid, polygon in polygons:
+				draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+			merge = Image.alpha_composite(img, mask)
+			merge.save('../../Areas%s/%d-%d/merge-1.png' % (self.city_name, area_idx[0], area_idx[1]))
+			merge = Image.alpha_composite(roadmap, mask)
+			merge.save('../../Areas%s/%d-%d/merge-2.png' % (self.city_name, area_idx[0], area_idx[1]))
 
 		# Save as text file to save storage
-		f = open('../%s_Area/%d_%d/polygons.txt' % (self.city_name, area_idx[0], area_idx[1]), 'w')
-		for polygon in polygons:
-			f.write('%\n')
-			for p in polygon:
-				f.write('%d %d\n' % p)
-		f.close()
-
-		# Return
+		with open('../../Areas%s/%d-%d/polygons.txt' % (self.city_name, area_idx[0], area_idx[1]), 'w') as f:
+			for bid, polygon in polygons:
+				f.write('%% %d\n' % bid)
+				for v in polygon:
+					f.write('%d %d\n' % v)
 		return
 
-	def saveImageBBoxes(self, img, polygons, area_idx):
-		# Save images
-		img = Image.fromarray(img)
-		bboxes = []
-
-		for polygon in polygons:
-			l, r = 10000, -10000
-			u, d = 10000, -10000
-			for x, y in polygon:
-				l = min(l, x)
-				u = min(u, y)
-				r = max(r, x)
-				d = max(d, y)
-			l -= 20
-			r += 20
-			u -= 20
-			d += 20
-			l = min(max(l, 0), self.size[0])
-			r = min(max(r, 0), self.size[0])
-			u = min(max(u, 0), self.size[1])
-			d = min(max(d, 0), self.size[1])
-			# mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
-			# draw = ImageDraw.Draw(mask)
-			# draw.polygon([(l, u), (l, d), (r, d), (r, u)], fill = (255, 255, 255, 0), outline = (0, 255, 0, 128))
-			# img = Image.alpha_composite(img, mask)
-			if l != r and u != d:
-				bboxes.append((l, u, r, d))
-		if not bboxes:
-			os.rmdir('../%s_Area/%d_%d' % (self.city_name, area_idx[0], area_idx[1]))
-			return
-
-		img.save('../%s_Area/%d_%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))
-		# img.save('../%s_Area/%d_%d/merge.png' % (self.city_name, area_idx[0], area_idx[1]))
-
-		# Save as text file to save storage
-		f = open('../%s_Area/%d_%d/bboxes.txt' % (self.city_name, area_idx[0], area_idx[1]), 'w')
-		for bbox in bboxes:
-			f.write('%d %d %d %d\n' % bbox)
-		f.close()
-
-		# Return
-		return
-
-	def getAreaAerialImage(self, idx, area_idx):
+	def getAreaAerialImage(self, seq_idx, area_idx):
 		# Create new folder
-		if not os.path.exists('../%s_Area/%d_%d' % (self.city_name, area_idx[0], area_idx[1])):
-			os.makedirs('../%s_Area/%d_%d' % (self.city_name, area_idx[0], area_idx[1]))
+		if not os.path.exists('../../Areas%s/%d-%d' % (self.city_name, area_idx[0], area_idx[1])):
+			os.makedirs('../../Areas%s/%d-%d' % (self.city_name, area_idx[0], area_idx[1]))
 
-		c_lon = self.city['left-up-center'][0] + self.city['step'][0] * area_idx[0]
-		c_lat = self.city['left-up-center'][1] - self.city['step'][1] * area_idx[1]
+		c_lon = self.city_info['center'][0] + self.city_info['step'][0] * (area_idx[0] + self.city_info['xrange'][0])
+		c_lat = self.city_info['center'][1] + self.city_info['step'][1] * (area_idx[1] + self.city_info['yrange'][0])
+		pad = int((640 - config.MAX_PATCH_SIZE) / 2)
+		size = config.MAX_PATCH_SIZE + pad * 2
 
 		# Get image from Google Map API
+		google_roadmap_edge_color = '0x00ff00'
 		while True:
-			try:
+			if True:
 				data = requests.get(
-					'https://maps.googleapis.com/maps/api/staticmap?' 			+ \
-					'maptype=%s&' 			% 'satellite' 						+ \
-					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 					+ \
-					'zoom=%d&' 				% self.zoom 						+ \
-					'size=%dx%d&' 			% self.size_g						+ \
-					'scale=%d&' 			% self.scale 						+ \
-					'format=%s&' 			% 'png32' 							+ \
-					'key=%s' 				% self.keys[idx % len(self.keys)] 	  \
+					'https://maps.googleapis.com/maps/api/staticmap?' 				+ \
+					'maptype=%s&' 			% 'satellite' 							+ \
+					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 						+ \
+					'zoom=%d&' 				% config.ZOOM 							+ \
+					'size=%dx%d&' 			% (size, size)					 		+ \
+					'scale=%d&' 			% config.SCALE 							+ \
+					'format=%s&' 			% 'png32' 								+ \
+					'key=%s' 				% self.keys[seq_idx % len(self.keys)] 	  \
 				).content
 				img = np.array(Image.open(io.BytesIO(data)))
+				data = requests.get(
+					'https://maps.googleapis.com/maps/api/staticmap?' 				+ \
+					'maptype=%s&' 			% 'roadmap' 							+ \
+					'style=feature:all|element:labels|visibility:off&' 				+ \
+					'style=feature:landscape.man_made|element:geometry.stroke|'		+ \
+					'color:%s&' 			% google_roadmap_edge_color 			+ \
+					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 						+ \
+					'zoom=%d&' 				% config.ZOOM 							+ \
+					'size=%dx%d&' 			% (size, size)					 		+ \
+					'scale=%d&' 			% config.SCALE 							+ \
+					'format=%s&' 			% 'png32' 								+ \
+					'key=%s' 				% self.keys[seq_idx % len(self.keys)] 	  \
+				).content
+				roadmap = np.array(Image.open(io.BytesIO(data)))
 				break
-			except:
+			else:
 				print('Try again to get the image.')
-				pass
 
 		# Image large
-		img = img[self.pad: img.shape[0] - self.pad, self.pad: img.shape[1] - self.pad]
-		# Image.fromarray(img).show()
+		img = img[pad: img.shape[0] - pad, pad: img.shape[1] - pad]
+		roadmap = roadmap[pad: roadmap.shape[0] - pad, pad: roadmap.shape[1] - pad, ...]
+		size -= pad * 2
 
 		# Compute polygon's vertices
 		polygons = []
-		bbox = ut.BoundingBox(c_lon, c_lat, self.zoom, self.scale, self.size)
-		for k in self.area_building[area_idx]:
+		bbox = UtilityGeography.BoundingBox(c_lon, c_lat, size, size, config.ZOOM, config.SCALE)
+		for bid in self.area_building[area_idx]:
 			polygon = []
-			for lon, lat in self.cons.building[k]:
+			for lon, lat in self.cons.building[bid]:
 				px, py = bbox.lonLatToRelativePixel(lon, lat)
 				if not polygon or (px, py) != polygon[-1]:
 					polygon.append((px, py))
 			if polygon[-1] == polygon[0]:
 				polygon.pop()
-			polygons.append(polygon)
+			polygons.append((bid, polygon))
 
 		# Save and return
-		self.saveImagePolygons(img, polygons, area_idx)
-		# self.saveImageBBoxes(img, polygons, area_idx)
+		self.saveImagePolygons(img, roadmap, polygons, area_idx)
 		return
 
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2 or len(sys.argv) == 4)
 	city_name = sys.argv[1]
-	objDown = AreaImageDownloader('./GoogleMapAPIKey.txt', city_name)
-	keys = [k for k in objDown.area_building]
-	keys.sort()
-	print('Totally %d areas.' % len(keys))
+	obj = AreaImageDownloader('./GoogleMapsAPIsKeys.txt', city_name)
+	area_id = [k for k in obj.area_building]
+	area_id.sort()
 	if len(sys.argv) == 4:
 		beg_idx = int(sys.argv[2])
-		end_idx = min(int(sys.argv[3]), len(keys))
+		end_idx = min(int(sys.argv[3]), len(area_id))
 	else:
 		beg_idx = 0
-		end_idx = len(keys)
-	for i in range(beg_idx, end_idx):
-		print(i)
-		objDown.getAreaAerialImage(i, keys[i])
+		end_idx = len(area_id)
+	if True:
+		for i in range(beg_idx, end_idx):
+			print(i)
+			obj.getAreaAerialImage(i, area_id[i])
+	else: # <- Local test
+		filenames = glob.glob('../../Buildings%s/*/' % city_name)
+		filenames = [int(item.replace('../../Buildings%s/' % city_name, '').replace('/', '')) for item in filenames]
+		for i, item in enumerate(filenames):
+			print(i)
+			if obj.building_area[item]:
+				obj.getAreaAerialImage(i, obj.building_area[item][0])
+
+
 
