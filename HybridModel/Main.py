@@ -7,12 +7,6 @@ from PIL import Image, ImageDraw
 from Model import *
 import Utility as ut
 
-ANCHOR_SCALE   = [16, 32, 64, 128]
-ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
-FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
-FEATURE_STRIDE = [4, 8, 16, 32]
-
-CHOOSE_TOP_K = 6
 
 class PolygonRNN(object):
 
