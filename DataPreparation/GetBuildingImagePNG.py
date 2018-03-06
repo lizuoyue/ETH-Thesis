@@ -29,13 +29,14 @@ class BuildingImageDownloader(object):
 		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 		draw = ImageDraw.Draw(mask)
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-		merge = Image.alpha_composite(roadmap, mask)
 		img.save('../../Buildings%s/%d/img.png' % (self.city_name, building_id))
 		roadmap.save('../../Buildings%s/%d/roadmap.png' % (self.city_name, building_id))
-		mask.save('../../Buildings%s/%d/mask.png' % (self.city_name, building_id))
-		merge.save('../../Buildings%s/%d/merge-2.png' % (self.city_name, building_id))
-		merge = Image.alpha_composite(img, mask)
-		merge.save('../../Buildings%s/%d/merge-1.png' % (self.city_name, building_id))
+		if False:
+			mask.save('../../Buildings%s/%d/mask.png' % (self.city_name, building_id))
+			merge = Image.alpha_composite(img, mask)
+			merge.save('../../Buildings%s/%d/merge-1.png' % (self.city_name, building_id))
+			merge = Image.alpha_composite(roadmap, mask)
+			merge.save('../../Buildings%s/%d/merge-2.png' % (self.city_name, building_id))
 
 		# Decide the order of vertices
 		inner_count = 0

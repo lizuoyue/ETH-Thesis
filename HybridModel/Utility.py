@@ -3,22 +3,32 @@ import math, random
 import os, io, sys, glob
 import time, zipfile, paramiko
 from PIL import Image, ImageDraw, ImageFilter
+from Config import *
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 
-BLUR = 0.75
-ANCHOR_SCALE   = [16, 32, 64, 128]
-ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
-FEATURE_SHAPE  = [[64, 64], [32, 32], [16, 16], [8, 8]]
-FEATURE_STRIDE = [4, 8, 16, 32]
+config = Config()
 
-tableau20 = [
-	(255, 0, 0), (31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),  
-	(44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),  
-	(148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),  
-	(227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),  
-	(188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)
-]
+class Logger(object):
+	def __init__(self, log_dir):
+		self.writer = tf.summary.FileWriter(log_dir)
+		return
+
+	def log_scalar(self, tag, value, step):
+		summary = tf.Summary(value = [tf.Summary.Value(tag = tag, simple_value = value)])
+		self.writer.add_summary(summary, step)
+		return
+
+	def close(self):
+		self.writer.close()
+		return
+
+
+
+
+
+
+
 
 ############################################################
 #  Bounding Boxes
@@ -61,66 +71,6 @@ def computeOverlaps(boxes1, boxes2):
 		overlaps[:, i] = computeIoU(box2, boxes1, area2[i], area1)
 	return overlaps
 
-def nonMaxSuppression(boxes, scores, threshold):
-	"""Performs non-maximum supression and returns indicies of kept boxes.
-	boxes: [N, (y1, x1, y2, x2)]. Notice that (y2, x2) lays outside the box.
-	scores: 1-D array of box scores.
-	threshold: Float. IoU threshold to use for filtering.
-	"""
-	assert boxes.shape[0] > 0
-	if boxes.dtype.kind != "f":
-		boxes = boxes.astype(np.float32)
-
-	# Compute box areas
-	y1 = boxes[:, 0]
-	x1 = boxes[:, 1]
-	y2 = boxes[:, 2]
-	x2 = boxes[:, 3]
-	area = (y2 - y1) * (x2 - x1)
-
-	# Get indicies of boxes sorted by scores (highest first)
-	ixs = scores.argsort()[::-1]
-
-	pick = []
-	while len(ixs) > 0:
-		# Pick top box and add its index to the list
-		i = ixs[0]
-		pick.append(i)
-		# Compute IoU of the picked box with the rest
-		iou = computeIoU(boxes[i], boxes[ixs[1:]], area[i], area[ixs[1:]])
-		# Identify boxes with IoU over the threshold. This
-		# returns indicies into ixs[1:], so add 1 to get
-		# indicies into ixs.
-		remove_ixs = np.where(iou > threshold)[0] + 1
-		# Remove indicies of the picked and overlapped boxes.
-		ixs = np.delete(ixs, remove_ixs)
-		ixs = np.delete(ixs, 0)
-	return np.array(pick, dtype=np.int32)
-
-def applyBoxesDeltas(boxes, deltas):
-	"""Applies the given deltas to the given boxes.
-	boxes: [N, (y1, x1, y2, x2)]. Note that (y2, x2) is outside the box.
-	deltas: [N, (dy, dx, log(dh), log(dw))]
-	"""
-	deltas *= np.array([0.1, 0.1, 0.2, 0.2])
-	boxes = boxes.astype(np.float32)
-	# Convert to y, x, h, w
-	height = boxes[:, 2] - boxes[:, 0]
-	width = boxes[:, 3] - boxes[:, 1]
-	center_y = boxes[:, 0] + 0.5 * height
-	center_x = boxes[:, 1] + 0.5 * width
-	# Apply deltas
-	center_y += deltas[:, 0] * height
-	center_x += deltas[:, 1] * width
-	height *= np.exp(deltas[:, 2])
-	width *= np.exp(deltas[:, 3])
-	# Convert back to y1, x1, y2, x2
-	y1 = center_y - 0.5 * height
-	x1 = center_x - 0.5 * width
-	y2 = y1 + height
-	x2 = x1 + width
-	return np.stack([y1, x1, y2, x2], axis=1)
-
 def boxRefinement(box, gt_box):
 	"""Compute refinement needed to transform box to gt_box.
 	box and gt_box are [N, (y1, x1, y2, x2)]. (y2, x2) is
@@ -150,15 +100,13 @@ def boxRefinement(box, gt_box):
 #  Anchors
 ############################################################
 
-def generateAnchors(scales, ratios, shape, feature_stride, anchor_stride):
+def generateAnchors(scales, ratios, shape, feature_stride):
 	"""
 	scales: 1D array of anchor sizes in pixels. Example: [32, 64, 128]
 	ratios: 1D array of anchor ratios of width/height. Example: [0.5, 1, 2]
 	shape: [height, width] spatial shape of the feature map over which
 			to generate anchors.
 	feature_stride: Stride of the feature map relative to the image in pixels.
-	anchor_stride: Stride of anchors on the feature map. For example, if the
-		value is 2 then generate anchors for every other feature map pixel.
 	"""
 	# Get all combinations of scales and ratios
 	scales, ratios = np.meshgrid(np.array(scales), np.array(ratios))
@@ -170,8 +118,8 @@ def generateAnchors(scales, ratios, shape, feature_stride, anchor_stride):
 	widths = scales * np.sqrt(ratios)
 
 	# Enumerate shifts in feature space
-	shifts_y = np.arange(0, shape[0], anchor_stride) * feature_stride
-	shifts_x = np.arange(0, shape[1], anchor_stride) * feature_stride
+	shifts_y = np.arange(0, shape[0], 1) * feature_stride
+	shifts_x = np.arange(0, shape[1], 1) * feature_stride
 	shifts_x, shifts_y = np.meshgrid(shifts_x, shifts_y)
 
 	# Enumerate combinations of shifts, widths, and heights
@@ -188,8 +136,7 @@ def generateAnchors(scales, ratios, shape, feature_stride, anchor_stride):
 							box_centers + 0.5 * box_sizes], axis=1)
 	return np.array(boxes, dtype=np.float32)
 
-def generatePyramidAnchors(scales, ratios, feature_shapes, feature_strides,
-							 anchor_stride):
+def generatePyramidAnchors(scales, ratios, feature_shapes, feature_strides):
 	"""Generate anchors at different levels of a feature pyramid. Each scale
 	is associated with a level of the pyramid, but each ratio is used in
 	all levels of the pyramid.
@@ -203,8 +150,7 @@ def generatePyramidAnchors(scales, ratios, feature_shapes, feature_strides,
 	# [anchor_count, (y1, x1, y2, x2)]
 	anchors = []
 	for i in range(len(scales)):
-		anchors.append(generateAnchors(scales[i], ratios, feature_shapes[i],
-										feature_strides[i], anchor_stride))
+		anchors.append(generateAnchors(scales[i], ratios, feature_shapes[i], feature_strides[i]))
 	return np.concatenate(anchors, axis=0)
 
 def buildRPNTargets(anchors, gt_boxes):
@@ -274,6 +220,20 @@ def buildRPNTargets(anchors, gt_boxes):
 		gt = gt_boxes[anchor_iou_argmax[i]]
 		rpn_bbox[i,:] = boxRefinement(np.array([a]), np.array([gt]))
 	return rpn_match, rpn_bbox
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def polygons2bboxes(polygons):
 	"""
@@ -443,7 +403,7 @@ class DataGenerator(object):
 		self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
 		self.sftp = self.ssh.open_sftp()
 
-		self.anchors = generatePyramidAnchors(ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
+		self.anchors = generatePyramidAnchors(config.ANCHOR_SCALE, ANCHOR_RATIO, FEATURE_SHAPE, FEATURE_STRIDE, 1)
 		return
 
 	def dispatchBuilding(self, building_id, th = 0.9):
