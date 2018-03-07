@@ -2,8 +2,8 @@ import os, sys
 import numpy as np
 import tensorflow as tf
 from Config import *
-from Utility import *
 from BasicModel import *
+from UtilityBoxAnchor import *
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 
@@ -26,7 +26,7 @@ class HybridModel(object):
 		self.res_num          = self.v_out_nrow * self.v_out_ncol
 
 		# FPN parameters
-		self.anchors          = Utility.generatePyramidAnchors(
+		self.anchors          = generatePyramidAnchors(
 			config.ANCHOR_SCALE, config.ANCHOR_RATIO, config.FEATURE_SHAPE, config.FEATURE_STRIDE
 		)
 		self.num_anchors      = self.anchors.shape[0]
@@ -68,12 +68,12 @@ class HybridModel(object):
 			logit             : [batch_size, num_anchors, 2]
 			delta             : [batch_size, num_anchors, 4]
 		"""
-		p2, p3, p4, p5, p6 = PyramidAnchorFeature(VGG16(images, reuse), reuse)
-		p2_logit, p2_delta = SingleLayerFPN(p2, len(ANCHOR_RATIO), reuse)
-		p3_logit, p3_delta = SingleLayerFPN(p3, len(ANCHOR_RATIO), reuse = True)
-		p4_logit, p4_delta = SingleLayerFPN(p4, len(ANCHOR_RATIO), reuse = True)
-		p5_logit, p5_delta = SingleLayerFPN(p5, len(ANCHOR_RATIO), reuse = True)
-		p6_logit, p6_delta = SingleLayerFPN(p5, len(ANCHOR_RATIO), reuse = True)
+		p2, p3, p4, p5, p6 = PyramidAnchorFeature(VGG16(img, reuse), reuse)
+		p2_logit, p2_delta = SingleLayerFPN(p2, len(config.ANCHOR_RATIO), reuse)
+		p3_logit, p3_delta = SingleLayerFPN(p3, len(config.ANCHOR_RATIO), reuse = True)
+		p4_logit, p4_delta = SingleLayerFPN(p4, len(config.ANCHOR_RATIO), reuse = True)
+		p5_logit, p5_delta = SingleLayerFPN(p5, len(config.ANCHOR_RATIO), reuse = True)
+		p6_logit, p6_delta = SingleLayerFPN(p6, len(config.ANCHOR_RATIO), reuse = True)
 		logit = tf.concat([p2_logit, p3_logit, p4_logit, p5_logit, p6_logit], axis = 1)
 		delta = tf.concat([p2_delta, p3_delta, p4_delta, p5_delta, p6_delta], axis = 1)
 		return logit, delta
@@ -123,7 +123,7 @@ class HybridModel(object):
 			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num + 1, activation = None)
 		if not reuse:
 			loss = tf.reduce_sum(
-				tf.nn.softmax_cross_entropy_with_logits(labels = gt_rnn_out, logits = logits)
+				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
 			) / tf.reduce_sum(gt_seq_len)
 			return logits, loss
 		else:
@@ -272,7 +272,7 @@ class HybridModel(object):
 
 	def predict_rpn(self, aa):
 		#
-		img          = tf.reshape(aa, [config.PRED_AREA_BATCH, config.AREA_SIZE[0], config.AREA_SIZE[0], 3])
+		img          = tf.reshape(aa, [config.PRED_AREA_BATCH, config.AREA_SIZE[0], config.AREA_SIZE[1], 3])
 
 		#
 		pred_logit, pred_delta = self.RPN(img, reuse = True)
@@ -283,11 +283,9 @@ class HybridModel(object):
 		#
 		pred_box = []
 		for i in range(config.PRED_AREA_BATCH):
-			box_valid = pred_bbox[i]
-			score_valid = pred_score[i]
-			idx_top = tf.nn.top_k(score_valid, 500).indices
-			box_top = tf.gather(box_valid, idx_top)
-			score_top = tf.gather(score_valid, idx_top)
+			idx_top = tf.nn.top_k(pred_score[i], 500).indices
+			box_top = tf.gather(pred_bbox[i], idx_top)
+			score_top = tf.gather(pred_score[i], idx_top)
 			idx = tf.where(score_top >= 0.99)
 			box = tf.gather(box_top, idx)[:, 0, :]
 			score = tf.gather(score_top, idx)[:, 0]
@@ -302,7 +300,7 @@ class HybridModel(object):
 
 	def predict_polygon(self, pp):
 		#
-		img  = tf.reshape(pp, [-1, config.PATCH_SIZE[0], config.PATCH_SIZE[0], 3])
+		img  = tf.reshape(pp, [-1, config.PATCH_SIZE[0], config.PATCH_SIZE[1], 3])
 
 		#
 		feature, v_first_with_prob = self.CNN(img, reuse = True)

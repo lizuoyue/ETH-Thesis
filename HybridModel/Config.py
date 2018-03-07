@@ -12,7 +12,7 @@ class Config(object):
 
 		#
 		self.BEAM_WIDTH = 5
-		self.BLUR = 1
+		self.BLUR = 0.75
 
 		self.TABLEAU20 = [
 			( 31, 119, 180), (174, 199, 232), (255, 127,  14), (255, 187, 120),  
@@ -21,3 +21,15 @@ class Config(object):
 			(227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),  
 			(188, 189,  34), (219, 219, 141), ( 23, 190, 207), (158, 218, 229),
 		]
+
+		# Learning parameters
+		self.PATH_A = '/local/lizuoyue/Areas%s'
+		self.PATH_B = '../../Buildings%s.zip'
+		self.NUM_ITER = 100000
+		self.MAX_NUM_VERTICES = 20
+		self.LEARNING_RATE = 0.0005
+		self.LSTM_OUT_CHANNEL = [32, 16, 8]
+		self.V_OUT_RES = (32, 32)
+		self.AREA_TRAIN_BATCH = 4
+		self.AREA_PRED_BATCH = 8
+		self.BUILDING_TRAIN_BATCH = 12

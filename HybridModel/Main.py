@@ -2,8 +2,9 @@ import os, sys
 import numpy as np
 import tensorflow as tf
 from Config import *
-from Utility import *
 from HybridModel import *
+from DataGenerator import *
+from UtilityBoxAnchor import *
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 
@@ -129,34 +130,23 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
 
 if __name__ == '__main__':
 	# Create new folder
-	if not os.path.exists('./model/'):
-		os.makedirs('./model/')
-	# if not os.path.exists('./val/'):
-	# 	os.makedirs('./val/')
-	# if not os.path.exists('./pre/'):
-	# 	os.makedirs('./pre/')
-	# if not os.path.exists('./tes/'):
-	# 	os.makedirs('./tes/')
-
-	# Set parameters
-	n_iter = 100000
-	building_path = '../../Chicago.zip'
-	area_path = '/local/lizuoyue/Chicago_Area'
-	max_seq_len = 24
-	lr = 0.0005
-	lstm_out_channel = [32, 16, 8]
-	v_out_res = (28, 28)
-	area_batch_size = 4
-	building_batch_size = 12
+	if not os.path.exists('./Model/'):
+		os.makedirs('./Model/')
 
 	# Create data generator
-	obj = ut.DataGenerator(building_path, area_path, max_seq_len, (224, 224), v_out_res)
+	obj = DataGenerator(
+		config.PATH_B % 'Zurich',
+		config.PATH_A % 'Zurich', 
+		config.MAX_NUM_VERTICES,
+		config.PATCH_SIZE,
+		config.V_OUT_RES
+	)
 
 	# Define graph
-	PolyRNNGraph = PolygonRNN(
-		max_seq_len = max_seq_len,
-		lstm_out_channel = lstm_out_channel, 
-		v_out_res = v_out_res,
+	graph = HybridModel(
+		max_num_vertices = config.MAX_NUM_VERTICES,
+		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
+		v_out_res = config.V_OUT_RES,
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)
@@ -169,15 +159,15 @@ if __name__ == '__main__':
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
 
-	train_res     = PolyRNNGraph.train(aa, cc, dd, pp, ii, bb, vv, oo, ee, ll)
-	pred_rpn_res  = PolyRNNGraph.predict_rpn(aa)
-	pred_poly_res = PolyRNNGraph.predict_polygon(pp)
+	train_res     = graph.train(aa, cc, dd, pp, ii, bb, vv, oo, ee, ll)
+	pred_rpn_res  = graph.predict_rpn(aa)
+	pred_poly_res = graph.predict_polygon(pp)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
 	# quit()
 
-	optimizer = tf.train.AdamOptimizer(learning_rate = lr)
+	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
 	saver = tf.train.Saver(max_to_keep = 3)
 	init = tf.global_variables_initializer()
@@ -185,23 +175,23 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		f = open('./PolygonRNN-%d.out' % v_out_res[1], 'a')
-		train_writer = Logger('./log/train/')
-		valid_writer = Logger('./log/valid/')
+		f = open('./HybridModel.out', 'a')
+		train_writer = Logger('./Log/train/')
+		valid_writer = Logger('./Log/valid/')
 
 		# Restore weights
 		if len(sys.argv) > 1 and sys.argv[1] != None:
-			saver.restore(sess, './model/model-%s.ckpt' % sys.argv[1])
-			iter_obj = range(int(sys.argv[1]) + 1, n_iter)
+			saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[1])
+			iter_obj = range(int(sys.argv[1]) + 1, NUM_ITER)
 		else:
 			sess.run(init)
-			iter_obj = range(n_iter)
+			iter_obj = range(config.NUM_ITER)
 
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, anchor_cls, anchor_box = obj.getAreasBatch(area_batch_size, mode = 'train')
-			patch, boundary, vertices, v_in, v_out, end, seq_len = obj.getBuildingsBatch(building_batch_size, mode = 'train')
+			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_TRAIN_BATCH, mode = 'train')
+			patch, boundary, vertices, v_in, v_out, end, seq_len = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'train')
 			feed_dict = {
 				aa: img, cc: anchor_cls, dd: anchor_box,
 				pp: patch, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len
@@ -226,14 +216,14 @@ if __name__ == '__main__':
 
 			# Visualize
 			if i % 20 == 1:
-				img, anchor_cls, anchor_box = obj.getAreasBatch(area_batch_size, mode = 'valid')
+				img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'valid')
 				feed_dict = {aa: img}
 				pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
 				org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
 				feed_dict = {pp: patch}
 				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
 				# visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (28, 28))
-				path = './res-train'#-%d' % (int((i - 1) / 20) % 10)
+				path = './Result'#-%d' % (int((i - 1) / 20) % 10)
 				if not os.path.exists(path):
 					os.makedirs(path)
 				# for item in glob.glob(path + '/*'):
@@ -243,7 +233,7 @@ if __name__ == '__main__':
 
 			# Save model
 			if i % 200 == 0:
-				saver.save(sess, './model/model-%d.ckpt' % i)
+				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
 		train_writer.close()
