@@ -56,7 +56,6 @@ class DataGenerator(object):
 		self.building_path = building_path.lstrip('./').replace('.zip', '')
 		bids = set()
 		for filename in self.archive.namelist():
-			print(filename)
 			if filename.startswith('__MACOSX'):
 				continue
 			parts = filename.split('/')
