@@ -150,7 +150,7 @@ class DataGenerator(object):
 		# Adjust image and polygon
 		org_info = (img.size, rotate)
 		x_rate = self.v_out_res[0] / img.size[0]
-		y_rate = self.v_out_res[1] / img.size[2]
+		y_rate = self.v_out_res[1] / img.size[1]
 		img = img.resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
 		img = np.array(img)[..., 0: 3] / 255.0
 		polygon_s = []
@@ -213,7 +213,7 @@ class DataGenerator(object):
 		"""
 
 		# Rotate, anticlockwise
-		n_rotate = random.choice([0, 1, 2, 3])
+		n_rotate = 0#random.choice([0, 1, 2, 3])
 
 		# 
 		while True:
