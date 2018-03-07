@@ -1,8 +1,10 @@
-import numpy as np
+import os, sys
+if os.path.exists('../../Python-Lib/'):
+	sys.path.insert(1, '../../Python-Lib')import numpy as np
 import tensorflow as tf
 import math, random
 import zipfile, paramiko
-import os, io, sys, glob, time
+import io, glob, time
 from PIL import Image, ImageDraw, ImageFilter
 from Config import *
 from UtilityBoxAnchor import *

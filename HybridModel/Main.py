@@ -1,12 +1,12 @@
 import os, sys
+if os.path.exists('../../Python-Lib/'):
+	sys.path.insert(1, '../../Python-Lib')
 import numpy as np
 import tensorflow as tf
 from Config import *
 from HybridModel import *
 from DataGenerator import *
 from UtilityBoxAnchor import *
-if os.path.exists('../../Python-Lib/'):
-	sys.path.insert(1, '../../Python-Lib')
 
 config = Config()
 
