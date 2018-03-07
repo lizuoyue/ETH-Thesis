@@ -1,7 +1,7 @@
+import numpy as np
 import os, sys
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
-import numpy as np
 import tensorflow as tf
 from Config import *
 from HybridModel import *
