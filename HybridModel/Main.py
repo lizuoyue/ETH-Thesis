@@ -135,11 +135,11 @@ if __name__ == '__main__':
 
 	# Create data generator
 	obj = DataGenerator(
-		config.PATH_B % 'Zurich',
-		config.PATH_A % 'Zurich', 
-		config.MAX_NUM_VERTICES,
-		config.PATCH_SIZE,
-		config.V_OUT_RES
+		building_path = config.PATH_B % 'Zurich',
+		area_path = config.PATH_A % 'Zurich', 
+		img_size = config.PATCH_SIZE,
+		v_out_res = config.V_OUT_RES,
+		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
 
 	# Define graph
