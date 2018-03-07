@@ -228,8 +228,8 @@ if __name__ == '__main__':
 					os.makedirs(path)
 				# for item in glob.glob(path + '/*'):
 				# 	os.remove(item)
-				obj.recover(path, org_img, pred_box, i)
-				obj.recoverGlobal(path, org_img, org_info, pred_v_out, i)
+				obj.recover(path, org_img, pred_box, int((i-1)/20))
+				obj.recoverGlobal(path, org_img, org_info, pred_v_out, int((i-1)/20))
 
 			# Save model
 			if i % 200 == 0:

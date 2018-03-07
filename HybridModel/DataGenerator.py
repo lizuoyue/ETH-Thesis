@@ -339,7 +339,7 @@ class DataGenerator(object):
 				u, l, d, r = tuple(list(boxes[j]))
 				if (r - l) * (d - u) > 24 * 24:
 					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
-			a.save(path + '/box_%d_%d.png' % (base, i))
+			a.save(path + '/box_%d_%d.png' % (base % 100, i))
 
 	def recoverGlobal(self, path, img, org_info, pred_v_out, base):
 		batch_size = len(org_info)
@@ -361,7 +361,7 @@ class DataGenerator(object):
 				draw.line(polygons[i], fill = config.TABLEAU20[kk], width = 2)
 			break
 		for i, im in enumerate(img):
-			im.save(path + '/%d_%d.png' % (base, i))
+			im.save(path + '/%d_%d.png' % (base % 100, i))
 
 if __name__ == '__main__':
 	dg = DataGenerator(building_path = '../../Chicago.zip', area_path = '/local/lizuoyue/Chicago_Area', max_num_vertices = 20, img_size = (256, 256), v_out_res = (32, 32))
