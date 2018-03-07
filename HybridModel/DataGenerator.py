@@ -120,6 +120,7 @@ class DataGenerator(object):
 
 		#
 		aids = self.sftp.listdir(area_path)
+		split = int(len(aids) * 0.9)
 		print('Totally %d areas.' % len(aids))
 		aids.sort()
 		random.seed(31415927)
