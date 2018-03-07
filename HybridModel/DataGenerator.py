@@ -367,14 +367,22 @@ class DataGenerator(object):
 			im.save(path + '/%d_%d.png' % (base % 100, i))
 
 if __name__ == '__main__':
-	dg = DataGenerator(building_path = '../../Chicago.zip', area_path = '/local/lizuoyue/Chicago_Area', max_num_vertices = 20, img_size = (256, 256), v_out_res = (32, 32))
+	dg = DataGenerator(
+		building_path = '../../BuildingsZurich.zip',
+		area_path = '/local/lizuoyue/AreasZurich',
+		img_size = (256, 256),
+		v_out_res = (32, 32),
+		max_num_vertices = 20,
+	)
 	item1 = dg.getAreasBatch(4, mode = 'train')
 	item2 = dg.getBuildingsBatch(12, mode = 'train')
 	for item in item1:
 		print(item.shape)
 	for item in item2:
 		print(item.shape)
-	a, b, c = dg.getPatchesFromAreas([np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]])])
+	a, b, c = dg.getPatchesFromAreas(
+		[np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]])]
+	)
 	print(len(a))
 	print(b.shape)
 	print(len(c))

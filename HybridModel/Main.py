@@ -10,124 +10,6 @@ from UtilityBoxAnchor import *
 
 config = Config()
 
-def overlay(img, mask, shape, color = (255, 0, 0)):
-	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
-	alpha = np.array(mask * 128.0, dtype = np.uint8)
-	alpha = np.concatenate(
-		(
-			np.ones((shape[0], shape[1], 1)) * color[0],
-			np.ones((shape[0], shape[1], 1)) * color[1],
-			np.ones((shape[0], shape[1], 1)) * color[2],
-			np.reshape(alpha, (shape[0], shape[1], 1))
-		),
-		axis = 2
-	)
-	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
-	alpha = alpha.resize((224, 224), resample = Image.BICUBIC)
-	merge = Image.alpha_composite(org, alpha)
-	return merge
-
-def overlayMultiMask(img, mask, shape):
-	merge = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
-	merge = np.array(overlay(img, mask[0], shape)) / 255.0
-	for i in range(1, mask.shape[0]):
-		color = (255 * (i == 1), 128 * (i == 1) + (1 - i % 2) * 255, i % 2 * 255 - 255 * (i == 1))
-		merge = np.array(overlay(merge, mask[i], shape, color)) / 255.0
-	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
-
-def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res):
-	# Clear last files
-	for item in glob.glob(path + '/*'):
-		os.remove(item)
-
-	# Reshape
-	shape = ((v_out_res[1], v_out_res[0]))
-	blank = np.zeros(shape)
-
-	# Polygon
-	polygon = [None for i in range(img.shape[0])]
-	for i in range(v_out_pred.shape[0]):
-		v = v_in[i, 0]
-		r, c = np.unravel_index(v.argmax(), v.shape)
-		polygon[i] = [(c, r)]
-		for j in range(seq_len[i] - 1):
-			if end_pred[i, j] <= v.max():
-				v = v_out_pred[i, j]
-				r, c = np.unravel_index(v.argmax(), v.shape)
-				polygon[i].append((c, r))
-
-	# 
-	for i in range(img.shape[0]):
-		vv = np.concatenate((v_in[i, 0: 1], v_out_pred[i, 0: seq_len[i] - 1]), axis = 0)
-		overlay(img[i], blank      , shape).save(path + '/%d-0-img.png' % i)
-		overlay(img[i], boundary[i], shape).save(path + '/%d-1-bound.png' % i)
-		overlay(img[i], b_pred  [i], shape).save(path + '/%d-1-bound-pred.png' % i)
-		overlay(img[i], vertices[i], shape).save(path + '/%d-2-vertices.png' % i)
-		overlay(img[i], v_pred  [i], shape).save(path + '/%d-2-vertices-pred.png' % i)
-		overlayMultiMask(img[i], vv, shape).save(path + '/%d-3-vertices-merge.png' % i)
-		# for j in range(seq_len[i]):
-		# 	overlay(img[i], vv[j], shape).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
-
-		link = Image.new('P', shape, color = 0)
-		draw = ImageDraw.Draw(link)
-		if len(polygon[i]) == 1:
-			polygon[i].append(polygon[i][0])
-		draw.polygon(polygon[i], fill = 0, outline = 255)
-		link = np.array(link) / 255.0
-		overlay(img[i], link, shape).save(path + '/%d-4-vertices-link.png' % i)
-
-		f = open(path + '/%d-5-end-prob.txt' % i, 'w')
-		for j in range(seq_len[i]):
-			f.write('%.6lf\n' % end_pred[i, j])
-		f.close()
-
-	#
-	return
-
-def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res):
-	if not os.path.exists(path):
-		os.makedirs(path)
-	# Clear last files
-	for item in glob.glob(path + '/*'):
-		os.remove(item)
-
-	# Reshape
-	batch_size = img.shape[0]
-	shape = ((v_out_res[1], v_out_res[0]))
-	blank = np.zeros(shape)
-
-	# Sequence length and polygon
-	polygon = [[] for i in range(batch_size)]
-	for i in range(v_out_pred.shape[0]):
-		for j in range(v_out_pred.shape[1]):
-			v = v_out_pred[i, j]
-			if v.sum() >= 0.5:
-				r, c = np.unravel_index(v.argmax(), v.shape)
-				polygon[i].append((c, r))
-			else:
-				break
-	seq_len = [len(polygon[i]) for i in range(batch_size)]
-
-	# 
-	for i in range(batch_size):
-		vv = v_out_pred[i, 0: seq_len[i]]
-		overlay(img[i], blank      , shape).save(path + '/%d-0-img.png' % i)
-		overlay(img[i], b_pred[i]  , shape).save(path + '/%d-1-bound-pred.png' % i)
-		overlay(img[i], v_pred[i]  , shape).save(path + '/%d-2-vertices-pred.png' % i)
-		overlayMultiMask(img[i], vv, shape).save(path + '/%d-3-vertices-merge.png' % i)
-		# for j in range(seq_len[i]):
-		# 	overlay(img[i], vv[j], shape).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
-		link = Image.new('P', shape, color = 0)
-		draw = ImageDraw.Draw(link)
-		if len(polygon[i]) == 1:
-			polygon[i].append(polygon[i][0])
-		draw.polygon(polygon[i], fill = 0, outline = 255)
-		link = np.array(link) / 255.0
-		overlay(img[i], link, shape).save(path + '/%d-4-vertices-link.png' % i)
-
-	# 
-	return
-
 if __name__ == '__main__':
 	# Create new folder
 	if not os.path.exists('./Model/'):
@@ -222,12 +104,9 @@ if __name__ == '__main__':
 				org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
 				feed_dict = {pp: patch}
 				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-				# visualize_pred('./res-train', patch, pred_boundary, pred_vertices, pred_v_out, (28, 28))
-				path = './Result'#-%d' % (int((i - 1) / 20) % 10)
+				path = './Result'
 				if not os.path.exists(path):
 					os.makedirs(path)
-				# for item in glob.glob(path + '/*'):
-				# 	os.remove(item)
 				obj.recover(path, org_img, pred_box, int((i-1)/200))
 				obj.recoverGlobal(path, org_img, org_info, pred_v_out, int((i-1)/200))
 
