@@ -215,7 +215,7 @@ if __name__ == '__main__':
 			f.flush()
 
 			# Visualize
-			if i % 20 == 1:
+			if i % 200 == 1:
 				img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'valid')
 				feed_dict = {aa: img}
 				pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
@@ -228,8 +228,8 @@ if __name__ == '__main__':
 					os.makedirs(path)
 				# for item in glob.glob(path + '/*'):
 				# 	os.remove(item)
-				obj.recover(path, org_img, pred_box, int((i-1)/20))
-				obj.recoverGlobal(path, org_img, org_info, pred_v_out, int((i-1)/20))
+				obj.recover(path, org_img, pred_box, int((i-1)/200))
+				obj.recoverGlobal(path, org_img, org_info, pred_v_out, int((i-1)/200))
 
 			# Save model
 			if i % 200 == 0:
