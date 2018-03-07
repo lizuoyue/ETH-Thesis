@@ -1,6 +1,7 @@
 import os, sys
 if os.path.exists('../../Python-Lib/'):
-	sys.path.insert(1, '../../Python-Lib')import numpy as np
+	sys.path.insert(1, '../../Python-Lib')
+import numpy as np
 import tensorflow as tf
 import math, random
 import zipfile, paramiko
