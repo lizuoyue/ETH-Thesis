@@ -235,6 +235,8 @@ class DataGenerator(object):
 				if line.startswith('%'):
 					_, bid = line.strip().split()
 					polygons.append([int(bid)])
+					if bid not in self.shift_info:
+						self.shift_info[bid] = (1, 0, 0)
 				else:
 					x, y = line.strip().split()
 					polygons[-1].append((int(x), int(y)))
