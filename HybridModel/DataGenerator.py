@@ -50,6 +50,8 @@ class DataGenerator(object):
 		self.v_out_res = v_out_res
 		self.max_num_vertices = max_num_vertices
 
+		self.shift_info = {}
+
 		# 
 		self.area_path = area_path
 		self.archive = zipfile.ZipFile(building_path, 'r')
@@ -66,7 +68,7 @@ class DataGenerator(object):
 		print('Totally %d buildings.' % len(bids))
 
 		#
-		self.shift_info, self.building_polygon, li = {}, {}, []
+		self.building_polygon, li = {}, []
 		for bid in bids:
 			#
 			lines = self.archive.read(self.building_path + '/%d/shift.txt' % bid).decode('utf-8').split('\n')
@@ -235,11 +237,12 @@ class DataGenerator(object):
 				if line.startswith('%'):
 					_, bid = line.strip().split()
 					polygons.append([int(bid)])
-					if bid not in self.shift_info:
-						self.shift_info[bid] = (1, 0, 0)
 				else:
 					x, y = line.strip().split()
 					polygons[-1].append((int(x), int(y)))
+		for polygon in polygons:
+			if polygon[0] not in self.shift_info:
+				self.shift_info[polygon[0]] = (1, 0, 0)
 		polygons = [applyAlphaShiftToPolygon(self.shift_info[polygon[0]], polygon[1: ]) for polygon in polygons]
 
 		gt_boxes = []
