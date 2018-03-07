@@ -230,6 +230,7 @@ class DataGenerator(object):
 		img = img.rotate(n_rotate * 90)
 		num_anchors = self.anchors.shape[0]
 		org = np.array(img)[..., 0: 3] / 255.0
+		img = img.resize(config.AREA_SIZE)
 
 		polygons = []
 		for line in lines:
@@ -276,7 +277,7 @@ class DataGenerator(object):
 		anchor_cls[rpn_match == -1, 1] = 1
 
 		#
-		return org, anchor_cls, anchor_box
+		return np.array(img)[..., 0: 3] / 255.0, anchor_cls, anchor_box
 
 	def getBuildingsBatch(self, batch_size, mode = None):
 		# Real
