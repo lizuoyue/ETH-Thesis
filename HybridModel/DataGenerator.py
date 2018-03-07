@@ -54,13 +54,16 @@ class DataGenerator(object):
 		self.area_path = area_path
 		self.archive = zipfile.ZipFile(building_path, 'r')
 		self.building_path = building_path.lstrip('./').replace('.zip', '')
-		bids = []
+		bids = set()
 		for filename in self.archive.namelist():
+			print(filename)
 			if filename.startswith('__MACOSX'):
 				continue
 			parts = filename.split('/')
 			if len(parts) == 3:
-				bids.append(int(parts[1]))
+				bids.add(int(parts[1]))
+		bids = list(bids)
+		bids.sort()
 		print('Totally %d buildings.' % len(bids))
 
 		#
