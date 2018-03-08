@@ -72,7 +72,7 @@ class HybridModel(object):
 		# p2, p3, p4, p5, p6 = PyramidAnchorFeature(VGG16(img, reuse), reuse)
 		p3, p4, p5, p6 = PyramidAnchorFeature(VGG16(img, reuse), reuse)
 		# p2_logit, p2_delta = SingleLayerFPN(p2, len(config.ANCHOR_RATIO), reuse)
-		p3_logit, p3_delta = SingleLayerFPN(p3, len(config.ANCHOR_RATIO), reuse = True)
+		p3_logit, p3_delta = SingleLayerFPN(p3, len(config.ANCHOR_RATIO), reuse)
 		p4_logit, p4_delta = SingleLayerFPN(p4, len(config.ANCHOR_RATIO), reuse = True)
 		p5_logit, p5_delta = SingleLayerFPN(p5, len(config.ANCHOR_RATIO), reuse = True)
 		p6_logit, p6_delta = SingleLayerFPN(p6, len(config.ANCHOR_RATIO), reuse = True)
