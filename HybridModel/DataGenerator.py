@@ -14,7 +14,6 @@ if os.path.exists('../../Python-Lib/'):
 
 config = Config()
 
-
 class Logger(object):
 	def __init__(self, log_dir):
 		self.writer = tf.summary.FileWriter(log_dir)
@@ -29,7 +28,6 @@ class Logger(object):
 		self.writer.close()
 		return
 
-
 def applyAlphaShiftToPolygon(info, polygon):
 	alpha, shift_i, shift_j = info
 	if alpha != 1:
@@ -42,10 +40,10 @@ def applyAlphaShiftToPolygon(info, polygon):
 		polygon = [(polygon_j[k], polygon_i[k]) for k in range(len(polygon))]
 	return [(x + shift_j, y + shift_i) for x, y in polygon]
 
-def rotate(size, box):
+def rotateBox(size, box):
 	w, h = size
-	l, u, r, d = box
-	return (h, w), (u, w - r, d, w - l)
+	x1, y1, x2, y2 = box
+	return (h, w), (y1, w - x2, y2, w - x1)
 
 class DataGenerator(object):
 	def __init__(self, building_path, area_path, img_size, v_out_res, max_num_vertices):
@@ -87,7 +85,7 @@ class DataGenerator(object):
 					polygon.append((int(x), int(y)))
 			self.building_polygon[bid] = applyAlphaShiftToPolygon(self.shift_info[bid], polygon)
 		li.sort()
-		split = int(len(li) * 0.9)
+		split = int(len(li) * 0.75)
 
 		# 
 		self.good_bids = [item[1] for item in li[: split]]
@@ -123,7 +121,7 @@ class DataGenerator(object):
 
 		#
 		aids = self.sftp.listdir(area_path)
-		split = int(len(aids) * 0.9)
+		split = int(len(aids) * 0.8)
 		print('Totally %d areas.' % len(aids))
 		aids.sort()
 		random.seed(31415927)
@@ -261,7 +259,7 @@ class DataGenerator(object):
 			d = min(h, p[:, 1].max())
 			if r > l and d > u:
 				for _ in range(n_rotate):
-					(w, h), (l, u, r, d) = rotate((w, h), (l, u, r, d))
+					(w, h), (l, u, r, d) = rotateBox((w, h), (l, u, r, d))
 				bw, bh = r - l, d - u
 				l = max(0, l - bw * pad)
 				u = max(0, u - bh * pad)
