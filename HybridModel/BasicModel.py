@@ -47,22 +47,25 @@ def PyramidAnchorFeature(vgg_result, reuse = None):
 	"""
 		vgg_result: see the return of VGG16 function defined above
 	"""
-	_, _, conv2_2, conv3_3, conv4_3, conv5_3 = vgg_result
+	# _, _, conv2_2, conv3_3, conv4_3, conv5_3 = vgg_result
+	_, _, _, conv3_3, conv4_3, conv5_3 = vgg_result
 	with tf.variable_scope('PyramidAnchorFeature', reuse = reuse):
 		c5      = tf.layers.conv2d       (inputs = conv5_3, filters = 256, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu) #  20
 		c4      = tf.layers.conv2d       (inputs = conv4_3, filters = 256, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu) #  40
 		c4     += tf.image.resize_images (images = c5, size = [c5.shape[1] * 2, c5.shape[2] * 2])											#  40
 		c3      = tf.layers.conv2d       (inputs = conv3_3, filters = 256, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu) #  80
 		c3     += tf.image.resize_images (images = c4, size = [c4.shape[1] * 2, c4.shape[2] * 2])											#  80
-		c2      = tf.layers.conv2d       (inputs = conv2_2, filters = 256, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu) # 160
-		c2     += tf.image.resize_images (images = c3, size = [c3.shape[1] * 2, c3.shape[2] * 2])											# 160
-		c6      = tf.layers.max_pooling2d(inputs = c5     , pool_size = (2, 2), strides = 2)												#  10
-		p2      = tf.layers.conv2d       (inputs = c2     , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 160
+		# c2      = tf.layers.conv2d       (inputs = conv2_2, filters = 256, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu) # 160
+		# c2     += tf.image.resize_images (images = c3, size = [c3.shape[1] * 2, c3.shape[2] * 2])											# 160
+		# c6      = tf.layers.max_pooling2d(inputs = c5     , pool_size = (2, 2), strides = 2)												#  10
+		# p2      = tf.layers.conv2d       (inputs = c2     , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 160
 		p3      = tf.layers.conv2d       (inputs = c3     , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  80
 		p4      = tf.layers.conv2d       (inputs = c4     , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  40
 		p5      = tf.layers.conv2d       (inputs = c5     , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  20
-		p6      = tf.layers.conv2d       (inputs = c6     , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  10
-	return p2, p3, p4, p5, p6
+		# p6      = tf.layers.conv2d       (inputs = c6     , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  10
+		p6      = tf.layers.max_pooling2d(inputs = p5     , pool_size = (2, 2), strides = 2)
+	# return p2, p3, p4, p5, p6
+	return p3, p4, p5, p6
 
 def SingleLayerFPN(feature, anchors_per_pixel, reuse = None):
 	"""

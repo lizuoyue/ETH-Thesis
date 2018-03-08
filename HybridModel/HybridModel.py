@@ -74,7 +74,9 @@ class HybridModel(object):
 		p3_logit, p3_delta = SingleLayerFPN(p3, len(config.ANCHOR_RATIO), reuse = True)
 		p4_logit, p4_delta = SingleLayerFPN(p4, len(config.ANCHOR_RATIO), reuse = True)
 		p5_logit, p5_delta = SingleLayerFPN(p5, len(config.ANCHOR_RATIO), reuse = True)
-		p6_logit, p6_delta = SingleLayerFPN(p6, len(config.ANCHOR_RATIO), reuse = True)
+		# p6_logit, p6_delta = SingleLayerFPN(p6, len(config.ANCHOR_RATIO), reuse = True)
+		# logit = tf.concat([p2_logit, p3_logit, p4_logit, p5_logit, p6_logit], axis = 1)
+		# delta = tf.concat([p2_delta, p3_delta, p4_delta, p5_delta, p6_delta], axis = 1)
 		logit = tf.concat([p2_logit, p3_logit, p4_logit, p5_logit, p6_logit], axis = 1)
 		delta = tf.concat([p2_delta, p3_delta, p4_delta, p5_delta, p6_delta], axis = 1)
 		return logit, delta

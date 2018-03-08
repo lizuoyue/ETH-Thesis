@@ -324,13 +324,14 @@ class DataGenerator(object):
 			for j in range(boxes.shape[0]):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
-				# y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * self.pad))
-				h, w = max(w, h) + 30, max(w, h) + 30
-				cx, cy = (x1+x2)/2, (y1+y2)/2
-				y1, x1, y2, x2 = int(max(0, cy-h/2)), int(max(0, cx-w/2)), int(min(img.shape[0], cy+h/2)), int(min(img.shape[1], cx+w/2))
-				if y1 < y2 and x1 < x2:
-					patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize(config.PATCH_SIZE, resample = Image.BICUBIC))/255.0)
-					org_info.append([i, y1, x1, y2, x2])
+				if h * w > 24 * 24 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
+					# y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * self.pad))
+					h, w = max(w, h) + 30, max(w, h) + 30
+					cx, cy = (x1+x2)/2, (y1+y2)/2
+					y1, x1, y2, x2 = int(max(0, cy-h/2)), int(max(0, cx-w/2)), int(min(img.shape[0], cy+h/2)), int(min(img.shape[1], cx+w/2))
+					if y1 < y2 and x1 < x2:
+						patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize(config.PATCH_SIZE, resample = Image.BICUBIC))/255.0)
+						org_info.append([i, y1, x1, y2, x2])
 		return self.area_imgs, np.array(patches), org_info
 
 	def recover(self, path, imgs, res, base):
@@ -339,9 +340,10 @@ class DataGenerator(object):
 			boxes = res[i] * self.recover_rate
 			draw = ImageDraw.Draw(a)
 			for j in range(boxes.shape[0]):
-				u, l, d, r = tuple(list(boxes[j]))
-				if (r - l) * (d - u) > 24 * 24:
-					draw.polygon([(l, u), (r, u), (r, d), (l, d)], outline = (255, 0, 0))
+				y1, x1, y2, x2 = tuple(list(boxes[j]))
+				h, w = y2 - y1, x2 - x1
+				if h * w > 24 * 24 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
+					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (255, 0, 0))
 			a.save(path + '/box_%d_%d.png' % (base % 100, i))
 
 	def recoverGlobal(self, path, img, org_info, pred_v_out, base):
@@ -367,12 +369,13 @@ class DataGenerator(object):
 			im.save(path + '/%d_%d.png' % (base % 100, i))
 
 if __name__ == '__main__':
+	city = 'Zurich'
 	dg = DataGenerator(
-		building_path = '../../BuildingsZurich.zip',
-		area_path = '/local/lizuoyue/AreasZurich',
-		img_size = (256, 256),
-		v_out_res = (32, 32),
-		max_num_vertices = 20,
+		building_path = '../../Buildings%s.zip' % city,
+		area_path = '/local/lizuoyue/Areas%s' % city,
+		img_size = config.PATCH_SIZE,
+		v_out_res = config.V_OUT_RES,
+		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
 	item1 = dg.getAreasBatch(4, mode = 'train')
 	item2 = dg.getBuildingsBatch(12, mode = 'train')
