@@ -383,6 +383,19 @@ if __name__ == '__main__':
 		print(item.shape)
 	for item in item2:
 		print(item.shape)
+	for k in range(12):
+		for i, item in enumerate(item2):
+			if i < 3:
+				Image.fromarray(np.array(item[k, ...]*255,np.uint8)).resize((256,256)).show()
+				time.sleep(0.5)
+			elif i < 5:
+				for j in range(20):
+					Image.fromarray(np.array(item[k, j, ...]*255,np.uint8)).resize((256,256)).show()
+					print(j)
+					time.sleep(0.5)
+			else:
+				print(item[k])
+		input()
 	a, b, c = dg.getPatchesFromAreas(
 		[np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]]),np.array([[100, 100, 200, 200]])]
 	)
