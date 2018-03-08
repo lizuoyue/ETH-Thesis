@@ -342,7 +342,7 @@ class DataGenerator(object):
 			for j in range(boxes.shape[0]):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
-				if h * w > 24 * 24 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
+				if h * w > 24 * 24 and y1 >= 0 and x1 >= 0 and y2 < a.size[1] and x2 < a.size[0]:
 					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (255, 0, 0))
 			a.save(path + '/box_%d_%d.png' % (base % 100, i))
 
