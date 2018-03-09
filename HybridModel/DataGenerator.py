@@ -178,7 +178,7 @@ class DataGenerator(object):
 		# Return
 		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len
 
-	def getSingleArea(self, area_idx, show = False):
+	def getSingleArea(self, area_idx):
 		# Rotate, anticlockwise
 		n_rotate = random.choice([0, 1, 2, 3])
 
@@ -223,7 +223,7 @@ class DataGenerator(object):
 				d = min(h, d + bh * pad)
 				gt_boxes.append([u, l, d, r])
 
-		if show:
+		if True: # <- Local test
 			mask = Image.new('RGBA', org_rot.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
 			for u, l, d, r in gt_boxes:
@@ -335,7 +335,7 @@ if __name__ == '__main__':
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
-	item1 = dg.getAreasBatch(4, mode = 'valid', show = True)
+	item1 = dg.getAreasBatch(4, mode = 'valid')
 	item2 = dg.getBuildingsBatch(12, mode = 'train')
 	for item in item1:
 		print(item.shape)
