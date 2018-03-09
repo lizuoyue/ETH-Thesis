@@ -13,8 +13,8 @@ def applyAlphaShiftToPolygon(info, polygon):
 	return [(x + shift_j, y + shift_i) for x, y in polygon]
 
 if __name__ == '__main__':
-	assert(len(sys.argv) == 3)
-	city_name = sys.argv[2]
+	assert(len(sys.argv) == 2)
+	city_name = sys.argv[1]
 	shift_info = {}
 	for file in glob.glob('../../Buildings%s/*/shift.txt' % city_name):
 		lines = open(file, 'r').readlines()
