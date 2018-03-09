@@ -63,21 +63,12 @@ class DataGenerator(object):
 			score, _ = lines[1].split()
 			li.append((float(score), bid))
 		li.sort()
-		split = int(len(li) * 0.8)					
 
 		# 
-		self.good_bid = [item[1] for item in li[: split]]
-		self.bid_test = [item[1] for item in li[split: ]]
-		self.good_bid.sort()
-		random.seed(31415926)
-		random.shuffle(self.good_bid)
-		random.seed()
-		self.bid_train = self.good_bid[: split]
-		self.bid_valid = self.good_bid[split: ]
-
+		self.bid_train = [item[1] for item in li[: int(len(li) * 0.9)]]
+		self.bid_valid = [item[1] for item in li[int(len(li) * 0.9): ]]
 		print('Totally %d buildings for train.' % len(self.bid_train))
 		print('Totally %d buildings for valid.' % len(self.bid_valid))
-		print('Totally %d buildings for test.' % len(self.bid_test))
 
 		# 
 		self.blank = np.zeros(self.v_out_res, dtype = np.uint8)
@@ -99,14 +90,15 @@ class DataGenerator(object):
 
 		#
 		aids = self.sftp.listdir(area_path)
-		split = int(len(aids) * 0.8)
-		print('Totally %d areas.' % len(aids))
 		aids.sort()
-		random.seed(31415927)
+		random.seed(31415926)
 		random.shuffle(aids)
 		random.seed()
-		self.aid_train = aids[: split]
-		self.aid_valid = aids[split: ]
+		self.aid_train = aids[: int(len(aids) * 0.9)]
+		self.aid_valid = aids[int(len(aids) * 0.9): ]
+
+		print('Totally %d areas for train.' % len(self.aid_train))
+		print('Totally %d areas for valid.' % len(self.aid_valid))
 		return
 
 	def blur(self, img):
@@ -259,10 +251,6 @@ class DataGenerator(object):
 			sel = np.random.choice(len(self.bid_valid), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleBuilding(self.bid_valid[i]))
-		if mode == 'test':
-			sel = np.random.choice(len(self.bid_test), batch_size, replace = True)
-			for i in sel:
-				res.append(self.getSingleBuilding(self.bid_test[i]))
 		return (np.array([item[i] for item in res]) for i in range(7))
 
 	def getAreasBatch(self, batch_size, mode = None):
