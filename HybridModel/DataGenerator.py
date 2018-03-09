@@ -236,7 +236,7 @@ class DataGenerator(object):
 			gt_boxes = np.array(gt_boxes)
 
 		# 
-		self.recover_rate = org_rot.shape[0] / config.AREA_SIZE[0]
+		self.recover_rate = org_rot.size[0] / config.AREA_SIZE[0]
 		anchor_cls = np.zeros([self.anchors.shape[0], 2], np.int32)
 		rpn_match, anchor_box = buildRPNTargets(self.anchors * self.recover_rate, gt_boxes)
 		anchor_cls[rpn_match == 1, 0] = 1
@@ -335,7 +335,7 @@ if __name__ == '__main__':
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
-	item1 = dg.getAreasBatch(4, mode = 'valid')
+	item1 = dg.getAreasBatch(8, mode = 'valid')
 	item2 = dg.getBuildingsBatch(12, mode = 'train')
 	for item in item1:
 		print(item.shape)
