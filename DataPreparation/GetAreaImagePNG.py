@@ -1,21 +1,17 @@
 import io, os, sys, glob
 import numpy as np
 import requests, math, random
-import Config, UtilityGeography, GetBuildingListOSM
+import Config, UtilityGeography, GetBuildingListOSM, AdjustPolygon
 from PIL import Image, ImageDraw
 
 config = Config.Config()
-
-def normalize2D(p):
-	l = math.sqrt(p[0] ** 2 + p[1] ** 2)
-	return (p[0] / l, p[1] / l)
 
 class AreaImageDownloader(object):
 	def __init__(self, keys_filename, city_name):
 		self.city_name = city_name
 		with open(keys_filename, 'r') as f:
 			self.keys = [item.strip() for item in f.readlines()]
-		self.cons = GetBuildingListOSM.BuildingListConstructor(num_vertices_range = (4, 20), filename = './BuildingList-%s.npy' % city_name)
+		self.cons = GetBuildingListOSM.BuildingListConstructor(num_vertices_range = (4, 20), filename = './BuildingList%s.npy' % city_name)
 		self.building_area = {}
 		self.area_building = {}
 
@@ -50,34 +46,27 @@ class AreaImageDownloader(object):
 		print('Totally %d areas.' % (len(self.area_building)))
 		return
 
-	def centerRight(self, p1, p2, l):
-		direction = normalize2D((p1[1] - p2[1], p2[0] - p1[0]))
-		x = math.floor((p1[0] + p2[0]) / 2 + l * direction[0])
-		y = math.floor((p1[1] + p2[1]) / 2 + l * direction[1])
-		return (x, y)
-
 	def saveImagePolygons(self, img, roadmap, polygons, area_idx):
 		img = Image.fromarray(img)
 		roadmap = Image.fromarray(roadmap)
+		new = []
+		for bid, polygon in polygons:
+			a = AdjustPolygon.cutPolygon(600, 600, polygon)
+			if a:
+				new.append((bid, a))
+			if bid == 31323886:
+				print(polygon)
+				print(a)
+		polygons = new
 		for bid, polygon in polygons:
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
 			draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-			# Decide the order of vertices
-			inner_count = 0
-			for i in range(len(polygon)):
-				x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
-				try:
-					inner_count += (np.sum(mask[y, x, 1: 3]) > 1.0) # <- The pixel is not red
-				except:
-					inner_count += 1
-			if inner_count / len(polygon) < 0.5:
-				polygon.reverse()
 
 		img.save('../../Areas%s/%d-%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))
 		roadmap.save('../../Areas%s/%d-%d/roadmap.png' % (self.city_name, area_idx[0], area_idx[1]))
 
-		if False:
+		if True: # <- Local test
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
 			for bid, polygon in polygons:

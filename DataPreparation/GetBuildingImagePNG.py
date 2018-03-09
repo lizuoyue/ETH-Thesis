@@ -28,11 +28,6 @@ class BuildingImageDownloader(object):
 			merge = Image.alpha_composite(roadmap, mask)
 			merge.save('../../Buildings%s/%d/merge-2.png' % (self.city_name, building_id))
 
-		# Decide the order of vertices
-		s = sum([x1 * y2 - x2 * y1 for (x1, y1), (x2, y2) in zip(polygon, polygon[1: ] + [polygon[0]])])
-		if s < 0:
-			polygon.reverse()
-
 		# Save as text file to save storage
 		with open('../../Buildings%s/%d/polygon.txt' % (self.city_name, building_id), 'w') as f:
 			for vertex in polygon:
@@ -120,7 +115,7 @@ class BuildingImageDownloader(object):
 if __name__ == '__main__':
 	assert(len(sys.argv) == 4)
 	city_name, idx_beg, idx_end = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
-	objCons = GetBuildingListOSM.BuildingListConstructor((4, 20), './BuildingList-%s.npy' % city_name)
+	objCons = GetBuildingListOSM.BuildingListConstructor((4, 20), './BuildingList%s.npy' % city_name)
 	objDown = BuildingImageDownloader('./GoogleMapsAPIsKeys.txt', city_name)
 	id_list = objCons.getBuildingIDListSorted()
 	for i, building_id in enumerate(id_list):

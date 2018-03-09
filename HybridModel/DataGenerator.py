@@ -28,18 +28,6 @@ class Logger(object):
 		self.writer.close()
 		return
 
-def applyAlphaShiftToPolygon(info, polygon):
-	alpha, shift_i, shift_j = info
-	if alpha != 1:
-		polygon_i = np.array([v[1] for v in polygon], np.float32)
-		polygon_j = np.array([v[0] for v in polygon], np.float32)
-		c_i = (polygon_i.min() + polygon_i.max()) / 2
-		c_j = (polygon_j.min() + polygon_j.max()) / 2
-		polygon_i = np.array(polygon_i * alpha + c_i * (1 - alpha), np.int32)
-		polygon_j = np.array(polygon_j * alpha + c_j * (1 - alpha), np.int32)
-		polygon = [(polygon_j[k], polygon_i[k]) for k in range(len(polygon))]
-	return [(x + shift_j, y + shift_i) for x, y in polygon]
-
 def rotateBox(size, box):
 	w, h = size
 	x1, y1, x2, y2 = box
@@ -50,8 +38,6 @@ class DataGenerator(object):
 		self.img_size = img_size
 		self.v_out_res = v_out_res
 		self.max_num_vertices = max_num_vertices
-
-		self.shift_info = {}
 
 		# 
 		self.area_path = area_path
@@ -71,18 +57,7 @@ class DataGenerator(object):
 		#
 		self.building_polygon, li = {}, []
 		for bid in bids:
-			#
-			lines = self.archive.read(self.building_path + '/%d/shift.txt' % bid).decode('utf-8').split('\n')
-			alpha, shift_i, shift_j = lines[0].strip().split()
-			self.shift_info[bid] = (float(alpha), int(shift_i), int(shift_j))
-			score, edge_score = lines[1].strip().split()
-			li.append((score, bid))
-			lines = self.archive.read(self.building_path + '/%d/polygon.txt' % bid).decode('utf-8').split('\n')
-			polygon = []
-			for line in lines:
-				if line.strip() != '':
-					x, y = line.strip().split()
-					polygon.append((int(x), int(y)))
+			
 			self.building_polygon[bid] = applyAlphaShiftToPolygon(self.shift_info[bid], polygon)
 		li.sort()
 		split = int(len(li) * 0.75)
