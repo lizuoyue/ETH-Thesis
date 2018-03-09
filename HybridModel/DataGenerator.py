@@ -178,24 +178,22 @@ class DataGenerator(object):
 		# Return
 		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len
 
-	def getSingleArea(self, area_idx):
+	def getSingleArea(self, area_idx, show = False):
 		# Rotate, anticlockwise
 		n_rotate = random.choice([0, 1, 2, 3])
 
 		# 
 		while True:
 			try:
-				img = Image.open(io.BytesIO(self.sftp.open(self.area_path + '/%s/img.png' % area_idx).read()))
-				self.area_imgs.append(img)
+				org = Image.open(io.BytesIO(self.sftp.open(self.area_path + '/%s/img.png' % area_idx).read()))
+				self.area_imgs.append(org)
 				lines = self.sftp.open(self.area_path + '/%s/polygons_after_shift.txt' % area_idx).read().decode('utf-8').split('\n')
 				break
 			except:
 				print('Try again.')
 
-		img = img.rotate(n_rotate * 90)
-		num_anchors = self.anchors.shape[0]
-		org = np.array(img)[..., 0: 3] / 255.0
-		img = img.resize(config.AREA_SIZE)
+		org_rot = org.rotate(n_rotate * 90)
+		org_resize = org_rot.resize(config.AREA_SIZE)
 
 		polygons = []
 		for line in lines:
@@ -209,7 +207,7 @@ class DataGenerator(object):
 		gt_boxes = []
 		pad = 0.1
 		for polygon in polygons:
-			h, w = org.shape[0], org.shape[1]
+			w, h = org.size
 			p = np.array(polygon, np.int32)
 			l = max(0, p[:, 0].min())
 			u = max(0, p[:, 1].min())
@@ -224,20 +222,28 @@ class DataGenerator(object):
 				r = min(w, r + bw * pad)
 				d = min(h, d + bh * pad)
 				gt_boxes.append([u, l, d, r])
+
+		if show:
+			mask = Image.new('RGBA', org_rot.size, color = (255, 255, 255, 0))
+			draw = ImageDraw.Draw(mask)
+			for u, l, d, r in gt_boxes:
+				draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+			merge = Image.alpha_composite(org_rot, mask).show()
+
 		if len(gt_boxes) == 0:
 			gt_boxes = np.zeros((0, 4), np.int32)
 		else:
 			gt_boxes = np.array(gt_boxes)
 
 		# 
-		self.recover_rate = org.shape[0] / config.AREA_SIZE[0]
-		anchor_cls = np.zeros([num_anchors, 2], np.int32)
+		self.recover_rate = org_rot.shape[0] / config.AREA_SIZE[0]
+		anchor_cls = np.zeros([self.anchors.shape[0], 2], np.int32)
 		rpn_match, anchor_box = buildRPNTargets(self.anchors * self.recover_rate, gt_boxes)
 		anchor_cls[rpn_match == 1, 0] = 1
 		anchor_cls[rpn_match == -1, 1] = 1
 
 		#
-		return np.array(img)[..., 0: 3] / 255.0, anchor_cls, anchor_box
+		return np.array(org_resize)[..., 0: 3] / 255.0, anchor_cls, anchor_box
 
 	def getBuildingsBatch(self, batch_size, mode = None):
 		# Real
@@ -329,7 +335,7 @@ if __name__ == '__main__':
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
-	item1 = dg.getAreasBatch(4, mode = 'train')
+	item1 = dg.getAreasBatch(4, mode = 'valid', show = True)
 	item2 = dg.getBuildingsBatch(12, mode = 'train')
 	for item in item1:
 		print(item.shape)
