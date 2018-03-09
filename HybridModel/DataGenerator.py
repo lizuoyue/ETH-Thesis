@@ -125,7 +125,7 @@ class DataGenerator(object):
 		# Rotate
 		rotate = random.choice([0, 90, 180, 270])
 
-		# Get image, polygon coordinates and shift
+		# Get image, polygon coordinates
 		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
 		polygon = self.building_polygon[bid]
 
@@ -188,12 +188,6 @@ class DataGenerator(object):
 		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len
 
 	def getSingleArea(self, area_idx):
-		"""
-		# with open(self.building_list[building_idx] + 'shift.txt', 'w') as f:
-		# 	f.write('%.2lf %d %d\n' % (alphas[idx], shift_i, shift_j))
-		# 	f.write('%lf %lf\n' % (score, edge_score))
-		"""
-
 		# Rotate, anticlockwise
 		n_rotate = random.choice([0, 1, 2, 3])
 
@@ -202,7 +196,7 @@ class DataGenerator(object):
 			try:
 				img = Image.open(io.BytesIO(self.sftp.open(self.area_path + '/%s/img.png' % area_idx).read()))
 				self.area_imgs.append(img)
-				lines = self.sftp.open(self.area_path + '/%s/polygons.txt' % area_idx).read().decode('utf-8').split('\n')
+				lines = self.sftp.open(self.area_path + '/%s/polygons_after_shift.txt' % area_idx).read().decode('utf-8').split('\n')
 				break
 			except:
 				print('Try again.')
@@ -216,15 +210,10 @@ class DataGenerator(object):
 		for line in lines:
 			if line.strip() != '':
 				if line.startswith('%'):
-					_, bid = line.strip().split()
-					polygons.append([int(bid)])
+					polygons.append([])
 				else:
 					x, y = line.strip().split()
 					polygons[-1].append((int(x), int(y)))
-		for polygon in polygons:
-			if polygon[0] not in self.shift_info:
-				self.shift_info[polygon[0]] = (1, 0, 0)
-		polygons = [applyAlphaShiftToPolygon(self.shift_info[polygon[0]], polygon[1: ]) for polygon in polygons]
 
 		gt_boxes = []
 		pad = 0.1
