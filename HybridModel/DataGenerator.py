@@ -58,7 +58,7 @@ class DataGenerator(object):
 		self.building_polygon, li = {}, []
 		for bid in bids:
 			lines = self.archive.read(self.building_path + '/%d/polygon_after_shift.txt' % bid).decode('utf-8').split('\n')
-			self.building_polygon[bid] = [tuple(int(item) for item in line.split()) for line in lines]
+			self.building_polygon[bid] = [tuple(int(item) for item in line.split()) for line in lines if bool(line.strip())]
 			lines = self.archive.read(self.building_path + '/%d/shift.txt' % bid).decode('utf-8').split('\n')
 			score, _ = lines[1].split()
 			li.append((float(score), bid))
@@ -120,7 +120,6 @@ class DataGenerator(object):
 		# Get image, polygon coordinates
 		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
 		polygon = self.building_polygon[bid]
-		print(polygon)
 
 		# Adjust image and polygon
 		org_info = (img.size, rotate)
