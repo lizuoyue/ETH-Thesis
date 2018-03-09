@@ -70,7 +70,7 @@ class DataGenerator(object):
 		self.bid_test = [item[1] for item in li[split: ]]
 		self.good_bid.sort()
 		random.seed(31415926)
-		random.shuffle(self.good_bids)
+		random.shuffle(self.good_bid)
 		random.seed()
 		self.bid_train = self.good_bid[: split]
 		self.bid_valid = self.good_bid[split: ]
