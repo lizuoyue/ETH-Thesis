@@ -1,7 +1,7 @@
 import io, os, sys, glob
 import numpy as np
 import requests, math, random
-import Config, UtilityGeography, GetBuildingListOSM, AdjustPolygon
+import Config, UtilityGeography, GetBuildingListOSM
 from PIL import Image, ImageDraw
 
 config = Config.Config()
@@ -49,15 +49,6 @@ class AreaImageDownloader(object):
 	def saveImagePolygons(self, img, roadmap, polygons, area_idx):
 		img = Image.fromarray(img)
 		roadmap = Image.fromarray(roadmap)
-		new = []
-		for bid, polygon in polygons:
-			a = AdjustPolygon.cutPolygon(600, 600, polygon)
-			if a:
-				new.append((bid, a))
-			if bid == 31323886:
-				print(polygon)
-				print(a)
-		polygons = new
 		for bid, polygon in polygons:
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
@@ -66,7 +57,7 @@ class AreaImageDownloader(object):
 		img.save('../../Areas%s/%d-%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))
 		roadmap.save('../../Areas%s/%d-%d/roadmap.png' % (self.city_name, area_idx[0], area_idx[1]))
 
-		if True: # <- Local test
+		if False: # <- Local test
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
 			for bid, polygon in polygons:
