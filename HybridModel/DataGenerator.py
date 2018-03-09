@@ -227,6 +227,7 @@ class DataGenerator(object):
 			draw = ImageDraw.Draw(org_rot)
 			for u, l, d, r in gt_boxes:
 				draw.line([(l, u), (r, u), (r, d), (l, d), (l, u)], fill = (255, 0, 0, 255), width = 3)
+			org_rot.show()
 
 		if len(gt_boxes) == 0:
 			gt_boxes = np.zeros((0, 4), np.int32)
@@ -339,6 +340,7 @@ if __name__ == '__main__':
 		print(item.shape)
 	for item in item2:
 		print(item.shape)
+	quit()
 	for k in range(12):
 		for i, item in enumerate(list(item2)):
 			if i < 3:
