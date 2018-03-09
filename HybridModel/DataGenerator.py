@@ -87,6 +87,22 @@ class DataGenerator(object):
 		li.sort()
 		split = int(len(li) * 0.75)
 
+		#
+		if False:
+			angles = []
+			for bid in bids:
+				lines = self.archive.read(self.building_path + '/%d/polygon.txt' % bid).decode('utf-8').split('\n')
+				polygon = []
+				for line in lines:
+					if line.strip() != '':
+						x, y = line.strip().split()
+						polygon.append((int(x), int(y)))
+				for i in range(len(polygon)):
+					x0, y0 = polygon[i - 1]
+					x1, y1 = polygon[i]
+					x2, y2 = polygon[(i + 1) % len(polygon)]
+					
+
 		# 
 		self.good_bids = [item[1] for item in li[: split]]
 		self.bids_test = [item[1] for item in li[split: ]]

@@ -6,29 +6,39 @@ This is my Master thesis project at ETH Zurich, which contains two parts:
 ## Thesis Outline
 * Introduction
 	* Background
-	* Related Work
-		* Previous Theses
-		* Recent Models
+	* Focus of This Work
+	* Thesis Organization
+* Related Work
+	* Previous Theses
+	* Recent Models
+		* PolygonRNN
+		* Mask R-CNN
 	* Motivation
-* Models
+* Model Architecture
 	* PolygonRNN
-	* Faster R-CNN/Mask R-CNN
+		* VGG-16
+		* ConvLSTM
+	* Faster/Mask R-CNN
 		* Region Proposal Network
 		* Feature Pyramid Network
-	* Combined Model
+	* Region-based PolygonRNN
 		* Two-step Model
 		* Hybrid Model
 * Experiments and Results
 	* Data Preparation
-		* Google Maps API and OpenStreetMap
 		* Buildings and Areas
+		* OpenStreetMap
+		* Google Maps APIs
 		* Shift Adjustment
-	* Model Configuration
+	* Implementation Details
+		* Configuration
 		* Beam Search
-		* ...
+		* Training
 	* Experiment Results
-		* Shape of Single Building
-		* Multiple
+		* Single Building Segmentation
+		* Buildings Localization
+		* Region-based PolygonRNN
 * Problems and Future Work
 	* Problems
 	* Future Work
+

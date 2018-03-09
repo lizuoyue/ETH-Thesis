@@ -6,21 +6,11 @@ from PIL import Image, ImageDraw
 
 config = Config.Config()
 
-def normalize2D(p):
-	l = math.sqrt(p[0] ** 2 + p[1] ** 2)
-	return (p[0] / l, p[1] / l)
-
 class BuildingImageDownloader(object):
 	def __init__(self, keys_filename, city_name):
 		self.city_name = city_name
 		with open(keys_filename, 'r') as f:
 			self.keys = [item.strip() for item in f.readlines()]
-
-	def centerRight(self, p1, p2, l):
-		direction = normalize2D((p1[1] - p2[1], p2[0] - p1[0]))
-		x = math.floor((p1[0] + p2[0]) / 2 + l * direction[0])
-		y = math.floor((p1[1] + p2[1]) / 2 + l * direction[1])
-		return (x, y)
 
 	def saveImagePolygon(self, img, polygon, roadmap):
 		# Save images
@@ -39,14 +29,8 @@ class BuildingImageDownloader(object):
 			merge.save('../../Buildings%s/%d/merge-2.png' % (self.city_name, building_id))
 
 		# Decide the order of vertices
-		inner_count = 0
-		for i in range(len(polygon)):
-			x, y = self.centerRight(polygon[i - 1], polygon[i], 5)
-			try:
-				inner_count += (np.sum(mask[y, x, 1: 3]) > 1.0) # <- The pixel is not red
-			except:
-				inner_count += 1
-		if inner_count / len(polygon) < 0.5:
+		s = sum([x1 * y2 - x2 * y1 for (x1, y1), (x2, y2) in zip(polygon, polygon[1: ] + [polygon[0]])])
+		if s < 0:
 			polygon.reverse()
 
 		# Save as text file to save storage
@@ -139,8 +123,6 @@ if __name__ == '__main__':
 	objCons = GetBuildingListOSM.BuildingListConstructor((4, 20), './BuildingList-%s.npy' % city_name)
 	objDown = BuildingImageDownloader('./GoogleMapsAPIsKeys.txt', city_name)
 	id_list = objCons.getBuildingIDListSorted()
-	if True:
-		random.shuffle(id_list)
 	for i, building_id in enumerate(id_list):
 		if i < idx_beg or i >= idx_end:
 			continue

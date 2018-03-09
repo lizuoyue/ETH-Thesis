@@ -131,5 +131,5 @@ if __name__ == '__main__':
 	assert(len(sys.argv) == 2)
 	config = Config.Config()
 	city_name = sys.argv[1]
-	objCons = BuildingListConstructor(num_vertices_range = (4, 20), filename = './BuildingList-%s.npy' % city_name)
+	objCons = BuildingListConstructor(num_vertices_range = (4, 20), filename = './BuildingList%s.npy' % city_name)
 	objCons.batchAddBuildingList(config.CITY_BUILDING[city_name])
