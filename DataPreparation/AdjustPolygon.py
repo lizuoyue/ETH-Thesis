@@ -13,6 +13,8 @@ def applyAlphaShiftToPolygon(info, polygon):
 	return [(x + shift_j, y + shift_i) for x, y in polygon]
 
 if __name__ == '__main__':
+	assert(len(sys.argv) == 3)
+	city_name = sys.argv[2]
 	shift_info = {}
 	for file in glob.glob('../../Buildings%s/*/shift.txt' % city_name):
 		lines = open(file, 'r').readlines()
@@ -20,7 +22,9 @@ if __name__ == '__main__':
 		bid = int(file.split('/')[3])
 		shift_info[bid] = (float(alpha), int(shift_i), int(shift_j))
 
-	for file in glob.glob('../../Areas%s/*/polygons.txt' % city_name):
+	files = glob.glob('../../Areas%s/*/polygons.txt' % city_name)
+	for i, file in enumerate(files):
+		print('%d/%d' % (i, len(files)))
 		# Read original polygons
 		lines = open(file, 'r').readlines()
 		polygons = []
