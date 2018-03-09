@@ -57,40 +57,27 @@ class DataGenerator(object):
 		#
 		self.building_polygon, li = {}, []
 		for bid in bids:
-			
-			self.building_polygon[bid] = applyAlphaShiftToPolygon(self.shift_info[bid], polygon)
+			lines = self.archive.read(self.building_path + '/%d/polygon_after_shift.txt' % bid).decode('utf-8').split('\n')
+			self.building_polygon[bid] = [tuple(int(item) for item in line.split()) for line in lines]
+			lines = self.archive.read(self.building_path + '/%d/shift.txt' % bid).decode('utf-8').split('\n')
+			score, _ = lines[1].split()
+			li.append((float(score), bid))
 		li.sort()
-		split = int(len(li) * 0.75)
-
-		#
-		if False:
-			angles = []
-			for bid in bids:
-				lines = self.archive.read(self.building_path + '/%d/polygon.txt' % bid).decode('utf-8').split('\n')
-				polygon = []
-				for line in lines:
-					if line.strip() != '':
-						x, y = line.strip().split()
-						polygon.append((int(x), int(y)))
-				for i in range(len(polygon)):
-					x0, y0 = polygon[i - 1]
-					x1, y1 = polygon[i]
-					x2, y2 = polygon[(i + 1) % len(polygon)]
-					
+		split = int(len(li) * 0.8)					
 
 		# 
 		self.good_bids = [item[1] for item in li[: split]]
 		self.bids_test = [item[1] for item in li[split: ]]
-		print('Totally %d good buildings.' % len(self.good_bids))
-		print('Totally %d bad buildings.' % len(self.bids_test))
-
-		#
 		self.good_bids.sort()
 		random.seed(31415926)
 		random.shuffle(self.good_bids)
 		random.seed()
 		self.bid_train = self.good_bids[: split]
 		self.bid_valid = self.good_bids[split: ]
+
+		print('Totally %d buildings for train.' % len(self.bids_train))
+		print('Totally %d buildings for valid.' % len(self.bids_valid))
+		print('Totally %d buildings for test.' % len(self.bids_test))
 
 		# 
 		self.blank = np.zeros(self.v_out_res, dtype = np.uint8)
@@ -208,7 +195,7 @@ class DataGenerator(object):
 		"""
 
 		# Rotate, anticlockwise
-		n_rotate = 0#random.choice([0, 1, 2, 3])
+		n_rotate = random.choice([0, 1, 2, 3])
 
 		# 
 		while True:

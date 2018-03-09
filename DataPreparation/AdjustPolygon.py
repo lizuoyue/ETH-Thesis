@@ -35,7 +35,6 @@ if __name__ == '__main__':
 		with open(file.replace('shift.txt', 'polygon_after_shift.txt'), 'w') as f:
 			for v in polygon:
 				f.write('%d %d\n' % v)
-	quit()
 
 	files = glob.glob('../../Areas%s/*/polygons.txt' % city_name)
 	for i, file in enumerate(files):
