@@ -52,7 +52,6 @@ class DataGenerator(object):
 				bids.add(int(parts[1]))
 		bids = list(bids)
 		bids.sort()
-		print('Totally %d buildings.' % len(bids))
 
 		#
 		self.building_polygon, li = {}, []
@@ -251,7 +250,7 @@ class DataGenerator(object):
 			sel = np.random.choice(len(self.bid_valid), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleBuilding(self.bid_valid[i]))
-		return (np.array([item[i] for item in res]) for i in range(7))
+		return [np.array([item[i] for item in res]) for i in range(7)]
 
 	def getAreasBatch(self, batch_size, mode = None):
 		# Real
@@ -265,7 +264,7 @@ class DataGenerator(object):
 			sel = np.random.choice(len(self.aid_valid), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleArea(self.aid_valid[i]))
-		return (np.array([item[i] for item in res]) for i in range(3))
+		return [np.array([item[i] for item in res]) for i in range(3)]
 
 	def getPatchesFromAreas(self, res):
 		assert(len(res) == len(self.area_imgs))
@@ -338,7 +337,6 @@ if __name__ == '__main__':
 		print(item.shape)
 	for k in range(12):
 		for i, item in enumerate(list(item2)):
-			print(i)
 			if i < 3:
 				Image.fromarray(np.array(item[k, ...]*255,np.uint8)).resize((256,256)).show()
 				time.sleep(0.5)
