@@ -112,9 +112,12 @@ class DataGenerator(object):
 	def distL1(self, p1, p2):
 		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
 
-	def getSingleBuilding(self, bid):
+	def getSingleBuilding(self, bid, rotate = True):
 		# Rotate
-		rotate = random.choice([0, 90, 180, 270])
+		if rotate:
+			rotate = random.choice([0, 90, 180, 270])
+		else:
+			rotate = 0
 
 		# Get image, polygon coordinates
 		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
@@ -178,21 +181,24 @@ class DataGenerator(object):
 		# Return
 		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len
 
-	def getSingleArea(self, area_idx):
+	def getSingleArea(self, area_idx, rotate = True):
 		# Rotate, anticlockwise
-		n_rotate = random.choice([0, 1, 2, 3])
+		if rotate:
+			n_rotate = random.choice([0, 1, 2, 3])
+		else:
+			n_rotate = 0
 
 		# 
 		while True:
 			try:
 				org = Image.open(io.BytesIO(self.sftp.open(self.area_path + '/%s/img.png' % area_idx).read()))
-				self.area_imgs.append(org)
 				lines = self.sftp.open(self.area_path + '/%s/polygons_after_shift.txt' % area_idx).read().decode('utf-8').split('\n')
 				break
 			except:
 				print('Try again.')
 
 		org_rot = org.rotate(n_rotate * 90)
+		self.area_imgs.append(org_rot)
 		org_resize = org_rot.resize(config.AREA_SIZE)
 
 		polygons = []
@@ -223,7 +229,7 @@ class DataGenerator(object):
 				d = min(h, d + bh * pad)
 				gt_boxes.append([u, l, d, r])
 
-		if True: # <- Local test
+		if False: # <- Local test
 			draw = ImageDraw.Draw(org_rot)
 			for u, l, d, r in gt_boxes:
 				draw.line([(l, u), (r, u), (r, d), (l, d), (l, u)], fill = (255, 0, 0, 255), width = 3)
@@ -254,7 +260,7 @@ class DataGenerator(object):
 		if mode == 'valid':
 			sel = np.random.choice(len(self.bid_valid), batch_size, replace = True)
 			for i in sel:
-				res.append(self.getSingleBuilding(self.bid_valid[i]))
+				res.append(self.getSingleBuilding(self.bid_valid[i], rotate = False))
 		return [np.array([item[i] for item in res]) for i in range(7)]
 
 	def getAreasBatch(self, batch_size, mode = None):
@@ -268,7 +274,7 @@ class DataGenerator(object):
 		if mode == 'valid':
 			sel = np.random.choice(len(self.aid_valid), batch_size, replace = True)
 			for i in sel:
-				res.append(self.getSingleArea(self.aid_valid[i]))
+				res.append(self.getSingleArea(self.aid_valid[i], rotate = False))
 		return [np.array([item[i] for item in res]) for i in range(3)]
 
 	def getPatchesFromAreas(self, res):
@@ -283,7 +289,7 @@ class DataGenerator(object):
 				h, w = y2 - y1, x2 - x1
 				if h * w > 24 * 24 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
 					# y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * self.pad))
-					h, w = max(w, h) + 30, max(w, h) + 30
+					h, w = int(max(w, h) * 1.3), int(max(w, h) * 1.3)
 					cx, cy = (x1+x2)/2, (y1+y2)/2
 					y1, x1, y2, x2 = int(max(0, cy-h/2)), int(max(0, cx-w/2)), int(min(img.shape[0], cy+h/2)), int(min(img.shape[1], cx+w/2))
 					if y1 < y2 and x1 < x2:

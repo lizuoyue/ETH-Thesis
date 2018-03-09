@@ -118,3 +118,4 @@ if __name__ == '__main__':
 		train_writer.close()
 		valid_writer.close()
 		f.close()
+
