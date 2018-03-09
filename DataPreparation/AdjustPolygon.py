@@ -16,7 +16,9 @@ if __name__ == '__main__':
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
 	shift_info = {}
-	for file in glob.glob('../../Buildings%s/*/shift.txt' % city_name):
+	files = glob.glob('../../Buildings%s/*/shift.txt' % city_name)
+	for i, file in enumerate(files):
+		print('%d/%d' % (i, len(files)))
 		lines = open(file, 'r').readlines()
 		alpha, shift_i, shift_j = lines[0].strip().split()
 		bid = int(file.split('/')[3])
@@ -62,7 +64,7 @@ if __name__ == '__main__':
 			new_polygons.append((bid, new_polygon))
 
 		# Write file
-		with open(file.replace('polygons.txt', 'polygons_after_shift.txt', 'w')) as f:
+		with open(file.replace('polygons.txt', 'polygons_after_shift.txt'), 'w') as f:
 			for bid, polygon in polygons:
 				f.write('%% %d\n' % bid)
 				for v in polygon:
