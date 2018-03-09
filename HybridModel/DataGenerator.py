@@ -337,7 +337,8 @@ if __name__ == '__main__':
 	for item in item2:
 		print(item.shape)
 	for k in range(12):
-		for i, item in enumerate(item2):
+		for i, item in enumerate(list(item2)):
+			print(i)
 			if i < 3:
 				Image.fromarray(np.array(item[k, ...]*255,np.uint8)).resize((256,256)).show()
 				time.sleep(0.5)
