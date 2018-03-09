@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-d = np.load('BuildingList-Zurich.npy').item()
+d = np.load('BuildingListZurich.npy').item()
 angles = []
 for bid in d:
 	polygon = d[bid]

@@ -23,7 +23,19 @@ if __name__ == '__main__':
 		lines = open(file, 'r').readlines()
 		alpha, shift_i, shift_j = lines[0].strip().split()
 		bid = int(file.split('/')[3])
-		shift_info[bid] = (float(alpha), int(shift_i), int(shift_j))
+		info = (float(alpha), int(shift_i), int(shift_j))
+		shift_info[bid] = info
+		lines = open(file.replace('shift.txt', 'polygon.txt'), 'r').readlines()
+		polygon = []
+		for line in lines:
+			if line.strip() != '':
+				x, y = line.strip().split()
+				polygon.append((int(x), int(y)))
+		polygon = applyAlphaShiftToPolygon(info, polygon)
+		with open(file.replace('shift.txt', 'polygon_after_shift.txt'), 'w') as f:
+			for v in polygon:
+				f.write('%d %d\n' % v)
+	quit()
 
 	files = glob.glob('../../Areas%s/*/polygons.txt' % city_name)
 	for i, file in enumerate(files):
