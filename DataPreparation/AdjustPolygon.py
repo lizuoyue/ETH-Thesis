@@ -1,4 +1,4 @@
-import glob, math
+import sys, glob, math
 
 def applyAlphaShiftToPolygon(info, polygon):
 	alpha, shift_i, shift_j = info
