@@ -224,11 +224,9 @@ class DataGenerator(object):
 				gt_boxes.append([u, l, d, r])
 
 		if True: # <- Local test
-			mask = Image.new('RGBA', org_rot.size, color = (255, 255, 255, 0))
-			draw = ImageDraw.Draw(mask)
+			draw = ImageDraw.Draw(org_rot)
 			for u, l, d, r in gt_boxes:
-				draw.polygon([(l, u), (r, u), (r, d), (l, d)], fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
-			merge = Image.alpha_composite(org_rot, mask).show()
+				draw.line([(l, u), (r, u), (r, d), (l, d), (l, u)], fill = (255, 0, 0, 255), width = 3)
 
 		if len(gt_boxes) == 0:
 			gt_boxes = np.zeros((0, 4), np.int32)
