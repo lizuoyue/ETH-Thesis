@@ -120,6 +120,7 @@ class DataGenerator(object):
 		# Get image, polygon coordinates
 		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
 		polygon = self.building_polygon[bid]
+		print(polygon)
 
 		# Adjust image and polygon
 		org_info = (img.size, rotate)
