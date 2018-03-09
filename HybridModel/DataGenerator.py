@@ -66,18 +66,18 @@ class DataGenerator(object):
 		split = int(len(li) * 0.8)					
 
 		# 
-		self.good_bids = [item[1] for item in li[: split]]
-		self.bids_test = [item[1] for item in li[split: ]]
-		self.good_bids.sort()
+		self.good_bid = [item[1] for item in li[: split]]
+		self.bid_test = [item[1] for item in li[split: ]]
+		self.good_bid.sort()
 		random.seed(31415926)
 		random.shuffle(self.good_bids)
 		random.seed()
-		self.bid_train = self.good_bids[: split]
-		self.bid_valid = self.good_bids[split: ]
+		self.bid_train = self.good_bid[: split]
+		self.bid_valid = self.good_bid[split: ]
 
-		print('Totally %d buildings for train.' % len(self.bids_train))
-		print('Totally %d buildings for valid.' % len(self.bids_valid))
-		print('Totally %d buildings for test.' % len(self.bids_test))
+		print('Totally %d buildings for train.' % len(self.bid_train))
+		print('Totally %d buildings for valid.' % len(self.bid_valid))
+		print('Totally %d buildings for test.' % len(self.bid_test))
 
 		# 
 		self.blank = np.zeros(self.v_out_res, dtype = np.uint8)
