@@ -216,6 +216,7 @@ if __name__ == '__main__':
 		saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[1])
 
 		for i in range(50):
+			print('Round %d' % i)
 			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {aa: img}
 			pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
