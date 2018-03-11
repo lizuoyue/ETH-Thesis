@@ -64,8 +64,8 @@ class DataGenerator(object):
 		li.sort()
 
 		# 
-		self.bid_train = [item[1] for item in li[: int(len(li) * 0.7)]]
-		self.bid_valid = [item[1] for item in li[int(len(li) * 0.7): ]]
+		self.bid_train = [item[1] for item in li[: int(len(li) * config.SPLIT)]]
+		self.bid_valid = [item[1] for item in li[int(len(li) * config.SPLIT): ]]
 		print('Totally %d buildings for train.' % len(self.bid_train))
 		print('Totally %d buildings for valid.' % len(self.bid_valid))
 
@@ -93,8 +93,8 @@ class DataGenerator(object):
 		random.seed(31415926)
 		random.shuffle(aids)
 		random.seed()
-		self.aid_train = aids[: int(len(aids) * 0.7)]
-		self.aid_valid = aids[int(len(aids) * 0.7): ]
+		self.aid_train = aids[: int(len(aids) * config.SPLIT)]
+		self.aid_valid = aids[int(len(aids) * config.SPLIT): ]
 
 		print('Totally %d areas for train.' % len(self.aid_train))
 		print('Totally %d areas for valid.' % len(self.aid_valid))
