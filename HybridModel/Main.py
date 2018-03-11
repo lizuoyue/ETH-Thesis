@@ -17,8 +17,8 @@ if __name__ == '__main__':
 
 	# Create data generator
 	obj = DataGenerator(
-		building_path = config.PATH_B % 'Zurich',
-		area_path = config.PATH_A % 'Zurich', 
+		building_path = config.PATH_B % 'Chicago',
+		area_path = config.PATH_A % 'Chicago', 
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
