@@ -179,7 +179,7 @@ class DataGenerator(object):
 		#  in: 0 1 2 3 4 5 X X
 
 		# Return
-		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len
+		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info
 
 	def getSingleArea(self, area_idx, rotate = True):
 		# Rotate, anticlockwise
@@ -250,7 +250,7 @@ class DataGenerator(object):
 		#
 		return np.array(org_resize)[..., 0: 3] / 255.0, anchor_cls, anchor_box
 
-	def getBuildingsBatch(self, batch_size, mode = None):
+	def getBuildingsBatch(self, batch_size, mode = None, idx = None):
 		# Real
 		res = []
 		if mode == 'train':
@@ -261,9 +261,13 @@ class DataGenerator(object):
 			sel = np.random.choice(len(self.bid_valid), batch_size, replace = True)
 			for i in sel:
 				res.append(self.getSingleBuilding(self.bid_valid[i], rotate = False))
-		return [np.array([item[i] for item in res]) for i in range(7)]
+		if mode == 'test':
+			sel = self.bid_valid[batch_size * idx: batch_size * (idx + 1)]
+			for i in sel:
+				res.append(self.getSingleBuilding(self.bid_valid[i], rotate = False))
+		return [np.array([item[i] for item in res]) for i in range(8)]
 
-	def getAreasBatch(self, batch_size, mode = None):
+	def getAreasBatch(self, batch_size, mode = None, idx = None):
 		# Real
 		res = []
 		self.area_imgs = []
@@ -273,6 +277,10 @@ class DataGenerator(object):
 				res.append(self.getSingleArea(self.aid_train[i]))
 		if mode == 'valid':
 			sel = np.random.choice(len(self.aid_valid), batch_size, replace = True)
+			for i in sel:
+				res.append(self.getSingleArea(self.aid_valid[i], rotate = False))
+		if mode == 'test':
+			sel = self.aid_valid[batch_size * idx: batch_size * (idx + 1)]
 			for i in sel:
 				res.append(self.getSingleArea(self.aid_valid[i], rotate = False))
 		return [np.array([item[i] for item in res]) for i in range(3)]

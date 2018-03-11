@@ -31,3 +31,4 @@ class Config(object):
 		self.AREA_TRAIN_BATCH = 4
 		self.AREA_PRED_BATCH = 8
 		self.BUILDING_TRAIN_BATCH = 12
+		self.BUILDING_PRED_BATCH = 16
