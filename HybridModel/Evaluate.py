@@ -42,9 +42,6 @@ def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, e
 		os.remove(item)
 
 	# Reshape
-	b_pred = b_pred[..., 0]
-	v_pred = v_pred[..., 0]
-	end_pred = end_pred[..., 0]
 	shape = ((v_out_res[1], v_out_res[0]))
 	blank = np.zeros(shape)
 
@@ -94,8 +91,6 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 
 	# Reshape
 	batch_size = img.shape[0]
-	b_pred = b_pred[..., 0]
-	v_pred = v_pred[..., 0]
 	shape = ((v_out_res[1], v_out_res[0]))
 	blank = np.zeros(shape)
 
@@ -235,10 +230,6 @@ if __name__ == '__main__':
 			path = './EvalBuildingResult%d' % i
 			if not os.path.exists(path):
 				os.makedirs(path)
-			print(pred_boundary.shape)
-			print(pred_vertices.shape)
-			print(pred_v_out.shape)
-			print(org_info.shape)
 			visualize_pred(path, img, pred_boundary, pred_vertices, pred_v_out[0], config.V_OUT_RES, org_info)
 			print(scoreIoU(org_info, vertex_input, pred_v_out[0]))
 
