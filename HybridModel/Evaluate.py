@@ -216,7 +216,7 @@ if __name__ == '__main__':
 		saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[1])
 
 		for i in range(50):
-			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'test', i)
+			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {aa: img}
 			pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
 			org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
@@ -228,7 +228,7 @@ if __name__ == '__main__':
 			obj.recover(path, org_img, pred_box, i)
 			obj.recoverGlobal(path, org_img, org_info, pred_v_out, i)
 
-			img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info = obj.getBuildingsBatch(config.BUILDING_PRED_BATCH, mode = 'test', i)
+			img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info = obj.getBuildingsBatch(config.BUILDING_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {pp: img}
 			pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
 			path = './EvalBuildingResult%d' % i
