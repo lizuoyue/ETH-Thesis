@@ -29,6 +29,6 @@ class Config(object):
 		self.LSTM_OUT_CHANNEL = [32, 16, 8]
 		self.V_OUT_RES = (28, 28)
 		self.AREA_TRAIN_BATCH = 4
-		self.AREA_PRED_BATCH = 8
+		self.AREA_PRED_BATCH = 4
 		self.BUILDING_TRAIN_BATCH = 12
-		self.BUILDING_PRED_BATCH = 16
+		self.BUILDING_PRED_BATCH = 8
