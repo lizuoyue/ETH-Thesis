@@ -124,7 +124,7 @@ class DataGenerator(object):
 		polygon = self.building_polygon[bid]
 
 		# Adjust image and polygon
-		org_info = (img.size, rotate)
+		org_info = [img.size[0], img.size[1], rotate]
 		x_rate = self.v_out_res[0] / img.size[0]
 		y_rate = self.v_out_res[1] / img.size[1]
 		img = img.resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)

@@ -114,10 +114,10 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 	# 
 	for i in range(batch_size):
 		vv = v_out_pred[i, 0: seq_len[i]]
-		overlay(img[i], blank      , shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-0-img.png' % i)
-		overlay(img[i], b_pred[i]  , shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-1-bound-pred.png' % i)
-		overlay(img[i], v_pred[i]  , shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-2-vertices-pred.png' % i)
-		overlayMultiMask(img[i], vv, shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-3-vertices-merge.png' % i)
+		overlay(img[i], blank      , shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-0-img.png' % i)
+		overlay(img[i], b_pred[i]  , shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-1-bound-pred.png' % i)
+		overlay(img[i], v_pred[i]  , shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-2-vertices-pred.png' % i)
+		overlayMultiMask(img[i], vv, shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-3-vertices-merge.png' % i)
 		# for j in range(seq_len[i]):
 		# 	overlay(img[i], vv[j], shape).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
 		link = Image.new('P', shape, color = 0)
@@ -126,7 +126,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info)
 			polygon[i].append(polygon[i][0])
 		draw.polygon(polygon[i], fill = 0, outline = 255)
 		link = np.array(link) / 255.0
-		overlay(img[i], link, shape).resize(size = tuple(patch_info[i][0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i][2]).save(path + '/%d-4-vertices-link.png' % i)
+		overlay(img[i], link, shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-4-vertices-link.png' % i)
 
 	# 
 	return
@@ -154,13 +154,13 @@ def scoreIoU(org_info, gt_vv, vv):
 		gt_mask = Image.new('P', config.V_OUT_RES, color = 0)
 		draw = ImageDraw.Draw(gt_mask)
 		draw.polygon(gt_poly[i], fill = 0, outline = 255)
-		gt_mask = gt_mask.resize(size = tuple(org_info[i][0: 2]), resample = Image.BICUBIC).rotate(-org_info[i][2])
+		gt_mask = gt_mask.resize(size = tuple(org_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-org_info[i, 2])
 		mask = Image.new('P', config.V_OUT_RES, color = 0)
 		draw = ImageDraw.Draw(mask)
 		if len(poly[i]) == 1:
 			poly[i].append(poly[i][0])
 		draw.polygon(poly[i], fill = 0, outline = 255)
-		mask = mask.resize(size = tuple(org_info[i][0: 2]), resample = Image.BICUBIC).rotate(-org_info[i][2])
+		mask = mask.resize(size = tuple(org_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-org_info[i, 2])
 		gt_mask = np.array(np.array(gt_mask) / 255.0, np.bool)
 		mask = np.array(np.array(mask) / 255.0, np.bool)
 		res.append(np.sum(gt_mask & mask) / np.sum(gt_mask | mask))
