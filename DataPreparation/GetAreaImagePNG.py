@@ -57,7 +57,7 @@ class AreaImageDownloader(object):
 		img.save('../../Areas%s/%d-%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))
 		roadmap.save('../../Areas%s/%d-%d/roadmap.png' % (self.city_name, area_idx[0], area_idx[1]))
 
-		if False: # <- Local test
+		if True: # <- Local test
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
 			for bid, polygon in polygons:

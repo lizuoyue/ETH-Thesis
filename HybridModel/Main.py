@@ -64,7 +64,7 @@ if __name__ == '__main__':
 		# Restore weights
 		if len(sys.argv) > 1 and sys.argv[1] != None:
 			saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[1])
-			iter_obj = range(int(sys.argv[1]) + 1, NUM_ITER)
+			iter_obj = range(int(sys.argv[1]) + 1, config.NUM_ITER)
 		else:
 			sess.run(init)
 			iter_obj = range(config.NUM_ITER)
