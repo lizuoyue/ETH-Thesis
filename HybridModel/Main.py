@@ -73,7 +73,7 @@ if __name__ == '__main__':
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
 			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_TRAIN_BATCH, mode = 'train')
-			patch, boundary, vertices, v_in, v_out, end, seq_len = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'train')
+			patch, boundary, vertices, v_in, v_out, end, seq_len, _ = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'train')
 			feed_dict = {
 				aa: img, cc: anchor_cls, dd: anchor_box,
 				pp: patch, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len
