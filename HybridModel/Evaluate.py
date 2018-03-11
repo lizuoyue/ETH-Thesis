@@ -235,6 +235,10 @@ if __name__ == '__main__':
 			path = './EvalBuildingResult%d' % i
 			if not os.path.exists(path):
 				os.makedirs(path)
+			print(pred_boundary.shape)
+			print(pred_vertices.shape)
+			print(pred_v_out.shape)
+			print(org_info.shape)
 			visualize_pred(path, img, pred_boundary, pred_vertices, pred_v_out[0], config.V_OUT_RES, org_info)
 			print(scoreIoU(org_info, vertex_input, pred_v_out[0]))
 
