@@ -223,7 +223,7 @@ class HybridModel(object):
 
 	def train(self, aa, cc, dd, pp, ii, bb, vv, oo, ee, ll):
 		#
-		img          = tf.reshape(aa, [config.TRAIN_AREA_BATCH, config.AREA_SIZE[0], config.AREA_SIZE[0], 3])
+		img          = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[0], config.AREA_SIZE[0], 3])
 		anchor_class = tf.reshape(cc, [-1, self.num_anchors, 2])
 		anchor_delta = tf.reshape(dd, [-1, self.num_anchors, 4])
 		patches      = tf.reshape(pp, [-1, config.PATCH_SIZE[0], config.PATCH_SIZE[0], 3])
@@ -252,12 +252,12 @@ class HybridModel(object):
 		pred_end      = tf.reshape(pred_rnn[..., self.res_num], [-1, self.max_num_vertices])
 
 		pred_score = tf.nn.softmax(pred_logit)[..., 0]
-		anchors_rep = tf.tile(tf.expand_dims(self.anchors, 0), [config.TRAIN_AREA_BATCH, 1, 1])
+		anchors_rep = tf.tile(tf.expand_dims(self.anchors, 0), [config.AREA_TRAIN_BATCH, 1, 1])
 		pred_bbox  = self.applyDeltaToAnchor(anchors_rep, pred_delta)
 
 		#
 		pred_box = []
-		for i in range(config.TRAIN_AREA_BATCH):
+		for i in range(config.AREA_TRAIN_BATCH):
 			idx_top = tf.nn.top_k(pred_score[i], 500).indices
 			box_top = tf.gather(pred_bbox[i], idx_top)
 			score_top = tf.gather(pred_score[i], idx_top)
@@ -276,17 +276,17 @@ class HybridModel(object):
 
 	def predict_rpn(self, aa):
 		#
-		img          = tf.reshape(aa, [config.PRED_AREA_BATCH, config.AREA_SIZE[0], config.AREA_SIZE[1], 3])
+		img          = tf.reshape(aa, [config.AREA_PRED_BATCH, config.AREA_SIZE[0], config.AREA_SIZE[1], 3])
 
 		#
 		pred_logit, pred_delta = self.RPN(img, reuse = True)
 		pred_score = tf.nn.softmax(pred_logit)[..., 0]
-		anchors_rep = tf.tile(tf.expand_dims(self.anchors, 0), [config.PRED_AREA_BATCH, 1, 1])
+		anchors_rep = tf.tile(tf.expand_dims(self.anchors, 0), [config.AREA_PRED_BATCH, 1, 1])
 		pred_bbox  = self.applyDeltaToAnchor(anchors_rep, pred_delta)
 
 		#
 		pred_box = []
-		for i in range(config.PRED_AREA_BATCH):
+		for i in range(config.AREA_PRED_BATCH):
 			idx_top = tf.nn.top_k(pred_score[i], 500).indices
 			box_top = tf.gather(pred_bbox[i], idx_top)
 			score_top = tf.gather(pred_score[i], idx_top)

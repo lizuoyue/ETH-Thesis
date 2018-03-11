@@ -2,8 +2,6 @@ class Config(object):
 	def __init__(self):
 		# 
 		self.AREA_SIZE      = [256, 256]
-		self.TRAIN_AREA_BATCH = 4
-		self.PRED_AREA_BATCH = 8
 		self.ANCHOR_SCALE   = [16, 32, 64, 128]
 		self.ANCHOR_RATIO   = [0.25, 0.5, 1, 2, 4]
 		self.FEATURE_SHAPE  = [(64, 64), (32, 32), (16, 16), (8, 8)]
