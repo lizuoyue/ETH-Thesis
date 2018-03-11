@@ -263,8 +263,8 @@ class DataGenerator(object):
 				res.append(self.getSingleBuilding(self.bid_valid[i], rotate = False))
 		if mode == 'test':
 			sel = self.bid_valid[batch_size * idx: batch_size * (idx + 1)]
-			for i in sel:
-				res.append(self.getSingleBuilding(self.bid_valid[i], rotate = False))
+			for item in sel:
+				res.append(self.getSingleBuilding(item, rotate = False))
 		return [np.array([item[i] for item in res]) for i in range(8)]
 
 	def getAreasBatch(self, batch_size, mode = None, idx = None):
@@ -281,8 +281,8 @@ class DataGenerator(object):
 				res.append(self.getSingleArea(self.aid_valid[i], rotate = False))
 		if mode == 'test':
 			sel = self.aid_valid[batch_size * idx: batch_size * (idx + 1)]
-			for i in sel:
-				res.append(self.getSingleArea(self.aid_valid[i], rotate = False))
+			for item in sel:
+				res.append(self.getSingleArea(item, rotate = False))
 		return [np.array([item[i] for item in res]) for i in range(3)]
 
 	def getPatchesFromAreas(self, res):
