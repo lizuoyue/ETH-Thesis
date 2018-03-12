@@ -148,14 +148,16 @@ def scoreIoU(org_info, gt_vv, vv):
 	for i in range(batch_size):
 		gt_mask = Image.new('P', config.V_OUT_RES, color = 0)
 		draw = ImageDraw.Draw(gt_mask)
-		draw.polygon(gt_poly[i], fill = 0, outline = 255)
-		gt_mask = gt_mask.resize(size = tuple(org_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-org_info[i, 2])
+		draw.polygon(gt_poly[i], fill = 255, outline = 255)
+		# gt_mask = gt_mask.resize(size = tuple(org_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-org_info[i, 2])
+		gt_mask = gt_mask.rotate(-org_info[i, 2])
 		mask = Image.new('P', config.V_OUT_RES, color = 0)
 		draw = ImageDraw.Draw(mask)
 		if len(poly[i]) == 1:
 			poly[i].append(poly[i][0])
-		draw.polygon(poly[i], fill = 0, outline = 255)
-		mask = mask.resize(size = tuple(org_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-org_info[i, 2])
+		draw.polygon(poly[i], fill = 255, outline = 255)
+		# mask = mask.resize(size = tuple(org_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-org_info[i, 2])
+		mask = mask.rotate(-org_info[i, 2])
 		gt_mask = np.array(np.array(gt_mask) / 255.0, np.bool)
 		mask = np.array(np.array(mask) / 255.0, np.bool)
 		res.append(np.sum(gt_mask & mask) / np.sum(gt_mask | mask))
@@ -167,8 +169,8 @@ if __name__ == '__main__':
 
 	# Create data generator
 	obj = DataGenerator(
-		building_path = config.PATH_B % 'Chicago',
-		area_path = config.PATH_A % 'Chicago', 
+		building_path = config.PATH_B % sys.argv[1],
+		area_path = config.PATH_A % sys.argv[1], 
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
@@ -208,7 +210,7 @@ if __name__ == '__main__':
 	with tf.Session() as sess:
 		# Restore weights
 		assert(len(sys.argv) > 1)
-		saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[1])
+		saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[2])
 
 		for i in range(50):
 			print('Round %d' % i)
