@@ -253,5 +253,6 @@ if __name__ == '__main__':
 			res = score(org_info, vertex_input, pred_v_out[0])
 			for j, line in enumerate(res):
 				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
+			f.flush()
 
 		f.close()
