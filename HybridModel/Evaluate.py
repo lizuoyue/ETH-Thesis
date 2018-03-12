@@ -225,7 +225,7 @@ if __name__ == '__main__':
 		f = open('eval.csv', 'w')
 		f.write('id,acc,pre,rec,f1s,iou\n')
 
-		for i in range(50):
+		for i in range(200):
 			print('Round %d' % i)
 			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {aa: img}
