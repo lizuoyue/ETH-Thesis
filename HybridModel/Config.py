@@ -32,4 +32,4 @@ class Config(object):
 		self.AREA_PRED_BATCH = 8
 		self.BUILDING_TRAIN_BATCH = 12
 		self.BUILDING_PRED_BATCH = 16
-		self.SPLIT = 0.5
+		self.SPLIT = 0.9
