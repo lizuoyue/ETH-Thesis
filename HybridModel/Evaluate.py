@@ -223,7 +223,7 @@ if __name__ == '__main__':
 		saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[2])
 
 		f = open('eval.csv', 'w')
-		f.write('id,acc,pre,rec,f1s,iou\n' % tuple(line))
+		f.write('id,acc,pre,rec,f1s,iou\n')
 
 		for i in range(50):
 			print('Round %d' % i)
