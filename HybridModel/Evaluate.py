@@ -139,12 +139,12 @@ def recoverPolygon(vv):
 				break
 	return polygon
 
-def scoreIoU(org_info, gt_vv, vv):
+def score(org_info, gt_vv, vv):
 	gt_poly = recoverPolygon(gt_vv)
 	poly = recoverPolygon(vv)
 	assert(len(gt_poly) == len(poly))
 	batch_size = len(poly)
-	res = []
+	acc, pre, rec, f1s, iou = [], [], [], [], []
 	for i in range(batch_size):
 		gt_mask = Image.new('P', config.V_OUT_RES, color = 0)
 		draw = ImageDraw.Draw(gt_mask)
@@ -160,8 +160,18 @@ def scoreIoU(org_info, gt_vv, vv):
 		mask = mask.rotate(-org_info[i, 2])
 		gt_mask = np.array(np.array(gt_mask) / 255.0, np.bool)
 		mask = np.array(np.array(mask) / 255.0, np.bool)
-		res.append(np.sum(gt_mask & mask) / np.sum(gt_mask | mask))
-	return res
+
+		w_0, w_1 = 0.5 / np.sum(gt_mask == False), 0.5 / np.sum(gt_mask == True)
+		tp = np.sum((gt_mask == True) & (mask == True))
+		fp = np.sum((gt_mask == False) & (mask == True))
+		fn = np.sum((gt_mask == True) & (mask == False))
+		tn = np.sum((gt_mask == False) & (mask == False))
+		acc.append(w_0 * tn + w_1 * tp)
+		pre.append(tp / (tp + fp))
+		rec.append(tp / (tp + fn))
+		f1s.append(2 / (1/pre[-1] + 1/rec[-1]))
+		iou.append(np.sum(gt_mask & mask) / np.sum(gt_mask | mask))
+	return [[acc[i], pre[i], rec[i], f1s[i], iou[i]] for i in range(batch_size)]
 
 if __name__ == '__main__':
 	# Create new folder
@@ -212,6 +222,9 @@ if __name__ == '__main__':
 		assert(len(sys.argv) > 1)
 		saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[2])
 
+		f = open('eval.csv', 'w')
+		f.write('id,acc,pre,rec,f1s,iou\n' % tuple(line))
+
 		for i in range(50):
 			print('Round %d' % i)
 			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'test', idx = i)
@@ -237,5 +250,8 @@ if __name__ == '__main__':
 			if not os.path.exists(path):
 				os.makedirs(path)
 			visualize_pred(path, img, boundary, vertices, vertex_input, config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
-			print(scoreIoU(org_info, vertex_input, pred_v_out[0]))
+			res = scoreIoU(org_info, vertex_input, pred_v_out[0])
+			for j, line in enumerate(res):
+				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
 
+		f.close()
