@@ -250,7 +250,7 @@ if __name__ == '__main__':
 			if not os.path.exists(path):
 				os.makedirs(path)
 			visualize_pred(path, img, boundary, vertices, vertex_input, config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
-			res = scoreIoU(org_info, vertex_input, pred_v_out[0])
+			res = score(org_info, vertex_input, pred_v_out[0])
 			for j, line in enumerate(res):
 				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
 
