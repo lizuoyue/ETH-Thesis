@@ -132,4 +132,4 @@ if __name__ == '__main__':
 	config = Config.Config()
 	city_name = sys.argv[1]
 	objCons = BuildingListConstructor(num_vertices_range = (4, 20), filename = './BuildingList%s.npy' % city_name)
-	objCons.batchAddBuildingList(config.CITY_BUILDING[city_name])
+	objCons.batchAddBuildingList(config.CITY_COO[city_name])

@@ -9,6 +9,9 @@ config = Config.Config()
 class BuildingImageDownloader(object):
 	def __init__(self, keys_filename, city_name):
 		self.city_name = city_name
+		self.zoom = config.CITY_IMAGE[city_name]['zoom']
+		self.scale = config.CITY_IMAGE[city_name]['scale']
+		self.size = config.CITY_IMAGE[city_name]['size']
 		with open(keys_filename, 'r') as f:
 			self.keys = [item.strip() for item in f.readlines()]
 
@@ -21,7 +24,7 @@ class BuildingImageDownloader(object):
 		draw.polygon(polygon, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
 		img.save('../../Buildings%s/%d/img.png' % (self.city_name, building_id))
 		roadmap.save('../../Buildings%s/%d/roadmap.png' % (self.city_name, building_id))
-		if False:
+		if False: # <- Local test
 			mask.save('../../Buildings%s/%d/mask.png' % (self.city_name, building_id))
 			merge = Image.alpha_composite(img, mask)
 			merge.save('../../Buildings%s/%d/merge-1.png' % (self.city_name, building_id))
@@ -47,13 +50,13 @@ class BuildingImageDownloader(object):
 		c_lat = (min_lat + max_lat) / 2.0
 
 		# Decide the zoom level
-		left, up = UtilityGeography.lonLatToPixel(min_lon, max_lat, config.ZOOM)
-		right, down = UtilityGeography.lonLatToPixel(max_lon, min_lat, config.ZOOM)
+		left, up = UtilityGeography.lonLatToPixel(min_lon, max_lat, self.zoom)
+		right, down = UtilityGeography.lonLatToPixel(max_lon, min_lat, self.zoom)
 		diameter = math.sqrt((right - left) ** 2 + (down - up) ** 2)
 		patch_size = math.ceil(1.1 * diameter) # <- Pad
-		if patch_size > config.MAX_PATCH_SIZE:
+		if patch_size > self.size:
 			return
-		pad = int((640 - config.MAX_PATCH_SIZE) / 2)
+		pad = int((640 - self.size) / 2)
 		size = patch_size + pad * 2
 
 		# Create new folder
@@ -63,14 +66,14 @@ class BuildingImageDownloader(object):
 		# Get image from Google Map API
 		google_roadmap_edge_color = '0x00ff00'
 		while True:
-			if True:
+			try:
 				data = requests.get(
 					'https://maps.googleapis.com/maps/api/staticmap?' 				+ \
 					'maptype=%s&' 			% 'satellite' 							+ \
 					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 						+ \
-					'zoom=%d&' 				% config.ZOOM 							+ \
+					'zoom=%d&' 				% self.zoom 							+ \
 					'size=%dx%d&' 			% (size, size)					 		+ \
-					'scale=%d&' 			% config.SCALE 							+ \
+					'scale=%d&' 			% self.scale 							+ \
 					'format=%s&' 			% 'png32' 								+ \
 					'key=%s' 				% self.keys[seq_idx % len(self.keys)] 	  \
 				).content
@@ -82,15 +85,15 @@ class BuildingImageDownloader(object):
 					'style=feature:landscape.man_made|element:geometry.stroke|'		+ \
 					'color:%s&' 			% google_roadmap_edge_color 			+ \
 					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 						+ \
-					'zoom=%d&' 				% config.ZOOM 							+ \
+					'zoom=%d&' 				% self.zoom 							+ \
 					'size=%dx%d&' 			% (size, size)					 		+ \
-					'scale=%d&' 			% config.SCALE 							+ \
+					'scale=%d&' 			% self.scale 							+ \
 					'format=%s&' 			% 'png32' 								+ \
 					'key=%s' 				% self.keys[seq_idx % len(self.keys)] 	  \
 				).content
 				roadmap = np.array(Image.open(io.BytesIO(data)))
 				break
-			else:
+			except:
 				print('Try again to get the image.')
 
 		# Image large
@@ -99,7 +102,7 @@ class BuildingImageDownloader(object):
 
 		# Compute polygon's vertices
 		size -= pad * 2
-		bbox = UtilityGeography.BoundingBox(c_lon, c_lat, size, size, config.ZOOM, config.SCALE)
+		bbox = UtilityGeography.BoundingBox(c_lon, c_lat, size, size, self.zoom, self.scale)
 		polygon = [] # <- polygon: (col, row)
 		for lon, lat in building:
 			px, py = bbox.lonLatToRelativePixel(lon, lat)

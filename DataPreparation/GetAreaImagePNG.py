@@ -12,10 +12,13 @@ class AreaImageDownloader(object):
 		with open(keys_filename, 'r') as f:
 			self.keys = [item.strip() for item in f.readlines()]
 		self.cons = GetBuildingListOSM.BuildingListConstructor(num_vertices_range = (4, 20), filename = './BuildingList%s.npy' % city_name)
+		self.zoom = config.CITY_IMAGE[city_name]['zoom']
+		self.scale = config.CITY_IMAGE[city_name]['scale']
+		self.size = config.CITY_IMAGE[city_name]['size']
 		self.building_area = {}
 		self.area_building = {}
 
-		self.city_info = config.CITY_AREA[city_name]
+		self.city_info = config.CITY_IMAGE[city_name]
 
 		for bid in self.cons.getBuildingIDListSorted():
 			min_lon, max_lon = 200.0, -200.0
@@ -57,7 +60,7 @@ class AreaImageDownloader(object):
 		img.save('../../Areas%s/%d-%d/img.png' % (self.city_name, area_idx[0], area_idx[1]))
 		roadmap.save('../../Areas%s/%d-%d/roadmap.png' % (self.city_name, area_idx[0], area_idx[1]))
 
-		if True: # <- Local test
+		if False: # <- Local test
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
 			for bid, polygon in polygons:
@@ -82,20 +85,20 @@ class AreaImageDownloader(object):
 
 		c_lon = self.city_info['center'][0] + self.city_info['step'][0] * (area_idx[0] + self.city_info['xrange'][0])
 		c_lat = self.city_info['center'][1] + self.city_info['step'][1] * (area_idx[1] + self.city_info['yrange'][0])
-		pad = int((640 - config.MAX_PATCH_SIZE) / 2)
-		size = config.MAX_PATCH_SIZE + pad * 2
+		pad = int((640 - self.size) / 2)
+		size = self.size + pad * 2
 
 		# Get image from Google Map API
 		google_roadmap_edge_color = '0x00ff00'
 		while True:
-			if True:
+			try:
 				data = requests.get(
 					'https://maps.googleapis.com/maps/api/staticmap?' 				+ \
 					'maptype=%s&' 			% 'satellite' 							+ \
 					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 						+ \
-					'zoom=%d&' 				% config.ZOOM 							+ \
+					'zoom=%d&' 				% self.zoom 							+ \
 					'size=%dx%d&' 			% (size, size)					 		+ \
-					'scale=%d&' 			% config.SCALE 							+ \
+					'scale=%d&' 			% self.scale 							+ \
 					'format=%s&' 			% 'png32' 								+ \
 					'key=%s' 				% self.keys[seq_idx % len(self.keys)] 	  \
 				).content
@@ -107,15 +110,15 @@ class AreaImageDownloader(object):
 					'style=feature:landscape.man_made|element:geometry.stroke|'		+ \
 					'color:%s&' 			% google_roadmap_edge_color 			+ \
 					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 						+ \
-					'zoom=%d&' 				% config.ZOOM 							+ \
+					'zoom=%d&' 				% self.zoom 							+ \
 					'size=%dx%d&' 			% (size, size)					 		+ \
-					'scale=%d&' 			% config.SCALE 							+ \
+					'scale=%d&' 			% self.scale 							+ \
 					'format=%s&' 			% 'png32' 								+ \
 					'key=%s' 				% self.keys[seq_idx % len(self.keys)] 	  \
 				).content
 				roadmap = np.array(Image.open(io.BytesIO(data)))
 				break
-			else:
+			except:
 				print('Try again to get the image.')
 
 		# Image large
@@ -125,7 +128,7 @@ class AreaImageDownloader(object):
 
 		# Compute polygon's vertices
 		polygons = []
-		bbox = UtilityGeography.BoundingBox(c_lon, c_lat, size, size, config.ZOOM, config.SCALE)
+		bbox = UtilityGeography.BoundingBox(c_lon, c_lat, size, size, self.zoom, self.scale)
 		for bid in self.area_building[area_idx]:
 			polygon = []
 			for lon, lat in self.cons.building[bid]:
