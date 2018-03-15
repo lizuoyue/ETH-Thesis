@@ -1,17 +1,37 @@
 \chapter{Experiments and Results}
 
+In this chapter, the entire experimental process is presented, from the acquisition of the ground truth dataset (see section \ref{gt}), to the implementation, training and prediction phases of the \modelnameshort\ (see section \ref{id}), and finally to the results evaluation and analysis (see section \ref{er}).
+
+\section{Ground Truth}\label{gt}
+
+Our ground truth dataset consists of satellite images and buildings' coordinates, which are used as inputs and labels respectively when training. In this project, all of the satellite images are collected from Google Static Maps API \footnote{https://developers.google.com/maps/documentation/static-maps/} and all of the latitude and longitude coordinates of the polygon vertices of buildings are collected from OpenStreetMap\footnote{https://www.openstreetmap.org/}. For details of the two APIs mentioned above, please refer to subsections \ref{google} and \ref{osm}.
+
+Since the whole dataset is collected from two different sources, the problem of inconsistency may exist. Subsection \ref{pa} describes details of problems which exists in the ground truth dataset, and proposes a solution to tackle the inconsistency problem.
+
+Finally, subsection \ref{ba} illustrates two different kinds of ground truth dataset, which are required for training the \modelnameshort.
+
+\subsection{Google Static Maps API}\label{google}
+
+Google Static Maps API provides an interface that implements maps as high-resolution images. Users can download customized map based on URL with different parameters, which is sent through a standard HTTPS request.
+
+The parameters in URL includes the map type, latitude and longitude coordinates of the image center, the resolution of the image, the zoom level, and the scale.
+
+%\includegraphics[scale=0.5]{4-00} 
+
+%%https://maps.googleapis.com/maps/api/staticmap?maptype=satellite&center=41.9399708,-87.7380649&zoom=20&size=640x640&scale=1&key=AIzaSyCyAEx-G-TOsUEq6me1nOpNhsA7OoROQWw
+
+%%&style=feature:all|element:labels|visibility:off&style=feature:landscape.man_made|element:geometry.stroke|color:0x00ff00
+
+Except for the satellite images, users can also get roadmap if it is in the URL. 
+However, this kind of map only has pixel-wise boundaries of buildings, without information of coordinates.
+然是roadmap只有房屋边界，所以最多用于4.1.5节的对准
+还有PolygonRNN 里CNN part作为gt使用，但本毕设并没有采用
+Because sometimes there is no boundaries but it can be seen clearly that there is a building in the original
+Thus, this thesis project 
+
+\subsection{OpenStreetMap}\label{osm}
+
 Dummy text.
-
-\section{Ground Truth}
-
-Dummy text.
-
-\subsection{Buildings and Areas}
-
-Dummy text.
-
-\subsection{Google Static Maps API}
-
 Dummy text.
 
 \subsubsection{Example Subsubsection}
@@ -26,19 +46,17 @@ Dummy text.
 
 Dummy text.
 
-\subsection{OpenStreetMap}
+\subsection{Problems and Adjustments}\label{pa}
+
+
+
+\subsection{Buildings and Areas}\label{ba}
 
 Dummy text.
 
-\subsection{Problems of Training Set}
 
-Dummy text.
 
-\subsection{Shift Adjustment}
-
-Dummy text.
-
-\section{Implementation Details}
+\section{Implementation Details}\label{id}
 
 Dummy text.
 
@@ -54,7 +72,7 @@ Dummy text.
 
 Beam search
 
-\section{Experiment Results}
+\section{Experiment Results}\label{er}
 
 Dummy text.
 

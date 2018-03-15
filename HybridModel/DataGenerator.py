@@ -63,9 +63,20 @@ class DataGenerator(object):
 			li.append((float(score), bid))
 		li.sort()
 
+		self.num_v_num_building = {}
+		for item in self.building_polygon:
+			l = len(self.building_polygon[item])
+			if l in self.num_v_num_building:
+				self.num_v_num_building[l] += 1
+			else:
+				self.num_v_num_building[l] = 1
+		print(self.num_v_num_building)
+
 		# 
 		self.bid_train = [item[1] for item in li[: int(len(li) * config.SPLIT)]]
 		self.bid_valid = [item[1] for item in li[int(len(li) * config.SPLIT): ]]
+		self.bid_train_p = [1 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_train]
+		self.bid_valid_p = [1 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_valid]
 		print('Totally %d buildings for train.' % len(self.bid_train))
 		print('Totally %d buildings for valid.' % len(self.bid_valid))
 
@@ -254,17 +265,17 @@ class DataGenerator(object):
 		# Real
 		res = []
 		if mode == 'train':
-			sel = np.random.choice(len(self.bid_train), batch_size, replace = True)
-			for i in sel:
-				res.append(self.getSingleBuilding(self.bid_train[i]))
+			sel = np.random.choice(self.bid_train, batch_size, replace = True, p = self.bid_train_p)
+			for bid in sel:
+				res.append(self.getSingleBuilding(bid))
 		if mode == 'valid':
-			sel = np.random.choice(len(self.bid_valid), batch_size, replace = True)
+			sel = np.random.choice(self.bid_valid, batch_size, replace = True, p = self.bid_valid_p)
 			for i in sel:
-				res.append(self.getSingleBuilding(self.bid_valid[i], rotate = False))
+				res.append(self.getSingleBuilding(bid, rotate = False))
 		if mode == 'test':
 			sel = self.bid_valid[batch_size * idx: batch_size * (idx + 1)]
-			for item in sel:
-				res.append(self.getSingleBuilding(item, rotate = False))
+			for bid in sel:
+				res.append(self.getSingleBuilding(bid, rotate = False))
 		return [np.array([item[i] for item in res]) for i in range(8)]
 
 	def getAreasBatch(self, batch_size, mode = None, idx = None):
@@ -272,17 +283,17 @@ class DataGenerator(object):
 		res = []
 		self.area_imgs = []
 		if mode == 'train':
-			sel = np.random.choice(len(self.aid_train), batch_size, replace = True)
-			for i in sel:
-				res.append(self.getSingleArea(self.aid_train[i]))
+			sel = np.random.choice(self.aid_train, batch_size, replace = True)
+			for aid in sel:
+				res.append(self.getSingleArea(aid))
 		if mode == 'valid':
-			sel = np.random.choice(len(self.aid_valid), batch_size, replace = True)
-			for i in sel:
-				res.append(self.getSingleArea(self.aid_valid[i], rotate = False))
+			sel = np.random.choice(self.aid_valid, batch_size, replace = True)
+			for aid in sel:
+				res.append(self.getSingleArea(aid, rotate = False))
 		if mode == 'test':
 			sel = self.aid_valid[batch_size * idx: batch_size * (idx + 1)]
-			for item in sel:
-				res.append(self.getSingleArea(item, rotate = False))
+			for aid in sel:
+				res.append(self.getSingleArea(aid, rotate = False))
 		return [np.array([item[i] for item in res]) for i in range(3)]
 
 	def getPatchesFromAreas(self, res):
