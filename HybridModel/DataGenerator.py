@@ -75,8 +75,14 @@ class DataGenerator(object):
 		# 
 		self.bid_train = [item[1] for item in li[: int(len(li) * config.SPLIT)]]
 		self.bid_valid = [item[1] for item in li[int(len(li) * config.SPLIT): ]]
-		self.bid_train_p = [1 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_train]
-		self.bid_valid_p = [1 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_valid]
+		self.bid_train_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_train]
+		self.bid_valid_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_valid]
+		temp = sum(self.bid_train_p)
+		self.bid_train_p = [item / temp for item in self.bid_train_p]
+		temp = sum(self.bid_valid_p)
+		self.bid_valid_p = [item / temp for item in self.bid_valid_p]
+		print(sum(self.bid_train_p))
+		print(sum(self.bid_valid_p))
 		print('Totally %d buildings for train.' % len(self.bid_train))
 		print('Totally %d buildings for valid.' % len(self.bid_valid))
 
