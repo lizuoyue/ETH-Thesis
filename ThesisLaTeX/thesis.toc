@@ -40,45 +40,54 @@
 \contentsline {section}{\numberline {4.1}Ground Truth}{7}{section.4.1}
 \contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{7}{subsection.4.1.1}
 \contentsline {subsection}{\numberline {4.1.2}OpenStreetMap}{8}{subsection.4.1.2}
-\contentsline {subsubsection}{Example Subsubsection}{8}{section*.11}
-\contentsline {paragraph}{Example Paragraph}{8}{section*.12}
-\contentsline {subparagraph}{Example Subparagraph}{8}{section*.13}
-\contentsline {subsection}{\numberline {4.1.3}Problems and Adjustments}{9}{subsection.4.1.3}
-\contentsline {subsection}{\numberline {4.1.4}Buildings and Areas}{9}{subsection.4.1.4}
-\contentsline {section}{\numberline {4.2}Implementation Details}{9}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Configuration}{9}{subsection.4.2.1}
-\contentsline {subsection}{\numberline {4.2.2}Training}{9}{subsection.4.2.2}
-\contentsline {subsection}{\numberline {4.2.3}Prediction}{9}{subsection.4.2.3}
-\contentsline {section}{\numberline {4.3}Experiment Results}{9}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{9}{subsection.4.3.1}
-\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{9}{subsection.4.3.2}
-\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{9}{subsection.4.3.3}
-\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{11}{chapter.5}
-\contentsline {section}{\numberline {5.1}Problems}{11}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Problem 1}{11}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Problem 2}{11}{subsection.5.1.2}
-\contentsline {subsubsection}{Example Subsubsection}{11}{section*.14}
-\contentsline {paragraph}{Example Paragraph}{11}{section*.15}
-\contentsline {subparagraph}{Example Subparagraph}{11}{section*.16}
-\contentsline {section}{\numberline {5.2}Future Work}{11}{section.5.2}
-\contentsline {subsection}{\numberline {5.2.1}Ground Truth}{11}{subsection.5.2.1}
-\contentsline {subsection}{\numberline {5.2.2}Training Phase}{12}{subsection.5.2.2}
-\contentsline {subsection}{\numberline {5.2.3}Model Generalization}{12}{subsection.5.2.3}
-\contentsline {chapter}{\chapternumberline {6}Introduction}{13}{chapter.6}
-\contentsline {section}{\numberline {6.1}Features}{13}{section.6.1}
-\contentsline {subsection}{\numberline {6.1.1}Extra package includes}{13}{subsection.6.1.1}
-\contentsline {subsection}{\numberline {6.1.2}Layout setup}{14}{subsection.6.1.2}
-\contentsline {subsection}{\numberline {6.1.3}Theorem setup}{14}{subsection.6.1.3}
-\contentsline {subsection}{\numberline {6.1.4}Macro setup}{15}{subsection.6.1.4}
-\contentsline {chapter}{\chapternumberline {7}Writing scientific texts in English}{17}{chapter.7}
-\contentsline {section}{\numberline {7.1}Basic writing rules}{17}{section.7.1}
-\contentsline {section}{\numberline {7.2}Being nice to the reader}{17}{section.7.2}
-\contentsline {section}{\numberline {7.3}A few important grammar rules}{18}{section.7.3}
-\contentsline {section}{\numberline {7.4}Things you (usually) don't say in English}{21}{section.7.4}
-\contentsline {chapter}{\chapternumberline {8}Typography}{23}{chapter.8}
-\contentsline {section}{\numberline {8.1}Punctuation}{23}{section.8.1}
-\contentsline {section}{\numberline {8.2}Spacing}{24}{section.8.2}
-\contentsline {section}{\numberline {8.3}Choice of `fonts'}{25}{section.8.3}
-\contentsline {section}{\numberline {8.4}Displayed equations}{25}{section.8.4}
-\contentsline {section}{\numberline {8.5}Floats}{26}{section.8.5}
-\contentsline {appendix}{\chapternumberline {A}Dummy Appendix}{29}{appendix.A}
+\contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{9}{subsection.4.1.3}
+\contentsline {paragraph}{Areas for FPN}{9}{section*.11}
+\contentsline {paragraph}{Buildings for PolygonRNN}{9}{section*.12}
+\contentsline {subsection}{\numberline {4.1.4}Problems and Adjustments}{11}{subsection.4.1.4}
+\contentsline {paragraph}{General Shift}{11}{section*.13}
+\contentsline {paragraph}{Polygon Size}{11}{section*.14}
+\contentsline {paragraph}{Angle Issue}{11}{section*.15}
+\contentsline {paragraph}{Adjacent Buildings}{11}{section*.16}
+\contentsline {section}{\numberline {4.2}Implementation Details}{12}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Configuration}{12}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Training}{12}{subsection.4.2.2}
+\contentsline {subsection}{\numberline {4.2.3}Prediction}{12}{subsection.4.2.3}
+\contentsline {section}{\numberline {4.3}Experiment Results}{12}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{12}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{13}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{13}{subsection.4.3.3}
+\contentsline {subsubsection}{Example Subsubsection}{13}{section*.17}
+\contentsline {paragraph}{Example Paragraph}{13}{section*.18}
+\contentsline {subparagraph}{Example Subparagraph}{13}{section*.19}
+\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{15}{chapter.5}
+\contentsline {section}{\numberline {5.1}Problems}{15}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Problem 1}{15}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Problem 2}{15}{subsection.5.1.2}
+\contentsline {subsubsection}{Example Subsubsection}{15}{section*.20}
+\contentsline {paragraph}{Example Paragraph}{15}{section*.21}
+\contentsline {subparagraph}{Example Subparagraph}{15}{section*.22}
+\contentsline {section}{\numberline {5.2}Future Work}{15}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Ground Truth}{15}{subsection.5.2.1}
+\contentsline {subsection}{\numberline {5.2.2}Training Phase}{16}{subsection.5.2.2}
+\contentsline {subsection}{\numberline {5.2.3}Model Generalization}{16}{subsection.5.2.3}
+\contentsline {chapter}{\chapternumberline {6}Introduction}{17}{chapter.6}
+\contentsline {section}{\numberline {6.1}Features}{17}{section.6.1}
+\contentsline {subsection}{\numberline {6.1.1}Extra package includes}{17}{subsection.6.1.1}
+\contentsline {subsection}{\numberline {6.1.2}Layout setup}{18}{subsection.6.1.2}
+\contentsline {subsection}{\numberline {6.1.3}Theorem setup}{18}{subsection.6.1.3}
+\contentsline {subsection}{\numberline {6.1.4}Macro setup}{19}{subsection.6.1.4}
+\contentsline {chapter}{\chapternumberline {7}Writing scientific texts in English}{21}{chapter.7}
+\contentsline {section}{\numberline {7.1}Basic writing rules}{21}{section.7.1}
+\contentsline {section}{\numberline {7.2}Being nice to the reader}{21}{section.7.2}
+\contentsline {section}{\numberline {7.3}A few important grammar rules}{22}{section.7.3}
+\contentsline {section}{\numberline {7.4}Things you (usually) don't say in English}{25}{section.7.4}
+\contentsline {chapter}{\chapternumberline {8}Typography}{27}{chapter.8}
+\contentsline {section}{\numberline {8.1}Punctuation}{27}{section.8.1}
+\contentsline {section}{\numberline {8.2}Spacing}{28}{section.8.2}
+\contentsline {section}{\numberline {8.3}Choice of `fonts'}{29}{section.8.3}
+\contentsline {section}{\numberline {8.4}Displayed equations}{29}{section.8.4}
+\contentsline {section}{\numberline {8.5}Floats}{30}{section.8.5}
+\contentsline {appendix}{\chapternumberline {A}Appendix}{33}{appendix.A}
+\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{33}{section.A.1}
+\contentsline {section}{\numberline {A.2}OpenStreetMap}{33}{section.A.2}
+\contentsline {section}{\numberline {A.3}Projection}{33}{section.A.3}

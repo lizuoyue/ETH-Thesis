@@ -29,8 +29,8 @@
 \BOOKMARK [1][-]{section.4.1}{Ground\040Truth}{chapter.4}% 29
 \BOOKMARK [2][-]{subsection.4.1.1}{Google\040Static\040Maps\040API}{section.4.1}% 30
 \BOOKMARK [2][-]{subsection.4.1.2}{OpenStreetMap}{section.4.1}% 31
-\BOOKMARK [2][-]{subsection.4.1.3}{Problems\040and\040Adjustments}{section.4.1}% 32
-\BOOKMARK [2][-]{subsection.4.1.4}{Buildings\040and\040Areas}{section.4.1}% 33
+\BOOKMARK [2][-]{subsection.4.1.3}{Areas\040and\040Buildings}{section.4.1}% 32
+\BOOKMARK [2][-]{subsection.4.1.4}{Problems\040and\040Adjustments}{section.4.1}% 33
 \BOOKMARK [1][-]{section.4.2}{Implementation\040Details}{chapter.4}% 34
 \BOOKMARK [2][-]{subsection.4.2.1}{Configuration}{section.4.2}% 35
 \BOOKMARK [2][-]{subsection.4.2.2}{Training}{section.4.2}% 36
@@ -64,4 +64,7 @@
 \BOOKMARK [1][-]{section.8.3}{Choice\040of\040`fonts'}{chapter.8}% 64
 \BOOKMARK [1][-]{section.8.4}{Displayed\040equations}{chapter.8}% 65
 \BOOKMARK [1][-]{section.8.5}{Floats}{chapter.8}% 66
-\BOOKMARK [0][-]{appendix.A}{Dummy\040Appendix}{}% 67
+\BOOKMARK [0][-]{appendix.A}{Appendix}{}% 67
+\BOOKMARK [1][-]{section.A.1}{Example\040URL\040of\040Google\040Static\040Maps\040API}{appendix.A}% 68
+\BOOKMARK [1][-]{section.A.2}{OpenStreetMap}{appendix.A}% 69
+\BOOKMARK [1][-]{section.A.3}{Projection}{appendix.A}% 70

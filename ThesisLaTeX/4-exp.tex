@@ -1,78 +1,111 @@
 \chapter{Experiments and Results}
 
-In this chapter, the entire experimental process is presented, from the acquisition of the ground truth dataset (see section \ref{gt}), to the implementation, training and prediction phases of the \modelnameshort\ (see section \ref{id}), and finally to the results evaluation and analysis (see section \ref{er}).
+In this chapter, the entire experimental process is presented, from the acquisition of the ground truth dataset (see section \ref{gt}), to the implementation, training and prediction phases of the \modelnameshort\ (see section \ref{impdet}), and finally to the results evaluation and analysis (see section \ref{expres}).
 
 \section{Ground Truth}\label{gt}
 
-Our ground truth dataset consists of satellite images and buildings' coordinates, which are used as inputs and labels respectively when training. In this project, all of the satellite images are collected from Google Static Maps API \footnote{https://developers.google.com/maps/documentation/static-maps/} and all of the latitude and longitude coordinates of the polygon vertices of buildings are collected from OpenStreetMap\footnote{https://www.openstreetmap.org/}. For details of the two APIs mentioned above, please refer to subsections \ref{google} and \ref{osm}.
+Our ground truth dataset consists of satellite images and buildings' coordinates, which are used as inputs and labels respectively when training. In this project, all of the satellite images are collected from Google Static Maps API and all of the latitude and longitude coordinates of the polygon vertices of buildings are collected from OpenStreetMap. For details of the two APIs mentioned above, please refer to subsections \ref{apimap} and \ref{apiosm}.
 
-Since the whole dataset is collected from two different sources, the problem of inconsistency may exist. Subsection \ref{pa} describes details of problems which exists in the ground truth dataset, and proposes a solution to tackle the inconsistency problem.
+As mentioned in section \ref{modmer}, the training phase of our model \modelnameshort\ requires two different kinds of ground truth dataset, areas with multiple bounding boxes for FPN and buildings with geometrical shapes for PolygonRNN, all of which are illustrated in subsection \ref{arebui}.
 
-Finally, subsection \ref{ba} illustrates two different kinds of ground truth dataset, which are required for training the \modelnameshort.
+Since the whole dataset is collected from two different sources, the problem of inconsistency may exist. Subsection \ref{proadj} describes details of the problems in the ground truth dataset, and proposes a solution to adjust the shift between buildings' images and polygons.
 
-\subsection{Google Static Maps API}\label{google}
+\subsection{Google Static Maps API}\label{apimap}
 
-Google Static Maps API provides an interface that implements maps as high-resolution images. Users can download customized map based on URL with different parameters, which is sent through a standard HTTPS request.
+Google Static Maps API\footnote{\lstinline{https://developers.google.com/maps/documentation/static-maps/}} provides an interface that implements maps as high-resolution images. Users can download customized map based on URL with different parameters, which is sent through a standard HTTPS request.
 
-The parameters in URL includes the map type, latitude and longitude coordinates of the image center, the resolution of the image, the zoom level, and the scale.
+The parameters in URL includes the map type (satellite, roadmap, etc.), latitude and longitude coordinates of the image center, the resolution of the image, the zoom level, and the scale. For the usage of the Google Static Maps API, please refer to section \ref{app:apimap} in appendices. Figure \ref{fig:egsatellite} and \ref{fig:egroadmap} shows two types of images can be obtained by Google Static Maps API.
 
-%\includegraphics[scale=0.5]{4-00} 
+\input{fig/4-00}
 
-%%https://maps.googleapis.com/maps/api/staticmap?maptype=satellite&center=41.9399708,-87.7380649&zoom=20&size=640x640&scale=1&key=AIzaSyCyAEx-G-TOsUEq6me1nOpNhsA7OoROQWw
+We would have liked to obtain buildings' coordinates from Google Static Maps API as well, but we find that the API does not provide such information directly. Instead, it gives the styled roadmap images like figure \ref{fig:egroadmap}, where querying coordinates requires further corner detection but the boundaries may be still inaccurate (see figure \ref{fig:eghybrid} for example). Thus, this thesis project, only satellite images from Google Static Maps API are used.
 
-%%&style=feature:all|element:labels|visibility:off&style=feature:landscape.man_made|element:geometry.stroke|color:0x00ff00
+\subsection{OpenStreetMap}\label{apiosm}
 
-Except for the satellite images, users can also get roadmap if it is in the URL. 
-However, this kind of map only has pixel-wise boundaries of buildings, without information of coordinates.
-然是roadmap只有房屋边界，所以最多用于4.1.5节的对准
-还有PolygonRNN 里CNN part作为gt使用，但本毕设并没有采用
-Because sometimes there is no boundaries but it can be seen clearly that there is a building in the original
-Thus, this thesis project 
+OpenStreetMap\footnote{\lstinline{https://www.openstreetmap.org/}} provides an interface that implements a map as a XML format \lstinline{.osm} file. The file contains all the information which can be used to recover the map. When the map's bounding box is given, users can retrieve the latitude and longitude coordinates of the buildings' vertices and roads' central lines within the map. For the usage of OpenStreetMap and the format of the \lstinline{.osm} file, please refer to section \ref{app:apiosm} in appendices.
 
-\subsection{OpenStreetMap}\label{osm}
+The coordinates obtained by the API is the original latitude and longitude coordinates of the buildings' vertices, which cannot be directly used for training. We need to convert them to relative pixel coordinates with regards to an given satellite image.
 
-Dummy text.
-Dummy text.
+As a matter of fact, every fixed point on the earth can correspond to a unique pixel on the map at a specific zoom level. This projection process can be regarded as a function. Since we have already known the relative pixel coordinates of the image center (half width and half height), the projection for an arbitrary point with given latitude and longitude coordinates can be therefore computed. This process can be described as following equations.
+\begin{equation}
+	(c_x, c_y) = (\frac{w}{2}, \frac{h}{2}) = f(c_{lon}, c_{lat}, z) + (\Delta_x, \Delta_y),
+\end{equation}
+\begin{equation}
+	(p_x, p_y) = f(p_{lon}, p_{lat}, z) + (\Delta_x, \Delta_y),
+\end{equation}
+where $f$ is the function that projects latitude and longitude coordinates to global pixel coordinates (see \ref{app:projec} in appendices for more details), $c$ is the image center, $p$ is an arbitrary point, the subscripts $x$, $y$, $lon$, $lat$ mean the relative pixel and longitude and latitude coordinates respectively, $z$ is the zoom level, $\Delta$ is the translation constant from the global to the relative pixel coordinate system. Thus, we have
+\begin{equation}
+	(p_x, p_y) = f(p_{lon}, p_{lat}, z) - f(c_{lon}, c_{lat}, z) + (\frac{w}{2}, \frac{h}{2}),
+\end{equation}
+for any arbitrary point $p$.
 
-\subsubsection{Example Subsubsection}
+\subsection{Areas and Buildings}\label{arebui}
 
-Dummy text.
+As mentioned in section \ref{modmer}, \modelnameshort\ is formed by FPN and PolygonRNN. However, the training phase of these two models requires two different kinds of ground truth dataset.
 
-\paragraph{Example Paragraph}
+\paragraph{Areas for FPN}
+In subsection \ref{modfpn} we have shown that FPN aims at finding rectangular regions of interests. Thus, training FPN generally requires a relatively large image with several objects in it. When considering our problem, an example of the ground truth can be an area of a city with several bounding boxes. Each box contains a single building, regardless of its tight polygon outline. Figure \ref{fig:egareafpn} gives an example area for training FPN and its visualized ground truth label.
 
-Dummy text.
+\input{fig/4-01}
 
-\subparagraph{Example Subparagraph}
+\paragraph{Buildings for PolygonRNN}
+In section \ref{modpol} we have mentioned that PolygonRNN can only deal with images with single object, meaning that the bounding box of the object should be first given. Thus, training PolygonRNN generally requires a relatively small image with single object, as well as the information of its polygon outline. When it comes to our problem, an example of the ground truth can be a building with some padding and the pixel coordinates of building's vertices. Figure \ref{fig:egbui} gives example buildings for training PolygonRNN and its visualized ground truth label.
 
-Dummy text.
+\input{fig/4-02}
 
-\subsection{Problems and Adjustments}\label{pa}
+\subsection{Problems and Adjustments}\label{proadj}
+
+Recall that the satellite images and polygons' coordinates are collected from two different sources, the problem of inconsistency may exist. That is to say, the polygon and the actual building we see in the image may not match well in some cases. This inconsistency is mainly reflected in the following aspects.
+
+\paragraph{General Shift}
+The figure shows a typical shift example in the dataset.
+$$(figure placeholder)$$
+
+\paragraph{Polygon Size}
+Sometimes the polygon size is different from the actual building size as well. Through rough observation, most of this kind of polygon is smaller than the reality. This is because OpenStreetMap measures the bottom of the building and the aerial image is taken from the top. The roof of the house we see from the top is usually large than the floor area.
+$$(figure placeholder)$$
+
+\paragraph{Angle Issue}
+Some very tall buildings may suffer from the angle issue. This is because the satellite cannot always be vertically right above the building, so the side of these very high buildings will be photographed.
+$$(figure placeholder)$$
+
+\paragraph{Adjacent Buildings}
+Some adjacent buildings will be very close together, and some even share a common roof. Thus, from the satellite image, it is generally difficult to distinguish the boundaries between them. However, these buildings are separated in the dataset of OpenStreetMap. It means that where there are originally edges between buildings, it looks like there is no edge in the image. This would cause the inaccuracy of the bounding boxes, as well as the polygon shapes in the ground truth dataset.
+$$(figure placeholder)$$
+
+Problems such as angle issue and adjacent buildings are unsolvable unless the data source can be corrected. What we can improve is to tackle the general shift and the polygon size problem and make the image-polygon pairs more matching. By observing, we can get to some conclusions for a matching image-polygon pair.
+\begin{itemize}
+\item The color variance of image pixels covered by polygon generally reaches the local minimum, because the roof of a building usually has only one color or several similar colors.
+\item The polygon edges are generally a subset of the output of the edge detection (e.g. Sobel, Canny), which is performed on the image.
+\item The polygon vertices are generally a subset of the output of the corner detection (e.g. Harris, SIFT), which is performed on the image.
+\end{itemize}
+Based on these observations, we propose a brute force shift adjustment method. Briefly, we resize and translate the initial polygon within a certain range, and traverse all the cases to see where the minimum color variance, maximum edge and corner coverage are reached. This method can adjust the shift problem to some extent.
+$$(figure placeholder)$$
+
+\section{Implementation Details}\label{impdet}
 
 
+\subsection{Configuration}\label{config}
 
-\subsection{Buildings and Areas}\label{ba}
-
-Dummy text.
-
-
-
-\section{Implementation Details}\label{id}
-
-Dummy text.
-
-\subsection{Configuration}
-
-Dummy text.
+所有building逆时针
 
 \subsection{Training}
 
-Dummy text.
+Furthermore, buildings around the edges of areas are typically ignored 
+
+more likely to be incomplete. In this case, the polygon would be clipped by the edges, resulting in new vertices, which can be very hard to compute.
+$$(figure placeholder)$$
+
+Although buildings can extract from areas
+
+Therefore, in this project, two different kinds of ground truth dataset are collected separately.
+而且独立可以保证训练时的batchsize一致，如果每次训练的Building从area提取，可能会导致每次训练PolygonRNN的batchsize不一致。
 
 \subsection{Prediction}
 
 Beam search
 
-\section{Experiment Results}\label{er}
+\section{Experiment Results}\label{expres}
 
 Dummy text.
 
@@ -87,3 +120,17 @@ Dummy text.
 \subsection{R-PolygonRNN}
 
 Beam search
+
+
+\subsubsection{Example Subsubsection}
+
+Dummy text.
+
+\paragraph{Example Paragraph}
+
+Dummy text.
+
+\subparagraph{Example Subparagraph}
+
+Dummy text.
+
