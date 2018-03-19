@@ -198,6 +198,76 @@ class DataGenerator(object):
 		# Return
 		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info
 
+	def getSingleBuildingRotate(self, bid):
+		theta = random.randint(0, 359)
+
+		# Get image, polygon coordinates
+		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
+		img_rot = img.rotate(theta, resample = Image.BICUBIC, expand = True)
+		img_res = img.resize(self.img_size, resample = Image.BICUBIC)
+
+		# Adjust image and polygon
+		org_info = [img.size[0], img.size[1], theta]
+		polygon = self.building_polygon[bid]
+		polygon_rot = [(
+			 np.cos(np.deg2rad(theta)) * (x - img.size[0] / 2) + np.sin(np.deg2rad(theta)) * (y - img.size[1] / 2) + img_rot.size[0] / 2,
+			-np.sin(np.deg2rad(theta)) * (x - img.size[0] / 2) + np.cos(np.deg2rad(theta)) * (y - img.size[1] / 2) + img_rot.size[1] / 2
+		) for x, y in polygon]
+		x_rate = self.v_out_res[0] / img_rot.size[0]
+		y_rate = self.v_out_res[1] / img_rot.size[1]
+		img = np.array(img_res)[..., 0: 3] / 255.0
+		polygon_s = []
+		for x, y in polygon_rot:
+			a, b = math.floor(x * x_rate), math.floor(y * y_rate)
+			if not polygon_s or self.distL1((a, b), polygon_s[-1]) > 0:
+				polygon_s.append((a, b))
+		start = random.randint(0, len(polygon_s) - 1)
+		polygon_s = polygon_s[start: ] + polygon_s[: start]
+
+		# Draw boundary and vertices
+		boundary = Image.new('P', self.v_out_res, color = 0)
+		draw = ImageDraw.Draw(boundary)
+		draw.polygon(polygon_s, fill = 0, outline = 255)
+		boundary = self.blur(boundary.rotate(rotate))
+
+		vertices = Image.new('P', self.v_out_res, color = 0)
+		draw = ImageDraw.Draw(vertices)
+		draw.point(polygon_s, fill = 255)
+		vertices = self.blur(vertices.rotate(rotate))
+
+		# Get each single vertex
+		vertex_input, vertex_output = [], []
+		for i, (x, y) in enumerate(polygon_s):
+			v = self.vertex_pool[int(y)][int(x)].rotate(rotate)
+			vertex_input.append(np.array(v, dtype = np.float32) / 255.0)
+			if i == 0:
+				continue
+			vertex_output.append(np.array(v, dtype = np.float32) / 255.0)
+		assert(len(vertex_output) == len(vertex_input) - 1)
+
+		# 
+		while len(vertex_input) < self.max_num_vertices:
+			vertex_input.append(np.array(self.blank, dtype = np.float32))
+		while len(vertex_output) < self.max_num_vertices:
+			vertex_output.append(np.array(self.blank, dtype = np.float32))
+		vertex_input = np.array(vertex_input)
+		vertex_output = np.array(vertex_output)
+
+		# Get end signal
+		seq_len = len(polygon_s)
+		end = [0.0 for i in range(self.max_num_vertices)]
+		end[seq_len - 1] = 1.0
+		end = np.array(end)
+
+		# Example:
+		# seq_len = 6
+		# end: ? ? ? ? ? ! X X
+		# out: 1 2 3 4 5 ? X X
+		#  in: 0 1 2 3 4 5 X X
+
+		# Return
+		return img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info
+
 	def getSingleArea(self, area_idx, rotate = True):
 		# Rotate, anticlockwise
 		if rotate:
@@ -273,7 +343,7 @@ class DataGenerator(object):
 		if mode == 'train':
 			sel = np.random.choice(self.bid_train, batch_size, replace = True, p = self.bid_train_p)
 			for bid in sel:
-				res.append(self.getSingleBuilding(bid))
+				res.append(self.getSingleBuildingRotate(bid))
 		if mode == 'valid':
 			sel = np.random.choice(self.bid_valid, batch_size, replace = True, p = self.bid_valid_p)
 			for i in sel:

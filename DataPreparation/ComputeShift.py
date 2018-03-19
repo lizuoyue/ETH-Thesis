@@ -183,7 +183,8 @@ class PolygonShiftProcessor(object):
 			new_poly = [(a + shift_j, b + shift_i) for a, b in helper[idx].polygon]
 			mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
 			draw = ImageDraw.Draw(mask)
-			draw.polygon(new_poly, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+			# draw.polygon(new_poly, fill = (255, 0, 0, 128), outline = (255, 0, 0, 128))
+			draw.line(new_poly + [new_poly[0]], fill = (255, 0, 0, 255), width = 2)
 			merge = Image.alpha_composite(img, mask)
 			# merge.show()
 			merge.save('../../%d.png' % building_idx)
@@ -196,5 +197,5 @@ if __name__ == '__main__':
 	obj = PolygonShiftProcessor(city_name)
 	for i in range(idx_beg, min(idx_end, len(obj.building_list))):
 		print(i)
-		obj.shift(i, show = False)
+		obj.shift(i, show = True)
 

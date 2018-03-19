@@ -16,6 +16,27 @@ class BuildingImageDownloader(object):
 			self.keys = [item.strip() for item in f.readlines()]
 
 	def saveImagePolygon(self, img, polygon, roadmap):
+		#=====================
+		# Save images
+		img = Image.fromarray(img)
+		xrate, yrate = 224 / img.size[0], 224 / img.size[1]
+		img = img.resize((224, 224), resample = Image.BICUBIC)
+		roadmap = Image.fromarray(roadmap).resize((224, 224), resample = Image.BICUBIC)
+		mask = Image.new('RGBA', img.size, color = (255, 255, 255, 0))
+		draw = ImageDraw.Draw(mask)
+		polygon = [(int(x * xrate), int(y * yrate)) for x, y in polygon]
+		draw.line(polygon + [polygon[0]], fill = (255, 0, 0, 255), width = 2)
+		img.save('../../Buildings%s/%d/img.png' % (self.city_name, building_id))
+		roadmap.save('../../Buildings%s/%d/roadmap.png' % (self.city_name, building_id))
+		if True: # <- Local test
+			merge = Image.alpha_composite(img, mask)
+			merge.save('../../Buildings%s/%d/merge.png' % (self.city_name, building_id))
+		# Save as text file to save storage
+		with open('../../Buildings%s/%d/polygon.txt' % (self.city_name, building_id), 'w') as f:
+			for vertex in polygon:
+				f.write('%d %d\n' % vertex)
+		return
+		#=====================
 		# Save images
 		img = Image.fromarray(img)
 		roadmap = Image.fromarray(roadmap)
