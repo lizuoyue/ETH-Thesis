@@ -441,7 +441,6 @@ if __name__ == '__main__':
 		print(item.shape)
 	for item in item2:
 		print(item.shape)
-	quit()
 	for k in range(12):
 		for i, item in enumerate(list(item2)):
 			if i < 3:
