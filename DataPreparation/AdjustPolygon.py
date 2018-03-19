@@ -69,7 +69,7 @@ if __name__ == '__main__':
 					s += x0 * y1 - x1 * y0
 					s += x1 * y2 - x2 * y1
 					s += x2 * y0 - x0 * y2
-					if math.fabs(s) > 1:
+					if math.fabs(s) > 3:
 						new_polygon.append((x1, y1))
 			else:
 				new_polygon = polygon

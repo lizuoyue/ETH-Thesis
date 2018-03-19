@@ -75,8 +75,10 @@ class DataGenerator(object):
 		# 
 		self.bid_train = [item[1] for item in li[: int(len(li) * config.SPLIT)]]
 		self.bid_valid = [item[1] for item in li[int(len(li) * config.SPLIT): ]]
-		self.bid_train_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_train]
-		self.bid_valid_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_valid]
+		# self.bid_train_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_train]
+		# self.bid_valid_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_valid]
+		self.bid_train_p = [1.0 / (self.num_v_num_building[len(self.building_polygon[item])] ** 2) for item in self.bid_train]
+		self.bid_valid_p = [1.0 / (self.num_v_num_building[len(self.building_polygon[item])] ** 2) for item in self.bid_valid]
 		temp = sum(self.bid_train_p)
 		self.bid_train_p = [item / temp for item in self.bid_train_p]
 		temp = sum(self.bid_valid_p)
@@ -435,6 +437,7 @@ if __name__ == '__main__':
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
+	quit()
 	item1 = dg.getAreasBatch(8, mode = 'valid')
 	item2 = dg.getBuildingsBatch(12, mode = 'train')
 	for item in item1:
