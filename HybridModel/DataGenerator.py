@@ -427,7 +427,7 @@ class DataGenerator(object):
 			im.save(path + '/%d_%d.png' % (base % 100, i))
 
 if __name__ == '__main__':
-	city = 'Zurich'
+	city = 'Chicago'
 	dg = DataGenerator(
 		building_path = '../../Buildings%s.zip' % city,
 		area_path = '/local/lizuoyue/Areas%s' % city,
