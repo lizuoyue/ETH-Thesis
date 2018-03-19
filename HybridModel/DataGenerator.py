@@ -204,7 +204,7 @@ class DataGenerator(object):
 		# Get image, polygon coordinates
 		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
 		img_rot = img.rotate(theta, resample = Image.BICUBIC, expand = True)
-		img_res = img.resize(self.img_size, resample = Image.BICUBIC)
+		img_res = img_rot.resize(self.img_size, resample = Image.BICUBIC)
 
 		# Adjust image and polygon
 		org_info = [img.size[0], img.size[1], theta]
