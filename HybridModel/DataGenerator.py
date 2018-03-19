@@ -228,17 +228,17 @@ class DataGenerator(object):
 		boundary = Image.new('P', self.v_out_res, color = 0)
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_s, fill = 0, outline = 255)
-		boundary = self.blur(boundary.rotate(rotate))
+		boundary = self.blur(boundary.rotate(theta))
 
 		vertices = Image.new('P', self.v_out_res, color = 0)
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_s, fill = 255)
-		vertices = self.blur(vertices.rotate(rotate))
+		vertices = self.blur(vertices.rotate(theta))
 
 		# Get each single vertex
 		vertex_input, vertex_output = [], []
 		for i, (x, y) in enumerate(polygon_s):
-			v = self.vertex_pool[int(y)][int(x)].rotate(rotate)
+			v = self.vertex_pool[int(y)][int(x)].rotate(theta)
 			vertex_input.append(np.array(v, dtype = np.float32) / 255.0)
 			if i == 0:
 				continue
