@@ -203,7 +203,7 @@ class DataGenerator(object):
 
 		# Get image, polygon coordinates
 		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
-		img_rot = img.rotate(theta, resample = Image.BICUBIC, expand = True)
+		img_rot = img.rotate(-theta, resample = Image.BICUBIC, expand = True)
 		img_res = img_rot.resize(self.img_size, resample = Image.BICUBIC)
 
 		# Adjust image and polygon
@@ -228,17 +228,17 @@ class DataGenerator(object):
 		boundary = Image.new('P', self.v_out_res, color = 0)
 		draw = ImageDraw.Draw(boundary)
 		draw.polygon(polygon_s, fill = 0, outline = 255)
-		boundary = self.blur(boundary.rotate(theta))
+		boundary = self.blur(boundary)
 
 		vertices = Image.new('P', self.v_out_res, color = 0)
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_s, fill = 255)
-		vertices = self.blur(vertices.rotate(theta))
+		vertices = self.blur(vertices)
 
 		# Get each single vertex
 		vertex_input, vertex_output = [], []
 		for i, (x, y) in enumerate(polygon_s):
-			v = self.vertex_pool[int(y)][int(x)].rotate(theta)
+			v = self.vertex_pool[int(y)][int(x)]
 			vertex_input.append(np.array(v, dtype = np.float32) / 255.0)
 			if i == 0:
 				continue
