@@ -345,7 +345,7 @@ class DataGenerator(object):
 		if mode == 'train':
 			sel = np.random.choice(self.bid_train, batch_size, replace = True, p = self.bid_train_p)
 			for bid in sel:
-				res.append(self.getSingleBuildingRotate(bid))
+				res.append(self.getSingleBuilding(bid))
 		if mode == 'valid':
 			sel = np.random.choice(self.bid_valid, batch_size, replace = True, p = self.bid_valid_p)
 			for i in sel:
