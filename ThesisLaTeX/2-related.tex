@@ -1,20 +1,8 @@
 \chapter{Related Work}
 
-Dummy text.
+In this chapter, the architectures of PolygonRNN and Faster/Mask R-CNN are presented in detail (see section \ref{modpoly} and section \ref{modrcnn} respectively). Considering our problem, we combine PolygonRNN and FPN part of Mask R-CNN together and come up with a new model, which is called \modelnameshort\ (\modelnamelong, see section \ref{modmer}). In theory, the proposed model should find out the bounding boxes of buildings within an aerial image and give geometrical shape for each building.
 
 \section{Previous Theses}
-
-Dummy text.
-
-\subsubsection{Example Subsubsection}
-
-Dummy text.
-
-\paragraph{Example Paragraph}
-
-Dummy text.
-
-\subparagraph{Example Subparagraph}
 
 Dummy text.
 
@@ -22,9 +10,12 @@ Dummy text.
 
 Dummy text.
 
-\subsection{PolygonRNN}
+\subsection{PolygonRNN}\label{relatpoly}
 
-Dummy text.
+这一张主要讲述寻找几何形状的网络——PolygonRNN
+它是由XXX率先在哪里提出，用于汽车标记，更快annotate
+An RNN is a powerful representation of time-series data, as it carries more complex information about the history by employing linear and non-linear functions. In our case, we hope the RNN to capture the shape of the object and thus make coherent predictions even in ambiguous cases such as for example shadows and saturation.
+RNN网络可以在迭代过程中，通过线性和非线性方程携带复杂的历史信息，正是从这点考虑作者希望通过RNN来依次预测出多边形的顶点。
 
 \subsection{Mask R-CNN}
 

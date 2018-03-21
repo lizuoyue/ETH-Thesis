@@ -49,7 +49,7 @@ In subsection \ref{modfpn} we have shown that FPN aims at finding rectangular re
 \input{fig/4-01}
 
 \paragraph{Buildings for PolygonRNN}
-In section \ref{modpol} we have mentioned that PolygonRNN can only deal with images with single object, meaning that the bounding box of the object should be first given. Thus, training PolygonRNN generally requires a relatively small image with single object, as well as the information of its polygon outline. When it comes to our problem, an example of the ground truth can be a building with some padding and the pixel coordinates of building's vertices. Figure \ref{fig:egbui} gives example buildings for training PolygonRNN and its visualized ground truth label.
+In section \ref{modpoly} we have mentioned that PolygonRNN can only deal with images with single object, meaning that the bounding box of the object should be first given. Thus, training PolygonRNN generally requires a relatively small image with single object, as well as the information of its polygon outline. When it comes to our problem, an example of the ground truth can be a building with some padding and the pixel coordinates of building's vertices. Figure \ref{fig:egbui} gives example buildings for training PolygonRNN and its visualized ground truth label.
 
 \input{fig/4-02}
 
@@ -60,16 +60,16 @@ Recall that the satellite images and polygons' coordinates are collected from tw
 \input{fig/4-03}
 
 \paragraph{General Shift}
-Figure \ref{fig:egshi0} and \ref{fig:egshi1} give two typical shift examples in the dataset. This shift is generally within the range of 30 pixels, either up and down, or left and right.
+Figure \ref{fig:egshi0} gives two typical shift examples in the dataset. This shift is generally within the range of 30 pixels, either up and down, or left and right.
 
 \paragraph{Polygon Size and Shape}
-Sometimes the polygon size and shape is different from the actual building size as well. This is typically because OpenStreetMap measures the bottom of the building and the aerial image is taken from the top. The roof of the house we see from the top can be different from the floor area. Figure \ref{fig:egshi2} shows a building with a smaller polygon and figure \ref{fig:egshi3} shows a building with a too rough outline.
+Sometimes the polygon size and shape is different from the actual building size as well. This is typically because OpenStreetMap measures the bottom of the building and the aerial image is taken from the top. The roof of the house we see from the top can be different from the floor area. Figure \ref{fig:egshi1} shows a building with a smaller polygon and a building with a too rough outline.
 
 \paragraph{Angle Issue}
-Some tall buildings may suffer from the angle issue. This is because the satellite cannot always be vertically right above the building, so the side of these very high buildings will be photographed. Figure \ref{fig:egshi4} and \ref{fig:egshi5} give two examples.
+Some tall buildings may suffer from the angle issue. This is because the satellite cannot always be vertically right above the building, so the side of these very high buildings will be photographed. Figure \ref{fig:egshi2} gives two examples.
 
 \paragraph{Adjacent Buildings}
-Some adjacent buildings will be very close together, and some even share a common roof. Thus, from the satellite image, it is generally difficult to distinguish the boundaries between them. However, these buildings are separated in the dataset of OpenStreetMap. It means that where there are originally edges between buildings, it looks like there is no edge in the image. This kind of inaccuracy would have  negative effect on the training phase. Figure \ref{fig:egshi6} and \ref{fig:egshi7} give two examples.
+Some adjacent buildings will be very close together, and some even share a common roof. Thus, from the satellite image, it is generally difficult to distinguish the boundaries between them. However, these buildings are separated in the dataset of OpenStreetMap. It means that where there are originally edges between buildings, it looks like there is no edge in the image. This kind of inaccuracy would have  negative effect on the training phase. Figure \ref{fig:egshi3} and gives two examples.
 
 \subsection{Adjustments}\label{adjust}
 Problems such as too rough polygon shape, angle issue and adjacent buildings are unsolvable unless the data sources can correct themselves. What we can improve is to tackle the general shift and the polygon size problem and make the image-polygon pairs more matching. By observation, we can get to some conclusions for a matching image-polygon pair.
@@ -85,7 +85,7 @@ The polygon edges generally lie within the output of the edge detection (e.g. So
 \paragraph{Corners}
 The polygon vertices can generally match the output of the corner detection (e.g. Harris, SIFT) performed on the image.
 
-Based on these conclusions, we propose a brute force shift adjustment method. Briefly, we resize and translate the initial polygon within a certain range, and traverse all the cases to see where the minimum color variance, maximum edge and corner coverage are reached. This method can address the shift problem to some extent. Figure \ref{fig:egadj} illustrates some examples.
+Based on these conclusions, we propose a brute force shift adjustment method. Briefly, we resize and translate the initial polygon within a certain range, and traverse all the cases to see where the minimum color variance, maximum edge and corner coverage are reached. Figure \ref{fig:egadj} illustrates some examples which compare the polygons before and after the adjustment. Results show that this algorithm can well address the shift problem to some extent.
 
 \section{Implementation Details}\label{impdet}
 
@@ -94,6 +94,7 @@ Based on these conclusions, we propose a brute force shift adjustment method. Br
 number of layers
 LSTM
 polygon anticlockwise
+remove point in a line
 
 \subsection{Training}
 
