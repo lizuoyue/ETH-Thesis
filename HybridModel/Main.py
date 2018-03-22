@@ -11,14 +11,17 @@ from UtilityBoxAnchor import *
 config = Config()
 
 if __name__ == '__main__':
+	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
+	city_name = sys.argv[1]
+
 	# Create new folder
-	if not os.path.exists('./Model/'):
-		os.makedirs('./Model/')
+	if not os.path.exists('./Model%s/' % city_name):
+		os.makedirs('./Model%s/' % city_name)
 
 	# Create data generator
 	obj = DataGenerator(
-		building_path = config.PATH_B % 'Chicago',
-		area_path = config.PATH_A % 'Chicago', 
+		building_path = config.PATH_B % city_name,
+		area_path = config.PATH_A % city_name, 
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
@@ -57,14 +60,15 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		f = open('./HybridModel.out', 'a')
-		train_writer = Logger('./Log/train/')
-		valid_writer = Logger('./Log/valid/')
+		train_loss = open('./Loss%sTrain.out' % city_name, 'w')
+		valid_loss = open('./Loss%sValid.out' % city_name, 'w')
+		train_writer = Logger('./Log%s/train/' % city_name)
+		valid_writer = Logger('./Log%s/valid/' % city_name)
 
 		# Restore weights
-		if len(sys.argv) > 1 and sys.argv[1] != None:
-			saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[1])
-			iter_obj = range(int(sys.argv[1]) + 1, config.NUM_ITER)
+		if len(sys.argv) == 3 and sys.argv[1] != None:
+			saver.restore(sess, './Model%s/Model%s-%s.ckpt' % (city_name, city_name, sys.argv[2]))
+			iter_obj = range(int(sys.argv[2]) + 1, config.NUM_ITER)
 		else:
 			sess.run(init)
 			iter_obj = range(config.NUM_ITER)
@@ -92,9 +96,30 @@ if __name__ == '__main__':
 			train_writer.log_scalar('Loss Full' , loss_class + loss_delta + loss_CNN + loss_RNN, i)
 			
 			# Write loss to file
-			print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
-			f.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
-			f.flush()
+			# print('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
+			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
+			train_loss.flush()
+
+			# Validation
+			if i % 200 == 0:
+				img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_TRAIN_BATCH, mode = 'valid')
+				patch, boundary, vertices, v_in, v_out, end, seq_len, _ = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'valid')
+				feed_dict = {
+					aa: img, cc: anchor_cls, dd: anchor_box,
+					pp: patch, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len
+				}
+				init_time = time.time()
+				loss_class, loss_delta, loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end, pred_box = sess.run(train_res, feed_dict)
+				cost_time = time.time() - init_time
+				valid_writer.log_scalar('Loss Class', loss_class, i)
+				valid_writer.log_scalar('Loss Delta', loss_delta, i)
+				valid_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
+				valid_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
+				valid_writer.log_scalar('Loss RPN'  , loss_class + loss_delta, i)
+				valid_writer.log_scalar('Loss Poly' , loss_CNN   + loss_RNN  , i)
+				valid_writer.log_scalar('Loss Full' , loss_class + loss_delta + loss_CNN + loss_RNN, i)
+				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_class, loss_delta, loss_CNN, loss_RNN, cost_time))
+				valid_loss.flush()
 
 			# Visualize
 			if i % 200 == 1:
@@ -104,7 +129,7 @@ if __name__ == '__main__':
 				org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
 				feed_dict = {pp: patch}
 				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-				path = './Result'
+				path = './Result%s' % city_name
 				if not os.path.exists(path):
 					os.makedirs(path)
 				obj.recover(path, org_img, pred_box, int((i-1)/200))
@@ -112,10 +137,11 @@ if __name__ == '__main__':
 
 			# Save model
 			if i % 200 == 0:
-				saver.save(sess, './Model/Model-%d.ckpt' % i)
+				saver.save(sess, './Model%s/Model%s-%d.ckpt' % (city_name, city_name, i))
 
 		# End main loop
 		train_writer.close()
 		valid_writer.close()
-		f.close()
+		train_loss.close()
+		valid_loss.close()
 

@@ -28,6 +28,10 @@ class Logger(object):
 		self.writer.close()
 		return
 
+def normalize(li):
+	s = sum(li)
+	return [item / s for item in li]
+
 def rotateBox(size, box):
 	w, h = size
 	x1, y1, x2, y2 = box
@@ -75,16 +79,8 @@ class DataGenerator(object):
 		# 
 		self.bid_train = [item[1] for item in li[: int(len(li) * config.SPLIT)]]
 		self.bid_valid = [item[1] for item in li[int(len(li) * config.SPLIT): ]]
-		# self.bid_train_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_train]
-		# self.bid_valid_p = [1.0 / len(self.num_v_num_building) / self.num_v_num_building[len(self.building_polygon[item])] for item in self.bid_valid]
-		self.bid_train_p = [1.0 / (self.num_v_num_building[len(self.building_polygon[item])] ** 2) for item in self.bid_train]
-		self.bid_valid_p = [1.0 / (self.num_v_num_building[len(self.building_polygon[item])] ** 2) for item in self.bid_valid]
-		temp = sum(self.bid_train_p)
-		self.bid_train_p = [item / temp for item in self.bid_train_p]
-		temp = sum(self.bid_valid_p)
-		self.bid_valid_p = [item / temp for item in self.bid_valid_p]
-		print(sum(self.bid_train_p))
-		print(sum(self.bid_valid_p))
+		self.bid_train_p = normalize([len(self.building_polygon[item]) for item in self.bid_train])
+		self.bid_valid_p = normalize([len(self.building_polygon[item]) for item in self.bid_valid])
 		print('Totally %d buildings for train.' % len(self.bid_train))
 		print('Totally %d buildings for valid.' % len(self.bid_valid))
 
@@ -429,7 +425,7 @@ class DataGenerator(object):
 			im.save(path + '/%d_%d.png' % (base % 100, i))
 
 if __name__ == '__main__':
-	city = 'Chicago'
+	city = sys.argv[1]
 	dg = DataGenerator(
 		building_path = '../../Buildings%s.zip' % city,
 		area_path = '/local/lizuoyue/Areas%s' % city,
