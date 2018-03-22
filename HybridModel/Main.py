@@ -132,8 +132,8 @@ if __name__ == '__main__':
 				path = './Result%s' % city_name
 				if not os.path.exists(path):
 					os.makedirs(path)
-				obj.recover(path, org_img, pred_box, int((i-1)/200))
-				obj.recoverGlobal(path, org_img, org_info, pred_v_out, int((i-1)/200))
+				obj.recover(path, org_img, pred_box, int((i - 1) / 200))
+				obj.recoverGlobal(path, org_img, org_info, pred_v_out, int((i - 1) / 200))
 
 			# Save model
 			if i % 200 == 0:

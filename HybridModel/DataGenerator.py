@@ -135,7 +135,13 @@ class DataGenerator(object):
 			rotate = 0
 
 		# Get image, polygon coordinates
-		img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
+		while True:
+			try:
+				img = Image.open(io.BytesIO(self.sftp.open(self.area_path.replace('Areas', 'Buildings') + '/%s/img.png' % bid).read()))
+				break
+			except:
+				print('Try again.')
+		# img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
 		polygon = self.building_polygon[bid]
 
 		# Adjust image and polygon
