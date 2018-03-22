@@ -1,0 +1,34 @@
+\select@language {english}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Simplified structure of PolygonRNN}}{5}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces VGG-16 architecture}}{6}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Modified VGG-16 architecture in PolygonRNN}}{7}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Mask prediction of VGG-16}}{7}{figure.3.4}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Visualization for LSTM cell}}{9}{figure.3.5}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Visualization for the time step of the RNN decoder}}{10}{figure.3.6}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{14}{figure.4.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces satellite image}}{14}{figure.4.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces roadmap image}}{14}{figure.4.1}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces hybrid image}}{14}{figure.4.1}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces An example area in Zurich for FPN training}}{16}{figure.4.2}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example area}}{16}{figure.4.2}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example area with bounding boxes}}{16}{figure.4.2}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Example buildings in Zurich for PolygonRNN training}}{16}{figure.4.3}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example buildings}}{16}{figure.4.3}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example buildings with polygon outlines}}{16}{figure.4.3}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Problems existed in the ground truth dataset}}{17}{figure.4.4}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces general shift}}{17}{figure.4.4}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces polygon size and shape}}{17}{figure.4.4}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces angle issue}}{17}{figure.4.4}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces adjacent buildings}}{17}{figure.4.4}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{18}{figure.4.5}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces before adjustment}}{18}{figure.4.5}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces after adjustment}}{18}{figure.4.5}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}

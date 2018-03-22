@@ -17,6 +17,9 @@ Dummy text.
 An RNN is a powerful representation of time-series data, as it carries more complex information about the history by employing linear and non-linear functions. In our case, we hope the RNN to capture the shape of the object and thus make coherent predictions even in ambiguous cases such as for example shadows and saturation.
 RNN网络可以在迭代过程中，通过线性和非线性方程携带复杂的历史信息，正是从这点考虑作者希望通过RNN来依次预测出多边形的顶点。
 
+ (right), we feed in an image representation using a modified VGG architecture. Our RNN is a two-layer convolutional LSTM with skip-connection from one and two time steps ago. At the output at each time step, we predict the spatial location of the new vertex of the polygon.
+At each time step, RNN outputs a vertex with the highest probability.
+
 \subsection{Mask R-CNN}
 
 Dummy text.
