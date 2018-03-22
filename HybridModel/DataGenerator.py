@@ -350,7 +350,7 @@ class DataGenerator(object):
 				res.append(self.getSingleBuilding(bid))
 		if mode == 'valid':
 			sel = np.random.choice(self.bid_valid, batch_size, replace = True, p = self.bid_valid_p)
-			for i in sel:
+			for bid in sel:
 				res.append(self.getSingleBuilding(bid, rotate = False))
 		if mode == 'test':
 			sel = self.bid_valid[batch_size * idx: batch_size * (idx + 1)]
