@@ -142,6 +142,10 @@ class DataGenerator(object):
 				break
 			except:
 				print('Try again.')
+				self.ssh = paramiko.SSHClient()
+				self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+				self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
+				self.sftp = self.ssh.open_sftp()
 		# img = Image.open(io.BytesIO(self.archive.read(self.building_path + '/%d/img.png' % bid)))
 		polygon = self.building_polygon[bid]
 
@@ -288,6 +292,10 @@ class DataGenerator(object):
 				break
 			except:
 				print('Try again.')
+				self.ssh = paramiko.SSHClient()
+				self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+				self.ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
+				self.sftp = self.ssh.open_sftp()
 
 		org_rot = org.rotate(n_rotate * 90)
 		self.area_imgs.append(org_rot)
