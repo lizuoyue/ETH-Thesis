@@ -62,6 +62,7 @@ class DataGenerator(object):
 		for bid in bids:
 			lines = self.archive.read(self.building_path + '/%d/polygon_after_shift.txt' % bid).decode('utf-8').split('\n')
 			self.building_polygon[bid] = [tuple(int(item) for item in line.split()) for line in lines if bool(line.strip())]
+			self.building_polygon[bid].reverse()
 			lines = self.archive.read(self.building_path + '/%d/shift.txt' % bid).decode('utf-8').split('\n')
 			score, _ = lines[1].split()
 			li.append((float(score), bid))

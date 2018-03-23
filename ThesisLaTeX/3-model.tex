@@ -4,13 +4,13 @@ In this chapter, the architectures of several models are presented. Section \ref
  
 \section{PolygonRNN}\label{modpoly}
 
-PolygonRNN is the core model for finding geometrical shapes in this project. Figure \ref{fig:simppoly} shows the simplified structure of PolygonRNN. The CNN part (see subsection \ref{modcnn}) can capture image features through multilayer convolutions and max pooling, which is then fed into the RNN part (see subsection \ref{modrnn}) to sequentially find out the polygon vertices.
+PolygonRNN is the core model for finding geometrical shapes in this project. Figure \ref{fig:simppoly} shows the simplified structure of PolygonRNN. The CNN part (see subsection \ref{modcnn}) can capture image features through multilayer convolutions and max pooling, which is then fed into the RNN part (see subsection \ref{modrnn}), which can sequentially predict spatial location of the new vertex with the highest probability at each time step.
 
 \input{fig/3-00}
 
 \subsection{CNN Part}\label{modcnn}
 
-As mentioned in subsection \ref{relatpoly}, the CNN part of PolygonRNN uses VGG-16. Actually, VGG-16 is a form of VGGNet, which is proposed by the Visual Geometry Group of Oxford University. VGGNet is very structured and focusing on deepening the  neural network without a large number of parameters. It generally believes that deeper networks have stronger expressive capabilities than shallow networks, and can accomplish more complex tasks. It also proven in practice that VGGNet has made great progress in performance compared to its previous network architecture (e.g. AlexNet).
+The CNN part of PolygonRNN uses VGG-16. Actually, VGG-16 is a form of VGGNet, which is very structured and focusing on deepening the  neural network without a large number of parameters. It generally believes that deeper networks have stronger expressive capabilities than shallow networks, and can accomplish more complex tasks. It also proven in practice that VGGNet has made great progress in performance compared to its previous network architecture (e.g. AlexNet).
 
 The `16' in VGG-16 means that it is a VGGNet with 16 layers containing parameters (13 convolutional layers and 3 fully connected layers). It has around 138 million parameters in total. Figure \ref{fig:vgg16} shows its detailed network structure. From the figure we can see that VGG-16 continuously does convolution with $3\times3$ small kernels and makes $2\times2$ max pooling. As the network deepens, the width and height of the image are reduced by half after each max pooling, and the number of channels is also doubly increasing after some convolution.
 
@@ -27,7 +27,7 @@ Another function of the CNN part is to predict masks of boundary and vertices in
 \input{fig/3-03}
 
 \subsection{RNN Part}\label{modrnn}
-The model used for predicting polygon vertices is RNN. We have mentioned in subsection \ref{relatpoly} that RNN is very powerful when data is related to time series, and in our case, we regards the polygon as a series of vertices.
+The model used for predicting polygon vertices is RNN. We have already mentioned in subsection \ref{relatpoly} that RNN is very powerful when data is related to time series, and in our case, we regards the polygon as a series of vertices.
 
 We know that given two vertices on a polygon in an order (either clockwise or anticlockwise), the third vertex after the two points can be uniquely determined. What RNN here can do is to predict the probability distribution of the next vertex's position in a low resolution when given the history information about the two vertices before, as well as the image features and the position of the starting vertex. This process can be formulated as follows.
 \begin{equation}\label{eq:vnext}
@@ -39,7 +39,7 @@ where $p$ denotes the extracted features by CNN (including the masks of boundary
 
 \paragraph{Starting Vertex} In equation \ref{eq:vnext}, two special cases $p(v_0)$ and $p(v_1|v_0)$ are not included yet. These two cases are different from the general case, and should be considered in addition. In particular, we can directly regard the mask of vertices (for example, the rightmost image in figure \ref{fig:vgg16mask}) predicted by the CNN as $v_0$'s unnormalized probability distribution $\tilde{p}(v_0)$, and choose the position with the highest probability for $v_0$'s assignment. As $v_0$ is known, there are typically two options for $v_1$, one is the next vertex on its left direction and another on right direction. To tackle this problem, we can simply specify the order of the polygon vertices to be fixed, so that $v_1$ can be uniquely determined. In our project, the order of polygon is set to be anticlockwise.
 
-\paragraph{ConvLSTM} As mentioned in subsection \ref{relatpoly} the model uses ConvLSTM cell as the polygon decoder to sequentially predict vertices. For simplicity, we can regard ConvLSTM as the function $F(\cdot)$ in equation \ref{eq:vnext}. In fact, the structure of a ConvLSTM cell is almost the same as that of an ordinary LSTM cell, except that it employs convolution in a 2D image with multiple channels instead of matrices or vectors multiplication. The introduction of ConvLSTM can significantly reduce the the number of parameters when it is compared with a fully connected RNN. The following equations define the computation process within a ConvLSTM cell, which is also visualized in figure \ref{fig:lstmcell}.
+\paragraph{ConvLSTM} The RNN uses ConvLSTM (Convolutional LSTM) cells as the polygon decoder to sequentially predict vertices. For simplicity, we can regard ConvLSTM as the function $F(\cdot)$ in equation \ref{eq:vnext}. In fact, the structure of a ConvLSTM cell is almost the same as that of an ordinary LSTM cell, except that it employs convolution in a 2D image with multiple channels instead of matrices or vectors multiplication. The introduction of ConvLSTM can significantly reduce the the number of parameters when it is compared with a fully connected RNN. The following equations define the computation process within a ConvLSTM cell, which is also visualized in figure \ref{fig:lstmcell}.
 \begin{equation}
 	\left[\begin{array}{c}
 		f_t\\i_t\\g_t\\o_t
@@ -78,31 +78,23 @@ where $W_y$ denotes the weights of the final fully connected layer. Figure \ref{
 
 \input{fig/3-05}
 
-\subsection{Training}
-the training of PolygonRNN
+\subsection{Loss Function}
+The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The loss function of CNN part uses log loss, since the mask prediction is equivalent to binary classification for each pixel. We also notice that the non-boundary pixels or the non-vertex pixels occupy the majority, the loss function should be further weighted. As for the loss of RNN, the loss function used is cross-entropy loss, because the polygon prediction is equivalent to multiclass classification at every time step.
 
-\paragraph{Loss of CNN Part}
-Cross-entropy loss
-
-The 
-
-The two masks are also used to compute the loss as well when given the ground truth. Here the weighted log loss is adopted.
-
-\paragraph{Loss of RNN Part}
+\section{Mask R-CNN}\label{modrcnn}
 
 
 
 
 
-\section{Faster/Mask R-CNN}\label{modrcnn}
 
-Dummy text.
 
-\subsection{Region Proposal Network}\label{modrpn}
-
-Dummy text.
 
 \subsection{Feature Pyramid Network}\label{modfpn}
+
+Dummy text.
+
+\subsection{Loss Function}
 
 Dummy text.
 

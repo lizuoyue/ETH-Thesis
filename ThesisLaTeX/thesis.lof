@@ -1,6 +1,10 @@
 \select@language {english}
 \addvspace {10pt}
 \addvspace {10pt}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Comparison of pixel-wise mask and polygon}}{4}{figure.2.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces an example building}}{4}{figure.2.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces pixel-wise mask}}{4}{figure.2.1}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces polygon prediction}}{4}{figure.2.1}
 \addvspace {10pt}
 \contentsline {figure}{\numberline {3.1}{\ignorespaces Simplified structure of PolygonRNN}}{5}{figure.3.1}
 \contentsline {figure}{\numberline {3.2}{\ignorespaces VGG-16 architecture}}{6}{figure.3.2}

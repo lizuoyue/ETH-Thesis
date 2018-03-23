@@ -1,29 +1,34 @@
 \chapter{Related Work}
 
-In this chapter, the architectures of PolygonRNN and Faster/Mask R-CNN are presented in detail (see section \ref{modpoly} and section \ref{modrcnn} respectively). Considering our problem, we combine PolygonRNN and FPN part of Mask R-CNN together and come up with a new model, which is called \modelnameshort\ (\modelnamelong, see section \ref{modmer}). In theory, the proposed model should find out the bounding boxes of buildings within an aerial image and give geometrical shape for each building.
+In this chapter, some related work are illustrated in detail. Section \ref{relatpre} presents two previous theses related to our problem and points out their deficiencies. Section \ref{relatrec} introduces two recent models, PolygonRNN and Mask R-CNN. The former can be used to extract geometrical shapes and the FPN (Feature Pyramid Network) used in latter one can be used for the localization of buildings. Section \ref{relatmot} further discusses the feasibility of applying these models to our problem.
 
-\section{Previous Theses}
+\section{Previous Theses}\label{relatpre}
 
-Dummy text.
 
-\section{Recent Models}
 
 Dummy text.
+
+\section{Recent Models}\label{relatrec}
+
+
+PolygonRNN, geometric shape
+FPN, localization
 
 \subsection{PolygonRNN}\label{relatpoly}
+PolygonRNN aims at finding geometrical shape for an object instance, given the bounding box. The model is originally proposed for speeding up labeling the ground truth since it can achieve semi-automatic annotation of object instances, but the model can be used for instance segmentation as well.
 
-这一张主要讲述寻找几何形状的网络——PolygonRNN
-它是由XXX率先在哪里提出，用于汽车标记，更快annotate
-An RNN is a powerful representation of time-series data, as it carries more complex information about the history by employing linear and non-linear functions. In our case, we hope the RNN to capture the shape of the object and thus make coherent predictions even in ambiguous cases such as for example shadows and saturation.
-RNN网络可以在迭代过程中，通过线性和非线性方程携带复杂的历史信息，正是从这点考虑作者希望通过RNN来依次预测出多边形的顶点。
+Most current methods regard the instance segmentation problem as a pixel-wise classification problem, generally labeling each pixel as object or background (see figure \ref{fig:egpxlmsk} for example). Different from this traditional way, the paper treats the segmentation task as a polygon prediction problem. In particular, PolygonRNN takes the image of instance as input and sequentially produces vertices of the polygon outlining the object (see figure \ref{fig:egpoly} for example).
 
- (right), we feed in an image representation using a modified VGG architecture. Our RNN is a two-layer convolutional LSTM with skip-connection from one and two time steps ago. At the output at each time step, we predict the spatial location of the new vertex of the polygon.
-At each time step, RNN outputs a vertex with the highest probability.
+\input{fig/2-00}
 
-\subsection{Mask R-CNN}
+We know that predicting a polygon is equivalent to predicting each of its vertices. Thus, the paper regards polygon as a series of vertices, and uses RNN as the model to make coherent prediction. RNN is very powerful when data is related to time series as it can carry complex information about the history. In our case, the prediction of each vertex is dependent on the position of its two previous vertices. The paper also mentioned that another advantage over traditional methods is that RNN can capture the shape of the object even in ambiguous cases like shadows and saturation.
+
+In short, we hope that PolygonRNN can be used to solve our problems, extracting geometric shapes of buildings in aerial images, since the buildings in such images can be also regarded as polygons. For more details of the architecture, please refer to section \ref{modpoly}.
+
+\subsection{Mask R-CNN}\label{relatrcnn}
 
 Dummy text.
 
-\section{Motivation}
+\section{Motivation}\label{relatmot}
 
 Dummy text.
