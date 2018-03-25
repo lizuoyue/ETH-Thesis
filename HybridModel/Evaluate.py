@@ -181,8 +181,8 @@ if __name__ == '__main__':
 
 	# Create data generator
 	obj = DataGenerator(
-		building_path = config.PATH_B % sys.argv[1],
-		area_path = config.PATH_A % sys.argv[1], 
+		building_path = config.PATH_B % sys.argv[2],
+		area_path = config.PATH_A % sys.argv[2], 
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
