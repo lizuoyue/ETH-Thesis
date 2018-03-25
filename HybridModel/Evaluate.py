@@ -175,7 +175,9 @@ def score(org_info, gt_vv, vv):
 
 if __name__ == '__main__':
 	# Create new folder
-	assert(os.path.exists('./Model/'))
+	city_name = sys.argv[1]
+	assert(os.path.exists('./Model%s/' % city_name))
+	assert(len(sys.argv) == 3)
 
 	# Create data generator
 	obj = DataGenerator(
@@ -220,9 +222,9 @@ if __name__ == '__main__':
 	with tf.Session() as sess:
 		# Restore weights
 		assert(len(sys.argv) > 1)
-		saver.restore(sess, './Model/Model-%s.ckpt' % sys.argv[2])
+		saver.restore(sess, './Model%s/Model%s-%s.ckpt' % (city_name, city_name, sys.argv[2]))
 
-		f = open('eval.csv', 'w')
+		f = open('Eval%s.csv' % city_name, 'w')
 		f.write('id,acc,pre,rec,f1s,iou\n')
 
 		for i in range(200):
@@ -233,7 +235,7 @@ if __name__ == '__main__':
 			org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
 			feed_dict = {pp: patch}
 			pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-			path = './EvalAreaResult'
+			path = './EvalAreaResult%s' % city_name
 			if not os.path.exists(path):
 				os.makedirs(path)
 			obj.recover(path, org_img, pred_box, i)
@@ -242,11 +244,11 @@ if __name__ == '__main__':
 			img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info = obj.getBuildingsBatch(config.BUILDING_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {pp: img}
 			pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-			path = './EvalBuildingResult'
+			path = './EvalBuildingResult%s' % city_name
 			if not os.path.exists(path):
 				os.makedirs(path)
 			visualize_pred(path, img, pred_boundary, pred_vertices, pred_v_out[0], config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
-			path = './EvalBuildingResultGT'
+			path = './EvalBuildingResultGT%s' % city_name
 			if not os.path.exists(path):
 				os.makedirs(path)
 			visualize_pred(path, img, boundary, vertices, vertex_input, config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
