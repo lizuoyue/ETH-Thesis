@@ -1,6 +1,6 @@
 \chapter{Model Architecture}
 
-In this chapter, the architectures of several models are presented. Section \ref{modpoly} gives a comprehensive explanation to the structure of PolygonRNN, while section \ref{modrcnn} looks into the FPN part of Mask R-CNN. Considering our problem, we combine PolygonRNN and FPN part of Mask R-CNN together and come up with a new model, which is called \modelnameshort\ (\modelnamelong, see section \ref{modmer}). In theory, the proposed model can find out the bounding boxes of buildings within an aerial image and give geometrical shape for each building.
+In this chapter, the architectures of several models are presented. Section \ref{modpoly} gives a comprehensive explanation to the structure of PolygonRNN, while section \ref{modfpn} looks into the FPN part of Mask R-CNN. Considering our problem, we combine PolygonRNN and FPN part of Mask R-CNN together and come up with a new model, which is called \modelnameshort\ (\modelnamelong, see section \ref{modmer}). In theory, the proposed model can find out the bounding boxes of buildings within an aerial image and give geometrical shape for each building.
  
 \section{PolygonRNN}\label{modpoly}
 
@@ -81,20 +81,19 @@ where $W_y$ denotes the weights of the final fully connected layer. Figure \ref{
 \subsection{Loss Function}
 The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The loss function of CNN part uses log loss, since the mask prediction is equivalent to binary classification for each pixel. We also notice that the non-boundary pixels or the non-vertex pixels occupy the majority, the loss function should be further weighted. As for the loss of RNN, the loss function used is cross-entropy loss, because the polygon prediction is equivalent to multiclass classification at every time step.
 
-\section{Mask R-CNN}\label{modrcnn}
+\section{Feature Pyramid Network}\label{modfpn}
+
+FPN uses a top-down architecture with lateral connections to build an in-network feature pyramid from a single-scale input. Faster R-CNN with an FPN back- bone extracts RoI features from different levels of the fea- ture pyramid according to their scale, but otherwise the rest of the approach is similar to vanilla ResNet. Using a ResNet-FPN backbone for feature extraction with Mask R- CNN gives excellent gains in both accuracy and speed. For further details on FPN, we refer readers to [27].
+
+For the network head we closely follow architectures presented in previous work to which we add a fully con- volutional mask prediction branch. Specifically, we ex- tend the Faster R-CNN box heads from the ResNet [19] and FPN [27] papers. Details are shown in Figure 3. The head on the ResNet-C4 backbone includes the 5-th stage of ResNet (namely, the 9-layer ‘res5’ [19]), which is compute- intensive. For FPN, the backbone already includes res5 and thus allows for a more efficient head that uses fewer filters.
+We note that our mask branches have a straightforward structure. More complex designs have the potential to im- prove performance but are not the focus of this work.
 
 
+\subsection{Anchor}
 
+\subsection{Single Bounding Box Regression}
 
-
-
-
-
-\subsection{Feature Pyramid Network}\label{modfpn}
-
-Dummy text.
-
-\subsection{Loss Function}
+\subsection{Feature Pyramid}
 
 Dummy text.
 
@@ -109,3 +108,9 @@ Dummy text.
 \subsection{Hybrid Model}
 
 Dummy text.
+
+\subsection{Hybrid Model with RoI Align}
+
+
+
+

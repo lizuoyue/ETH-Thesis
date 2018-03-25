@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  23 MAR 2018 11:30
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  25 MAR 2018 23:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -765,7 +765,16 @@ Package: pdfcprot 2002/02/27 v1.5 character protruding using pdflatex (cs)
 \cftbeforesubfigureskip=\skip263
 \cftsubfigureindent=\skip264
 \cftsubfigurenumwidth=\skip265
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tablefootnote/tablefootnote.sty
+Package: tablefootnote 2014/01/26 v1.1c Table foot notes (HMM)
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/letltxmacro.sty
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
 )
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xifthen/xifthen.sty
+Package: xifthen 2015/11/05 v1.4.0 Extended ifthen features
+)))
 (./layoutsetup.tex (./ETHlogo.sty
 Package: ETHlogo 2000/11/06 0.1 ETH Logo command
 )
@@ -848,7 +857,7 @@ Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
 Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
 )
 Package hobsub Info: Skipping package `hobsub' (already loaded).
-Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+Package hobsub Info: Skipping package `letltxmacro' (already loaded).
 Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
 Package: xcolor-patch 2016/05/16 xcolor patch
 Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
@@ -1079,8 +1088,136 @@ LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 5.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 9.
-LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <10.95> not available
-(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 27.
+Missing character: There is no 航 in font pplr7t!
+Missing character: There is no 拍 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 指 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no … in font pplr7t!
+Missing character: There is no … in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no （ in font pplr7t!
+Missing character: There is no 给 in font pplr7t!
+Missing character: There is no 例 in font pplr7t!
+Missing character: There is no 子 in font pplr7t!
+Missing character: There is no ） in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 它 in font pplr7t!
+Missing character: There is no 具 in font pplr7t!
+Missing character: There is no 有 in font pplr7t!
+Missing character: There is no 很 in font pplr7t!
+Missing character: There is no 大 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 应 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 因 in font pplr7t!
+Missing character: There is no 为 in font pplr7t!
+Missing character: There is no 现 in font pplr7t!
+Missing character: There is no 实 in font pplr7t!
+Missing character: There is no 生 in font pplr7t!
+Missing character: There is no 活 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 不 in font pplr7t!
+Missing character: There is no 断 in font pplr7t!
+Missing character: There is no 更 in font pplr7t!
+Missing character: There is no 新 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 所 in font pplr7t!
+Missing character: There is no 展 in font pplr7t!
+Missing character: There is no 现 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 地 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 也 in font pplr7t!
+Missing character: There is no 需 in font pplr7t!
+Missing character: There is no 要 in font pplr7t!
+Missing character: There is no 因 in font pplr7t!
+Missing character: There is no 此 in font pplr7t!
+Missing character: There is no 而 in font pplr7t!
+Missing character: There is no 更 in font pplr7t!
+Missing character: There is no 新 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 它 in font pplr7t!
+Missing character: There is no 能 in font pplr7t!
+Missing character: There is no 够 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 电 in font pplr7t!
+Missing character: There is no 子 in font pplr7t!
+Missing character: There is no 地 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 地 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 绘 in font pplr7t!
+Missing character: There is no 制 in font pplr7t!
+Missing character: There is no 提 in font pplr7t!
+Missing character: There is no 供 in font pplr7t!
+Missing character: There is no 参 in font pplr7t!
+Missing character: There is no 考 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 它 in font pplr7t!
+Missing character: There is no 还 in font pplr7t!
+Missing character: There is no 有 in font pplr7t!
+Missing character: There is no … in font pplr7t!
+Missing character: There is no … in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 途 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 节 in font pplr7t!
+Missing character: There is no 主 in font pplr7t!
+Missing character: There is no 要 in font pplr7t!
+Missing character: There is no 介 in font pplr7t!
+Missing character: There is no 绍 in font pplr7t!
+Missing character: There is no 毕 in font pplr7t!
+Missing character: There is no 设 in font pplr7t!
+Missing character: There is no 项 in font pplr7t!
+Missing character: There is no 目 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 背 in font pplr7t!
+Missing character: There is no 景 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 给 in font pplr7t!
+Missing character: There is no 出 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 什 in font pplr7t!
+Missing character: There is no 么 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 航 in font pplr7t!
+Missing character: There is no 拍 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 什 in font pplr7t!
+Missing character: There is no 么 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 分 in font pplr7t!
+Missing character: There is no 割 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 以 in font pplr7t!
+Missing character: There is no 及 in font pplr7t!
+Missing character: There is no 展 in font pplr7t!
+Missing character: There is no 现 in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 所 in font pplr7t!
+Missing character: There is no 希 in font pplr7t!
+Missing character: There is no 望 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 到 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 几 in font pplr7t!
+Missing character: There is no 何 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
  [1
 
 ]) (./2-related.tex [2]
@@ -1089,23 +1226,55 @@ Overfull \hbox (1.2367pt too wide) in paragraph at lines 3--4
 -tail. Sec-tion [][]2.1[][] presents
  []
 
-(./fig/2-00.tex
+[3
+
+] (./fig/2-00.tex
 File: fig/2-00-0.png Graphic file (type bmp)
 <fig/2-00-0.png>
 File: fig/2-00-1.png Graphic file (type bmp)
 <fig/2-00-1.png>
-File: fig/2-00-2.pdf Graphic file (type pdf)
-<use fig/2-00-2.pdf>
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [4]
+(./fig/2-01.tex
+File: fig/2-01-0.png Graphic file (type bmp)
+<fig/2-01-0.png>
+File: fig/2-01-1.png Graphic file (type bmp)
+<fig/2-01-1.png>
+File: fig/2-01-2.pdf Graphic file (type pdf)
+<use fig/2-01-2.pdf>
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+ [5]
+(./fig/2-02.tex
+File: fig/2-02.pdf Graphic file (type pdf)
+<use fig/2-02.pdf>
+) (./fig/2-03.tex
+File: fig/2-03.pdf Graphic file (type pdf)
+<use fig/2-03.pdf>
+)
+Underfull \vbox (badness 7221) has occurred while \output is active []
 
-) [3
-
-]) (./3-model.tex [4] (./fig/3-00.tex
+ [6]
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 9.37807pt on input line 69.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 7.29405pt on input line 69.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 5.21004pt on input line 69.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 9.37807pt on input line 69.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 7.29405pt on input line 69.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 5.21004pt on input line 69.
+)
+(./3-model.tex [7] [8] (./fig/3-00.tex
 File: fig/3-00.pdf Graphic file (type pdf)
 <use fig/3-00.pdf>
-) [5
+) [9
 
 ] (./fig/3-01.tex
 File: fig/3-01.pdf Graphic file (type pdf)
@@ -1126,7 +1295,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 ) (./fig/3-03.tex
 File: fig/3-03.pdf Graphic file (type pdf)
 <use fig/3-03.pdf>
-) [6] [7] [8]
+) [10] [11] [12]
 Overfull \hbox (2.24448pt too wide) detected at line 53
 [][] [] \OT1/zplm/m/n/10.95 = [] \OMS/zplm/m/n/10.95 ^^C \OML/zplm/m/it/10.95 h
 [] \OT1/zplm/m/n/10.95 + [] \OMS/zplm/m/n/10.95 ^^C \OML/zplm/m/it/10.95 x[] \O
@@ -1139,41 +1308,32 @@ n/10.95 ^^C \OML/zplm/m/it/10.95 x[] \OT1/zplm/m/n/10.95 + \OML/zplm/m/it/10.95
 (./fig/3-04.tex
 File: fig/3-04.pdf Graphic file (type pdf)
 <use fig/3-04.pdf>
-) [9] (./fig/3-05.tex
+) [13] (./fig/3-05.tex
 File: fig/3-05.pdf Graphic file (type pdf)
 <use fig/3-05.pdf>
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 4.
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 4.
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 4.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 4.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 4.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 4.
 )
 Underfull \vbox (badness 2057) has occurred while \output is active []
 
- [10])
-(./4-exp.tex [11] [12
+ [14]
+Missing character: There is no ‘ in font pplr7t!
+Missing character: There is no ’ in font pplr7t!
 
-]
+[15]) (./4-exp.tex [16]
 Overfull \hbox (0.42546pt too wide) in paragraph at lines 15--16
 \OT1/ppl/m/n/10.95 Google Static Maps API[][][][][] pro-vides an in-ter-face th
 at im-ple-ments maps as high-
  []
 
-[13] (./fig/4-00.tex
+[17
+
+] (./fig/4-00.tex
 File: fig/4-00-0.png Graphic file (type bmp)
 <fig/4-00-0.png>
 File: fig/4-00-1.png Graphic file (type bmp)
 <fig/4-00-1.png>
 File: fig/4-00-2.png Graphic file (type bmp)
 <fig/4-00-2.png>
-) [14] (./fig/4-01.tex
+) [18] (./fig/4-01.tex
 File: fig/4-01-0.png Graphic file (type bmp)
 <fig/4-01-0.png>
 File: fig/4-01-1.png Graphic file (type bmp)
@@ -1203,7 +1363,7 @@ File: fig/4-02-7.png Graphic file (type bmp)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [15] (./fig/4-03.tex
+) [19] (./fig/4-03.tex
 File: fig/4-03-0.png Graphic file (type bmp)
 <fig/4-03-0.png>
 File: fig/4-03-1.png Graphic file (type bmp)
@@ -1224,7 +1384,7 @@ File: fig/4-03-7.png Graphic file (type bmp)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [16] [17] (./fig/4-04.tex
+) [20] [21] (./fig/4-04.tex
 File: fig/4-04-0.png Graphic file (type bmp)
 <fig/4-04-0.png>
 File: fig/4-04-1.png Graphic file (type bmp)
@@ -1247,7 +1407,7 @@ Overfull \hbox (4.24834pt too wide) in paragraph at lines 88--89
 ift ad-just-ment method.
  []
 
-[18]
+[22]
 Missing character: There is no 而 in font pplr7t!
 Missing character: There is no 且 in font pplr7t!
 Missing character: There is no 独 in font pplr7t!
@@ -1288,14 +1448,17 @@ Missing character: There is no 不 in font pplr7t!
 Missing character: There is no 一 in font pplr7t!
 Missing character: There is no 致 in font pplr7t!
 Missing character: There is no 。 in font pplr7t!
-) (./5-future.tex [19] [20
+LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <10.95> not available
+(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 142.
 
-] [21]) (./introduction.tex [22]
+) (./5-future.tex [23] [24
 
-LaTeX Warning: Citation `bringhurst1996ets' on page 23 undefined on input line 
+] [25]) (./introduction.tex [26]
+
+LaTeX Warning: Citation `bringhurst1996ets' on page 27 undefined on input line 
 32.
 
-[23
+[27
 
 ]
 Package hyperref Info: bookmark level for unknown theorem defaults to 0 on inpu
@@ -1304,7 +1467,7 @@ Package hyperref Info: bookmark level for unknown proof defaults to 0 on input
 line 77.
 Package hyperref Info: bookmark level for unknown proposition defaults to 0 on 
 input line 97.
-) (./rules.tex [24] [25] [26
+) (./rules.tex [28] [29] [30
 
 ]
 Missing character: There is no ö in font pplr7t!
@@ -1314,7 +1477,7 @@ Missing character: There is no § in font pplr7t!
 Missing character: There is no § in font pplr7t!
 Package hyperref Info: bookmark level for unknown Rule defaults to 0 on input l
 ine 21.
- [27] [28]
+ [31] [32]
 Missing character: There is no ä in font pplri7t!
 Missing character: There is no ä in font pplri7t!
 Missing character: There is no ä in font pplri7t!
@@ -1325,7 +1488,7 @@ Overfull \hbox (4.38068pt too wide) in paragraph at lines 178--181
 o-rithm, which was found by the fa-mous math-
  []
 
-[29] [30]
+[33] [34]
 Missing character: There is no ü in font pplri7t!
 Missing character: There is no ä in font pplri7t!
 
@@ -1333,17 +1496,17 @@ Overfull \hbox (1.91208pt too wide) in paragraph at lines 264--278
  [][] 
  []
 
-) (./typography.tex [31] [32
+) (./typography.tex [35] [36
 
 ]
 Missing character: There is no è in font pplri7t!
- [33]
+ [37]
 Overfull \hbox (4.5436pt too wide) in paragraph at lines 94--100
 \OT1/ppl/m/n/10.95 or ques-tion mark is sentence-ending, ex-cept for pe-ri-ods 
 pre-ceded by an upper-
  []
 
-[34]
+[38]
 Underfull \hbox (badness 4726) detected at line 114
 \OT1/ppl/m/n/10.95 Prof. Dr. A. Steger is a member of CADMO. If you
  []
@@ -1354,10 +1517,10 @@ Overfull \hbox (7.97166pt too wide) in paragraph at lines 152--157
 /m/n/10.95 we only changed the shape to small caps. Chang-
  []
 
-[35]
+[39]
 LaTeX Font Info:    Font shape `OT1/lmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/lmtt/b/n' tried instead on input line 218.
- [36]) (./appendix.tex [37] [38
+ [40]) (./appendix.tex [41] [42
 
 ]
 Overfull \hbox (534.7113pt too wide) in paragraph at lines 6--8
@@ -1370,7 +1533,7 @@ Overfull \hbox (458.82715pt too wide) in paragraph at lines 8--9
 ] 
  []
 
-) [39] [40
+) [43] [44
 
 ]
 No file thesis.bbl.
@@ -1383,14 +1546,14 @@ File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
- [41]
+ [45]
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
- [42]
+ [46]
 \tf@thm=\write5
 \openout5 = `thesis.thm'.
 
@@ -1411,12 +1574,12 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 19603 strings out of 492998
- 277768 string characters out of 6134492
- 439893 words of memory out of 5000000
- 23165 multiletter control sequences out of 15000+600000
+ 19734 strings out of 492998
+ 280063 string characters out of 6134492
+ 444474 words of memory out of 5000000
+ 23274 multiletter control sequences out of 15000+600000
  62840 words of font info for 107 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 62i,18n,122p,1010b,1751s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,18n,122p,1312b,1751s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on thesis.pdf (50 pages).
+Output written on thesis.pdf (54 pages).

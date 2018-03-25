@@ -1,14 +1,11 @@
 \begin{figure}[!h]
 	\centering
-	\subbottom[an example building\label{fig:egorgimg}]{
-		\includegraphics[width=\figfigfig\textwidth]{2-00-0.png}
+	\subbottom[pixel-wise labelled mask\label{fig:egimgseg}]{
+		\includegraphics[width=\figfig\textwidth]{2-00-0.png}
 	}
-	\subbottom[pixel-wise mask\label{fig:egpxlmsk}]{
-		\frame{\includegraphics[width=\figfigfig\textwidth]{2-00-1.png}}
+	\subbottom[rotated bounding boxes\label{fig:egrotbbox}]{
+		\includegraphics[width=\figfig\textwidth]{2-00-1.png}
 	}
-	\subbottom[polygon prediction\label{fig:egpoly}]{
-		\frame{\includegraphics[width=\figfigfig\textwidth]{2-00-2.pdf}}
-	}
-    \caption[Comparison of pixel-wise mask and polygon]{Comparison of pixel-wise mask and polygon. (a) is the original image containing a building. (b) is the target mask of traditional pixel-wise instance segmentation, (c) is the desired prediction of polygon, of which the vertices are numbered.}
-	\label{fig:egcmp}
+    \caption[Example outputs of two previous theses]{Example outputs of two previous theses. In (a), the pixels with red color refer to buildings, while the pixels with blue color refer to roads. In (b), each bounding box relates to one instance.}
+	\label{fig:prethe}
 \end{figure}

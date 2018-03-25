@@ -7,93 +7,97 @@
 \contentsline {section}{\numberline {1.1}Background}{1}{section.1.1}
 \contentsline {subsection}{\numberline {1.1.1}Aerial Image}{1}{subsection.1.1.1}
 \contentsline {subsection}{\numberline {1.1.2}Image Segmentation}{1}{subsection.1.1.2}
-\contentsline {subsubsection}{Example Subsubsection}{1}{section*.2}
-\contentsline {paragraph}{Example Paragraph}{1}{section*.3}
-\contentsline {subparagraph}{Example Subparagraph}{1}{section*.4}
 \contentsline {subsection}{\numberline {1.1.3}Geometrical Shape}{1}{subsection.1.1.3}
 \contentsline {section}{\numberline {1.2}Problem Definition}{1}{section.1.2}
 \contentsline {section}{\numberline {1.3}Focus of This Work}{2}{section.1.3}
 \contentsline {section}{\numberline {1.4}Thesis Organization}{2}{section.1.4}
 \contentsline {chapter}{\chapternumberline {2}Related Work}{3}{chapter.2}
 \contentsline {section}{\numberline {2.1}Previous Theses}{3}{section.2.1}
-\contentsline {section}{\numberline {2.2}Recent Models}{3}{section.2.2}
-\contentsline {subsection}{\numberline {2.2.1}PolygonRNN}{3}{subsection.2.2.1}
-\contentsline {subsection}{\numberline {2.2.2}Mask R-CNN}{4}{subsection.2.2.2}
-\contentsline {section}{\numberline {2.3}Motivation}{4}{section.2.3}
-\contentsline {chapter}{\chapternumberline {3}Model Architecture}{5}{chapter.3}
-\contentsline {section}{\numberline {3.1}PolygonRNN}{5}{section.3.1}
-\contentsline {subsection}{\numberline {3.1.1}CNN Part}{5}{subsection.3.1.1}
-\contentsline {paragraph}{Feature Extraction}{6}{section*.5}
-\contentsline {paragraph}{Mask Prediction}{7}{section*.6}
-\contentsline {subsection}{\numberline {3.1.2}RNN Part}{7}{subsection.3.1.2}
-\contentsline {paragraph}{End Signal}{8}{section*.7}
-\contentsline {paragraph}{Starting Vertex}{8}{section*.8}
-\contentsline {paragraph}{ConvLSTM}{8}{section*.9}
-\contentsline {paragraph}{Multilayer RNN}{9}{section*.10}
-\contentsline {subsection}{\numberline {3.1.3}Loss Function}{11}{subsection.3.1.3}
-\contentsline {section}{\numberline {3.2}Mask R-CNN}{11}{section.3.2}
-\contentsline {subsection}{\numberline {3.2.1}Feature Pyramid Network}{11}{subsection.3.2.1}
-\contentsline {subsection}{\numberline {3.2.2}Loss Function}{11}{subsection.3.2.2}
-\contentsline {section}{\numberline {3.3}R-PolygonRNN}{11}{section.3.3}
-\contentsline {subsection}{\numberline {3.3.1}Two-step Model}{11}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}Hybrid Model}{11}{subsection.3.3.2}
-\contentsline {chapter}{\chapternumberline {4}Experiments and Results}{13}{chapter.4}
-\contentsline {section}{\numberline {4.1}Ground Truth}{13}{section.4.1}
-\contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{13}{subsection.4.1.1}
-\contentsline {subsection}{\numberline {4.1.2}OpenStreetMap}{14}{subsection.4.1.2}
-\contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{15}{subsection.4.1.3}
-\contentsline {paragraph}{Areas for FPN}{15}{section*.11}
-\contentsline {paragraph}{Buildings for PolygonRNN}{15}{section*.12}
-\contentsline {subsection}{\numberline {4.1.4}Problems}{16}{subsection.4.1.4}
-\contentsline {paragraph}{General Shift}{17}{section*.13}
-\contentsline {paragraph}{Polygon Size and Shape}{17}{section*.14}
-\contentsline {paragraph}{Angle Issue}{17}{section*.15}
-\contentsline {paragraph}{Adjacent Buildings}{17}{section*.16}
-\contentsline {subsection}{\numberline {4.1.5}Adjustments}{18}{subsection.4.1.5}
-\contentsline {paragraph}{Color Variance}{18}{section*.17}
-\contentsline {paragraph}{Edges}{18}{section*.18}
-\contentsline {paragraph}{Corners}{18}{section*.19}
-\contentsline {section}{\numberline {4.2}Implementation Details}{19}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Configuration}{19}{subsection.4.2.1}
-\contentsline {subsection}{\numberline {4.2.2}Training}{19}{subsection.4.2.2}
-\contentsline {subsection}{\numberline {4.2.3}Prediction}{19}{subsection.4.2.3}
-\contentsline {section}{\numberline {4.3}Experiment Results}{19}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{19}{subsection.4.3.1}
-\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{19}{subsection.4.3.2}
-\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{19}{subsection.4.3.3}
-\contentsline {subsubsection}{Example Subsubsection}{19}{section*.20}
-\contentsline {paragraph}{Example Paragraph}{19}{section*.21}
-\contentsline {subparagraph}{Example Subparagraph}{19}{section*.22}
-\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{21}{chapter.5}
-\contentsline {section}{\numberline {5.1}Problems}{21}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Problem 1}{21}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Problem 2}{21}{subsection.5.1.2}
-\contentsline {subsubsection}{Example Subsubsection}{21}{section*.23}
-\contentsline {paragraph}{Example Paragraph}{21}{section*.24}
-\contentsline {subparagraph}{Example Subparagraph}{21}{section*.25}
-\contentsline {section}{\numberline {5.2}Future Work}{21}{section.5.2}
-\contentsline {subsection}{\numberline {5.2.1}Ground Truth}{21}{subsection.5.2.1}
-\contentsline {subsection}{\numberline {5.2.2}Training Phase}{22}{subsection.5.2.2}
-\contentsline {subsection}{\numberline {5.2.3}Model Generalization}{22}{subsection.5.2.3}
-\contentsline {chapter}{\chapternumberline {6}Introduction}{23}{chapter.6}
-\contentsline {section}{\numberline {6.1}Features}{23}{section.6.1}
-\contentsline {subsection}{\numberline {6.1.1}Extra package includes}{23}{subsection.6.1.1}
-\contentsline {subsection}{\numberline {6.1.2}Layout setup}{24}{subsection.6.1.2}
-\contentsline {subsection}{\numberline {6.1.3}Theorem setup}{24}{subsection.6.1.3}
-\contentsline {subsection}{\numberline {6.1.4}Macro setup}{25}{subsection.6.1.4}
-\contentsline {chapter}{\chapternumberline {7}Writing scientific texts in English}{27}{chapter.7}
-\contentsline {section}{\numberline {7.1}Basic writing rules}{27}{section.7.1}
-\contentsline {section}{\numberline {7.2}Being nice to the reader}{27}{section.7.2}
-\contentsline {section}{\numberline {7.3}A few important grammar rules}{28}{section.7.3}
-\contentsline {section}{\numberline {7.4}Things you (usually) don't say in English}{31}{section.7.4}
-\contentsline {chapter}{\chapternumberline {8}Typography}{33}{chapter.8}
-\contentsline {section}{\numberline {8.1}Punctuation}{33}{section.8.1}
-\contentsline {section}{\numberline {8.2}Spacing}{34}{section.8.2}
-\contentsline {section}{\numberline {8.3}Choice of `fonts'}{35}{section.8.3}
-\contentsline {section}{\numberline {8.4}Displayed equations}{35}{section.8.4}
-\contentsline {section}{\numberline {8.5}Floats}{36}{section.8.5}
-\contentsline {appendix}{\chapternumberline {A}Appendix}{39}{appendix.A}
-\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{39}{section.A.1}
-\contentsline {section}{\numberline {A.2}OpenStreetMap}{39}{section.A.2}
-\contentsline {section}{\numberline {A.3}Projection}{39}{section.A.3}
-\contentsline {chapter}{List of Figures}{41}{section*.26}
+\contentsline {paragraph}{Pixel-wise Image Segmentation}{3}{section*.2}
+\contentsline {paragraph}{Rotated Bounding Box}{3}{section*.3}
+\contentsline {section}{\numberline {2.2}Recent Models}{4}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}PolygonRNN}{5}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Mask R-CNN}{6}{subsection.2.2.2}
+\contentsline {paragraph}{Feature Pyramid Network}{6}{section*.4}
+\contentsline {paragraph}{Classification Branch}{7}{section*.5}
+\contentsline {paragraph}{Mask Branch}{7}{section*.6}
+\contentsline {section}{\numberline {2.3}Motivation}{7}{section.2.3}
+\contentsline {chapter}{\chapternumberline {3}Model Architecture}{9}{chapter.3}
+\contentsline {section}{\numberline {3.1}PolygonRNN}{9}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}CNN Part}{9}{subsection.3.1.1}
+\contentsline {paragraph}{Feature Extraction}{10}{section*.7}
+\contentsline {paragraph}{Mask Prediction}{11}{section*.8}
+\contentsline {subsection}{\numberline {3.1.2}RNN Part}{11}{subsection.3.1.2}
+\contentsline {paragraph}{End Signal}{12}{section*.9}
+\contentsline {paragraph}{Starting Vertex}{12}{section*.10}
+\contentsline {paragraph}{ConvLSTM}{12}{section*.11}
+\contentsline {paragraph}{Multilayer RNN}{13}{section*.12}
+\contentsline {subsection}{\numberline {3.1.3}Loss Function}{15}{subsection.3.1.3}
+\contentsline {section}{\numberline {3.2}Feature Pyramid Network}{15}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Anchor}{15}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Single Bounding Box Regression}{15}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Feature Pyramid}{15}{subsection.3.2.3}
+\contentsline {section}{\numberline {3.3}R-PolygonRNN}{15}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Two-step Model}{15}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Hybrid Model}{16}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Hybrid Model with RoI Align}{16}{subsection.3.3.3}
+\contentsline {chapter}{\chapternumberline {4}Experiments and Results}{17}{chapter.4}
+\contentsline {section}{\numberline {4.1}Ground Truth}{17}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{17}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}OpenStreetMap}{18}{subsection.4.1.2}
+\contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{19}{subsection.4.1.3}
+\contentsline {paragraph}{Areas for FPN}{19}{section*.13}
+\contentsline {paragraph}{Buildings for PolygonRNN}{19}{section*.14}
+\contentsline {subsection}{\numberline {4.1.4}Problems}{20}{subsection.4.1.4}
+\contentsline {paragraph}{General Shift}{21}{section*.15}
+\contentsline {paragraph}{Polygon Size and Shape}{21}{section*.16}
+\contentsline {paragraph}{Angle Issue}{21}{section*.17}
+\contentsline {paragraph}{Adjacent Buildings}{21}{section*.18}
+\contentsline {subsection}{\numberline {4.1.5}Adjustments}{22}{subsection.4.1.5}
+\contentsline {paragraph}{Color Variance}{22}{section*.19}
+\contentsline {paragraph}{Edges}{22}{section*.20}
+\contentsline {paragraph}{Corners}{22}{section*.21}
+\contentsline {section}{\numberline {4.2}Implementation Details}{23}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Configuration}{23}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Training}{23}{subsection.4.2.2}
+\contentsline {subsection}{\numberline {4.2.3}Prediction}{23}{subsection.4.2.3}
+\contentsline {section}{\numberline {4.3}Experiment Results}{23}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{23}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{23}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{23}{subsection.4.3.3}
+\contentsline {subsubsection}{Example Subsubsection}{23}{section*.22}
+\contentsline {paragraph}{Example Paragraph}{23}{section*.23}
+\contentsline {subparagraph}{Example Subparagraph}{23}{section*.24}
+\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{25}{chapter.5}
+\contentsline {section}{\numberline {5.1}Problems}{25}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Problem 1}{25}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Problem 2}{25}{subsection.5.1.2}
+\contentsline {subsubsection}{Example Subsubsection}{25}{section*.25}
+\contentsline {paragraph}{Example Paragraph}{25}{section*.26}
+\contentsline {subparagraph}{Example Subparagraph}{25}{section*.27}
+\contentsline {section}{\numberline {5.2}Future Work}{25}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Ground Truth}{25}{subsection.5.2.1}
+\contentsline {subsection}{\numberline {5.2.2}Training Phase}{26}{subsection.5.2.2}
+\contentsline {subsection}{\numberline {5.2.3}Model Generalization}{26}{subsection.5.2.3}
+\contentsline {chapter}{\chapternumberline {6}Introduction}{27}{chapter.6}
+\contentsline {section}{\numberline {6.1}Features}{27}{section.6.1}
+\contentsline {subsection}{\numberline {6.1.1}Extra package includes}{27}{subsection.6.1.1}
+\contentsline {subsection}{\numberline {6.1.2}Layout setup}{28}{subsection.6.1.2}
+\contentsline {subsection}{\numberline {6.1.3}Theorem setup}{28}{subsection.6.1.3}
+\contentsline {subsection}{\numberline {6.1.4}Macro setup}{29}{subsection.6.1.4}
+\contentsline {chapter}{\chapternumberline {7}Writing scientific texts in English}{31}{chapter.7}
+\contentsline {section}{\numberline {7.1}Basic writing rules}{31}{section.7.1}
+\contentsline {section}{\numberline {7.2}Being nice to the reader}{31}{section.7.2}
+\contentsline {section}{\numberline {7.3}A few important grammar rules}{32}{section.7.3}
+\contentsline {section}{\numberline {7.4}Things you (usually) don't say in English}{35}{section.7.4}
+\contentsline {chapter}{\chapternumberline {8}Typography}{37}{chapter.8}
+\contentsline {section}{\numberline {8.1}Punctuation}{37}{section.8.1}
+\contentsline {section}{\numberline {8.2}Spacing}{38}{section.8.2}
+\contentsline {section}{\numberline {8.3}Choice of `fonts'}{39}{section.8.3}
+\contentsline {section}{\numberline {8.4}Displayed equations}{39}{section.8.4}
+\contentsline {section}{\numberline {8.5}Floats}{40}{section.8.5}
+\contentsline {appendix}{\chapternumberline {A}Appendix}{43}{appendix.A}
+\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{43}{section.A.1}
+\contentsline {section}{\numberline {A.2}OpenStreetMap}{43}{section.A.2}
+\contentsline {section}{\numberline {A.3}Projection}{43}{section.A.3}
+\contentsline {chapter}{List of Figures}{45}{section*.28}
