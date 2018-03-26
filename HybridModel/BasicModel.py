@@ -3,11 +3,15 @@ if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 import tensorflow as tf
 
-def VGG16(img, reuse = None):
+def VGG16(img, reuse = None, scope = None):
 	"""
 		img: [batch_size, height, width, num_channels]
 	"""
-	with tf.variable_scope('VGG16', reuse = reuse):
+	if scope:
+		scope_name = scope
+	else:
+		scope_name = 'VGG16'
+	with tf.variable_scope(scope_name, reuse = reuse):
 		conv1_1 = tf.layers.conv2d       (inputs = img    , filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 256
 		conv1_2 = tf.layers.conv2d       (inputs = conv1_1, filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 256
 		pool1   = tf.layers.max_pooling2d(inputs = conv1_2, pool_size = (2, 2), strides = 2)												# 128

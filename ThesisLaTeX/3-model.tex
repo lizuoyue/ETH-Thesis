@@ -31,7 +31,7 @@ The model used for predicting polygon vertices is RNN. We have already mentioned
 
 We know that given two vertices on a polygon in an order (either clockwise or anticlockwise), the third vertex after the two points can be uniquely determined. What RNN here can do is to predict the probability distribution of the next vertex's position in a low resolution when given the history information about the two vertices before, as well as the image features and the position of the starting vertex. This process can be formulated as follows.
 \begin{equation}\label{eq:vnext}
-	p(v_t|v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, p), \forall t \in \{2,3,4,...,T\},
+	p(v_t|v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, p), \forall t \in \{2,3,4,\ldots,T\},
 \end{equation}
 where $p$ denotes the extracted features by CNN (including the masks of boundary and vertices), $F(\cdot)$ denotes a function for computing the conditional probability, $T$ denotes the number of vertices of the polygon, $v_t$ denotes the vertex position at $t$-th prediction. Specifically, the vertex prediction problem can be formulated as a classification problem. The position of $v_t$ can be then quantized to the resolution of output grid, and we can thus use one-hot encoding for $v_t$'s representation.
 
@@ -64,7 +64,7 @@ where $x_t$, $h_t$, $c_t$ denote the input, the hidden state (or cell output), a
 \paragraph{Multilayer RNN}
 PolygonRNN uses multilayer RNN with ConvLSTM cells. The connection between two neighboring layers can be described as follows, which means that the cell input of this layer comes from the cell output of the previous layer.
 \begin{equation}\label{eq:cellconnect}
-	x_t^{(k)} = h_t^{(k-1)}, \forall k \in \{2,3,...,n\},
+	x_t^{(k)} = h_t^{(k-1)}, \forall k \in \{2,3,\ldots,n\},
 \end{equation}
 where $n$ is the number of RNN layers or ConvLSTM cells, $k$ in the superscript denotes the $k$-th layer. Recall that the initial cell input (i.e. the cell input of the first layer) at time step $t$ consists of the spatial information $p$ from CNN, the two previous vertices $v_{t-1}$ and $v_{t-2}$, and starting vertex $v_0$, here it is formulated as follows.
 \begin{equation}\label{eq:concat}

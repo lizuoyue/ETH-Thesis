@@ -13,7 +13,7 @@
 \contentsline {section}{\numberline {1.4}Thesis Organization}{2}{section.1.4}
 \contentsline {chapter}{\chapternumberline {2}Related Work}{3}{chapter.2}
 \contentsline {section}{\numberline {2.1}Previous Theses}{3}{section.2.1}
-\contentsline {paragraph}{Pixel-wise Image Segmentation}{3}{section*.2}
+\contentsline {paragraph}{Image Segmentation in Pixel Level}{3}{section*.2}
 \contentsline {paragraph}{Rotated Bounding Box}{3}{section*.3}
 \contentsline {section}{\numberline {2.2}Recent Models}{4}{section.2.2}
 \contentsline {subsection}{\numberline {2.2.1}PolygonRNN}{5}{subsection.2.2.1}

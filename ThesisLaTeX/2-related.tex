@@ -6,11 +6,11 @@ In this chapter, some related work are illustrated in detail. Section \ref{relat
 
 There are two previous theses related to our problem, which are shown as follows.
 
-\paragraph{Pixel-wise Image Segmentation}
-In this thesis, our problem is treated as a pixel-wise image segmentation problem. The student employs a kind of deep neural network, U-Net, to classify each pixel in the aerial image as different labels, i.e. buildings, roads or background. The output of the model is a labelled mask. An example is shown in figure \ref{fig:egimgseg}. We can see that the model can well distinguish between buildings and roads. However, there are also some limitations in this method: (1) we do not know which pixel belongs to which building, meaning that there is no instance segmentation here; (2) the buildings cannot be detected unless we do further pixel connectivity detection; (3) there are no geometrical shapes of the objects. Therefore, this model cannot be fully used to solve our problems.
+\paragraph{Image Segmentation in Pixel Level}
+In this thesis, our problem is treated as a pixel-wise image segmentation problem. The student employs a kind of deep neural network, U-Net, and make modification to classify each pixel in the aerial image as different labels, i.e. buildings, roads or background. The output of the model is a labelled mask. An example is shown in figure \ref{fig:egimgseg}. We can see that the model can well distinguish between buildings and roads. However, there are also some limitations in this method: (1) we do not know which pixel belongs to which building, meaning that there is no instance segmentation here; (2) the buildings cannot be detected unless we do further pixel connectivity detection; (3) there are no geometrical shapes of the objects. Therefore, this model cannot be fully used to solve our problems.
 
 \paragraph{Rotated Bounding Box}
-Another thesis utilizes the RPN (Region Proposal Network) part in Faster R-CNN and adds an orientation branch. It predicts the rotated bounding boxes to `capture' each building instance in an aerial image. Thus, our problem here becomes a parameters regression problem, which aims at finding out the center coordinates, width, height, and the rotation degrees of the bounding box. The model used here is the modified RPN. The role of RPN part in original Faster R-CNN is to find RoIs (Regions of Interest), which are generally represented as bounding boxes or rectangles. This kind of representation can be very suitable for horizontal or vertical buildings. But we know that buildings are not always regular, many of them are inclined in the image. Therefore, in this thesis project, the RPN is modified and another branch for rotating the bounding boxes is added. This can make the boundary of the bounding box closer to the building. Figure \ref{fig:egrotbbox} shows an example output. We can see from the figure that each building instance can correspond to a rotated bounding box, and can be also limited tightly to the box. This methods can detect buildings very well, but the geometrical shapes found are limited to rectangles and cannot be more precise.
+Another thesis utilizes the RPN (Region Proposal Network) part in Faster R-CNN and adds a branch for orientation degree. It predicts the rotated bounding boxes to `capture' each building instance in an aerial image. Thus, our problem here becomes a parameters regression problem, which aims at finding out the center coordinates, width, height, and the rotation degrees of the bounding box. The model used here is the modified RPN. The role of RPN part in original Faster R-CNN is to find RoIs (Regions of Interest), which are generally represented as bounding boxes or rectangles. This kind of representation can be very suitable for horizontal or vertical buildings. But we know that buildings are not always regular, many of them are inclined in the image. Therefore, in this thesis project, the RPN is modified and another branch for rotating the bounding boxes is added. This can make the boundary of the bounding box closer to the building. Figure \ref{fig:egrotbbox} shows an example output. We can see from the figure that each building instance can correspond to a rotated bounding box, and can be also limited tightly to the box. This methods can detect buildings very well, but the geometrical shapes found are limited to rectangles and cannot be more precise.
 
 \input{fig/2-00}
 
@@ -58,14 +58,14 @@ Table \ref{tab:summod} makes a summary for all models mentioned in sections \ref
 	\begin{tabular}{l|l|l|l}
 	\hline
 	Model & Localization & Geometrical Shape & Classification \\ \hline
-	Modified U-Net & Limited & No & \textbf{Yes} \\
-	Modified RPN & \textbf{Yes} & Limited & No \\
+	Modified U-Net & Limited\tablefootnote{As mentioned in section \ref{relatpre}, localization requires further pixel connectivity detection.} & No & \textbf{Yes} \\
+	Modified RPN & \textbf{Yes} & Limited\tablefootnote{As mentioned in section \ref{relatpre}, only rotated bounding boxes are found.} & No \\
 	PolygonRNN & No & \textbf{Yes} & No \\
 	Mask R-CNN & \textbf{Yes} & No & \textbf{Yes} \\
-	FPN & \textbf{Yes} & Limited & No \\
-	What We Want & \textbf{Yes} & \textbf{Yes} & N/A \tablefootnote{In section \ref{prodef} we have already mentioned that segmentation of roads are currently not considered, thus the cell here shows `N/A'.} \\
+	FPN & \textbf{Yes} & No & No \\
+	What We Want & \textbf{Yes} & \textbf{Yes} & N/A \tablefootnote{As mentioned in section \ref{prodef}, segmentation of roads is currently not considered in our project, thus the cell here shows `N/A'.} \\
 	\hline
 	\end{tabular}
 \end{table}
 
-After observation, we propose a possible approach, simply replacing the mask branch in Mask R-CNN with PolygonRNN so that the modified model can predict polygon rather than mask pixel for each RoI. This model takes two models' corresponding advantages, thus it can be applied to our problem. In practice, we just combine FPN and PolygonRNN and name it a new model \modelnameshort\ (\modelnamelong), of which the architecture is shown in detail in section \ref{modmer}.
+After observation, we propose a possible approach, simply replacing the mask branch in Mask R-CNN with PolygonRNN so that the modified model can predict polygon rather than pixel-wise mask for each RoI. This model takes advantages from both models, thus it can be applied to our problem. In practice, we just combine FPN and PolygonRNN and name it a new model \modelnameshort\ (\modelnamelong), of which the architecture is shown in detail in section \ref{modmer}.
