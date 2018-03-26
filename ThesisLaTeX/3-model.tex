@@ -31,9 +31,9 @@ The model used for predicting polygon vertices is RNN. We have already mentioned
 
 We know that given two vertices on a polygon in an order (either clockwise or anticlockwise), the third vertex after the two points can be uniquely determined. What RNN here can do is to predict the probability distribution of the next vertex's position in a low resolution when given the history information about the two vertices before, as well as the image features and the position of the starting vertex. This process can be formulated as follows.
 \begin{equation}\label{eq:vnext}
-	p(v_t|v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, p), \forall t \in \{2,3,4,\ldots,T\},
+	p(v_t|v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, f), \forall t \in \{2,3,4,\ldots,T\},
 \end{equation}
-where $p$ denotes the extracted features by CNN (including the masks of boundary and vertices), $F(\cdot)$ denotes a function for computing the conditional probability, $T$ denotes the number of vertices of the polygon, $v_t$ denotes the vertex position at $t$-th prediction. Specifically, the vertex prediction problem can be formulated as a classification problem. The position of $v_t$ can be then quantized to the resolution of output grid, and we can thus use one-hot encoding for $v_t$'s representation.
+where $f$ denotes the extracted features by CNN (including the masks of boundary and vertices), $F(\cdot)$ denotes a function for computing the conditional probability, $T$ denotes the number of vertices of the polygon, $v_t$ denotes the vertex position at $t$-th prediction. Specifically, the vertex prediction problem can be formulated as a classification problem. The position of $v_t$ can be then quantized to the resolution of output grid, and we can thus use one-hot encoding for $v_t$'s representation.
 
 \paragraph{End Signal} Note that the positions for $v_t$ are not only limited to the general output grid, the end signal for the closure detection of the polygon is also embedded in $v_t$, just like the `end of sequence' token \lstinline{<eos>} or \lstinline{</s>} in the RNN language model. Thus, the number possible assignments of $v_t$ equals to the resolution of the output grid plus one ($28\times28+1=785$ in our case). In order to correctly predict the end signal, the starting vertex $v_0$ is required for the conditional probability (equation \ref{eq:vnext}) calculation, as it tells the model when to finish the prediction phase. If the current prediction is the same as, or very close to the starting vertex $v_0$, $v_t$ will be forced to raise the end signal, indicating that the entire polygon is close, and the prediction phase is therefore complete. So generally, the end signal works when $t=T$.
 
@@ -57,7 +57,7 @@ where $p$ denotes the extracted features by CNN (including the masks of boundary
 \begin{equation}
 	h_t = \sigma(o_t) \circ \tanh(c_t),
 \end{equation}
-where $x_t$, $h_t$, $c_t$ denote the input, the hidden state (or cell output), and the cell state of the cell at time step $t$ respectively, $i_t$, $o_t$, $f_t$ denote the states of input, output, and forget gate at time step $t$ respectively, $g_t$ denotes an intermediate variable, $\sigma(\cdot)$, $*$, $\circ$ denote the sigmoid function, convolution, and Hadamard (element-wise) product respectively, $W_x$ and $W_h$ denotes two convolution kernels for $x_t$ and $h_t$ respectively, $W_{xf}$, $W_{xi}$, $W_{xg}$, $W_{xo}$ denote the four components of $W_x$ and $W_{hf}$, $W_{hi}$, $W_{hg}$, $W_{ho}$ denote the four components of $W_h$.
+where $x_t$, $h_t$, $c_t$ denote the input, the hidden state (or cell output), and the cell state of the cell at time step $t$ respectively, $i_t$, $o_t$, $f_t$ denote the states of input, output, and forget gate at time step $t$ respectively, $g_t$ denotes an intermediate variable, $\sigma(\cdot)$, $*$, $\circ$ denote the sigmoid function, convolution, and Hadamard (element-wise) product respectively, $W_x$ and $W_h$ denotes two convolution kernels for $x_t$ and $h_t$ respectively, $W_{xf}$, $W_{xi}$, $W_{xg}$, $W_{xo}$ denote the four components of $W_x$ in the dimension of channels and $W_{hf}$, $W_{hi}$, $W_{hg}$, $W_{ho}$ denote the four components of $W_h$ in the dimension of channels.
 
 \input{fig/3-04}
 
@@ -66,15 +66,15 @@ PolygonRNN uses multilayer RNN with ConvLSTM cells. The connection between two n
 \begin{equation}\label{eq:cellconnect}
 	x_t^{(k)} = h_t^{(k-1)}, \forall k \in \{2,3,\ldots,n\},
 \end{equation}
-where $n$ is the number of RNN layers or ConvLSTM cells, $k$ in the superscript denotes the $k$-th layer. Recall that the initial cell input (i.e. the cell input of the first layer) at time step $t$ consists of the spatial information $p$ from CNN, the two previous vertices $v_{t-1}$ and $v_{t-2}$, and starting vertex $v_0$, here it is formulated as follows.
+where $n$ is the number of RNN layers or ConvLSTM cells, $k$ in the superscript denotes the $k$-th layer. Recall that the initial cell input (i.e. the cell input of the first layer) at time step $t$ consists of the spatial information $f$ from CNN (including the masks of boundary and vertices), the two previous vertices $v_{t-1}$ and $v_{t-2}$, and starting vertex $v_0$, here it is formulated as follows.
 \begin{equation}\label{eq:concat}
-	x_t = x_t^{(1)} = v_{t-1} \oplus v_{t-2} \oplus v_0 \oplus p,
+	x_t = x_t^{(1)} = v_{t-1} \oplus v_{t-2} \oplus v_0 \oplus f,
 \end{equation}
 where $\oplus$ denotes the concatenation operation in the dimension of image channel. Thus, the equation \ref{eq:vnext} can be written as follows.
 \begin{equation}\label{eq:probcomp}
 	y_t = p(v_t|v_{t-1}, v_{t-2}) = \softmax(W_y\vect(h_t^{(n)})),
 \end{equation}
-where $W_y$ denotes the weights of the final fully connected layer. Figure \ref{fig:rnnconvlstm} shows the entire structure of the RNN part and highlights the process at time step $t$, using the same notation as the equations \ref{eq:cellconnect}, \ref{eq:concat} and \ref{eq:probcomp}.
+where $W_y$ denotes the weights of the final fully connected layer. Figure \ref{fig:rnnconvlstm} shows the entire structure of the RNN part and highlights the process at time step $t$, using the same notation as the equations \ref{eq:cellconnect}, \ref{eq:concat} and \ref{eq:probcomp}. Note that at each time step, the features, the masks of boundary and vertices as well as the one-hot encoding of starting vertex are fixed. Only $v_{t-1}$ and $v_{t-2}$ change over time.
 
 \input{fig/3-05}
 
@@ -83,17 +83,81 @@ The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The l
 
 \section{Feature Pyramid Network}\label{modfpn}
 
+FPN is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{mulbboxreg} introduces the basic concept of anchor, and further illustrates multiple bounding boxes regression. Finally, subsection \ref{bonefpn} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
+
+\subsection{Single Bounding Box Regression}\label{sglbboxreg}
+
+Single bounding box regression can be used for such a scenario, where the target image has only one RoI. Generally, a bounding box can be uniquely determined by four parameters, either box center and box size, denoting $(x, y)$ and $(w, h)$ or the coordinates of the upper left and lower right corners of the box, denoting $(l, u)$ and $(r, d)$. They have following relationships.
+\begin{equation}
+	\left[\begin{array}{c}
+		x\\y\\w\\h
+	\end{array}\right]=\frac{1}{2}\left[\begin{array}{cccc}
+		1 & 0 & 1 & 0 \\
+		0 & 1 & 0 & 1 \\
+		-2 & 0 & 2 & 0 \\
+		0 & -2 & 0 & 2
+	\end{array}\right]\left[\begin{array}{c}
+		l\\u\\r\\d
+	\end{array}\right],
+\end{equation}
+\begin{equation}
+	\left[\begin{array}{c}
+		l\\u\\r\\d
+	\end{array}\right]=\frac{1}{2}\left[\begin{array}{cccc}
+		2 & 0 & -1 & 0 \\
+		0 & 2 & 0 & -1 \\
+		2 & 0 & 1 & 0 \\
+		0 & 2 & 0 & 1
+	\end{array}\right]\left[\begin{array}{c}
+		x\\y\\w\\h
+	\end{array}\right].
+\end{equation}
+Therefore, we can regard the problem of finding out single bounding box of RoI as a parameter regression problem. With the image as input, any set of the four parameters, $(x, y, w, h)$ or $(l, u, r, d)$, can be selected as the target of the regression. Figure \ref{fig:sglbboxreg} shows the architecture of the network for single bounding box regression, using box center and box size as outputs.
+
+\input{fig/3-06}
+
+In practice, usually the normalized parameters of box center and box size rather than the coordinates of two corners are used as training targets.
+
+\subsection{Multiple Bounding Boxes Regression}\label{mulbboxreg}
+
+Multiple bounding boxes regression can be very different from the single one. Since the number of RoIs is unknown, if we still directly use the parameters regression as what we do in case of the single bounding box, then the number of nodes of FC output layer will not be fixed. Besides, the RoIs in the image usually reflects the local information, thus we cannot directly use all global features obtained by CNN, either.
+
+\paragraph{Anchor}
+Anchor is a basic concept in multiple bounding boxes regression. An anchor refers to an artificially specified bounding box in the original image, regardless of the number of RoIs or where these RoIs locate. An arbitrary rectangular area in the image can be an anchor. For an image with width $w$ and height $h$, the total number of possible anchors $n$ can be calculated as
+\begin{equation}
+	n = \frac{w(w+1)}{2}\frac{h(h+1)}{2} = \frac{1}{4}(w^2h^2+wh^2+w^2h+wh).
+\end{equation}
+Thus, even for a very small image patch with size 224$\times$224, $n$ is already very large, reaching 635.04 million. Figure \ref{fig:eganchor} illustrates some examples of anchors in an image with multiple RoIs.
+
+\input{fig/3-07}
+
+\paragraph{Regression from Anchor}
+
+refinement
+\begin{equation}
+	x_t = \frac{x_t - x_a}{w_a}, r_y = \frac{y_t - y_a}{h_a}, r_w = \log\frac{w_t}{w_a}, r_h = \log\frac{h_t}{h_a}.
+\end{equation}
+
+recover
+\begin{equation}
+	x = r_x'w_a + x_a, y = r_y'h_a + h_a, w = w_ae^{r_w'}, h = h_ae^{r_h'}.
+\end{equation}
+
+
+
+\subsection{Backbone and Feature Pyramid}\label{bonefpn}
+
+ResNet-101
+
+Feature pyramids are a basic component in recognition systems for detecting objects at different scales. But recent deep learning object detectors have avoided pyramid rep- resentations, in part because they are compute and memory intensive. In this paper, we exploit the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to con- struct feature pyramids with marginal extra cost. A top- down architecture with lateral connections is developed for building high-level semantic feature maps at all scales. This architecture, called a Feature Pyramid Network (FPN), shows significant improvement as a generic feature extrac- tor in several applications. Using FPN in a basic Faster R-CNN system, our method achieves state-of-the-art single- model results on the COCO detection benchmark without bells and whistles, surpassing all existing single-model en- tries including those from the COCO 2016 challenge win- ners. In addition, our method can run at 6 FPS on a GPU and thus is a practical and accurate solution to multi-scale object detection. Code will be made publicly available.
+
+
 FPN uses a top-down architecture with lateral connections to build an in-network feature pyramid from a single-scale input. Faster R-CNN with an FPN back- bone extracts RoI features from different levels of the fea- ture pyramid according to their scale, but otherwise the rest of the approach is similar to vanilla ResNet. Using a ResNet-FPN backbone for feature extraction with Mask R- CNN gives excellent gains in both accuracy and speed. For further details on FPN, we refer readers to [27].
 
 For the network head we closely follow architectures presented in previous work to which we add a fully con- volutional mask prediction branch. Specifically, we ex- tend the Faster R-CNN box heads from the ResNet [19] and FPN [27] papers. Details are shown in Figure 3. The head on the ResNet-C4 backbone includes the 5-th stage of ResNet (namely, the 9-layer ‘res5’ [19]), which is compute- intensive. For FPN, the backbone already includes res5 and thus allows for a more efficient head that uses fewer filters.
 We note that our mask branches have a straightforward structure. More complex designs have the potential to im- prove performance but are not the focus of this work.
 
 
-\subsection{Anchor}
-
-\subsection{Single Bounding Box Regression}
-
-\subsection{Feature Pyramid}
 
 Dummy text.
 

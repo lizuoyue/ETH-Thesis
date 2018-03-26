@@ -21,9 +21,9 @@
 \BOOKMARK [2][-]{subsection.3.1.2}{RNN\040Part}{section.3.1}% 21
 \BOOKMARK [2][-]{subsection.3.1.3}{Loss\040Function}{section.3.1}% 22
 \BOOKMARK [1][-]{section.3.2}{Feature\040Pyramid\040Network}{chapter.3}% 23
-\BOOKMARK [2][-]{subsection.3.2.1}{Anchor}{section.3.2}% 24
-\BOOKMARK [2][-]{subsection.3.2.2}{Single\040Bounding\040Box\040Regression}{section.3.2}% 25
-\BOOKMARK [2][-]{subsection.3.2.3}{Feature\040Pyramid}{section.3.2}% 26
+\BOOKMARK [2][-]{subsection.3.2.1}{Single\040Bounding\040Box\040Regression}{section.3.2}% 24
+\BOOKMARK [2][-]{subsection.3.2.2}{Multiple\040Bounding\040Boxes\040Regression}{section.3.2}% 25
+\BOOKMARK [2][-]{subsection.3.2.3}{Backbone\040and\040Feature\040Pyramid}{section.3.2}% 26
 \BOOKMARK [1][-]{section.3.3}{R-PolygonRNN}{chapter.3}% 27
 \BOOKMARK [2][-]{subsection.3.3.1}{Two-step\040Model}{section.3.3}% 28
 \BOOKMARK [2][-]{subsection.3.3.2}{Hybrid\040Model}{section.3.3}% 29
@@ -72,4 +72,4 @@
 \BOOKMARK [1][-]{section.A.1}{Example\040URL\040of\040Google\040Static\040Maps\040API}{appendix.A}% 72
 \BOOKMARK [1][-]{section.A.2}{OpenStreetMap}{appendix.A}% 73
 \BOOKMARK [1][-]{section.A.3}{Projection}{appendix.A}% 74
-\BOOKMARK [0][-]{section*.28}{List\040of\040Figures}{}% 75
+\BOOKMARK [0][-]{section*.29}{List\040of\040Figures}{}% 75

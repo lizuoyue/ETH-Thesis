@@ -18,15 +18,6 @@ if __name__ == '__main__':
 	if not os.path.exists('./Model%s/' % city_name):
 		os.makedirs('./Model%s/' % city_name)
 
-	# Create data generator
-	obj = DataGenerator(
-		building_path = config.PATH_B % city_name,
-		area_path = config.PATH_A % city_name, 
-		img_size = config.PATCH_SIZE,
-		v_out_res = config.V_OUT_RES,
-		max_num_vertices = config.MAX_NUM_VERTICES,
-	)
-
 	# Define graph
 	graph = HybridModel(
 		max_num_vertices = config.MAX_NUM_VERTICES,
@@ -51,6 +42,15 @@ if __name__ == '__main__':
 	# for v in tf.global_variables():
 	# 	print(v.name)
 	# quit()
+
+	# Create data generator
+	obj = DataGenerator(
+		building_path = config.PATH_B % city_name,
+		area_path = config.PATH_A % city_name, 
+		img_size = config.PATCH_SIZE,
+		v_out_res = config.V_OUT_RES,
+		max_num_vertices = config.MAX_NUM_VERTICES,
+	)
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])

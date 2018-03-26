@@ -92,7 +92,8 @@ class HybridModel(object):
 			prob              :
 		"""
 		batch_size = tf.cast(tf.shape(img)[0], tf.float32)
-		feature = PolygonRNNFeature(VGG16(img, True), reuse)
+		# feature = PolygonRNNFeature(VGG16(img, True), reuse)
+		feature = PolygonRNNFeature(VGG16(img, reuse, scope = 'SecondVGG'), reuse)
 		with tf.variable_scope('CNN', reuse = reuse):
 			boundary = tf.layers.conv2d(inputs = feature, filters = 1, kernel_size = (3, 3), padding = 'same', activation = tf.sigmoid)
 			combine  = tf.concat([feature, boundary], 3)
