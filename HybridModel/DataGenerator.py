@@ -38,15 +38,16 @@ def rotateBox(size, box):
 	return (h, w), (y1, w - x2, y2, w - x1)
 
 class DataGenerator(object):
-	def __init__(self, building_path, area_path, img_size, v_out_res, max_num_vertices):
+	def __init__(self, city_name, img_size, v_out_res, max_num_vertices):
 		self.img_size = img_size
 		self.v_out_res = v_out_res
 		self.max_num_vertices = max_num_vertices
 
 		# 
-		self.area_path = area_path
-		self.archive = zipfile.ZipFile(building_path, 'r')
-		self.building_path = building_path.lstrip('./').replace('.zip', '')
+		self.city_name = city_name
+		self.area_path = config.PATH_A % city_name
+		self.archive = zipfile.ZipFile(config.PATH_B % city_name, 'r')
+		self.building_path = (config.PATH_B % city_name).lstrip('./').replace('.zip', '')
 		bids = set()
 		for filename in self.archive.namelist():
 			if filename.startswith('__MACOSX'):
@@ -154,7 +155,7 @@ class DataGenerator(object):
 		x_rate = self.v_out_res[0] / img.size[0]
 		y_rate = self.v_out_res[1] / img.size[1]
 		img = img.resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
-		img = np.array(img)[..., 0: 3] / 255.0
+		img = np.array(img, np.float32)[..., 0: 3] - config.COLOR_MEAN['Buildings'][self.city_name]
 		polygon_s = []
 		for x, y in polygon:
 			a, b = math.floor(x * x_rate), math.floor(y * y_rate)
@@ -224,7 +225,7 @@ class DataGenerator(object):
 		) for x, y in polygon]
 		x_rate = self.v_out_res[0] / img_rot.size[0]
 		y_rate = self.v_out_res[1] / img_rot.size[1]
-		img = np.array(img_res)[..., 0: 3] / 255.0
+		img = np.array(img, np.float32)[..., 0: 3] - config.COLOR_MEAN['Buildings'][self.city_name]
 		polygon_s = []
 		for x, y in polygon_rot:
 			a, b = math.floor(x * x_rate), math.floor(y * y_rate)
@@ -348,7 +349,8 @@ class DataGenerator(object):
 		anchor_cls[rpn_match == -1, 1] = 1
 
 		#
-		return np.array(org_resize)[..., 0: 3] / 255.0, anchor_cls, anchor_box
+		ret_img = np.array(org_resize, np.float32)[..., 0: 3] - config.COLOR_MEAN['Areas'][self.city_name]
+		return ret_img, anchor_cls, anchor_box
 
 	def getBuildingsBatch(self, batch_size, mode = None, idx = None):
 		# Real
@@ -401,7 +403,8 @@ class DataGenerator(object):
 					cx, cy = (x1+x2)/2, (y1+y2)/2
 					y1, x1, y2, x2 = int(max(0, cy-h/2)), int(max(0, cx-w/2)), int(min(img.shape[0], cy+h/2)), int(min(img.shape[1], cx+w/2))
 					if y1 < y2 and x1 < x2:
-						patches.append(np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize(config.PATCH_SIZE, resample = Image.BICUBIC))/255.0)
+						patch = np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize(config.PATCH_SIZE, resample = Image.BICUBIC), np.float32)
+						patches.append(patch - config.COLOR_MEAN['Buildings'][self.city_name])
 						org_info.append([i, y1, x1, y2, x2])
 		return self.area_imgs, np.array(patches), org_info
 
@@ -440,10 +443,8 @@ class DataGenerator(object):
 			im.save(path + '/%d_%d.png' % (base % 100, i))
 
 if __name__ == '__main__':
-	city = sys.argv[1]
 	dg = DataGenerator(
-		building_path = '../../Buildings%s.zip' % city,
-		area_path = '/local/lizuoyue/Areas%s' % city,
+		city_name = sys.argv[1],
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
@@ -458,11 +459,11 @@ if __name__ == '__main__':
 	for k in range(12):
 		for i, item in enumerate(list(item2)):
 			if i < 3:
-				Image.fromarray(np.array(item[k, ...]*255,np.uint8)).resize((256,256)).show()
+				Image.fromarray(np.array(item[k, ...],np.uint8)).resize((256,256)).show()
 				time.sleep(0.5)
 			elif i < 5:
 				for j in range(20):
-					Image.fromarray(np.array(item[k, j, ...]*255,np.uint8)).resize((256,256)).show()
+					Image.fromarray(np.array(item[k, j, ...],np.uint8)).resize((256,256)).show()
 					print(j)
 					time.sleep(0.5)
 			else:

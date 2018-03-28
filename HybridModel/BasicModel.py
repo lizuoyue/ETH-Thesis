@@ -33,7 +33,7 @@ def VGG16(img, reuse = None, pretrained = False, scope = None):
 			conv5_3 = tf.layers.conv2d       (inputs = conv5_2, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  16
 			return pool2, pool3, conv2_2, conv3_3, conv4_3, conv5_3
 	else:
-		wbs = np.load('../../VGG16ConvWeights.npy')
+		wbs = np.load('../../VGG16ConvWeights2.npy')
 		trainable = False
 		with tf.variable_scope(scope_name, reuse = reuse):
 			conv1_1 = tf.layers.conv2d       (inputs = img    , filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 0][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 0][1], trainable = trainable) # 256

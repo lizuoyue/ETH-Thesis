@@ -14,7 +14,7 @@ for i in range(0, 40):
 				b = np.array(b)
 				print(w.shape, b.shape)
 				res1.append((w, b))
-np.save('../../VGG16ConvWeights1.npy', res1)
+np.save('../VGG16ConvWeights1.npy', res1)
 
 res2 = []
 ls = ['1_1', '1_2', '2_1', '2_2', '3_1', '3_2', '3_3', '4_1', '4_2', '4_3', '5_1', '5_2', '5_3']
@@ -24,4 +24,4 @@ for i in ls:
 	b = data['conv' + i + '_b']
 	print(w.shape, b.shape)
 	res2.append((w, b))
-np.save('../../VGG16ConvWeights2.npy', res2)
+np.save('../VGG16ConvWeights2.npy', res2)

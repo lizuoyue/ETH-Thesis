@@ -10,10 +10,11 @@ from UtilityBoxAnchor import *
 from PIL import Image, ImageDraw
 
 config = Config()
+global city_name
 
 def overlay(img, mask, shape, color = (255, 0, 0)):
-	org = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
-	alpha = np.array(mask * 128.0, dtype = np.uint8)
+	org = Image.fromarray(np.array(img, np.uint8)).convert('RGBA')
+	alpha = np.array(mask * 128.0, np.uint8)
 	alpha = np.concatenate(
 		(
 			np.ones((shape[0], shape[1], 1)) * color[0],
@@ -23,18 +24,18 @@ def overlay(img, mask, shape, color = (255, 0, 0)):
 		),
 		axis = 2
 	)
-	alpha = Image.fromarray(np.array(alpha, dtype = np.uint8), mode = 'RGBA')
+	alpha = Image.fromarray(np.array(alpha, np.uint8), mode = 'RGBA')
 	alpha = alpha.resize((224, 224), resample = Image.BICUBIC)
 	merge = Image.alpha_composite(org, alpha)
 	return merge
 
 def overlayMultiMask(img, mask, shape):
-	merge = Image.fromarray(np.array(img * 255.0, dtype = np.uint8)).convert('RGBA')
-	merge = np.array(overlay(img, mask[0], shape)) / 255.0
+	merge = Image.fromarray(np.array(img, np.uint8)).convert('RGBA')
+	merge = np.array(overlay(img, mask[0], shape))
 	for i in range(1, mask.shape[0]):
 		color = (255 * (i == 1), 128 * (i == 1) + (1 - i % 2) * 255, i % 2 * 255 - 255 * (i == 1))
-		merge = np.array(overlay(merge, mask[i], shape, color)) / 255.0
-	return Image.fromarray(np.array(merge * 255.0, dtype = np.uint8)).convert('RGBA')
+		merge = np.array(overlay(merge, mask[i], shape, color), np.uint8)
+	return Image.fromarray(merge).convert('RGBA')
 
 def visualize(path, img, boundary, vertices, v_in, b_pred, v_pred, v_out_pred, end_pred, seq_len, v_out_res, patch_info):
 	# Clear last files
@@ -93,6 +94,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info,
 	batch_size = img.shape[0]
 	shape = ((v_out_res[1], v_out_res[0]))
 	blank = np.zeros(shape)
+	img = img + config.COLOR_MEAN['Buildings'][city_name]
 
 	# Sequence length and polygon
 	polygon = [[] for i in range(batch_size)]
@@ -181,8 +183,7 @@ if __name__ == '__main__':
 
 	# Create data generator
 	obj = DataGenerator(
-		building_path = config.PATH_B % city_name,
-		area_path = config.PATH_A % city_name, 
+		city_name = city_name,
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
@@ -193,6 +194,7 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
+		two_step = False,
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)

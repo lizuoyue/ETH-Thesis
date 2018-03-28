@@ -33,3 +33,15 @@ class Config(object):
 		self.BUILDING_TRAIN_BATCH = 12
 		self.BUILDING_PRED_BATCH = 16
 		self.SPLIT = 0.9
+
+		self.COLOR_MEAN = {
+			'Areas': {
+				'Zurich':  [ 99.40127267, 102.85743628,  95.63071881],
+				'Chicago': [ 81.11714888,  81.95831831,  74.76831702],
+			},
+			'Buildings': {
+				'Zurich' : [104.35192842, 103.41573836,  99.22422849],
+				'Chicago': [ 76.90603533,  77.37561113,  71.17612697],
+			},
+		}
+

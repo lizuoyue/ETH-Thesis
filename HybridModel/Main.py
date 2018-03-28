@@ -37,9 +37,9 @@ if __name__ == '__main__':
 	pred_rpn_res  = graph.predict_rpn(aa)
 	pred_poly_res = graph.predict_polygon(pp)
 
-	for v in tf.global_variables():
-		print(v.name)
-	quit()
+	# for v in tf.global_variables():
+	# 	print(v.name)
+	# quit()
 
 	# Create new folder
 	if not os.path.exists('./Model%s/' % city_name):
@@ -47,8 +47,7 @@ if __name__ == '__main__':
 
 	# Create data generator
 	obj = DataGenerator(
-		building_path = config.PATH_B % city_name,
-		area_path = config.PATH_A % city_name, 
+		city_name = city_name,
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
