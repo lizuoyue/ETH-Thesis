@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 
 def func(img_type, city_name):
-	files = glob.glob('../../%s%s' % (img_type, city_name))
+	files = glob.glob('../../%s%s/*/img.png' % (img_type, city_name))
 	res = [[], [], []]
 	for n, file in enumerate(files):
 		print(n)
