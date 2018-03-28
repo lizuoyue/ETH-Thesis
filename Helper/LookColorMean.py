@@ -14,5 +14,6 @@ def func(img_type, city_name):
 	return [np.mean(res[i]) for i in range(3)]
 
 city_name = sys.argv[1]
-print(func('Buildings', city_name))
-print(func('Areas', city_name))
+res1 = func('Buildings', city_name)
+res2 = func('Areas', city_name)
+print(res1, res2)
