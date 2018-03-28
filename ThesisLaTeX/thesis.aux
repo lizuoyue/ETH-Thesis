@@ -122,197 +122,223 @@
 \newlabel{sglbboxreg}{{\M@TitleReference {3.2.1}{Single Bounding Box Regression}}{15}{Single Bounding Box Regression}{subsection.3.2.1}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces Simplified structure of the network for single bounding box regression}}{16}{figure.3.7}}
 \newlabel{fig:sglbboxreg}{{\M@TitleReference {3.7}{Simplified structure of the network for single bounding box regression}}{16}{Simplified structure of the network for single bounding box regression}{figure.3.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Multiple Bounding Boxes Regression}{16}{subsection.3.2.2}}
-\newlabel{mulbboxreg}{{\M@TitleReference {3.2.2}{Multiple Bounding Boxes Regression}}{16}{Multiple Bounding Boxes Regression}{subsection.3.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.2}Anchor and its Properties}{16}{subsection.3.2.2}}
+\newlabel{ancpro}{{\M@TitleReference {3.2.2}{Anchor and its Properties}}{16}{Anchor and its Properties}{subsection.3.2.2}{}}
 \@writefile{toc}{\contentsline {paragraph}{Anchor}{16}{section*.13}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Example anchors in image with multiple RoIs}}{16}{figure.3.8}}
-\newlabel{fig:eganchor}{{\M@TitleReference {3.8}{Example anchors in image with multiple RoIs}}{16}{Example anchors in image with multiple RoIs}{figure.3.8}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces }}{16}{figure.3.8}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces }}{16}{figure.3.8}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces }}{16}{figure.3.8}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces }}{16}{figure.3.8}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}Backbone and Feature Pyramid}{17}{subsection.3.2.3}}
-\newlabel{bonefpn}{{\M@TitleReference {3.2.3}{Backbone and Feature Pyramid}}{17}{Backbone and Feature Pyramid}{subsection.3.2.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}R-PolygonRNN}{17}{section.3.3}}
-\newlabel{modmer}{{\M@TitleReference {3.3}{R-PolygonRNN}}{17}{\modelnameshort }{section.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Two-step Model}{18}{subsection.3.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Hybrid Model}{18}{subsection.3.3.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}Hybrid Model with RoI Align}{18}{subsection.3.3.3}}
+\newlabel{eq:numanchor}{{3.10}{16}{Anchor}{equation.3.2.10}{}}
+\@writefile{toc}{\contentsline {paragraph}{IoU Score}{16}{section*.14}}
+\newlabel{fig:posanchor}{{3.8(a)}{17}{Subfigure 3.8(a)\relax }{subfigure.1}{}}
+\newlabel{sub@fig:posanchor}{{(a)}{17}{Subfigure 3.8(a)\relax }{subfigure.1}{}}
+\newlabel{fig:natanchor1}{{3.8(b)}{17}{Subfigure 3.8(b)\relax }{subfigure.2}{}}
+\newlabel{sub@fig:natanchor1}{{(b)}{17}{Subfigure 3.8(b)\relax }{subfigure.2}{}}
+\newlabel{fig:natanchor2}{{3.8(c)}{17}{Subfigure 3.8(c)\relax }{subfigure.3}{}}
+\newlabel{sub@fig:natanchor2}{{(c)}{17}{Subfigure 3.8(c)\relax }{subfigure.3}{}}
+\newlabel{fig:neganchor}{{3.8(d)}{17}{Subfigure 3.8(d)\relax }{subfigure.4}{}}
+\newlabel{sub@fig:neganchor}{{(d)}{17}{Subfigure 3.8(d)\relax }{subfigure.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Example anchors in image with multiple RoIs}}{17}{figure.3.8}}
+\newlabel{fig:eganchor}{{\M@TitleReference {3.8}{Example anchors in image with multiple RoIs}}{17}{Example anchors in image with multiple RoIs}{figure.3.8}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces Positive}}{17}{figure.3.8}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces Natural}}{17}{figure.3.8}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces Natural}}{17}{figure.3.8}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces Negative}}{17}{figure.3.8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces Coverage level of anchor and ground truth bounding box under different IoU scores}}{17}{figure.3.9}}
+\newlabel{fig:egiou}{{\M@TitleReference {3.9}{Coverage level of anchor and ground truth bounding box under different IoU scores}}{17}{Coverage level of anchor and ground truth bounding box under different IoU scores}{figure.3.9}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces IoU = 0}}{17}{figure.3.9}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces IoU = 0.3}}{17}{figure.3.9}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces IoU = 0.7}}{17}{figure.3.9}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces IoU = 1}}{17}{figure.3.9}}
+\@writefile{toc}{\contentsline {paragraph}{Anchor Polarity}{17}{section*.15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}Multiple Bounding Boxes Regression}{18}{subsection.3.2.3}}
+\newlabel{mulbboxreg}{{\M@TitleReference {3.2.3}{Multiple Bounding Boxes Regression}}{18}{Multiple Bounding Boxes Regression}{subsection.3.2.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Anchor Assignment}{18}{section*.16}}
+\@writefile{toc}{\contentsline {paragraph}{Classification and Regression on Anchors}{18}{section*.17}}
+\@writefile{toc}{\contentsline {paragraph}{Loss}{19}{section*.18}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.10}{\ignorespaces Smooth $L_1$ loss function}}{19}{figure.3.10}}
+\newlabel{fig:l1loss}{{\M@TitleReference {3.10}{Smooth $L_1$ loss function}}{19}{Smooth $L_1$ loss function}{figure.3.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2.4}Backbone and Feature Pyramid}{20}{subsection.3.2.4}}
+\newlabel{bonefpn}{{\M@TitleReference {3.2.4}{Backbone and Feature Pyramid}}{20}{Backbone and Feature Pyramid}{subsection.3.2.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}R-PolygonRNN}{20}{section.3.3}}
+\newlabel{modmer}{{\M@TitleReference {3.3}{R-PolygonRNN}}{20}{\modelnameshort }{section.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Two-step Model}{21}{subsection.3.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Hybrid Model}{21}{subsection.3.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}Hybrid Model with RoI Align}{21}{subsection.3.3.3}}
 \@writefile{lof}{\addvspace {10pt}}
 \@writefile{lot}{\addvspace {10pt}}
-\@writefile{toc}{\contentsline {chapter}{\chapternumberline {4}Experiments and Results}{19}{chapter.4}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Ground Truth}{19}{section.4.1}}
-\newlabel{gt}{{\M@TitleReference {4.1}{Ground Truth}}{19}{Ground Truth}{section.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{19}{subsection.4.1.1}}
-\newlabel{apimap}{{\M@TitleReference {4.1.1}{Google Static Maps API}}{19}{Google Static Maps API}{subsection.4.1.1}{}}
-\newlabel{fig:egsatellite}{{4.1(a)}{20}{Subfigure 4.1(a)\relax }{subfigure.1}{}}
-\newlabel{sub@fig:egsatellite}{{(a)}{20}{Subfigure 4.1(a)\relax }{subfigure.1}{}}
-\newlabel{fig:egroadmap}{{4.1(b)}{20}{Subfigure 4.1(b)\relax }{subfigure.2}{}}
-\newlabel{sub@fig:egroadmap}{{(b)}{20}{Subfigure 4.1(b)\relax }{subfigure.2}{}}
-\newlabel{fig:eghybrid}{{4.1(c)}{20}{Subfigure 4.1(c)\relax }{subfigure.3}{}}
-\newlabel{sub@fig:eghybrid}{{(c)}{20}{Subfigure 4.1(c)\relax }{subfigure.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{20}{figure.4.1}}
-\newlabel{fig:egapimap}{{\M@TitleReference {4.1}{Example images downloaded through Google Static Maps API}}{20}{Example images downloaded through Google Static Maps API}{figure.4.1}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces satellite image}}{20}{figure.4.1}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces roadmap image}}{20}{figure.4.1}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces hybrid image}}{20}{figure.4.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}OpenStreetMap}{20}{subsection.4.1.2}}
-\newlabel{apiosm}{{\M@TitleReference {4.1.2}{OpenStreetMap}}{20}{OpenStreetMap}{subsection.4.1.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{21}{subsection.4.1.3}}
-\newlabel{arebui}{{\M@TitleReference {4.1.3}{Areas and Buildings}}{21}{Areas and Buildings}{subsection.4.1.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Areas for FPN}{21}{section*.14}}
-\@writefile{toc}{\contentsline {paragraph}{Buildings for PolygonRNN}{21}{section*.15}}
-\newlabel{fig:egarea}{{4.2(a)}{22}{Subfigure 4.2(a)\relax }{subfigure.1}{}}
-\newlabel{sub@fig:egarea}{{(a)}{22}{Subfigure 4.2(a)\relax }{subfigure.1}{}}
-\newlabel{fig:egareabox}{{4.2(b)}{22}{Subfigure 4.2(b)\relax }{subfigure.2}{}}
-\newlabel{sub@fig:egareabox}{{(b)}{22}{Subfigure 4.2(b)\relax }{subfigure.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces An example area in Zurich for FPN training}}{22}{figure.4.2}}
-\newlabel{fig:egareafpn}{{\M@TitleReference {4.2}{An example area in Zurich for FPN training}}{22}{An example area in Zurich for FPN training}{figure.4.2}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces example area}}{22}{figure.4.2}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces example area with bounding boxes}}{22}{figure.4.2}}
-\newlabel{fig:egbui0}{{4.3(a)}{22}{Subfigure 4.3(a)\relax }{subfigure.1}{}}
-\newlabel{sub@fig:egbui0}{{(a)}{22}{Subfigure 4.3(a)\relax }{subfigure.1}{}}
-\newlabel{fig:egbui1}{{4.3(b)}{22}{Subfigure 4.3(b)\relax }{subfigure.2}{}}
-\newlabel{sub@fig:egbui1}{{(b)}{22}{Subfigure 4.3(b)\relax }{subfigure.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Example buildings in Zurich for PolygonRNN training}}{22}{figure.4.3}}
-\newlabel{fig:egbui}{{\M@TitleReference {4.3}{Example buildings in Zurich for PolygonRNN training}}{22}{Example buildings in Zurich for PolygonRNN training}{figure.4.3}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces example buildings}}{22}{figure.4.3}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces example buildings with polygon outlines}}{22}{figure.4.3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.4}Problems}{22}{subsection.4.1.4}}
-\newlabel{proble}{{\M@TitleReference {4.1.4}{Problems}}{22}{Problems}{subsection.4.1.4}{}}
-\newlabel{fig:egshi0}{{4.4(a)}{23}{Subfigure 4.4(a)\relax }{subfigure.1}{}}
-\newlabel{sub@fig:egshi0}{{(a)}{23}{Subfigure 4.4(a)\relax }{subfigure.1}{}}
-\newlabel{fig:egshi1}{{4.4(b)}{23}{Subfigure 4.4(b)\relax }{subfigure.2}{}}
-\newlabel{sub@fig:egshi1}{{(b)}{23}{Subfigure 4.4(b)\relax }{subfigure.2}{}}
-\newlabel{fig:egshi2}{{4.4(c)}{23}{Subfigure 4.4(c)\relax }{subfigure.3}{}}
-\newlabel{sub@fig:egshi2}{{(c)}{23}{Subfigure 4.4(c)\relax }{subfigure.3}{}}
-\newlabel{fig:egshi3}{{4.4(d)}{23}{Subfigure 4.4(d)\relax }{subfigure.4}{}}
-\newlabel{sub@fig:egshi3}{{(d)}{23}{Subfigure 4.4(d)\relax }{subfigure.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Problems existed in the ground truth dataset}}{23}{figure.4.4}}
-\newlabel{fig:egshi}{{\M@TitleReference {4.4}{Problems existed in the ground truth dataset}}{23}{Problems existed in the ground truth dataset}{figure.4.4}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces general shift}}{23}{figure.4.4}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces polygon size and shape}}{23}{figure.4.4}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces angle issue}}{23}{figure.4.4}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces adjacent buildings}}{23}{figure.4.4}}
-\@writefile{toc}{\contentsline {paragraph}{General Shift}{23}{section*.16}}
-\@writefile{toc}{\contentsline {paragraph}{Polygon Size and Shape}{23}{section*.17}}
-\@writefile{toc}{\contentsline {paragraph}{Angle Issue}{23}{section*.18}}
-\@writefile{toc}{\contentsline {paragraph}{Adjacent Buildings}{23}{section*.19}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.5}Adjustments}{24}{subsection.4.1.5}}
-\newlabel{adjust}{{\M@TitleReference {4.1.5}{Adjustments}}{24}{Adjustments}{subsection.4.1.5}{}}
-\newlabel{fig:egbfradj}{{4.5(a)}{24}{Subfigure 4.5(a)\relax }{subfigure.1}{}}
-\newlabel{sub@fig:egbfradj}{{(a)}{24}{Subfigure 4.5(a)\relax }{subfigure.1}{}}
-\newlabel{fig:egaftadj}{{4.5(b)}{24}{Subfigure 4.5(b)\relax }{subfigure.2}{}}
-\newlabel{sub@fig:egaftadj}{{(b)}{24}{Subfigure 4.5(b)\relax }{subfigure.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{24}{figure.4.5}}
-\newlabel{fig:egadj}{{\M@TitleReference {4.5}{Adjustment examples}}{24}{Adjustment examples}{figure.4.5}{}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces before adjustment}}{24}{figure.4.5}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces after adjustment}}{24}{figure.4.5}}
-\@writefile{toc}{\contentsline {paragraph}{Color Variance}{24}{section*.20}}
-\@writefile{toc}{\contentsline {paragraph}{Edges}{24}{section*.21}}
-\@writefile{toc}{\contentsline {paragraph}{Corners}{24}{section*.22}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Implementation Details}{25}{section.4.2}}
-\newlabel{impdet}{{\M@TitleReference {4.2}{Implementation Details}}{25}{Implementation Details}{section.4.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Configuration}{25}{subsection.4.2.1}}
-\newlabel{config}{{\M@TitleReference {4.2.1}{Configuration}}{25}{Configuration}{subsection.4.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Training}{25}{subsection.4.2.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.3}Prediction}{25}{subsection.4.2.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Experiment Results}{25}{section.4.3}}
-\newlabel{expres}{{\M@TitleReference {4.3}{Experiment Results}}{25}{Experiment Results}{section.4.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{25}{subsection.4.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{25}{subsection.4.3.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{25}{subsection.4.3.3}}
-\@writefile{toc}{\contentsline {subsubsection}{Example Subsubsection}{25}{section*.23}}
-\@writefile{toc}{\contentsline {paragraph}{Example Paragraph}{25}{section*.24}}
-\@writefile{toc}{\contentsline {subparagraph}{Example Subparagraph}{25}{section*.25}}
+\@writefile{toc}{\contentsline {chapter}{\chapternumberline {4}Experiments and Results}{23}{chapter.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Ground Truth}{23}{section.4.1}}
+\newlabel{gt}{{\M@TitleReference {4.1}{Ground Truth}}{23}{Ground Truth}{section.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{23}{subsection.4.1.1}}
+\newlabel{apimap}{{\M@TitleReference {4.1.1}{Google Static Maps API}}{23}{Google Static Maps API}{subsection.4.1.1}{}}
+\newlabel{fig:egsatellite}{{4.1(a)}{24}{Subfigure 4.1(a)\relax }{subfigure.1}{}}
+\newlabel{sub@fig:egsatellite}{{(a)}{24}{Subfigure 4.1(a)\relax }{subfigure.1}{}}
+\newlabel{fig:egroadmap}{{4.1(b)}{24}{Subfigure 4.1(b)\relax }{subfigure.2}{}}
+\newlabel{sub@fig:egroadmap}{{(b)}{24}{Subfigure 4.1(b)\relax }{subfigure.2}{}}
+\newlabel{fig:eghybrid}{{4.1(c)}{24}{Subfigure 4.1(c)\relax }{subfigure.3}{}}
+\newlabel{sub@fig:eghybrid}{{(c)}{24}{Subfigure 4.1(c)\relax }{subfigure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{24}{figure.4.1}}
+\newlabel{fig:egapimap}{{\M@TitleReference {4.1}{Example images downloaded through Google Static Maps API}}{24}{Example images downloaded through Google Static Maps API}{figure.4.1}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces satellite image}}{24}{figure.4.1}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces roadmap image}}{24}{figure.4.1}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces hybrid image}}{24}{figure.4.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}OpenStreetMap}{24}{subsection.4.1.2}}
+\newlabel{apiosm}{{\M@TitleReference {4.1.2}{OpenStreetMap}}{24}{OpenStreetMap}{subsection.4.1.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{25}{subsection.4.1.3}}
+\newlabel{arebui}{{\M@TitleReference {4.1.3}{Areas and Buildings}}{25}{Areas and Buildings}{subsection.4.1.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Areas for FPN}{25}{section*.19}}
+\@writefile{toc}{\contentsline {paragraph}{Buildings for PolygonRNN}{25}{section*.20}}
+\newlabel{fig:egarea}{{4.2(a)}{26}{Subfigure 4.2(a)\relax }{subfigure.1}{}}
+\newlabel{sub@fig:egarea}{{(a)}{26}{Subfigure 4.2(a)\relax }{subfigure.1}{}}
+\newlabel{fig:egareabox}{{4.2(b)}{26}{Subfigure 4.2(b)\relax }{subfigure.2}{}}
+\newlabel{sub@fig:egareabox}{{(b)}{26}{Subfigure 4.2(b)\relax }{subfigure.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces An example area in Zurich for FPN training}}{26}{figure.4.2}}
+\newlabel{fig:egareafpn}{{\M@TitleReference {4.2}{An example area in Zurich for FPN training}}{26}{An example area in Zurich for FPN training}{figure.4.2}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces example area}}{26}{figure.4.2}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces example area with bounding boxes}}{26}{figure.4.2}}
+\newlabel{fig:egbui0}{{4.3(a)}{26}{Subfigure 4.3(a)\relax }{subfigure.1}{}}
+\newlabel{sub@fig:egbui0}{{(a)}{26}{Subfigure 4.3(a)\relax }{subfigure.1}{}}
+\newlabel{fig:egbui1}{{4.3(b)}{26}{Subfigure 4.3(b)\relax }{subfigure.2}{}}
+\newlabel{sub@fig:egbui1}{{(b)}{26}{Subfigure 4.3(b)\relax }{subfigure.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Example buildings in Zurich for PolygonRNN training}}{26}{figure.4.3}}
+\newlabel{fig:egbui}{{\M@TitleReference {4.3}{Example buildings in Zurich for PolygonRNN training}}{26}{Example buildings in Zurich for PolygonRNN training}{figure.4.3}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces example buildings}}{26}{figure.4.3}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces example buildings with polygon outlines}}{26}{figure.4.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.4}Problems}{26}{subsection.4.1.4}}
+\newlabel{proble}{{\M@TitleReference {4.1.4}{Problems}}{26}{Problems}{subsection.4.1.4}{}}
+\newlabel{fig:egshi0}{{4.4(a)}{27}{Subfigure 4.4(a)\relax }{subfigure.1}{}}
+\newlabel{sub@fig:egshi0}{{(a)}{27}{Subfigure 4.4(a)\relax }{subfigure.1}{}}
+\newlabel{fig:egshi1}{{4.4(b)}{27}{Subfigure 4.4(b)\relax }{subfigure.2}{}}
+\newlabel{sub@fig:egshi1}{{(b)}{27}{Subfigure 4.4(b)\relax }{subfigure.2}{}}
+\newlabel{fig:egshi2}{{4.4(c)}{27}{Subfigure 4.4(c)\relax }{subfigure.3}{}}
+\newlabel{sub@fig:egshi2}{{(c)}{27}{Subfigure 4.4(c)\relax }{subfigure.3}{}}
+\newlabel{fig:egshi3}{{4.4(d)}{27}{Subfigure 4.4(d)\relax }{subfigure.4}{}}
+\newlabel{sub@fig:egshi3}{{(d)}{27}{Subfigure 4.4(d)\relax }{subfigure.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Problems existed in the ground truth dataset}}{27}{figure.4.4}}
+\newlabel{fig:egshi}{{\M@TitleReference {4.4}{Problems existed in the ground truth dataset}}{27}{Problems existed in the ground truth dataset}{figure.4.4}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces general shift}}{27}{figure.4.4}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces polygon size and shape}}{27}{figure.4.4}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces angle issue}}{27}{figure.4.4}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces adjacent buildings}}{27}{figure.4.4}}
+\@writefile{toc}{\contentsline {paragraph}{General Shift}{27}{section*.21}}
+\@writefile{toc}{\contentsline {paragraph}{Polygon Size and Shape}{27}{section*.22}}
+\@writefile{toc}{\contentsline {paragraph}{Angle Issue}{27}{section*.23}}
+\@writefile{toc}{\contentsline {paragraph}{Adjacent Buildings}{27}{section*.24}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.5}Adjustments}{28}{subsection.4.1.5}}
+\newlabel{adjust}{{\M@TitleReference {4.1.5}{Adjustments}}{28}{Adjustments}{subsection.4.1.5}{}}
+\newlabel{fig:egbfradj}{{4.5(a)}{28}{Subfigure 4.5(a)\relax }{subfigure.1}{}}
+\newlabel{sub@fig:egbfradj}{{(a)}{28}{Subfigure 4.5(a)\relax }{subfigure.1}{}}
+\newlabel{fig:egaftadj}{{4.5(b)}{28}{Subfigure 4.5(b)\relax }{subfigure.2}{}}
+\newlabel{sub@fig:egaftadj}{{(b)}{28}{Subfigure 4.5(b)\relax }{subfigure.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{28}{figure.4.5}}
+\newlabel{fig:egadj}{{\M@TitleReference {4.5}{Adjustment examples}}{28}{Adjustment examples}{figure.4.5}{}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces before adjustment}}{28}{figure.4.5}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces after adjustment}}{28}{figure.4.5}}
+\@writefile{toc}{\contentsline {paragraph}{Color Variance}{28}{section*.25}}
+\@writefile{toc}{\contentsline {paragraph}{Edges}{28}{section*.26}}
+\@writefile{toc}{\contentsline {paragraph}{Corners}{28}{section*.27}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Implementation Details}{29}{section.4.2}}
+\newlabel{impdet}{{\M@TitleReference {4.2}{Implementation Details}}{29}{Implementation Details}{section.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Configuration}{29}{subsection.4.2.1}}
+\newlabel{config}{{\M@TitleReference {4.2.1}{Configuration}}{29}{Configuration}{subsection.4.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Training}{29}{subsection.4.2.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.3}Prediction}{29}{subsection.4.2.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Experiment Results}{29}{section.4.3}}
+\newlabel{expres}{{\M@TitleReference {4.3}{Experiment Results}}{29}{Experiment Results}{section.4.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{29}{subsection.4.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{29}{subsection.4.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{29}{subsection.4.3.3}}
+\@writefile{toc}{\contentsline {subsubsection}{Example Subsubsection}{29}{section*.28}}
+\@writefile{toc}{\contentsline {paragraph}{Example Paragraph}{29}{section*.29}}
+\@writefile{toc}{\contentsline {subparagraph}{Example Subparagraph}{29}{section*.30}}
 \@writefile{lof}{\addvspace {10pt}}
 \@writefile{lot}{\addvspace {10pt}}
-\@writefile{toc}{\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{27}{chapter.5}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Problems}{27}{section.5.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Problem 1}{27}{subsection.5.1.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.2}Problem 2}{27}{subsection.5.1.2}}
-\@writefile{toc}{\contentsline {subsubsection}{Example Subsubsection}{27}{section*.26}}
-\@writefile{toc}{\contentsline {paragraph}{Example Paragraph}{27}{section*.27}}
-\@writefile{toc}{\contentsline {subparagraph}{Example Subparagraph}{27}{section*.28}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Future Work}{27}{section.5.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Ground Truth}{27}{subsection.5.2.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Training Phase}{28}{subsection.5.2.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.3}Model Generalization}{28}{subsection.5.2.3}}
+\@writefile{toc}{\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{31}{chapter.5}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Problems}{31}{section.5.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Problem 1}{31}{subsection.5.1.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.2}Problem 2}{31}{subsection.5.1.2}}
+\@writefile{toc}{\contentsline {subsubsection}{Example Subsubsection}{31}{section*.31}}
+\@writefile{toc}{\contentsline {paragraph}{Example Paragraph}{31}{section*.32}}
+\@writefile{toc}{\contentsline {subparagraph}{Example Subparagraph}{31}{section*.33}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Future Work}{31}{section.5.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}Ground Truth}{31}{subsection.5.2.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Training Phase}{32}{subsection.5.2.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.3}Model Generalization}{32}{subsection.5.2.3}}
 \citation{bringhurst1996ets}
 \@writefile{lof}{\addvspace {10pt}}
 \@writefile{lot}{\addvspace {10pt}}
-\@writefile{toc}{\contentsline {chapter}{\chapternumberline {6}Introduction}{29}{chapter.6}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.1}Features}{29}{section.6.1}}
-\newlabel{sec:features}{{\M@TitleReference {6.1}{Features}}{29}{Features}{section.6.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Extra package includes}{29}{subsection.6.1.1}}
-\newlabel{1@xvr}{{\M@TitleReference {}{Extra package includes}}{30}{Extra package includes}{subsection.6.1.1}{}}
-\newlabel{1@vr}{{\M@TitleReference {}{Extra package includes}}{30}{Extra package includes}{subsection.6.1.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Layout setup}{30}{subsection.6.1.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.3}Theorem setup}{30}{subsection.6.1.3}}
-\@writefile{thm}{\contentsline {theorem}{{Theorem}{6.{1}}{}}{30}{theorem.6.1.1}}
-\@writefile{thm}{\contentsline {proof}{{Proof}{1}{}}{30}{proof.1}}
-\@writefile{thm}{\contentsline {theorem}{{Theorem}{6.{2}}{Some Famous Guy}}{30}{theorem.6.1.2}}
-\@writefile{thm}{\contentsline {proof}{{Proof}{2}{}}{30}{proof.2}}
+\@writefile{toc}{\contentsline {chapter}{\chapternumberline {6}Introduction}{33}{chapter.6}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}Features}{33}{section.6.1}}
+\newlabel{sec:features}{{\M@TitleReference {6.1}{Features}}{33}{Features}{section.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Extra package includes}{33}{subsection.6.1.1}}
+\newlabel{1@xvr}{{\M@TitleReference {}{Extra package includes}}{34}{Extra package includes}{subsection.6.1.1}{}}
+\newlabel{1@vr}{{\M@TitleReference {}{Extra package includes}}{34}{Extra package includes}{subsection.6.1.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Layout setup}{34}{subsection.6.1.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.3}Theorem setup}{34}{subsection.6.1.3}}
+\@writefile{thm}{\contentsline {theorem}{{Theorem}{6.{1}}{}}{34}{theorem.6.1.1}}
+\@writefile{thm}{\contentsline {proof}{{Proof}{1}{}}{34}{proof.1}}
+\@writefile{thm}{\contentsline {theorem}{{Theorem}{6.{2}}{Some Famous Guy}}{34}{theorem.6.1.2}}
+\@writefile{thm}{\contentsline {proof}{{Proof}{2}{}}{34}{proof.2}}
 \global\def\markiiproofi{\ensuremath {\square }}
-\@writefile{thm}{\contentsline {proposition}{{Proposition}{6.{3}}{}}{30}{theorem.6.1.3}}
-\@writefile{thm}{\contentsline {proof}{{Proof}{3}{}}{30}{proof.3}}
+\@writefile{thm}{\contentsline {proposition}{{Proposition}{6.{3}}{}}{34}{theorem.6.1.3}}
+\@writefile{thm}{\contentsline {proof}{{Proof}{3}{}}{34}{proof.3}}
 \global\def\markiiiproofi{\ensuremath {\square }}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.4}Macro setup}{31}{subsection.6.1.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.4}Macro setup}{35}{subsection.6.1.4}}
 \@writefile{lof}{\addvspace {10pt}}
 \@writefile{lot}{\addvspace {10pt}}
-\@writefile{toc}{\contentsline {chapter}{\chapternumberline {7}Writing scientific texts in English}{33}{chapter.7}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.1}Basic writing rules}{33}{section.7.1}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{1}}{}}{33}{theorem.7.1.1}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{2}}{}}{33}{theorem.7.1.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.2}Being nice to the reader}{33}{section.7.2}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{3}}{}}{33}{theorem.7.2.3}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{4}}{}}{34}{theorem.7.2.4}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{5}}{}}{34}{theorem.7.2.5}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{6}}{}}{34}{theorem.7.2.6}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.3}A few important grammar rules}{34}{section.7.3}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{7}}{}}{34}{theorem.7.3.7}}
-\newlabel{rule:no-comma-before-that}{{\M@TitleReference {7.{7}}{A few important grammar rules}}{34}{A few important grammar rules}{theorem.7.3.7}{}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{8}}{}}{35}{theorem.7.3.8}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{9}}{}}{35}{theorem.7.3.9}}
-\newlabel{rule:non-defining-has-comma}{{\M@TitleReference {7.{9}}{A few important grammar rules}}{35}{A few important grammar rules}{theorem.7.3.9}{}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{10}}{}}{35}{theorem.7.3.10}}
-\newlabel{rule:defining-without-comma}{{\M@TitleReference {7.{10}}{A few important grammar rules}}{35}{A few important grammar rules}{theorem.7.3.10}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7.1}{\ignorespaces Things you (usually) don't say}}{37}{table.7.1}}
-\newlabel{tab:things-you-dont-say}{{\M@TitleReference {7.1}{Things you (usually) don't say}}{37}{Things you (usually) don't say}{table.7.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.4}Things you (usually) don't say in English}{37}{section.7.4}}
-\newlabel{sec:list}{{\M@TitleReference {7.4}{Things you (usually) don't say in English}}{37}{Things you (usually) don't say in English}{section.7.4}{}}
+\@writefile{toc}{\contentsline {chapter}{\chapternumberline {7}Writing scientific texts in English}{37}{chapter.7}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.1}Basic writing rules}{37}{section.7.1}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{1}}{}}{37}{theorem.7.1.1}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{2}}{}}{37}{theorem.7.1.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.2}Being nice to the reader}{37}{section.7.2}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{3}}{}}{37}{theorem.7.2.3}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{4}}{}}{38}{theorem.7.2.4}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{5}}{}}{38}{theorem.7.2.5}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{6}}{}}{38}{theorem.7.2.6}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.3}A few important grammar rules}{38}{section.7.3}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{7}}{}}{38}{theorem.7.3.7}}
+\newlabel{rule:no-comma-before-that}{{\M@TitleReference {7.{7}}{A few important grammar rules}}{38}{A few important grammar rules}{theorem.7.3.7}{}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{8}}{}}{39}{theorem.7.3.8}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{9}}{}}{39}{theorem.7.3.9}}
+\newlabel{rule:non-defining-has-comma}{{\M@TitleReference {7.{9}}{A few important grammar rules}}{39}{A few important grammar rules}{theorem.7.3.9}{}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{7.{10}}{}}{39}{theorem.7.3.10}}
+\newlabel{rule:defining-without-comma}{{\M@TitleReference {7.{10}}{A few important grammar rules}}{39}{A few important grammar rules}{theorem.7.3.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7.1}{\ignorespaces Things you (usually) don't say}}{41}{table.7.1}}
+\newlabel{tab:things-you-dont-say}{{\M@TitleReference {7.1}{Things you (usually) don't say}}{41}{Things you (usually) don't say}{table.7.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7.4}Things you (usually) don't say in English}{41}{section.7.4}}
+\newlabel{sec:list}{{\M@TitleReference {7.4}{Things you (usually) don't say in English}}{41}{Things you (usually) don't say in English}{section.7.4}{}}
 \@writefile{lof}{\addvspace {10pt}}
 \@writefile{lot}{\addvspace {10pt}}
-\@writefile{toc}{\contentsline {chapter}{\chapternumberline {8}Typography}{39}{chapter.8}}
-\@writefile{toc}{\contentsline {section}{\numberline {8.1}Punctuation}{39}{section.8.1}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{1}}{}}{39}{theorem.8.1.1}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{2}}{}}{39}{theorem.8.1.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {8.2}Spacing}{40}{section.8.2}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{3}}{}}{40}{theorem.8.2.3}}
-\newlabel{rule:no-manual-spacing}{{\M@TitleReference {8.{3}}{Spacing}}{40}{Spacing}{theorem.8.2.3}{}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{4}}{}}{40}{theorem.8.2.4}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{5}}{}}{40}{theorem.8.2.5}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{6}}{}}{41}{theorem.8.2.6}}
-\@writefile{toc}{\contentsline {section}{\numberline {8.3}Choice of `fonts'}{41}{section.8.3}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{7}}{}}{41}{theorem.8.3.7}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{8}}{}}{41}{theorem.8.3.8}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{9}}{}}{41}{theorem.8.3.9}}
-\@writefile{toc}{\contentsline {section}{\numberline {8.4}Displayed equations}{41}{section.8.4}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{10}}{}}{41}{theorem.8.4.10}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{11}}{}}{42}{theorem.8.4.11}}
-\@writefile{toc}{\contentsline {section}{\numberline {8.5}Floats}{42}{section.8.5}}
-\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{12}}{}}{43}{theorem.8.5.12}}
+\@writefile{toc}{\contentsline {chapter}{\chapternumberline {8}Typography}{43}{chapter.8}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.1}Punctuation}{43}{section.8.1}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{1}}{}}{43}{theorem.8.1.1}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{2}}{}}{43}{theorem.8.1.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.2}Spacing}{44}{section.8.2}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{3}}{}}{44}{theorem.8.2.3}}
+\newlabel{rule:no-manual-spacing}{{\M@TitleReference {8.{3}}{Spacing}}{44}{Spacing}{theorem.8.2.3}{}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{4}}{}}{44}{theorem.8.2.4}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{5}}{}}{44}{theorem.8.2.5}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{6}}{}}{45}{theorem.8.2.6}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.3}Choice of `fonts'}{45}{section.8.3}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{7}}{}}{45}{theorem.8.3.7}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{8}}{}}{45}{theorem.8.3.8}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{9}}{}}{45}{theorem.8.3.9}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.4}Displayed equations}{45}{section.8.4}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{10}}{}}{45}{theorem.8.4.10}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{11}}{}}{46}{theorem.8.4.11}}
+\@writefile{toc}{\contentsline {section}{\numberline {8.5}Floats}{46}{section.8.5}}
+\@writefile{thm}{\contentsline {Rule}{{Rule}{8.{12}}{}}{47}{theorem.8.5.12}}
 \@writefile{lof}{\addvspace {10pt}}
 \@writefile{lot}{\addvspace {10pt}}
-\@writefile{toc}{\contentsline {appendix}{\chapternumberline {A}Appendix}{45}{appendix.A}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{45}{section.A.1}}
-\newlabel{app:apimap}{{\M@TitleReference {A.1}{Example URL of Google Static Maps API}}{45}{Example URL of Google Static Maps API}{section.A.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.2}OpenStreetMap}{45}{section.A.2}}
-\newlabel{app:apiosm}{{\M@TitleReference {A.2}{OpenStreetMap}}{45}{OpenStreetMap}{section.A.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.3}Projection}{45}{section.A.3}}
-\newlabel{app:projec}{{\M@TitleReference {A.3}{Projection}}{45}{Projection}{section.A.3}{}}
+\@writefile{toc}{\contentsline {appendix}{\chapternumberline {A}Appendix}{49}{appendix.A}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{49}{section.A.1}}
+\newlabel{app:apimap}{{\M@TitleReference {A.1}{Example URL of Google Static Maps API}}{49}{Example URL of Google Static Maps API}{section.A.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.2}OpenStreetMap}{49}{section.A.2}}
+\newlabel{app:apiosm}{{\M@TitleReference {A.2}{OpenStreetMap}}{49}{OpenStreetMap}{section.A.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.3}Projection}{49}{section.A.3}}
+\newlabel{app:projec}{{\M@TitleReference {A.3}{Projection}}{49}{Projection}{section.A.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.4}Anchor Assignment}{49}{section.A.4}}
+\newlabel{app:assignanchor}{{\M@TitleReference {A.4}{Anchor Assignment}}{49}{Anchor Assignment}{section.A.4}{}}
 \bibstyle{plain}
 \bibdata{refs}
-\@writefile{toc}{\contentsline {chapter}{List of Figures}{47}{section*.29}}
-\memsetcounter{lastsheet}{56}
-\memsetcounter{lastpage}{48}
+\@writefile{toc}{\contentsline {chapter}{List of Figures}{51}{section*.34}}
+\memsetcounter{lastsheet}{60}
+\memsetcounter{lastpage}{52}

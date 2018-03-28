@@ -18,30 +18,36 @@
 \contentsline {figure}{\numberline {3.5}{\ignorespaces Visualization for LSTM cell}}{13}{figure.3.5}
 \contentsline {figure}{\numberline {3.6}{\ignorespaces Visualization for the time step of the RNN decoder}}{14}{figure.3.6}
 \contentsline {figure}{\numberline {3.7}{\ignorespaces Simplified structure of the network for single bounding box regression}}{16}{figure.3.7}
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Example anchors in image with multiple RoIs}}{16}{figure.3.8}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces }}{16}{figure.3.8}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces }}{16}{figure.3.8}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces }}{16}{figure.3.8}
-\contentsline {subfigure}{\numberline {(d)}{\ignorespaces }}{16}{figure.3.8}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Example anchors in image with multiple RoIs}}{17}{figure.3.8}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces Positive}}{17}{figure.3.8}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces Natural}}{17}{figure.3.8}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces Natural}}{17}{figure.3.8}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces Negative}}{17}{figure.3.8}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Coverage level of anchor and ground truth bounding box under different IoU scores}}{17}{figure.3.9}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces IoU = 0}}{17}{figure.3.9}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces IoU = 0.3}}{17}{figure.3.9}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces IoU = 0.7}}{17}{figure.3.9}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces IoU = 1}}{17}{figure.3.9}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Smooth $L_1$ loss function}}{19}{figure.3.10}
 \addvspace {10pt}
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{20}{figure.4.1}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces satellite image}}{20}{figure.4.1}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces roadmap image}}{20}{figure.4.1}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces hybrid image}}{20}{figure.4.1}
-\contentsline {figure}{\numberline {4.2}{\ignorespaces An example area in Zurich for FPN training}}{22}{figure.4.2}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example area}}{22}{figure.4.2}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example area with bounding boxes}}{22}{figure.4.2}
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Example buildings in Zurich for PolygonRNN training}}{22}{figure.4.3}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example buildings}}{22}{figure.4.3}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example buildings with polygon outlines}}{22}{figure.4.3}
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Problems existed in the ground truth dataset}}{23}{figure.4.4}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces general shift}}{23}{figure.4.4}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces polygon size and shape}}{23}{figure.4.4}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces angle issue}}{23}{figure.4.4}
-\contentsline {subfigure}{\numberline {(d)}{\ignorespaces adjacent buildings}}{23}{figure.4.4}
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{24}{figure.4.5}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces before adjustment}}{24}{figure.4.5}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces after adjustment}}{24}{figure.4.5}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{24}{figure.4.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces satellite image}}{24}{figure.4.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces roadmap image}}{24}{figure.4.1}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces hybrid image}}{24}{figure.4.1}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces An example area in Zurich for FPN training}}{26}{figure.4.2}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example area}}{26}{figure.4.2}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example area with bounding boxes}}{26}{figure.4.2}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Example buildings in Zurich for PolygonRNN training}}{26}{figure.4.3}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example buildings}}{26}{figure.4.3}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example buildings with polygon outlines}}{26}{figure.4.3}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Problems existed in the ground truth dataset}}{27}{figure.4.4}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces general shift}}{27}{figure.4.4}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces polygon size and shape}}{27}{figure.4.4}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces angle issue}}{27}{figure.4.4}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces adjacent buildings}}{27}{figure.4.4}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{28}{figure.4.5}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces before adjustment}}{28}{figure.4.5}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces after adjustment}}{28}{figure.4.5}
 \addvspace {10pt}
 \addvspace {10pt}
 \addvspace {10pt}

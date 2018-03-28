@@ -2,8 +2,9 @@ import os, sys
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 import tensorflow as tf
+import numpy as np
 
-def VGG16(img, reuse = None, scope = None):
+def VGG16(img, reuse = None, pretrained = False, scope = None):
 	"""
 		img: [batch_size, height, width, num_channels]
 	"""
@@ -11,25 +12,48 @@ def VGG16(img, reuse = None, scope = None):
 		scope_name = scope
 	else:
 		scope_name = 'VGG16'
-	with tf.variable_scope(scope_name, reuse = reuse):
-		conv1_1 = tf.layers.conv2d       (inputs = img    , filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 256
-		conv1_2 = tf.layers.conv2d       (inputs = conv1_1, filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 256
-		pool1   = tf.layers.max_pooling2d(inputs = conv1_2, pool_size = (2, 2), strides = 2)												# 128
-		conv2_1 = tf.layers.conv2d       (inputs = pool1  , filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 128
-		conv2_2 = tf.layers.conv2d       (inputs = conv2_1, filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 128
-		pool2   = tf.layers.max_pooling2d(inputs = conv2_2, pool_size = (2, 2), strides = 2)												#  64
-		conv3_1 = tf.layers.conv2d       (inputs = pool2  , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  64
-		conv3_2 = tf.layers.conv2d       (inputs = conv3_1, filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  64
-		conv3_3 = tf.layers.conv2d       (inputs = conv3_2, filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  64
-		pool3   = tf.layers.max_pooling2d(inputs = conv3_3, pool_size = (2, 2), strides = 2)												#  32
-		conv4_1 = tf.layers.conv2d       (inputs = pool3  , filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  32
-		conv4_2 = tf.layers.conv2d       (inputs = conv4_1, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  32
-		conv4_3 = tf.layers.conv2d       (inputs = conv4_2, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  32
-		pool4   = tf.layers.max_pooling2d(inputs = conv4_3, pool_size = (2, 2), strides = 2)												#  16
-		conv5_1 = tf.layers.conv2d       (inputs = pool4  , filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  16
-		conv5_2 = tf.layers.conv2d       (inputs = conv5_1, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  16
-		conv5_3 = tf.layers.conv2d       (inputs = conv5_2, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  16
-		return pool2, pool3, conv2_2, conv3_3, conv4_3, conv5_3
+	if not pretrained:
+		with tf.variable_scope(scope_name, reuse = reuse):
+			conv1_1 = tf.layers.conv2d       (inputs = img    , filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 256
+			conv1_2 = tf.layers.conv2d       (inputs = conv1_1, filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 256
+			pool1   = tf.layers.max_pooling2d(inputs = conv1_2, pool_size = (2, 2), strides = 2)												# 128
+			conv2_1 = tf.layers.conv2d       (inputs = pool1  , filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 128
+			conv2_2 = tf.layers.conv2d       (inputs = conv2_1, filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) # 128
+			pool2   = tf.layers.max_pooling2d(inputs = conv2_2, pool_size = (2, 2), strides = 2)												#  64
+			conv3_1 = tf.layers.conv2d       (inputs = pool2  , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  64
+			conv3_2 = tf.layers.conv2d       (inputs = conv3_1, filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  64
+			conv3_3 = tf.layers.conv2d       (inputs = conv3_2, filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  64
+			pool3   = tf.layers.max_pooling2d(inputs = conv3_3, pool_size = (2, 2), strides = 2)												#  32
+			conv4_1 = tf.layers.conv2d       (inputs = pool3  , filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  32
+			conv4_2 = tf.layers.conv2d       (inputs = conv4_1, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  32
+			conv4_3 = tf.layers.conv2d       (inputs = conv4_2, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  32
+			pool4   = tf.layers.max_pooling2d(inputs = conv4_3, pool_size = (2, 2), strides = 2)												#  16
+			conv5_1 = tf.layers.conv2d       (inputs = pool4  , filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  16
+			conv5_2 = tf.layers.conv2d       (inputs = conv5_1, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  16
+			conv5_3 = tf.layers.conv2d       (inputs = conv5_2, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  16
+			return pool2, pool3, conv2_2, conv3_3, conv4_3, conv5_3
+	else:
+		wbs = np.load('../../VGG16ConvWeights.npy')
+		trainable = False
+		with tf.variable_scope(scope_name, reuse = reuse):
+			conv1_1 = tf.layers.conv2d       (inputs = img    , filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 0][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 0][1], trainable = trainable) # 256
+			conv1_2 = tf.layers.conv2d       (inputs = conv1_1, filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 1][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 1][1], trainable = trainable) # 256
+			pool1   = tf.layers.max_pooling2d(inputs = conv1_2, pool_size = (2, 2), strides = 2)												# 128
+			conv2_1 = tf.layers.conv2d       (inputs = pool1  , filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 2][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 2][1], trainable = trainable) # 128
+			conv2_2 = tf.layers.conv2d       (inputs = conv2_1, filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 3][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 3][1], trainable = trainable) # 128
+			pool2   = tf.layers.max_pooling2d(inputs = conv2_2, pool_size = (2, 2), strides = 2)												#  64
+			conv3_1 = tf.layers.conv2d       (inputs = pool2  , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 4][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 4][1], trainable = trainable) #  64
+			conv3_2 = tf.layers.conv2d       (inputs = conv3_1, filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 5][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 5][1], trainable = trainable) #  64
+			conv3_3 = tf.layers.conv2d       (inputs = conv3_2, filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 6][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 6][1], trainable = trainable) #  64
+			pool3   = tf.layers.max_pooling2d(inputs = conv3_3, pool_size = (2, 2), strides = 2)												#  32
+			conv4_1 = tf.layers.conv2d       (inputs = pool3  , filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 7][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 7][1], trainable = trainable) #  32
+			conv4_2 = tf.layers.conv2d       (inputs = conv4_1, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 8][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 8][1], trainable = trainable) #  32
+			conv4_3 = tf.layers.conv2d       (inputs = conv4_2, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[ 9][0], bias_initializer = lambda shape, dtype, partition_info: wbs[ 9][1], trainable = trainable) #  32
+			pool4   = tf.layers.max_pooling2d(inputs = conv4_3, pool_size = (2, 2), strides = 2)												#  16
+			conv5_1 = tf.layers.conv2d       (inputs = pool4  , filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[10][0], bias_initializer = lambda shape, dtype, partition_info: wbs[10][1], trainable = trainable) #  16
+			conv5_2 = tf.layers.conv2d       (inputs = conv5_1, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[11][0], bias_initializer = lambda shape, dtype, partition_info: wbs[11][1], trainable = trainable) #  16
+			conv5_3 = tf.layers.conv2d       (inputs = conv5_2, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu, kernel_initializer = lambda shape, dtype, partition_info: wbs[12][0], bias_initializer = lambda shape, dtype, partition_info: wbs[12][1], trainable = trainable) #  16
+			return pool2, pool3, conv2_2, conv3_3, conv4_3, conv5_3
 
 def PolygonRNNFeature(vgg_result, reuse = None):
 	"""

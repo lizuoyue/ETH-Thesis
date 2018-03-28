@@ -14,15 +14,13 @@ if __name__ == '__main__':
 	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
 	city_name = sys.argv[1]
 
-	# Create new folder
-	if not os.path.exists('./Model%s/' % city_name):
-		os.makedirs('./Model%s/' % city_name)
-
 	# Define graph
 	graph = HybridModel(
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
+		two_step = False,
+		pretrained = True,
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)
@@ -39,9 +37,13 @@ if __name__ == '__main__':
 	pred_rpn_res  = graph.predict_rpn(aa)
 	pred_poly_res = graph.predict_polygon(pp)
 
-	# for v in tf.global_variables():
-	# 	print(v.name)
-	# quit()
+	for v in tf.global_variables():
+		print(v.name)
+	quit()
+
+	# Create new folder
+	if not os.path.exists('./Model%s/' % city_name):
+		os.makedirs('./Model%s/' % city_name)
 
 	# Create data generator
 	obj = DataGenerator(

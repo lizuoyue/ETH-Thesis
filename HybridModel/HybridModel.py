@@ -11,7 +11,7 @@ from UtilityBoxAnchor import *
 config = Config()
 
 class HybridModel(object):
-	def __init__(self, max_num_vertices, lstm_out_channel, v_out_res):
+	def __init__(self, max_num_vertices, lstm_out_channel, v_out_res, two_step = False, pretrained = False):
 		"""
 			max_num_vertices  : scalar
 			lstm_out_channel  : list of int numbers
@@ -25,6 +25,8 @@ class HybridModel(object):
 		self.v_out_nrow       = self.v_out_res[0]
 		self.v_out_ncol       = self.v_out_res[1]
 		self.res_num          = self.v_out_nrow * self.v_out_ncol
+		self.two_step         = two_step
+		self.pretrained       = pretrained
 
 		# FPN parameters
 		self.anchors          = generatePyramidAnchors(
@@ -70,7 +72,7 @@ class HybridModel(object):
 			delta             : [batch_size, num_anchors, 4]
 		"""
 		# p2, p3, p4, p5, p6 = PyramidAnchorFeature(VGG16(img, reuse), reuse)
-		p3, p4, p5, p6 = PyramidAnchorFeature(VGG16(img, reuse), reuse)
+		p3, p4, p5, p6 = PyramidAnchorFeature(VGG16(img, reuse, self.pretrained), reuse)
 		# p2_logit, p2_delta = SingleLayerFPN(p2, len(config.ANCHOR_RATIO), reuse)
 		p3_logit, p3_delta = SingleLayerFPN(p3, len(config.ANCHOR_RATIO), reuse)
 		p4_logit, p4_delta = SingleLayerFPN(p4, len(config.ANCHOR_RATIO), reuse = True)
@@ -92,8 +94,10 @@ class HybridModel(object):
 			prob              :
 		"""
 		batch_size = tf.cast(tf.shape(img)[0], tf.float32)
-		# feature = PolygonRNNFeature(VGG16(img, True), reuse)
-		feature = PolygonRNNFeature(VGG16(img, reuse, scope = 'SecondVGG'), reuse)
+		if self.two_step:
+			feature = PolygonRNNFeature(VGG16(img, reuse, self.pretrained, 'SecondVGG'), reuse)
+		else:
+			feature = PolygonRNNFeature(VGG16(img, True, self.pretrained), reuse)
 		with tf.variable_scope('CNN', reuse = reuse):
 			boundary = tf.layers.conv2d(inputs = feature, filters = 1, kernel_size = (3, 3), padding = 'same', activation = tf.sigmoid)
 			combine  = tf.concat([feature, boundary], 3)

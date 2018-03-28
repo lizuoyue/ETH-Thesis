@@ -16,3 +16,24 @@ According to the Google Maps JavaScript API \footnote{https://developers.google.
 
 \begin{lstlisting}
 \end{lstlisting}
+
+\section{Anchor Assignment}\label{app:assignanchor}
+\begin{equation}
+\begin{aligned}
+	A_{ij} = \begin{cases}
+		1, & \text{if } p_i = 1 \text{ and } j = d_i, \text{ or }\\
+		& j \notin \{d_i \mid i = 1,2,\ldots\} \text{ and } i = \argmax\limits_{k} \text{IoU}(a_k, g_j) \\
+		0, & \text{otherwise},\\
+	\end{cases}
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+	A_{ij} = \begin{cases}
+		1, & \text{if $a_i$ is assigned to $g_j$,}\\
+		0, & \text{otherwise},\\
+	\end{cases}
+\end{aligned}
+\end{equation}
+where $A$ is the assignment matrix. 
+

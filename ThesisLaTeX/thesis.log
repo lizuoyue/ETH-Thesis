@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  26 MAR 2018 20:40
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  27 MAR 2018 22:31
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1080,7 +1080,10 @@ LaTeX Font Info:    Try loading font information for U+esvect on input line 3.
 File: uesvect.fd 
 ) [3
 
-] [4])
+]
+Underfull \vbox (badness 1122) has occurred while \output is active []
+
+ [4])
 [5] [6
 
 ] (./1-intro.tex
@@ -1311,14 +1314,11 @@ File: fig/3-04.pdf Graphic file (type pdf)
 ) [13] (./fig/3-05.tex
 File: fig/3-05.pdf Graphic file (type pdf)
 <use fig/3-05.pdf>
-) [14] (./fig/3-06.tex
+) [14] [15] (./fig/3-06.tex
 File: fig/3-06.pdf Graphic file (type pdf)
 <use fig/3-06.pdf>
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-) [15] (./fig/3-07.tex
+)
+(./fig/3-07.tex
 File: fig/3-07-0.pdf Graphic file (type pdf)
 <use fig/3-07-0.pdf>
 File: fig/3-07-1.pdf Graphic file (type pdf)
@@ -1327,25 +1327,56 @@ File: fig/3-07-2.pdf Graphic file (type pdf)
 <use fig/3-07-2.pdf>
 File: fig/3-07-3.pdf Graphic file (type pdf)
 <use fig/3-07-3.pdf>
-) [16]
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) (./fig/3-08.tex
+File: fig/3-08-0.pdf Graphic file (type pdf)
+<use fig/3-08-0.pdf>
+File: fig/3-08-1.pdf Graphic file (type pdf)
+<use fig/3-08-1.pdf>
+File: fig/3-08-2.pdf Graphic file (type pdf)
+<use fig/3-08-2.pdf>
+File: fig/3-08-3.pdf Graphic file (type pdf)
+<use fig/3-08-3.pdf>
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [16] [17] [18]
+LaTeX Font Info:    Try loading font information for U+fplmbb on input line 187
+.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ufplmbb.fd
+File: ufplmbb.fd 2003/10/30 Fontinst v1.914 font definitions for U/fplmbb.
+)
+(./fig/3-09.tex
+File: fig/3-09.pdf Graphic file (type pdf)
+<use fig/3-09.pdf>
+) [19]
 Missing character: There is no ‘ in font pplr7t!
 Missing character: There is no ’ in font pplr7t!
- [17]) (./4-exp.tex [18]
+
+Underfull \vbox (badness 1412) has occurred while \output is active []
+
+ [20])
+(./4-exp.tex [21] [22
+
+]
 Overfull \hbox (0.42546pt too wide) in paragraph at lines 15--16
 \OT1/ppl/m/n/10.95 Google Static Maps API[][][][][] pro-vides an in-ter-face th
 at im-ple-ments maps as high-
  []
 
-[19
-
-] (./fig/4-00.tex
+[23] (./fig/4-00.tex
 File: fig/4-00-0.png Graphic file (type bmp)
 <fig/4-00-0.png>
 File: fig/4-00-1.png Graphic file (type bmp)
 <fig/4-00-1.png>
 File: fig/4-00-2.png Graphic file (type bmp)
 <fig/4-00-2.png>
-) [20] (./fig/4-01.tex
+) [24] (./fig/4-01.tex
 File: fig/4-01-0.png Graphic file (type bmp)
 <fig/4-01-0.png>
 File: fig/4-01-1.png Graphic file (type bmp)
@@ -1375,7 +1406,7 @@ File: fig/4-02-7.png Graphic file (type bmp)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [21] (./fig/4-03.tex
+) [25] (./fig/4-03.tex
 File: fig/4-03-0.png Graphic file (type bmp)
 <fig/4-03-0.png>
 File: fig/4-03-1.png Graphic file (type bmp)
@@ -1396,7 +1427,7 @@ File: fig/4-03-7.png Graphic file (type bmp)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [22] [23] (./fig/4-04.tex
+) [26] [27] (./fig/4-04.tex
 File: fig/4-04-0.png Graphic file (type bmp)
 <fig/4-04-0.png>
 File: fig/4-04-1.png Graphic file (type bmp)
@@ -1419,7 +1450,7 @@ Overfull \hbox (4.24834pt too wide) in paragraph at lines 88--89
 ift ad-just-ment method.
  []
 
-[24]
+[28]
 Missing character: There is no 而 in font pplr7t!
 Missing character: There is no 且 in font pplr7t!
 Missing character: There is no 独 in font pplr7t!
@@ -1463,14 +1494,14 @@ Missing character: There is no 。 in font pplr7t!
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <10.95> not available
 (Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 142.
 
-) (./5-future.tex [25] [26
+) (./5-future.tex [29] [30
 
-] [27]) (./introduction.tex [28]
+] [31]) (./introduction.tex [32]
 
-LaTeX Warning: Citation `bringhurst1996ets' on page 29 undefined on input line 
+LaTeX Warning: Citation `bringhurst1996ets' on page 33 undefined on input line 
 32.
 
-[29
+[33
 
 ]
 Package hyperref Info: bookmark level for unknown theorem defaults to 0 on inpu
@@ -1479,7 +1510,7 @@ Package hyperref Info: bookmark level for unknown proof defaults to 0 on input
 line 77.
 Package hyperref Info: bookmark level for unknown proposition defaults to 0 on 
 input line 97.
-) (./rules.tex [30] [31] [32
+) (./rules.tex [34] [35] [36
 
 ]
 Missing character: There is no ö in font pplr7t!
@@ -1489,7 +1520,7 @@ Missing character: There is no § in font pplr7t!
 Missing character: There is no § in font pplr7t!
 Package hyperref Info: bookmark level for unknown Rule defaults to 0 on input l
 ine 21.
- [33] [34]
+ [37] [38]
 Missing character: There is no ä in font pplri7t!
 Missing character: There is no ä in font pplri7t!
 Missing character: There is no ä in font pplri7t!
@@ -1500,7 +1531,7 @@ Overfull \hbox (4.38068pt too wide) in paragraph at lines 178--181
 o-rithm, which was found by the fa-mous math-
  []
 
-[35] [36]
+[39] [40]
 Missing character: There is no ü in font pplri7t!
 Missing character: There is no ä in font pplri7t!
 
@@ -1508,17 +1539,17 @@ Overfull \hbox (1.91208pt too wide) in paragraph at lines 264--278
  [][] 
  []
 
-) (./typography.tex [37] [38
+) (./typography.tex [41] [42
 
 ]
 Missing character: There is no è in font pplri7t!
- [39]
+ [43]
 Overfull \hbox (4.5436pt too wide) in paragraph at lines 94--100
 \OT1/ppl/m/n/10.95 or ques-tion mark is sentence-ending, ex-cept for pe-ri-ods 
 pre-ceded by an upper-
  []
 
-[40]
+[44]
 Underfull \hbox (badness 4726) detected at line 114
 \OT1/ppl/m/n/10.95 Prof. Dr. A. Steger is a member of CADMO. If you
  []
@@ -1529,10 +1560,10 @@ Overfull \hbox (7.97166pt too wide) in paragraph at lines 152--157
 /m/n/10.95 we only changed the shape to small caps. Chang-
  []
 
-[41]
+[45]
 LaTeX Font Info:    Font shape `OT1/lmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/lmtt/b/n' tried instead on input line 218.
- [42]) (./appendix.tex [43] [44
+ [46]) (./appendix.tex [47] [48
 
 ]
 Overfull \hbox (534.7113pt too wide) in paragraph at lines 6--8
@@ -1545,7 +1576,7 @@ Overfull \hbox (458.82715pt too wide) in paragraph at lines 8--9
 ] 
  []
 
-) [45] [46
+) [49] [50
 
 ]
 No file thesis.bbl.
@@ -1558,14 +1589,14 @@ File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
- [47]
+ [51]
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
- [48]
+ [52]
 \tf@thm=\write5
 \openout5 = `thesis.thm'.
 
@@ -1589,12 +1620,12 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 19773 strings out of 492998
- 280698 string characters out of 6134492
- 445118 words of memory out of 5000000
- 23303 multiletter control sequences out of 15000+600000
- 62840 words of font info for 107 fonts, out of 8000000 for 9000
+ 19841 strings out of 492998
+ 281832 string characters out of 6134492
+ 446063 words of memory out of 5000000
+ 23357 multiletter control sequences out of 15000+600000
+ 63542 words of font info for 113 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 62i,18n,122p,1322b,1751s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,19n,122p,1322b,1751s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on thesis.pdf (56 pages).
+Output written on thesis.pdf (60 pages).

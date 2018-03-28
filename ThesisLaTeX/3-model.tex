@@ -31,13 +31,13 @@ The model used for predicting polygon vertices is RNN. We have already mentioned
 
 We know that given two vertices on a polygon in an order (either clockwise or anticlockwise), the third vertex after the two points can be uniquely determined. What RNN here can do is to predict the probability distribution of the next vertex's position in a low resolution when given the history information about the two vertices before, as well as the image features and the position of the starting vertex. This process can be formulated as follows.
 \begin{equation}\label{eq:vnext}
-	p(v_t|v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, f), \forall t \in \{2,3,4,\ldots,T\},
+	p(v_t \mid v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, f), \forall t \in \{2,3,4,\ldots,T\},
 \end{equation}
 where $f$ denotes the extracted features by CNN (including the masks of boundary and vertices), $F(\cdot)$ denotes a function for computing the conditional probability, $T$ denotes the number of vertices of the polygon, $v_t$ denotes the vertex position at $t$-th prediction. Specifically, the vertex prediction problem can be formulated as a classification problem. The position of $v_t$ can be then quantized to the resolution of output grid, and we can thus use one-hot encoding for $v_t$'s representation.
 
 \paragraph{End Signal} Note that the positions for $v_t$ are not only limited to the general output grid, the end signal for the closure detection of the polygon is also embedded in $v_t$, just like the `end of sequence' token \lstinline{<eos>} or \lstinline{</s>} in the RNN language model. Thus, the number possible assignments of $v_t$ equals to the resolution of the output grid plus one ($28\times28+1=785$ in our case). In order to correctly predict the end signal, the starting vertex $v_0$ is required for the conditional probability (equation \ref{eq:vnext}) calculation, as it tells the model when to finish the prediction phase. If the current prediction is the same as, or very close to the starting vertex $v_0$, $v_t$ will be forced to raise the end signal, indicating that the entire polygon is close, and the prediction phase is therefore complete. So generally, the end signal works when $t=T$.
 
-\paragraph{Starting Vertex} In equation \ref{eq:vnext}, two special cases $p(v_0)$ and $p(v_1|v_0)$ are not included yet. These two cases are different from the general case, and should be considered in addition. In particular, we can directly regard the mask of vertices (for example, the rightmost image in figure \ref{fig:vgg16mask}) predicted by the CNN as $v_0$'s unnormalized probability distribution $\tilde{p}(v_0)$, and choose the position with the highest probability for $v_0$'s assignment. As $v_0$ is known, there are typically two options for $v_1$, one is the next vertex on its left direction and another on right direction. To tackle this problem, we can simply specify the order of the polygon vertices to be fixed, so that $v_1$ can be uniquely determined. In our project, the order of polygon is set to be anticlockwise.
+\paragraph{Starting Vertex} In equation \ref{eq:vnext}, two special cases $p(v_0)$ and $p(v_1 \mid v_0)$ are not included yet. These two cases are different from the general case, and should be considered in addition. In particular, we can directly regard the mask of vertices (for example, the rightmost image in figure \ref{fig:vgg16mask}) predicted by the CNN as $v_0$'s unnormalized probability distribution $\tilde{p}(v_0)$, and choose the position with the highest probability for $v_0$'s assignment. As $v_0$ is known, there are typically two options for $v_1$, one is the next vertex on its left direction and another on right direction. To tackle this problem, we can simply specify the order of the polygon vertices to be fixed, so that $v_1$ can be uniquely determined. In our project, the order of polygon is set to be anticlockwise.
 
 \paragraph{ConvLSTM} The RNN uses ConvLSTM (Convolutional LSTM) cells as the polygon decoder to sequentially predict vertices. For simplicity, we can regard ConvLSTM as the function $F(\cdot)$ in equation \ref{eq:vnext}. In fact, the structure of a ConvLSTM cell is almost the same as that of an ordinary LSTM cell, except that it employs convolution in a 2D image with multiple channels instead of matrices or vectors multiplication. The introduction of ConvLSTM can significantly reduce the the number of parameters when it is compared with a fully connected RNN. The following equations define the computation process within a ConvLSTM cell, which is also visualized in figure \ref{fig:lstmcell}.
 \begin{equation}
@@ -72,18 +72,20 @@ where $n$ is the number of RNN layers or ConvLSTM cells, $k$ in the superscript 
 \end{equation}
 where $\oplus$ denotes the concatenation operation in the dimension of image channel. Thus, the equation \ref{eq:vnext} can be written as follows.
 \begin{equation}\label{eq:probcomp}
-	y_t = p(v_t|v_{t-1}, v_{t-2}) = \softmax(W_y\vect(h_t^{(n)})),
+	y_t = p(v_t \mid v_{t-1}, v_{t-2}) = \text{softmax}(W_y\text{vec}(h_t^{(n)})),
 \end{equation}
-where $W_y$ denotes the weights of the final fully connected layer. Figure \ref{fig:rnnconvlstm} shows the entire structure of the RNN part and highlights the process at time step $t$, using the same notation as the equations \ref{eq:cellconnect}, \ref{eq:concat} and \ref{eq:probcomp}. Note that at each time step, the features, the masks of boundary and vertices as well as the one-hot encoding of starting vertex are fixed. Only $v_{t-1}$ and $v_{t-2}$ change over time.
+where $W_y$ denotes the weights of the final fully connected layer, $\text{vec}(\cdot)$ denotes the vectorization function for a matrix. Figure \ref{fig:rnnconvlstm} shows the entire structure of the RNN part and highlights the process at time step $t$, using the same notation as the equations \ref{eq:cellconnect}, \ref{eq:concat} and \ref{eq:probcomp}.
 
 \input{fig/3-05}
+
+Note that at each time step, the features, the masks of boundary and vertices as well as the one-hot encoding of starting vertex are fixed. Only $v_{t-1}$ and $v_{t-2}$ change over time.
 
 \subsection{Loss Function}
 The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The loss function of CNN part uses log loss, since the mask prediction is equivalent to binary classification for each pixel. We also notice that the non-boundary pixels or the non-vertex pixels occupy the majority, the loss function should be further weighted. As for the loss of RNN, the loss function used is cross-entropy loss, because the polygon prediction is equivalent to multiclass classification at every time step.
 
 \section{Feature Pyramid Network}\label{modfpn}
 
-FPN is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{mulbboxreg} introduces the basic concept of anchor, and further illustrates multiple bounding boxes regression. Finally, subsection \ref{bonefpn} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
+FPN is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{ancpro} introduces some basic concepts related to anchor, and subsection \ref{mulbboxreg} further illustrates multiple bounding boxes regression. Finally, subsection \ref{bonefpn} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
 
 \subsection{Single Bounding Box Regression}\label{sglbboxreg}
 
@@ -112,41 +114,101 @@ Single bounding box regression can be used for such a scenario, where the target
 		x\\y\\w\\h
 	\end{array}\right].
 \end{equation}
-Therefore, we can regard the problem of finding out single bounding box of RoI as a parameter regression problem. With the image as input, any set of the four parameters, $(x, y, w, h)$ or $(l, u, r, d)$, can be selected as the target of the regression. Figure \ref{fig:sglbboxreg} shows the architecture of the network for single bounding box regression, using box center and box size as outputs.
+Therefore, we can regard the problem of finding out single bounding box of RoI as a parameter regression problem. With the image as input, any set of the four parameters, $(x, y, w, h)$ or $(l, u, r, d)$, can be selected as the target of the regression. Figure \ref{fig:sglbboxreg} shows the architecture of the network for the single bounding box regression, using box center and size as outputs.
 
 \input{fig/3-06}
 
-In practice, usually the normalized parameters of box center and box size rather than the coordinates of two corners are used as training targets.
+In practice, usually the normalized parameters of box center and size rather than the coordinates of two corners are used as training targets. As for the normalization functions, see subsection \ref{mulbboxreg} for more details.
 
-\subsection{Multiple Bounding Boxes Regression}\label{mulbboxreg}
-
-Multiple bounding boxes regression can be very different from the single one. Since the number of RoIs is unknown, if we still directly use the parameters regression as what we do in case of the single bounding box, then the number of nodes of FC output layer will not be fixed. Besides, the RoIs in the image usually reflects the local information, thus we cannot directly use all global features obtained by CNN, either.
+\subsection{Anchor and its Properties}\label{ancpro}
+Anchor is a basic concept in multiple bounding boxes regression. The following paragraphs introduce the idea of anchor and its properties in detail.
 
 \paragraph{Anchor}
-Anchor is a basic concept in multiple bounding boxes regression. An anchor refers to an artificially specified bounding box in the original image, regardless of the number of RoIs or where these RoIs locate. An arbitrary rectangular area in the image can be an anchor. For an image with width $w$ and height $h$, the total number of possible anchors $n$ can be calculated as
-\begin{equation}
-	n = \frac{w(w+1)}{2}\frac{h(h+1)}{2} = \frac{1}{4}(w^2h^2+wh^2+w^2h+wh).
+An anchor refers to an artificially specified bounding box in the original image, regardless of the number of RoIs or where these RoIs locate. An arbitrary rectangular area in the image can be an anchor. For an image with width $w$ and height $h$, the total number of possible anchors $n$ can be calculated as
+\begin{equation}\label{eq:numanchor}
+	n = \frac{1}{4}w(w+1)h(h+1).
 \end{equation}
 Thus, even for a very small image patch with size 224$\times$224, $n$ is already very large, reaching 635.04 million. Figure \ref{fig:eganchor} illustrates some examples of anchors in an image with multiple RoIs.
 
 \input{fig/3-07}
 
-\paragraph{Regression from Anchor}
-
-refinement
+\paragraph{IoU Score}
+Usually IoU (Intersection over Union) score is used to evaluate the similarity between an anchor and a ground truth bounding box. The following equation shows its computation.
 \begin{equation}
-	x_t = \frac{x_t - x_a}{w_a}, r_y = \frac{y_t - y_a}{h_a}, r_w = \log\frac{w_t}{w_a}, r_h = \log\frac{h_t}{h_a}.
+	s = \frac{A \cap T}{A \cup T} \in [0, 1],
 \end{equation}
+where $s$ denotes the IoU score, $A$ and $T$ refer to the sets of pixels covered by the anchor and the ground truth bounding box respectively. $s = 1$ means that the anchor and the ground truth bounding box overlap perfectly. Figure \ref{fig:egiou} shows the coverage level under different IoU scores.
 
-recover
+\input{fig/3-08}
+
+\paragraph{Anchor Polarity}
+Generally, there are several buildings in an aerial image, thus multiple RoIs exist. Based on the IoU scores of an anchor with these ground truth bounding boxes, we can make a judgment on the polarity of this anchor, which is defined as follows.
 \begin{equation}
-	x = r_x'w_a + x_a, y = r_y'h_a + h_a, w = w_ae^{r_w'}, h = h_ae^{r_h'}.
+	d_i = \argmax_{j} \text{IoU}(a_i, g_j),
 \end{equation}
+\begin{equation}
+	s_i = \text{IoU}(a_i, g_{d_i}),
+\end{equation}
+\begin{equation}
+\begin{aligned}
+	p_i = \begin{cases}
+		1, & s_i > t_h, \\
+		0, & t_l \leqslant s_i \leqslant t_h,\\
+		-1, & s_i < t_l,
+	\end{cases}
+\end{aligned}
+\end{equation}
+where $a_i$ and $g_j$ denote the $i$-th anchor and $j$-th ground truth bounding box, $s_i$, $d_i$, and $p_i$ denote the highest IoU score that $a_i$ can get, the index of the `closest' ground truth box of $a_i$, and the polarity of $a_i$, $t_l$ and $t_h$ denote two threshold for the polarity judgment, and typically, $t_h = 0.7$, $t_l = 0.3$. An anchor is labeled as positive, natural or negative in case of $p_i = 1$, $p_i = 0$ or $p_i = -1$ respectively. Figure \ref{fig:eganchor} also shows anchors with different polarities.
 
+\subsection{Multiple Bounding Boxes Regression}\label{mulbboxreg}
+Multiple bounding boxes regression can be very different from the single one. Since the number of RoIs is unknown, if we still directly use the parameters regression as what we do in case of the single bounding box, then the number of nodes of the FC output layer will not be fixed. Besides, the RoIs in the image usually reflects the local information, usually we cannot directly use all global features obtained by CNN, either.
 
+\paragraph{Anchor Assignment}
+The basic idea for multiple bounding boxes regression is to regress them on positive anchors. Specifically, each RoI is regressed on the anchors which are assigned to it. There are two rules for the assignment: (1) each ground truth bounding box should have at least one anchor (either positive, natural or negative) assigned to it; (2) each positive anchor should be assigned to its `closest' ground truth bounding box. For those non-positive anchors that have assignments, we also treat them as positive anchors. For details of the matching algorithm, please refer to section \ref{app:assignanchor}.
+
+\paragraph{Classification and Regression on Anchors}
+As a matter of fact, the single bounding box regression can be regarded as regression on the anchor, which is exactly the whole image. Similar to this, we can simply increase the number of nodes in the FC output layer (see figure \ref{fig:sglbboxreg}) according to the number of anchors. Generally, each anchor requires 6 output nodes, 2 for binary classification and 4 for parameters regression. Specifically, 2 classification nodes output the logits, denoting $l_p$ and $l_n$, indicating how close the anchor is to an RoI. Thus the predicted probability of an anchor referring to an RoI $p'$ can be described as
+\begin{equation}
+	p' = \frac{e^{l_p}}{e^{l_p} + e^{l_n}}, 1 - p' = \frac{e^{l_n}}{e^{l_p} + e^{l_n}}.
+\end{equation}
+The rest 4 regression nodes output the refined box information, for recovering the corresponding RoI. Suppose we have a fixed positive anchor, which is assigned to a ground truth bounding box. The refined (or normalized) box parameters are used for regression target, which can be described as follows.
+\begin{equation}
+	\hat{x}_g = \frac{x_g - x_a}{w_a}, \hat{y}_g = \frac{y_g - y_a}{h_a}, \hat{w}_g = \log\frac{w_g}{w_a}, \hat{h}_g = \log\frac{h_g}{h_a},
+\end{equation}
+where $(x_a, y_a, w_a, h_a)$ and $(x_g, y_g, w_g, h_g)$ denotes the four parameters of the anchor and the ground truth bounding box respectively, $(\hat{x}_g, \hat{y}_g, \hat{w}_g, \hat{h}_g)$ denotes the refined parameters for regression target. As for the recovery phase, we have
+\begin{equation}
+	x_g' = x_a + \hat{x}_g'w_a, y_g' = h_a + \hat{y}_g'h_a, w_g' = w_ae^{\hat{w}_g'}, h_g' = h_ae^{\hat{h}_g'},
+\end{equation}
+where $(\hat{x}_g', \hat{y}_g', \hat{w}_g', \hat{h}_g')$ and $(x_g', y_g', w_g', h_g')$ denote the predicted refinement parameters and the parameters of the final predicted bounding box respectively. The reason why the refined parameters are used for training, instead of original box, is that the former one eliminates the location information thus more reasonable.
+
+\paragraph{Loss}
+As for training, only positive and negative anchors are used, where classification uses both and regression only uses positive anchors. The loss used for classification is the log loss, described as follows.
+\begin{equation}
+	L_c = \mathbb{1}[p = 1]\log{\frac{1}{p'}} + \mathbb{1}[p = -1]\log{\frac{1}{1-p'}},
+\end{equation}
+where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p'$ is the predicted probability, $\mathbb{1}[\cdot]$ is the indicator function. The loss used for regression is the smooth $L_1$ loss, described as follows.
+\begin{equation}
+\begin{aligned}
+	f(x) = \begin{cases}
+		\dfrac{1}{2}x^2, & \lvert x \rvert < 1, \\
+		\lvert x \rvert - \dfrac{1}{2}, & \lvert x \rvert \geqslant 1,
+	\end{cases}
+\end{aligned}
+\end{equation}
+\input{fig/3-09}
+\begin{equation}
+	L_r = f(\hat{x}_g' - \hat{x}_g) + f(\hat{y}_g' - \hat{y}_g) + f(\hat{w}_g' - \hat{w}_g) + f(\hat{h}_g' - \hat{h}_g),
+\end{equation}
+where $L_r$ is the regression loss. The total loss is defined as
+\begin{equation}
+	L = \sum_{i}^{} L_c^{(i)} + \lambda\sum_{i}^{}\mathbb{1}[p = 1]L_r^{(i)},
+\end{equation}
+where $\lambda$ is a self-defined parameter.
 
 \subsection{Backbone and Feature Pyramid}\label{bonefpn}
 
+\ref{eq:numanchor}
+Suppose we have numbers of self-defined anchors. These anchors are evenly distributed in the image and have kinds of shapes. 
 ResNet-101
 
 Feature pyramids are a basic component in recognition systems for detecting objects at different scales. But recent deep learning object detectors have avoided pyramid rep- resentations, in part because they are compute and memory intensive. In this paper, we exploit the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to con- struct feature pyramids with marginal extra cost. A top- down architecture with lateral connections is developed for building high-level semantic feature maps at all scales. This architecture, called a Feature Pyramid Network (FPN), shows significant improvement as a generic feature extrac- tor in several applications. Using FPN in a basic Faster R-CNN system, our method achieves state-of-the-art single- model results on the COCO detection benchmark without bells and whistles, surpassing all existing single-model en- tries including those from the COCO 2016 challenge win- ners. In addition, our method can run at 6 FPS on a GPU and thus is a practical and accurate solution to multi-scale object detection. Code will be made publicly available.
