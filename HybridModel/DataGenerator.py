@@ -105,7 +105,7 @@ class DataGenerator(object):
 		self.sftp = self.ssh.open_sftp()
 
 		#
-		aids = self.sftp.listdir(area_path)
+		aids = self.sftp.listdir(self.area_path)
 		aids.sort()
 		random.seed(31415926)
 		random.shuffle(aids)
