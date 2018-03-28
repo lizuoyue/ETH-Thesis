@@ -119,7 +119,7 @@ class HybridModel(object):
 			return combine, (v_first, prob)
 
 	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None):
-		"""
+		""" 
 			rnn_output
 			gt_rnn_out
 			gt_seq_len
