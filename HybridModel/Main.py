@@ -19,7 +19,7 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
-		two_step = False,
+		two_step = True,
 		pretrained = False,
 	)
 	aa = tf.placeholder(tf.float32)
@@ -37,9 +37,9 @@ if __name__ == '__main__':
 	pred_rpn_res  = graph.predict_rpn(aa)
 	pred_poly_res = graph.predict_polygon(pp)
 
-	# for v in tf.global_variables():
-	# 	print(v.name)
-	# quit()
+	for v in tf.global_variables():
+		print(v.name)
+	quit()
 
 	# Create new folder
 	if not os.path.exists('./Model%s/' % city_name):

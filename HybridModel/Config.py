@@ -25,7 +25,7 @@ class Config(object):
 		self.PATH_B = '../../Buildings%s.zip'
 		self.NUM_ITER = 100000
 		self.MAX_NUM_VERTICES = 20
-		self.LEARNING_RATE = 0.001#0.0005
+		self.LEARNING_RATE = 0.01#0.0005
 		self.LSTM_OUT_CHANNEL = [32, 16, 8]
 		self.V_OUT_RES = (28, 28)
 		self.AREA_TRAIN_BATCH = 4
