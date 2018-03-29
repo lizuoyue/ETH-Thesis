@@ -19,8 +19,8 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
-		two_step = False,
-		pretrained = True,
+		two_step = True,
+		pretrained = False,
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)
@@ -37,6 +37,11 @@ if __name__ == '__main__':
 	pred_rpn_res  = graph.predict_rpn(aa)
 	pred_poly_res = graph.predict_polygon(pp)
 
+	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
+	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
+	saver = tf.train.Saver(max_to_keep = 3)
+	init = tf.global_variables_initializer()
+
 	# for v in tf.global_variables():
 	# 	print(v.name)
 	# quit()
@@ -52,11 +57,6 @@ if __name__ == '__main__':
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
-
-	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
-	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
-	saver = tf.train.Saver(max_to_keep = 3)
-	init = tf.global_variables_initializer()
 
 	# Launch graph
 	with tf.Session() as sess:
