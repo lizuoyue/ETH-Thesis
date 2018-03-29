@@ -167,24 +167,24 @@ Multiple bounding boxes regression can be very different from the single one. Si
 The basic idea for multiple bounding boxes regression is to regress them on positive anchors. Specifically, each RoI is regressed on the anchors which are assigned to it. There are two rules for the assignment: (1) each ground truth bounding box should have at least one anchor (either positive, natural or negative) assigned to it; (2) each positive anchor should be assigned to its `closest' ground truth bounding box. For those non-positive anchors that have assignments, we also treat them as positive anchors. For details of the matching algorithm, please refer to section \ref{app:assignanchor}.
 
 \paragraph{Classification and Regression on Anchors}
-As a matter of fact, the single bounding box regression can be regarded as regression on the anchor, which is exactly the whole image. Similar to this, we can simply increase the number of nodes in the FC output layer (see figure \ref{fig:sglbboxreg}) according to the number of anchors. Generally, each anchor requires 6 output nodes, 2 for binary classification and 4 for parameters regression. Specifically, 2 classification nodes output the logits, denoting $l_p$ and $l_n$, indicating how close the anchor is to an RoI. Thus the predicted probability of an anchor referring to an RoI $p'$ can be described as
+As a matter of fact, the single bounding box regression can be regarded as regression on the anchor, which is exactly the whole image. Similar to this, we can simply increase the number of nodes in the FC output layer (see figure \ref{fig:sglbboxreg}) according to the number of anchors. Generally, each anchor requires 6 output nodes, 2 for binary classification and 4 for parameters regression. Specifically, 2 classification nodes output the logits, denoting $l_p$ and $l_n$, indicating how close the anchor is to an RoI. Thus the predicted probability of an anchor referring to an RoI $p^*$ can be described as
 \begin{equation}
-	p' = \frac{e^{l_p}}{e^{l_p} + e^{l_n}}, 1 - p' = \frac{e^{l_n}}{e^{l_p} + e^{l_n}}.
+	p^* = \frac{e^{l_p}}{e^{l_p} + e^{l_n}}, 1 - p^* = \frac{e^{l_n}}{e^{l_p} + e^{l_n}}.
 \end{equation}
 The rest 4 regression nodes output the refined box information, for recovering the corresponding RoI. Suppose we have a fixed positive anchor, which is assigned to a ground truth bounding box. The refined (or normalized) box parameters are used for regression target, which can be described as follows.
 \begin{equation}
-	\hat{x}_g = \frac{x_g - x_a}{w_a}, \hat{y}_g = \frac{y_g - y_a}{h_a}, \hat{w}_g = \log\frac{w_g}{w_a}, \hat{h}_g = \log\frac{h_g}{h_a},
+	r_x = \frac{x_g - x_a}{w_a}, r_y = \frac{y_g - y_a}{h_a}, r_w = \log\frac{w_g}{w_a}, r_h = \log\frac{h_g}{h_a},
 \end{equation}
-where $(x_a, y_a, w_a, h_a)$ and $(x_g, y_g, w_g, h_g)$ denotes the four parameters of the anchor and the ground truth bounding box respectively, $(\hat{x}_g, \hat{y}_g, \hat{w}_g, \hat{h}_g)$ denotes the refined parameters for regression target. As for the recovery phase, we have
+where $(x_a, y_a, w_a, h_a)$ and $(x_g, y_g, w_g, h_g)$ denotes the four parameters of the anchor and the ground truth bounding box respectively, $(r_x, r_y, r_w, r_h)$ denotes the refined parameters for regression target. As for the recovery phase, we have
 \begin{equation}
-	x_g' = x_a + \hat{x}_g'w_a, y_g' = h_a + \hat{y}_g'h_a, w_g' = w_ae^{\hat{w}_g'}, h_g' = h_ae^{\hat{h}_g'},
+	x_g^* = x_a + r_x^*w_a, y_g^* = h_a + r_y^*h_a, w_g^* = w_ae^{r_w^*}, h_g^* = h_ae^{r_h^*},
 \end{equation}
-where $(\hat{x}_g', \hat{y}_g', \hat{w}_g', \hat{h}_g')$ and $(x_g', y_g', w_g', h_g')$ denote the predicted refinement parameters and the parameters of the final predicted bounding box respectively. The reason why the refined parameters are used for training, instead of original box, is that the former one eliminates the location information thus more reasonable.
+where $(r_x^*, r_y^*, r_w^*, r_h^*)$ and $(x_g^*, y_g^*, w_g^*, h_g^*)$ denote the predicted refinement parameters and the parameters of the final predicted bounding box respectively. The reason why the refined parameters are used for training, instead of original box, is that the former one eliminates the location information thus more reasonable.
 
 \paragraph{Loss}
 As for training, only positive and negative anchors are used, where classification uses both and regression only uses positive anchors. The loss used for classification is the log loss, described as follows.
 \begin{equation}
-	L_c = \mathbb{1}[p = 1]\log{\frac{1}{p'}} + \mathbb{1}[p = -1]\log{\frac{1}{1-p'}},
+	L_c = \mathbb{1}[p = 1]\log{\frac{1}{p^*}} + \mathbb{1}[p = -1]\log{\frac{1}{1-p^*}},
 \end{equation}
 where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p'$ is the predicted probability, $\mathbb{1}[\cdot]$ is the indicator function. The loss used for regression is the smooth $L_1$ loss, described as follows.
 \begin{equation}
@@ -197,11 +197,11 @@ where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p'$ 
 \end{equation}
 \input{fig/3-09}
 \begin{equation}
-	L_r = f(\hat{x}_g' - \hat{x}_g) + f(\hat{y}_g' - \hat{y}_g) + f(\hat{w}_g' - \hat{w}_g) + f(\hat{h}_g' - \hat{h}_g),
+	L_r = f(x_g^* - x_g) + f(y_g^* - y_g) + f(w_g^* - w_g) + f(h_g^* - h_g),
 \end{equation}
 where $L_r$ is the regression loss. The total loss is defined as
 \begin{equation}
-	L = \sum_{i}^{} L_c^{(i)} + \lambda\sum_{i}^{}\mathbb{1}[p = 1]L_r^{(i)},
+	L = \sum_{i}^{} L_c^{(i)} + \lambda\sum_{i}^{}\mathbb{1}[p_i = 1]L_r^{(i)},
 \end{equation}
 where $\lambda$ is a self-defined parameter.
 

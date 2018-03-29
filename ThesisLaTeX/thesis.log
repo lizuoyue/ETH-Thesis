@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  27 MAR 2018 22:31
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  29 MAR 2018 16:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1615,14 +1615,11 @@ Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 133.
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
  19841 strings out of 492998
  281832 string characters out of 6134492
- 446063 words of memory out of 5000000
+ 446149 words of memory out of 5000000
  23357 multiletter control sequences out of 15000+600000
  63542 words of font info for 113 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191

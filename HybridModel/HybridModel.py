@@ -111,7 +111,7 @@ class HybridModel(object):
 			n_v   = tf.reduce_sum(gt_vertices) / batch_size
 			loss += tf.losses.log_loss(labels = gt_vertices, predictions = vertices,
 				weights = (gt_vertices * (self.res_num - 2 * n_v) + n_v))
-			loss /= 16
+			loss /= 256
 			return combine, loss
 		else:
 			prob, idx = tf.nn.top_k(tf.reshape(vertices, [-1, self.res_num]), k = config.BEAM_WIDTH)
