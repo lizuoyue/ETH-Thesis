@@ -19,7 +19,7 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
-		two_step = True,
+		two_step = False,
 		pretrained = False,
 	)
 	aa = tf.placeholder(tf.float32)
