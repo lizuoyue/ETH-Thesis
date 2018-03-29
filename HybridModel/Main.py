@@ -37,9 +37,9 @@ if __name__ == '__main__':
 	pred_rpn_res  = graph.predict_rpn(aa)
 	pred_poly_res = graph.predict_polygon(pp)
 
-	for v in tf.global_variables():
-		print(v.name)
-	quit()
+	# for v in tf.global_variables():
+	# 	print(v.name)
+	# quit()
 
 	# Create new folder
 	if not os.path.exists('./Model%s/' % city_name):
