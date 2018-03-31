@@ -24,11 +24,11 @@
 \BOOKMARK [2][-]{subsection.3.2.1}{Single\040Bounding\040Box\040Regression}{section.3.2}% 24
 \BOOKMARK [2][-]{subsection.3.2.2}{Anchor\040and\040its\040Properties}{section.3.2}% 25
 \BOOKMARK [2][-]{subsection.3.2.3}{Multiple\040Bounding\040Boxes\040Regression}{section.3.2}% 26
-\BOOKMARK [2][-]{subsection.3.2.4}{Backbone\040and\040Feature\040Pyramid}{section.3.2}% 27
+\BOOKMARK [2][-]{subsection.3.2.4}{Feature\040Pyramid\040and\040Backbone}{section.3.2}% 27
 \BOOKMARK [1][-]{section.3.3}{R-PolygonRNN}{chapter.3}% 28
-\BOOKMARK [2][-]{subsection.3.3.1}{Two-step\040Model}{section.3.3}% 29
-\BOOKMARK [2][-]{subsection.3.3.2}{Hybrid\040Model}{section.3.3}% 30
-\BOOKMARK [2][-]{subsection.3.3.3}{Hybrid\040Model\040with\040RoI\040Align}{section.3.3}% 31
+\BOOKMARK [2][-]{subsection.3.3.1}{Two-step\040Version}{section.3.3}% 29
+\BOOKMARK [2][-]{subsection.3.3.2}{Hybrid\040Version}{section.3.3}% 30
+\BOOKMARK [2][-]{subsection.3.3.3}{Hybrid\040Version\040with\040RoIAlign}{section.3.3}% 31
 \BOOKMARK [0][-]{chapter.4}{Experiments\040and\040Results}{}% 32
 \BOOKMARK [1][-]{section.4.1}{Ground\040Truth}{chapter.4}% 33
 \BOOKMARK [2][-]{subsection.4.1.1}{Google\040Static\040Maps\040API}{section.4.1}% 34
@@ -74,4 +74,5 @@
 \BOOKMARK [1][-]{section.A.2}{OpenStreetMap}{appendix.A}% 74
 \BOOKMARK [1][-]{section.A.3}{Projection}{appendix.A}% 75
 \BOOKMARK [1][-]{section.A.4}{Anchor\040Assignment}{appendix.A}% 76
-\BOOKMARK [0][-]{section*.34}{List\040of\040Figures}{}% 77
+\BOOKMARK [1][-]{section.A.5}{Non-max\040Suppression}{appendix.A}% 77
+\BOOKMARK [0][-]{section*.31}{List\040of\040Figures}{}% 78

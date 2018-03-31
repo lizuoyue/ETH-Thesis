@@ -18,7 +18,7 @@ The `16' in VGG-16 means that it is a VGGNet with 16 layers containing parameter
 
 VGG-16 was mostly used for image classification before, so after the convolutional layers and max pooling layers there are fully connected layers and softmax layer for the class labels. However, these two kinds of layers are not required for VGG-16 used in PolygonRNN, because the CNN here is working as a feature extractor and mask predictor. Layer \lstinline{pool5} is omitted as well because of the too low resolution.
 
-\paragraph{Feature Extraction} The modified VGG-16 provides RNN with useful features, which are taken from different convolutional and max pooling layers. Specifically, the features are extracted from layer \lstinline{pool2}, \lstinline{pool3}, \lstinline{conv4_3} and \lstinline{conv5_3}. Note that since the resolution of final features is fixed, when taking features from layer \lstinline{pool2} and \lstinline{conv5_3}, it requires another max pooling and upsampling respectively. All of these can be seen in figure \ref{fig:mdfvgg16}.
+\paragraph{Feature Extraction} The modified VGG-16 provides RNN with useful features, which are taken from different convolutional and max pooling layers. Specifically, the features are extracted from layers \lstinline{pool2}, \lstinline{pool3}, \lstinline{conv4_3} and \lstinline{conv5_3}. Note that since the resolution of final features is fixed, when taking features from layer \lstinline{pool2} and \lstinline{conv5_3}, it requires another max pooling and upsampling respectively. All of these can be seen in figure \ref{fig:mdfvgg16}.
 
 \input{fig/3-02}
 
@@ -85,7 +85,7 @@ The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The l
 
 \section{Feature Pyramid Network}\label{modfpn}
 
-FPN is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{ancpro} introduces some basic concepts related to anchor, and subsection \ref{mulbboxreg} further illustrates multiple bounding boxes regression. Finally, subsection \ref{bonefpn} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
+FPN is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{ancpro} introduces some basic concepts related to anchor, and subsection \ref{mulbboxreg} further illustrates multiple bounding boxes regression. Finally, subsection \ref{fpnbone} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
 
 \subsection{Single Bounding Box Regression}\label{sglbboxreg}
 
@@ -135,9 +135,9 @@ Thus, even for a very small image patch with size 224$\times$224, $n$ is already
 \paragraph{IoU Score}
 Usually IoU (Intersection over Union) score is used to evaluate the similarity between an anchor and a ground truth bounding box. The following equation shows its computation.
 \begin{equation}
-	s = \frac{A \cap T}{A \cup T} \in [0, 1],
+	s = \frac{\lvert A \cap T \rvert}{\lvert A \cup T \rvert} \in [0, 1],
 \end{equation}
-where $s$ denotes the IoU score, $A$ and $T$ refer to the sets of pixels covered by the anchor and the ground truth bounding box respectively. $s = 1$ means that the anchor and the ground truth bounding box overlap perfectly. Figure \ref{fig:egiou} shows the coverage level under different IoU scores.
+where $s$ denotes the IoU score, $\lvert \cdot \rvert$ denotes the size of the set, $A$ and $T$ refer to the sets of pixels covered by the anchor and the ground truth bounding box respectively. $s = 1$ means that the anchor and the ground truth bounding box overlap perfectly. Figure \ref{fig:egiou} shows the coverage level under different IoU scores.
 
 \input{fig/3-08}
 
@@ -181,6 +181,8 @@ where $(x_a, y_a, w_a, h_a)$ and $(x_g, y_g, w_g, h_g)$ denotes the four paramet
 \end{equation}
 where $(r_x^*, r_y^*, r_w^*, r_h^*)$ and $(x_g^*, y_g^*, w_g^*, h_g^*)$ denote the predicted refinement parameters and the parameters of the final predicted bounding box respectively. The reason why the refined parameters are used for training, instead of original box, is that the former one eliminates the location information thus more reasonable.
 
+\input{fig/3-09}
+
 \paragraph{Loss}
 As for training, only positive and negative anchors are used, where classification uses both and regression only uses positive anchors. The loss used for classification is the log loss, described as follows.
 \begin{equation}
@@ -195,7 +197,7 @@ where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p'$ 
 	\end{cases}
 \end{aligned}
 \end{equation}
-\input{fig/3-09}
+\input{fig/3-10}
 \begin{equation}
 	L_r = f(x_g^* - x_g) + f(y_g^* - y_g) + f(w_g^* - w_g) + f(h_g^* - h_g),
 \end{equation}
@@ -205,38 +207,70 @@ where $L_r$ is the regression loss. The total loss is defined as
 \end{equation}
 where $\lambda$ is a self-defined parameter.
 
-\subsection{Backbone and Feature Pyramid}\label{bonefpn}
+\subsection{Feature Pyramid and Backbone}\label{fpnbone}
 
-\ref{eq:numanchor}
-Suppose we have numbers of self-defined anchors. These anchors are evenly distributed in the image and have kinds of shapes. 
-ResNet-101
+From equation \ref{eq:numanchor} we know that even a small image can have a huge number of possible anchors. However, it is impossible to involve all anchors in the calculation, since the output layer would have too many nodes. Thus, how to select the proper anchors in the original image remains a problem. The selected anchors should cover the ground truth bounding boxes as much as possible. Under this guideline, selected anchors should have different kinds of shapes, in different scales and evenly distributed in the image.
 
-Feature pyramids are a basic component in recognition systems for detecting objects at different scales. But recent deep learning object detectors have avoided pyramid rep- resentations, in part because they are compute and memory intensive. In this paper, we exploit the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to con- struct feature pyramids with marginal extra cost. A top- down architecture with lateral connections is developed for building high-level semantic feature maps at all scales. This architecture, called a Feature Pyramid Network (FPN), shows significant improvement as a generic feature extrac- tor in several applications. Using FPN in a basic Faster R-CNN system, our method achieves state-of-the-art single- model results on the COCO detection benchmark without bells and whistles, surpassing all existing single-model en- tries including those from the COCO 2016 challenge win- ners. In addition, our method can run at 6 FPS on a GPU and thus is a practical and accurate solution to multi-scale object detection. Code will be made publicly available.
+In fact, in RPN from Faster R-CNN, there is a simple way to select anchors. For each entry of the convoluted feature map (or each pixel of the original image with corresponding stride), we generate $k$ different shapes of anchors also in different scales, which is shown in figure \ref{fig:ancsel}. For example, if we select anchors from image with size 320$\times$320, stride 8$\times$8, 3 different shapes ($1:1$, $\sqrt{2}/{2}:\sqrt{2}$, $\sqrt{2}:\sqrt{2}/{2}$) and 4 scales (16, 32, 64, 128), we will have $(320/8)^2\times3\times4=19200$ anchors.
 
+\input{fig/3-11}
 
-FPN uses a top-down architecture with lateral connections to build an in-network feature pyramid from a single-scale input. Faster R-CNN with an FPN back- bone extracts RoI features from different levels of the fea- ture pyramid according to their scale, but otherwise the rest of the approach is similar to vanilla ResNet. Using a ResNet-FPN backbone for feature extraction with Mask R- CNN gives excellent gains in both accuracy and speed. For further details on FPN, we refer readers to [27].
+But this method produces two problems: (1) large anchors are too close to each other, resulting in redundancy; (2) the stride may be too large for small anchors, thus a typically small ground truth bounding box which are sandwiched between two small anchors is very likely to be missed. Both problems are tackled with the introduction of feature pyramid.
 
-For the network head we closely follow architectures presented in previous work to which we add a fully con- volutional mask prediction branch. Specifically, we ex- tend the Faster R-CNN box heads from the ResNet [19] and FPN [27] papers. Details are shown in Figure 3. The head on the ResNet-C4 backbone includes the 5-th stage of ResNet (namely, the 9-layer ‘res5’ [19]), which is compute- intensive. For FPN, the backbone already includes res5 and thus allows for a more efficient head that uses fewer filters.
-We note that our mask branches have a straightforward structure. More complex designs have the potential to im- prove performance but are not the focus of this work.
+Feature pyramid is a basic component in recognition systems for detecting objects. It actually refers to semantic feature maps at different scales. FPN exploits the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to construct feature pyramids. The network uses a top-down architecture with lateral connections is developed for building an in-network feature pyramid from a single-scale input. Figure \ref{fig:fpn} shows its architecture.
 
+\input{fig/3-12}
 
+The relationship between the feature pyramid and anchors is that each level of the feature pyramid corresponds to single scale of anchors, which can be seen in figure \ref{fig:ancdifflay}. In general, we have
+\begin{equation}
+	S_i = 2^{i-1}S_1, i \in \{1,2,\ldots\},
+\end{equation}
+where $S_i$ denotes the smallest anchor size, $S_i$ denotes the anchor size corresponding to the feature map with $2^{-i}$ resolution. For example, for an image with size 320$\times$320, if the smallest anchor size is set to be 16, the anchor size for the feature map with resolution 40$\times$40 would be 128.
 
-Dummy text.
+\input{fig/3-13}
+
+Therefore, in FPN, the feature map with larger resolution corresponds to smaller anchor size (i.e. smaller stride with regard to the original image). That is the core reason why the problems mentioned above can be addressed. On the other hand, the total number of anchors $n_l$ has an upper bound $\Theta(wh)$, which can be derived as
+\begin{equation}
+	n_l = \sum_{i=1}^{l}\frac{w}{2^i}\frac{h}{2^i}k=whk\sum_{i=1}^{l}4^{-i}=\frac{1}{3}whk(1-4^{-l}) \leqslant \frac{1}{3}whk,
+\end{equation}
+where the subscript $l$ denotes the number of feature maps, i.e. the depth of feature pyramid, $w$ and $h$ denotes the image width and height, $k$ denotes the number of designed anchor shapes. Compared with equation \ref{eq:numanchor}, the total number of anchors is reduced by two orders of magnitude.
+
+The upper left part of figure \ref{fig:fpn} is so-called backbone of FPN, which is exactly a general CNN. In Mask R-CNN, the backbone used for feature extraction is ResNet-101, which can give excellent gains in both accuracy and speed. However, in our project, VGG-16 is chosen as the backbone of FPN, because we want FPN and PolygonRNN share the same VGG-16. For more details about the shared VGG-16, please refer to subsection \ref{hybmod}.
+
+Figure \ref{fig:fpnvgg} shows the architecture of FPN with VGG-16 backbone used in our project for feature pyramid extraction. Actually, the lateral connections are not fixed. It means that each layer of VGG-16 can be lead out in a reasonable situation. Here we use 4-layer feature pyramid, and features are taken from layers \lstinline{conv3_3}, \lstinline{conv4_3} and \lstinline{conv5_3}. For the network to make further prediction is already shown in figure \ref{fig:ancsel}.
+
+\input{fig/3-14}
 
 \section{\modelnameshort}\label{modmer}
 
-Dummy text.
+In this section, the final model, \modelnameshort\ (\modelnamelong), is derived and introduced in detail. Here we propose 3 possible versions, denoting two-step version, hybrid version and hybrid version with RoIAlign, which are described in subsection \ref{stpmod}, \ref{hybmod} and \ref{algmod}, respectively.
 
-\subsection{Two-step Model}
+\subsection{Two-step Version}\label{stpmod}
 
-Dummy text.
+The two-step version is very natural and easy to think of. In the first step, RPN is used to get the RoIs from the aerial image and each RoI contains a building. In the second step, PolygonRNN is used to get the geometrical shape. Thus, our problem is solved after these two steps. Figure \ref{fig:stpmod} shows its pipeline.
 
-\subsection{Hybrid Model}
+\input{fig/3-15}
 
-Dummy text.
+From the figure \ref{fig:stpmod} we can see that RPN and PolygonRNN are completely separate. Therefore, during the training phase, we can train the two models separately and integrate them when making prediction.
 
-\subsection{Hybrid Model with RoI Align}
+\subsection{Hybrid Version}\label{hybmod}
 
+Note that in figure \ref{fig:stpmod}, either when the area image is inputted to FPN or when the building image is inputted to PolygonRNN, they both pass CNN first, and their CNNs both adopt VGG-16. In fact, regardless of the whole model of FPN or PolygonRNN, the feature extraction in their CNN parts are both from the lateral connection on the basis of VGG-16. Although they extract features from different levels, the backbone of the original VGG-16 is exactly the same for both of them. Therefore, they can share the same VGG-16 skeleton, just like what figure \ref{fig:hybmod} shows.
 
+\input{fig/3-16}
 
+As a result, the training phase of the whole model, \modelnameshort, cannot be separated and multi-task training is needed. In general, multi-tasking training can make the training phase better, and can therefore improve the the model's prediction effect and accuracy.
 
+\subsection{Hybrid Version with RoIAlign}\label{algmod}
+
+Note that both two-step version and hybrid version do convolution for the area image and the building image respectively. However, we know that the building image is taken from the area image, so there is redundancy in the twice convolutions. Considering that we already have the feature map of the area image, it is unnecessary to do a second convolution since we can take the building feature from the corresponding position in the feature map of the area image， when given the RoI.
+
+In Mask R-CNN, RoIAlign is proposed to solve this kind of problem. Actually its previous version, RoIPooling is already used in Faster R-CNN. The role of RoIPooling is to pool the corresponding area in the feature map into a fixed-size tensor, so as to perform subsequent classification phase. The positions of the RoIs are usually obtained by regression of the model, which are generally floating numbers. RoIPooling has twice process of rounding these floating numbers: (1) box boundaries are rounded to integers; (2) the region of box is divided into several cells, boundaries of each cell are rounded to integers. After the twice rounding process, each cell has a certain deviation from its initial position, which will affect the accuracy of subsequent classification or segmentation (for Mask R-CNN). This problem is summarized as `misalignment' in Mask R-CNN paper.
+
+In order to tackle the shortcomings of RoIPooling, Mask R-CNN introduces ​​RoIAlign, using bilinear interpolation instead of rounding numbers. It can be used to obtain the value ​​at the pixel whose coordinates are floating numbers, thereby transforming the pooling process into a continuous operation.
+
+Therefore, we can simply apply the bounding boxes obtained from FPN calculation directly on the feature map by RoIAlign and send the pooled features to the RNN part of PolygonRNN. Figure \ref{fig:algmod} shows \modelnameshort model architecture with RoIAlign.
+
+\input{fig/3-17}
+
+As a result, VGG-16 is used only and therefore it can speed up the prediction in theory.

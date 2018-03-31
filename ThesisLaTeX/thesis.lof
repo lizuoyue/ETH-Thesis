@@ -1,53 +1,67 @@
 \select@language {english}
 \addvspace {10pt}
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Example of two satellite images}}{2}{figure.1.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces an area of Zurich}}{2}{figure.1.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces an area of Chicago}}{2}{figure.1.1}
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Example of binary image segmentation}}{3}{figure.1.2}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces original image}}{3}{figure.1.2}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces image after segmentation}}{3}{figure.1.2}
 \addvspace {10pt}
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Example outputs of two previous theses}}{4}{figure.2.1}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces pixel-wise labelled mask}}{4}{figure.2.1}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces rotated bounding boxes}}{4}{figure.2.1}
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Comparison of pixel-wise mask and polygon}}{5}{figure.2.2}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces an example building}}{5}{figure.2.2}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces pixel-wise mask}}{5}{figure.2.2}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces polygon prediction}}{5}{figure.2.2}
-\contentsline {figure}{\numberline {2.3}{\ignorespaces Example results of Mask R-CNN}}{6}{figure.2.3}
-\contentsline {figure}{\numberline {2.4}{\ignorespaces Simplified model structure of Mask R-CNN}}{6}{figure.2.4}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Example outputs of two previous theses}}{6}{figure.2.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces pixel-wise labelled mask}}{6}{figure.2.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces rotated bounding boxes}}{6}{figure.2.1}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Comparison of pixel-wise mask and polygon}}{7}{figure.2.2}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces an example building}}{7}{figure.2.2}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces pixel-wise mask}}{7}{figure.2.2}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces polygon prediction}}{7}{figure.2.2}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Example results of Mask R-CNN}}{8}{figure.2.3}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Simplified model structure of Mask R-CNN}}{8}{figure.2.4}
 \addvspace {10pt}
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Simplified structure of PolygonRNN}}{9}{figure.3.1}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces VGG-16 architecture}}{10}{figure.3.2}
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Modified VGG-16 architecture in PolygonRNN}}{11}{figure.3.3}
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Mask prediction of VGG-16}}{11}{figure.3.4}
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Visualization for LSTM cell}}{13}{figure.3.5}
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Visualization for the time step of the RNN decoder}}{14}{figure.3.6}
-\contentsline {figure}{\numberline {3.7}{\ignorespaces Simplified structure of the network for single bounding box regression}}{16}{figure.3.7}
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Example anchors in image with multiple RoIs}}{17}{figure.3.8}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces Positive}}{17}{figure.3.8}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces Natural}}{17}{figure.3.8}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces Natural}}{17}{figure.3.8}
-\contentsline {subfigure}{\numberline {(d)}{\ignorespaces Negative}}{17}{figure.3.8}
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Coverage level of anchor and ground truth bounding box under different IoU scores}}{17}{figure.3.9}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces IoU = 0}}{17}{figure.3.9}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces IoU = 0.3}}{17}{figure.3.9}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces IoU = 0.7}}{17}{figure.3.9}
-\contentsline {subfigure}{\numberline {(d)}{\ignorespaces IoU = 1}}{17}{figure.3.9}
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Smooth $L_1$ loss function}}{19}{figure.3.10}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Simplified structure of PolygonRNN}}{11}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces VGG-16 architecture}}{12}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Modified VGG-16 architecture in PolygonRNN}}{13}{figure.3.3}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Mask prediction of VGG-16}}{13}{figure.3.4}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Visualization for LSTM cell}}{15}{figure.3.5}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Visualization for the time step of the RNN decoder}}{16}{figure.3.6}
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Simplified structure of the network for single bounding box regression}}{18}{figure.3.7}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Example anchors in image with multiple RoIs}}{19}{figure.3.8}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces Positive}}{19}{figure.3.8}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces Natural}}{19}{figure.3.8}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces Natural}}{19}{figure.3.8}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces Negative}}{19}{figure.3.8}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Coverage level of anchor and ground truth bounding box under different IoU scores}}{19}{figure.3.9}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces IoU = 0}}{19}{figure.3.9}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces IoU = 0.3}}{19}{figure.3.9}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces IoU = 0.7}}{19}{figure.3.9}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces IoU = 1}}{19}{figure.3.9}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Simplified structure of multiple bounding box regression}}{21}{figure.3.10}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Smooth $L_1$ loss function}}{21}{figure.3.11}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Anchor selection}}{22}{figure.3.12}
+\contentsline {figure}{\numberline {3.13}{\ignorespaces Structure of Feature Pyramid Network}}{23}{figure.3.13}
+\contentsline {figure}{\numberline {3.14}{\ignorespaces Generation of anchors from different layers of feature pyramid}}{23}{figure.3.14}
+\contentsline {figure}{\numberline {3.15}{\ignorespaces FPN with VGG-16 backbone.}}{24}{figure.3.15}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces R-PolygonRNN\ , two-step version.}}{25}{figure.3.16}
+\contentsline {figure}{\numberline {3.17}{\ignorespaces R-PolygonRNN\ , hybrid version.}}{26}{figure.3.17}
+\contentsline {figure}{\numberline {3.18}{\ignorespaces R-PolygonRNN\ , hybrid version with RoIAlign.}}{27}{figure.3.18}
 \addvspace {10pt}
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{24}{figure.4.1}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces satellite image}}{24}{figure.4.1}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces roadmap image}}{24}{figure.4.1}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces hybrid image}}{24}{figure.4.1}
-\contentsline {figure}{\numberline {4.2}{\ignorespaces An example area in Zurich for FPN training}}{26}{figure.4.2}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example area}}{26}{figure.4.2}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example area with bounding boxes}}{26}{figure.4.2}
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Example buildings in Zurich for PolygonRNN training}}{26}{figure.4.3}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example buildings}}{26}{figure.4.3}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example buildings with polygon outlines}}{26}{figure.4.3}
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Problems existed in the ground truth dataset}}{27}{figure.4.4}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces general shift}}{27}{figure.4.4}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces polygon size and shape}}{27}{figure.4.4}
-\contentsline {subfigure}{\numberline {(c)}{\ignorespaces angle issue}}{27}{figure.4.4}
-\contentsline {subfigure}{\numberline {(d)}{\ignorespaces adjacent buildings}}{27}{figure.4.4}
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{28}{figure.4.5}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces before adjustment}}{28}{figure.4.5}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces after adjustment}}{28}{figure.4.5}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{30}{figure.4.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces satellite image}}{30}{figure.4.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces roadmap image}}{30}{figure.4.1}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces hybrid image}}{30}{figure.4.1}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces An example area in Zurich for FPN training}}{32}{figure.4.2}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example area}}{32}{figure.4.2}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example area with bounding boxes}}{32}{figure.4.2}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Example buildings in Zurich for PolygonRNN training}}{32}{figure.4.3}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces example buildings}}{32}{figure.4.3}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces example buildings with polygon outlines}}{32}{figure.4.3}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Problems existed in the ground truth dataset}}{33}{figure.4.4}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces general shift}}{33}{figure.4.4}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces polygon size and shape}}{33}{figure.4.4}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces angle issue}}{33}{figure.4.4}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces adjacent buildings}}{33}{figure.4.4}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{34}{figure.4.5}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces before adjustment}}{34}{figure.4.5}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces after adjustment}}{34}{figure.4.5}
 \addvspace {10pt}
 \addvspace {10pt}
 \addvspace {10pt}

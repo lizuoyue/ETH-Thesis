@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  29 MAR 2018 16:37
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  31 MAR 2018 23:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1091,147 +1091,910 @@ LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 5.
 LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ppl/b/n' tried instead on input line 9.
+ (./fig/1-00.tex
+File: fig/1-00-0.png Graphic file (type bmp)
+<fig/1-00-0.png>
+File: fig/1-00-1.png Graphic file (type bmp)
+<fig/1-00-1.png>
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [1
+
+]
+Missing character: There is no 传 in font pplr7t!
+Missing character: There is no 统 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 分 in font pplr7t!
+Missing character: There is no 割 in font pplr7t!
+Missing character: There is no 技 in font pplr7t!
+Missing character: There is no 术 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 为 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 每 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
+Missing character: There is no 打 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 如 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
 Missing character: There is no 航 in font pplr7t!
 Missing character: There is no 拍 in font pplr7t!
 Missing character: There is no 图 in font pplr7t!
 Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 分 in font pplr7t!
+Missing character: There is no 割 in font pplr7t!
 Missing character: There is no 指 in font pplr7t!
 Missing character: There is no 的 in font pplr7t!
 Missing character: There is no 是 in font pplr7t!
-Missing character: There is no … in font pplr7t!
-Missing character: There is no … in font pplr7t!
-Missing character: There is no ， in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 航 in font pplr7t!
+Missing character: There is no 拍 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 提 in font pplr7t!
+Missing character: There is no 取 in font pplr7t!
+Missing character: There is no 出 in font pplr7t!
+Missing character: There is no 房 in font pplr7t!
+Missing character: There is no 屋 in font pplr7t!
+Missing character: There is no 、 in font pplr7t!
+Missing character: There is no 道 in font pplr7t!
+Missing character: There is no 路 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
 Missing character: There is no （ in font pplr7t!
 Missing character: There is no 给 in font pplr7t!
 Missing character: There is no 例 in font pplr7t!
 Missing character: There is no 子 in font pplr7t!
 Missing character: There is no ） in font pplr7t!
-Missing character: There is no 。 in font pplr7t!
-Missing character: There is no 它 in font pplr7t!
-Missing character: There is no 具 in font pplr7t!
+Missing character: There is no 然 in font pplr7t!
+Missing character: There is no 而 in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 样 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 式 in font pplr7t!
 Missing character: There is no 有 in font pplr7t!
 Missing character: There is no 很 in font pplr7t!
-Missing character: There is no 大 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
 Missing character: There is no 的 in font pplr7t!
-Missing character: There is no 应 in font pplr7t!
-Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 局 in font pplr7t!
+Missing character: There is no 限 in font pplr7t!
+Missing character: There is no 性 in font pplr7t!
+Missing character: There is no — in font pplr7t!
+Missing character: There is no — in font pplr7t!
+Missing character: There is no 如 in font pplr7t!
+Missing character: There is no 无 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 房 in font pplr7t!
+Missing character: There is no 屋 in font pplr7t!
+Missing character: There is no 进 in font pplr7t!
+Missing character: There is no 行 in font pplr7t!
+Missing character: There is no 定 in font pplr7t!
+Missing character: There is no 位 in font pplr7t!
+Missing character: There is no 、 in font pplr7t!
+Missing character: There is no 存 in font pplr7t!
+Missing character: There is no 储 in font pplr7t!
+Missing character: There is no 上 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 每 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 很 in font pplr7t!
+Missing character: There is no 废 in font pplr7t!
+Missing character: There is no 空 in font pplr7t!
+Missing character: There is no 间 in font pplr7t!
+Missing character: There is no 什 in font pplr7t!
+Missing character: There is no 么 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
 Missing character: There is no 。 in font pplr7t!
-Missing character: There is no 因 in font pplr7t!
-Missing character: There is no 为 in font pplr7t!
-Missing character: There is no 现 in font pplr7t!
-Missing character: There is no 实 in font pplr7t!
-Missing character: There is no 生 in font pplr7t!
-Missing character: There is no 活 in font pplr7t!
+ (./fig/1-01.tex
+File: fig/1-01-0.jpg Graphic file (type bmp)
+<fig/1-01-0.jpg>
+File: fig/1-01-1.pdf Graphic file (type pdf)
+<use fig/1-01-1.pdf>
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+)
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 想 in font pplr7t!
+Missing character: There is no 要 in font pplr7t!
+Missing character: There is no 脱 in font pplr7t!
+Missing character: There is no 离 in font pplr7t!
+Missing character: There is no 每 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
+Missing character: There is no 标 in font pplr7t!
+Missing character: There is no 签 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 并 in font pplr7t!
+Missing character: There is no 直 in font pplr7t!
+Missing character: There is no 接 in font pplr7t!
+Missing character: There is no 通 in font pplr7t!
+Missing character: There is no 过 in font pplr7t!
+Missing character: There is no 向 in font pplr7t!
+Missing character: There is no 量 in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no 学 in font pplr7t!
+Missing character: There is no 习 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 边 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 当 in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 偏 in font pplr7t!
+Missing character: There is no 离 in font pplr7t!
+Missing character: There is no 标 in font pplr7t!
+Missing character: There is no 注 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 标 in font pplr7t!
+Missing character: There is no 准 in font pplr7t!
+Missing character: There is no 范 in font pplr7t!
+Missing character: There is no 例 in font pplr7t!
+Missing character: There is no 并 in font pplr7t!
+Missing character: There is no 旨 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 直 in font pplr7t!
+Missing character: There is no 接 in font pplr7t!
+Missing character: There is no 利 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 学 in font pplr7t!
+Missing character: There is no 习 in font pplr7t!
+Missing character: There is no 建 in font pplr7t!
+Missing character: There is no 筑 in font pplr7t!
+Missing character: There is no 物 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 几 in font pplr7t!
+Missing character: There is no 何 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 状 in font pplr7t!
+Missing character: There is no 时 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 边 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no 包 in font pplr7t!
+Missing character: There is no 括 in font pplr7t!
+Missing character: There is no 比 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 式 in font pplr7t!
+Missing character: There is no 标 in font pplr7t!
+Missing character: There is no 签 in font pplr7t!
+Missing character: There is no 少 in font pplr7t!
+Missing character: There is no 得 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 冗 in font pplr7t!
+Missing character: There is no 余 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 存 in font pplr7t!
+Missing character: There is no 储 in font pplr7t!
+Missing character: There is no 上 in font pplr7t!
+Missing character: There is no 有 in font pplr7t!
+Missing character: There is no 优 in font pplr7t!
+Missing character: There is no 势 in font pplr7t!
+Missing character: There is no 可 in font pplr7t!
+Missing character: There is no 以 in font pplr7t!
+Missing character: There is no 矢 in font pplr7t!
+Missing character: There is no 量 in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 即 in font pplr7t!
 Missing character: There is no 在 in font pplr7t!
 Missing character: There is no 不 in font pplr7t!
-Missing character: There is no 断 in font pplr7t!
-Missing character: There is no 更 in font pplr7t!
-Missing character: There is no 新 in font pplr7t!
+Missing character: There is no 同 in font pplr7t!
+Missing character: There is no 层 in font pplr7t!
+Missing character: There is no 面 in font pplr7t!
+Missing character: There is no 都 in font pplr7t!
+Missing character: There is no 可 in font pplr7t!
+Missing character: There is no 以 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
 Missing character: There is no ， in font pplr7t!
-Missing character: There is no 所 in font pplr7t!
-Missing character: There is no 展 in font pplr7t!
-Missing character: There is no 现 in font pplr7t!
-Missing character: There is no 的 in font pplr7t!
-Missing character: There is no 地 in font pplr7t!
-Missing character: There is no 图 in font pplr7t!
-Missing character: There is no 和 in font pplr7t!
-Missing character: There is no 也 in font pplr7t!
-Missing character: There is no 需 in font pplr7t!
-Missing character: There is no 要 in font pplr7t!
-Missing character: There is no 因 in font pplr7t!
-Missing character: There is no 此 in font pplr7t!
-Missing character: There is no 而 in font pplr7t!
-Missing character: There is no 更 in font pplr7t!
-Missing character: There is no 新 in font pplr7t!
-Missing character: There is no 。 in font pplr7t!
-Missing character: There is no 它 in font pplr7t!
-Missing character: There is no 能 in font pplr7t!
-Missing character: There is no 够 in font pplr7t!
+Missing character: There is no 建 in font pplr7t!
+Missing character: There is no 筑 in font pplr7t!
+Missing character: There is no 物 in font pplr7t!
+Missing character: There is no 等 in font pplr7t!
 Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 象 in font pplr7t!
+Missing character: There is no 可 in font pplr7t!
+Missing character: There is no 以 in font pplr7t!
+Missing character: There is no 更 in font pplr7t!
+Missing character: There is no 自 in font pplr7t!
+Missing character: There is no 然 in font pplr7t!
+Missing character: There is no 地 in font pplr7t!
+Missing character: There is no 建 in font pplr7t!
+Missing character: There is no 模 in font pplr7t!
+Missing character: There is no 学 in font pplr7t!
+Missing character: There is no 习 in font pplr7t!
+Missing character: There is no 到 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 边 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 可 in font pplr7t!
+Missing character: There is no 以 in font pplr7t!
+Missing character: There is no 直 in font pplr7t!
+Missing character: There is no 接 in font pplr7t!
+Missing character: There is no 标 in font pplr7t!
+Missing character: There is no 注 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
 Missing character: There is no 电 in font pplr7t!
 Missing character: There is no 子 in font pplr7t!
 Missing character: There is no 地 in font pplr7t!
 Missing character: There is no 图 in font pplr7t!
-Missing character: There is no 地 in font pplr7t!
-Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 而 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
 Missing character: There is no 的 in font pplr7t!
-Missing character: There is no 绘 in font pplr7t!
-Missing character: There is no 制 in font pplr7t!
-Missing character: There is no 提 in font pplr7t!
-Missing character: There is no 供 in font pplr7t!
-Missing character: There is no 参 in font pplr7t!
-Missing character: There is no 考 in font pplr7t!
-Missing character: There is no 。 in font pplr7t!
-Missing character: There is no 它 in font pplr7t!
-Missing character: There is no 还 in font pplr7t!
-Missing character: There is no 有 in font pplr7t!
-Missing character: There is no … in font pplr7t!
-Missing character: There is no … in font pplr7t!
-Missing character: There is no 的 in font pplr7t!
-Missing character: There is no 用 in font pplr7t!
-Missing character: There is no 途 in font pplr7t!
-Missing character: There is no 。 in font pplr7t!
-Missing character: There is no 这 in font pplr7t!
-Missing character: There is no 一 in font pplr7t!
-Missing character: There is no 节 in font pplr7t!
-Missing character: There is no 主 in font pplr7t!
-Missing character: There is no 要 in font pplr7t!
-Missing character: There is no 介 in font pplr7t!
-Missing character: There is no 绍 in font pplr7t!
-Missing character: There is no 毕 in font pplr7t!
-Missing character: There is no 设 in font pplr7t!
-Missing character: There is no 项 in font pplr7t!
-Missing character: There is no 目 in font pplr7t!
-Missing character: There is no 的 in font pplr7t!
-Missing character: There is no 背 in font pplr7t!
-Missing character: There is no 景 in font pplr7t!
-Missing character: There is no 。 in font pplr7t!
-Missing character: There is no 给 in font pplr7t!
-Missing character: There is no 出 in font pplr7t!
-Missing character: There is no 了 in font pplr7t!
-Missing character: There is no 什 in font pplr7t!
-Missing character: There is no 么 in font pplr7t!
+Missing character: There is no 不 in font pplr7t!
+Missing character: There is no 行 in font pplr7t!
+Missing character: There is no 因 in font pplr7t!
+Missing character: There is no 此 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 边 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
 Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 感 in font pplr7t!
+Missing character: There is no 兴 in font pplr7t!
+Missing character: There is no 趣 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 象 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 更 in font pplr7t!
+Missing character: There is no 紧 in font pplr7t!
+Missing character: There is no 凑 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 有 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 表 in font pplr7t!
+Missing character: There is no 示 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 因 in font pplr7t!
+Missing character: There is no 此 in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 希 in font pplr7t!
+Missing character: There is no 望 in font pplr7t!
+Missing character: There is no 能 in font pplr7t!
+Missing character: There is no 够 in font pplr7t!
+Missing character: There is no 从 in font pplr7t!
 Missing character: There is no 航 in font pplr7t!
 Missing character: There is no 拍 in font pplr7t!
 Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 获 in font pplr7t!
+Missing character: There is no 取 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 边 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 最 in font pplr7t!
+Missing character: There is no 近 in font pplr7t!
 Missing character: There is no ， in font pplr7t!
-Missing character: There is no 什 in font pplr7t!
-Missing character: There is no 么 in font pplr7t!
-Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 深 in font pplr7t!
+Missing character: There is no 度 in font pplr7t!
+Missing character: There is no 学 in font pplr7t!
+Missing character: There is no 习 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 诸 in font pplr7t!
+Missing character: There is no 如 in font pplr7t!
 Missing character: There is no 图 in font pplr7t!
 Missing character: There is no 像 in font pplr7t!
 Missing character: There is no 分 in font pplr7t!
 Missing character: There is no 割 in font pplr7t!
-Missing character: There is no ， in font pplr7t!
-Missing character: There is no 以 in font pplr7t!
-Missing character: There is no 及 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 象 in font pplr7t!
+Missing character: There is no 检 in font pplr7t!
+Missing character: There is no 测 in font pplr7t!
+Missing character: There is no 等 in font pplr7t!
+Missing character: There is no 许 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 计 in font pplr7t!
+Missing character: There is no 算 in font pplr7t!
+Missing character: There is no 机 in font pplr7t!
+Missing character: There is no 视 in font pplr7t!
+Missing character: There is no 觉 in font pplr7t!
+Missing character: There is no 任 in font pplr7t!
+Missing character: There is no 务 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
 Missing character: There is no 展 in font pplr7t!
 Missing character: There is no 现 in font pplr7t!
+Missing character: There is no 出 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 显 in font pplr7t!
+Missing character: There is no 着 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 成 in font pplr7t!
+Missing character: There is no 就 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 而 in font pplr7t!
+Missing character: There is no 相 in font pplr7t!
+Missing character: There is no 关 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 已 in font pplr7t!
+Missing character: There is no 经 in font pplr7t!
+Missing character: There is no 被 in font pplr7t!
+Missing character: There is no 应 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 航 in font pplr7t!
+Missing character: There is no 拍 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 但 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 些 in font pplr7t!
+Missing character: There is no 传 in font pplr7t!
+Missing character: There is no 统 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 架 in font pplr7t!
+Missing character: There is no 构 in font pplr7t!
+Missing character: There is no 仍 in font pplr7t!
+Missing character: There is no 然 in font pplr7t!
+Missing character: There is no 局 in font pplr7t!
+Missing character: There is no 限 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 常 in font pplr7t!
+Missing character: There is no 规 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 网 in font pplr7t!
+Missing character: There is no 格 in font pplr7t!
+Missing character: There is no 结 in font pplr7t!
+Missing character: There is no 构 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 些 in font pplr7t!
+Missing character: There is no 网 in font pplr7t!
+Missing character: There is no 络 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 僵 in font pplr7t!
+Missing character: There is no 化 in font pplr7t!
+Missing character: There is no 使 in font pplr7t!
+Missing character: There is no 得 in font pplr7t!
+Missing character: There is no 很 in font pplr7t!
+Missing character: There is no 难 in font pplr7t!
+Missing character: There is no 开 in font pplr7t!
+Missing character: There is no 发 in font pplr7t!
+Missing character: There is no 关 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 内 in font pplr7t!
+Missing character: There is no 容 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 高 in font pplr7t!
+Missing character: There is no 级 in font pplr7t!
+Missing character: There is no 先 in font pplr7t!
+Missing character: There is no 验 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 他 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 输 in font pplr7t!
+Missing character: There is no 出 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 结 in font pplr7t!
+Missing character: There is no 果 in font pplr7t!
+Missing character: There is no 仍 in font pplr7t!
+Missing character: There is no 然 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 那 in font pplr7t!
+Missing character: There is no 么 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 如 in font pplr7t!
+Missing character: There is no 何 in font pplr7t!
+Missing character: There is no 快 in font pplr7t!
+Missing character: There is no 速 in font pplr7t!
+Missing character: There is no 地 in font pplr7t!
+Missing character: There is no 从 in font pplr7t!
+Missing character: There is no 航 in font pplr7t!
+Missing character: There is no 拍 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 检 in font pplr7t!
+Missing character: There is no 测 in font pplr7t!
+Missing character: There is no 出 in font pplr7t!
+Missing character: There is no 矢 in font pplr7t!
+Missing character: There is no 量 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 变 in font pplr7t!
+Missing character: There is no 成 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 大 in font pplr7t!
+Missing character: There is no 问 in font pplr7t!
+Missing character: There is no 题 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 总 in font pplr7t!
+Missing character: There is no 之 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 项 in font pplr7t!
+Missing character: There is no 目 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 目 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 为 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 任 in font pplr7t!
+Missing character: There is no 意 in font pplr7t!
+Missing character: There is no 结 in font pplr7t!
+Missing character: There is no 构 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 几 in font pplr7t!
+Missing character: There is no 何 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 状 in font pplr7t!
+Missing character: There is no 开 in font pplr7t!
+Missing character: There is no 发 in font pplr7t!
+Missing character: There is no 新 in font pplr7t!
+Missing character: There is no 颖 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 深 in font pplr7t!
+Missing character: There is no 度 in font pplr7t!
+Missing character: There is no 学 in font pplr7t!
+Missing character: There is no 习 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
 Missing character: There is no 我 in font pplr7t!
 Missing character: There is no 们 in font pplr7t!
-Missing character: There is no 所 in font pplr7t!
-Missing character: There is no 希 in font pplr7t!
-Missing character: There is no 望 in font pplr7t!
+Missing character: There is no 试 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 将 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 象 in font pplr7t!
+Missing character: There is no 拓 in font pplr7t!
+Missing character: There is no 扑 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 状 in font pplr7t!
+Missing character: There is no 引 in font pplr7t!
+Missing character: There is no 入 in font pplr7t!
+Missing character: There is no 深 in font pplr7t!
+Missing character: There is no 度 in font pplr7t!
+Missing character: There is no 学 in font pplr7t!
+Missing character: There is no 习 in font pplr7t!
+Missing character: There is no 技 in font pplr7t!
+Missing character: There is no 术 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 想 in font pplr7t!
+Missing character: There is no 要 in font pplr7t!
+Missing character: There is no 脱 in font pplr7t!
+Missing character: There is no 离 in font pplr7t!
+Missing character: There is no 标 in font pplr7t!
+Missing character: There is no 注 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
 Missing character: There is no 的 in font pplr7t!
-Missing character: There is no 到 in font pplr7t!
+Missing character: There is no 标 in font pplr7t!
+Missing character: There is no 准 in font pplr7t!
+Missing character: There is no 范 in font pplr7t!
+Missing character: There is no 例 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 而 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 直 in font pplr7t!
+Missing character: There is no 接 in font pplr7t!
+Missing character: There is no 利 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 并 in font pplr7t!
+Missing character: There is no 学 in font pplr7t!
+Missing character: There is no 习 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 象 in font pplr7t!
 Missing character: There is no 的 in font pplr7t!
 Missing character: There is no 几 in font pplr7t!
 Missing character: There is no 何 in font pplr7t!
 Missing character: There is no 图 in font pplr7t!
 Missing character: There is no 形 in font pplr7t!
 Missing character: There is no 。 in font pplr7t!
- [1
+Missing character: There is no （ in font pplr7t!
+Missing character: There is no 给 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no ） in font pplr7t!
+Missing character: There is no 给 in font pplr7t!
+Missing character: There is no 定 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 张 in font pplr7t!
+Missing character: There is no 航 in font pplr7t!
+Missing character: There is no 拍 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 为 in font pplr7t!
+Missing character: There is no 航 in font pplr7t!
+Missing character: There is no 拍 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 每 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 房 in font pplr7t!
+Missing character: There is no 屋 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 寻 in font pplr7t!
+Missing character: There is no 找 in font pplr7t!
+Missing character: There is no 它 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 多 in font pplr7t!
+Missing character: There is no 边 in font pplr7t!
+Missing character: There is no 形 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 输 in font pplr7t!
+Missing character: There is no 入 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 什 in font pplr7t!
+Missing character: There is no 么 in font pplr7t!
+Missing character: There is no … in font pplr7t!
+Missing character: There is no … in font pplr7t!
+Missing character: There is no 输 in font pplr7t!
+Missing character: There is no 出 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 什 in font pplr7t!
+Missing character: There is no 么 in font pplr7t!
+Missing character: There is no … in font pplr7t!
+Missing character: There is no … in font pplr7t!
+ [2]
+Missing character: There is no 为 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 解 in font pplr7t!
+Missing character: There is no 决 in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 问 in font pplr7t!
+Missing character: There is no 题 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 本 in font pplr7t!
+Missing character: There is no 文 in font pplr7t!
+Missing character: There is no 提 in font pplr7t!
+Missing character: There is no 出 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 模 in font pplr7t!
+Missing character: There is no 型 in font pplr7t!
+Missing character: There is no 叫 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 它 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 结 in font pplr7t!
+Missing character: There is no 合 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 部 in font pplr7t!
+Missing character: There is no 分 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 产 in font pplr7t!
+Missing character: There is no 物 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 其 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 进 in font pplr7t!
+Missing character: There is no 行 in font pplr7t!
+Missing character: There is no 定 in font pplr7t!
+Missing character: There is no 位 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 即 in font pplr7t!
+Missing character: There is no 检 in font pplr7t!
+Missing character: There is no 测 in font pplr7t!
+Missing character: There is no 图 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 部 in font pplr7t!
+Missing character: There is no 分 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
 
-]) (./2-related.tex [2]
+Overfull \hbox (39.13486pt too wide) in paragraph at lines 46--47
+\OT1/ppl/m/n/10.95 region-based Poly-gonRN-N-Mask R-CNNFPNPolygonRNNFPNRoIPolyg
+onRNNfind
+ []
+
+Missing character: There is no 本 in font pplr7t!
+Missing character: There is no 论 in font pplr7t!
+Missing character: There is no 文 in font pplr7t!
+Missing character: There is no 组 in font pplr7t!
+Missing character: There is no 织 in font pplr7t!
+Missing character: There is no 如 in font pplr7t!
+Missing character: There is no 下 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 首 in font pplr7t!
+Missing character: There is no 先 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 回 in font pplr7t!
+Missing character: There is no 顾 in font pplr7t!
+Missing character: There is no 相 in font pplr7t!
+Missing character: There is no 关 in font pplr7t!
+Missing character: There is no 工 in font pplr7t!
+Missing character: There is no 作 in font pplr7t!
+Missing character: There is no 并 in font pplr7t!
+Missing character: There is no 着 in font pplr7t!
+Missing character: There is no 眼 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 像 in font pplr7t!
+Missing character: There is no 素 in font pplr7t!
+Missing character: There is no 级 in font pplr7t!
+Missing character: There is no 别 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 回 in font pplr7t!
+Missing character: There is no 归 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no （ in font pplr7t!
+Missing character: There is no ） in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 并 in font pplr7t!
+Missing character: There is no 且 in font pplr7t!
+Missing character: There is no 看 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 下 in font pplr7t!
+Missing character: There is no 最 in font pplr7t!
+Missing character: There is no 近 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 新 in font pplr7t!
+Missing character: There is no 模 in font pplr7t!
+Missing character: There is no 型 in font pplr7t!
+Missing character: There is no — in font pplr7t!
+Missing character: There is no — in font pplr7t!
+Missing character: There is no 和 in font pplr7t!
+Missing character: There is no 单 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 第 in font pplr7t!
+Missing character: There is no 章 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 两 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 新 in font pplr7t!
+Missing character: There is no 模 in font pplr7t!
+Missing character: There is no 型 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 具 in font pplr7t!
+Missing character: There is no 体 in font pplr7t!
+Missing character: There is no 架 in font pplr7t!
+Missing character: There is no 构 in font pplr7t!
+Missing character: There is no 将 in font pplr7t!
+Missing character: There is no 会 in font pplr7t!
+Missing character: There is no 被 in font pplr7t!
+Missing character: There is no 讨 in font pplr7t!
+Missing character: There is no 论 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 成 in font pplr7t!
+Missing character: There is no 功 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 象 in font pplr7t!
+Missing character: There is no 检 in font pplr7t!
+Missing character: There is no 测 in font pplr7t!
+Missing character: There is no 算 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 将 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 第 in font pplr7t!
+Missing character: There is no 章 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 解 in font pplr7t!
+Missing character: There is no 释 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 因 in font pplr7t!
+Missing character: There is no 为 in font pplr7t!
+Missing character: There is no 它 in font pplr7t!
+Missing character: There is no 作 in font pplr7t!
+Missing character: There is no 为 in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 第 in font pplr7t!
+Missing character: There is no 章 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 描 in font pplr7t!
+Missing character: There is no 述 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 第 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 种 in font pplr7t!
+Missing character: There is no 建 in font pplr7t!
+Missing character: There is no 筑 in font pplr7t!
+Missing character: There is no 物 in font pplr7t!
+Missing character: There is no 分 in font pplr7t!
+Missing character: There is no 割 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 基 in font pplr7t!
+Missing character: There is no 础 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 第 in font pplr7t!
+Missing character: There is no 二 in font pplr7t!
+Missing character: There is no 种 in font pplr7t!
+Missing character: There is no 建 in font pplr7t!
+Missing character: There is no 筑 in font pplr7t!
+Missing character: There is no 物 in font pplr7t!
+Missing character: There is no 分 in font pplr7t!
+Missing character: There is no 割 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 基 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 建 in font pplr7t!
+Missing character: There is no 筑 in font pplr7t!
+Missing character: There is no 物 in font pplr7t!
+Missing character: There is no 角 in font pplr7t!
+Missing character: There is no 点 in font pplr7t!
+Missing character: There is no 提 in font pplr7t!
+Missing character: There is no 取 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 其 in font pplr7t!
+Missing character: There is no 后 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 连 in font pplr7t!
+Missing character: There is no 体 in font pplr7t!
+Missing character: There is no 网 in font pplr7t!
+Missing character: There is no 络 in font pplr7t!
+Missing character: There is no 来 in font pplr7t!
+Missing character: There is no 检 in font pplr7t!
+Missing character: There is no 测 in font pplr7t!
+Missing character: There is no 属 in font pplr7t!
+Missing character: There is no 于 in font pplr7t!
+Missing character: There is no 同 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 建 in font pplr7t!
+Missing character: There is no 筑 in font pplr7t!
+Missing character: There is no 物 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 匹 in font pplr7t!
+Missing character: There is no 配 in font pplr7t!
+Missing character: There is no 角 in font pplr7t!
+Missing character: There is no 落 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 个 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 描 in font pplr7t!
+Missing character: There is no 述 in font pplr7t!
+Missing character: There is no 可 in font pplr7t!
+Missing character: There is no 以 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 第 in font pplr7t!
+Missing character: There is no 章 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 找 in font pplr7t!
+Missing character: There is no 到 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 我 in font pplr7t!
+Missing character: There is no 们 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 第 in font pplr7t!
+Missing character: There is no 章 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 这 in font pplr7t!
+Missing character: There is no 两 in font pplr7t!
+Missing character: There is no 种 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 法 in font pplr7t!
+Missing character: There is no 进 in font pplr7t!
+Missing character: There is no 行 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 评 in font pplr7t!
+Missing character: There is no 估 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+Missing character: There is no 在 in font pplr7t!
+Missing character: There is no 上 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 章 in font pplr7t!
+Missing character: There is no 中 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 结 in font pplr7t!
+Missing character: There is no 论 in font pplr7t!
+Missing character: There is no 进 in font pplr7t!
+Missing character: There is no 行 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 描 in font pplr7t!
+Missing character: There is no 述 in font pplr7t!
+Missing character: There is no 并 in font pplr7t!
+Missing character: There is no 对 in font pplr7t!
+Missing character: There is no 未 in font pplr7t!
+Missing character: There is no 来 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 工 in font pplr7t!
+Missing character: There is no 作 in font pplr7t!
+Missing character: There is no 进 in font pplr7t!
+Missing character: There is no 行 in font pplr7t!
+Missing character: There is no 了 in font pplr7t!
+Missing character: There is no 讨 in font pplr7t!
+Missing character: There is no 论 in font pplr7t!
+Missing character: There is no 。 in font pplr7t!
+) (./2-related.tex [3] [4
+
+]
 Overfull \hbox (1.2367pt too wide) in paragraph at lines 3--4
 \OT1/ppl/m/n/10.95 In this chap-ter, some re-lated work are il-lus-trated in de
 -tail. Sec-tion [][]2.1[][] presents
  []
 
-[3
-
-] (./fig/2-00.tex
+[5] (./fig/2-00.tex
 File: fig/2-00-0.png Graphic file (type bmp)
 <fig/2-00-0.png>
 File: fig/2-00-1.png Graphic file (type bmp)
@@ -1239,7 +2002,7 @@ File: fig/2-00-1.png Graphic file (type bmp)
 )
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [4]
+ [6]
 (./fig/2-01.tex
 File: fig/2-01-0.png Graphic file (type bmp)
 <fig/2-01-0.png>
@@ -1250,7 +2013,7 @@ File: fig/2-01-2.pdf Graphic file (type pdf)
 )
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [5]
+ [7]
 (./fig/2-02.tex
 File: fig/2-02.pdf Graphic file (type pdf)
 <use fig/2-02.pdf>
@@ -1260,7 +2023,7 @@ File: fig/2-03.pdf Graphic file (type pdf)
 )
 Underfull \vbox (badness 7221) has occurred while \output is active []
 
- [6]
+ [8]
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
 (Font)              scaled to size 9.37807pt on input line 69.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
@@ -1274,10 +2037,10 @@ LaTeX Font Info:    Font shape `U/msb/m/n' will be
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
 (Font)              scaled to size 5.21004pt on input line 69.
 )
-(./3-model.tex [7] [8] (./fig/3-00.tex
+(./3-model.tex [9] [10] (./fig/3-00.tex
 File: fig/3-00.pdf Graphic file (type pdf)
 <use fig/3-00.pdf>
-) [9
+) [11
 
 ] (./fig/3-01.tex
 File: fig/3-01.pdf Graphic file (type pdf)
@@ -1298,7 +2061,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 ) (./fig/3-03.tex
 File: fig/3-03.pdf Graphic file (type pdf)
 <use fig/3-03.pdf>
-) [10] [11] [12]
+) [12] [13] [14]
 Overfull \hbox (2.24448pt too wide) detected at line 53
 [][] [] \OT1/zplm/m/n/10.95 = [] \OMS/zplm/m/n/10.95 ^^C \OML/zplm/m/it/10.95 h
 [] \OT1/zplm/m/n/10.95 + [] \OMS/zplm/m/n/10.95 ^^C \OML/zplm/m/it/10.95 x[] \O
@@ -1311,10 +2074,10 @@ n/10.95 ^^C \OML/zplm/m/it/10.95 x[] \OT1/zplm/m/n/10.95 + \OML/zplm/m/it/10.95
 (./fig/3-04.tex
 File: fig/3-04.pdf Graphic file (type pdf)
 <use fig/3-04.pdf>
-) [13] (./fig/3-05.tex
+) [15] (./fig/3-05.tex
 File: fig/3-05.pdf Graphic file (type pdf)
 <use fig/3-05.pdf>
-) [14] [15] (./fig/3-06.tex
+) [16] [17] (./fig/3-06.tex
 File: fig/3-06.pdf Graphic file (type pdf)
 <use fig/3-06.pdf>
 )
@@ -1344,24 +2107,71 @@ File: fig/3-08-3.pdf Graphic file (type pdf)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [16] [17] [18]
-LaTeX Font Info:    Try loading font information for U+fplmbb on input line 187
+) [18] [19] [20] (./fig/3-09.tex
+File: fig/3-09.pdf Graphic file (type pdf)
+<use fig/3-09.pdf>
+)
+LaTeX Font Info:    Try loading font information for U+fplmbb on input line 189
 .
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ufplmbb.fd
 File: ufplmbb.fd 2003/10/30 Fontinst v1.914 font definitions for U/fplmbb.
 )
-(./fig/3-09.tex
-File: fig/3-09.pdf Graphic file (type pdf)
-<use fig/3-09.pdf>
-) [19]
-Missing character: There is no ‘ in font pplr7t!
-Missing character: There is no ’ in font pplr7t!
+(./fig/3-10.tex
+File: fig/3-10.pdf Graphic file (type pdf)
+<use fig/3-10.pdf>
+) [21] (./fig/3-11.tex
+File: fig/3-11.pdf Graphic file (type pdf)
+<use fig/3-11.pdf>
+) (./fig/3-12.tex
+File: fig/3-12.pdf Graphic file (type pdf)
+<use fig/3-12.pdf>
 
-Underfull \vbox (badness 1412) has occurred while \output is active []
 
- [20])
-(./4-exp.tex [21] [22
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [22] (./fig/3-13.tex
+File: fig/3-13.pdf Graphic file (type pdf)
+<use fig/3-13.pdf>
+)
+Overfull \hbox (0.34985pt too wide) in paragraph at lines 232--233
+\OT1/ppl/m/n/10.95 On the other hand, the to-tal num-ber of an-chors $\OML/zplm
+/m/it/10.95 n[]$ \OT1/ppl/m/n/10.95 has an up-per bound $\OT1/zplm/m/n/10.95 ^^
+B(\OML/zplm/m/it/10.95 wh\OT1/zplm/m/n/10.95 )$\OT1/ppl/m/n/10.95 ,
+ []
+
+[23] (./fig/3-14.tex
+File: fig/3-14.pdf Graphic file (type pdf)
+<use fig/3-14.pdf>
+)
+Overfull \hbox (1.25882pt too wide) in paragraph at lines 246--247
+\OT1/ppl/m/n/10.95 In this sec-tion, the fi-nal model, R-PolygonRNN (Region-bas
+ed Poly-gonRNN),
+ []
+
+[24] (./fig/3-15.tex
+File: fig/3-15.pdf Graphic file (type pdf)
+<use fig/3-15.pdf>
+) (./fig/3-16.tex
+File: fig/3-16.pdf Graphic file (type pdf)
+<use fig/3-16.pdf>
+ [25])
+Missing character: There is no ， in font pplr7t!
+ [26]
+Missing character: There is no ​ in font pplr7t!
+Missing character: There is no ​ in font pplr7t!
+Missing character: There is no ​ in font pplr7t!
+Missing character: There is no ​ in font pplr7t!
+
+Overfull \hbox (13.1938pt too wide) in paragraph at lines 272--273
+\OT1/ppl/m/n/10.95 tures to the RNN part of Poly-gonRNN. Fig-ure [][]3.18[][] s
+hows R-PolygonRNNmodel
+ []
+
+(./fig/3-17.tex
+File: fig/3-17.pdf Graphic file (type pdf)
+<use fig/3-17.pdf>
+)) (./4-exp.tex [27] [28
 
 ]
 Overfull \hbox (0.42546pt too wide) in paragraph at lines 15--16
@@ -1369,14 +2179,14 @@ Overfull \hbox (0.42546pt too wide) in paragraph at lines 15--16
 at im-ple-ments maps as high-
  []
 
-[23] (./fig/4-00.tex
+[29] (./fig/4-00.tex
 File: fig/4-00-0.png Graphic file (type bmp)
 <fig/4-00-0.png>
 File: fig/4-00-1.png Graphic file (type bmp)
 <fig/4-00-1.png>
 File: fig/4-00-2.png Graphic file (type bmp)
 <fig/4-00-2.png>
-) [24] (./fig/4-01.tex
+) [30] (./fig/4-01.tex
 File: fig/4-01-0.png Graphic file (type bmp)
 <fig/4-01-0.png>
 File: fig/4-01-1.png Graphic file (type bmp)
@@ -1406,7 +2216,7 @@ File: fig/4-02-7.png Graphic file (type bmp)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [25] (./fig/4-03.tex
+) [31] (./fig/4-03.tex
 File: fig/4-03-0.png Graphic file (type bmp)
 <fig/4-03-0.png>
 File: fig/4-03-1.png Graphic file (type bmp)
@@ -1427,7 +2237,7 @@ File: fig/4-03-7.png Graphic file (type bmp)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [26] [27] (./fig/4-04.tex
+) [32] [33] (./fig/4-04.tex
 File: fig/4-04-0.png Graphic file (type bmp)
 <fig/4-04-0.png>
 File: fig/4-04-1.png Graphic file (type bmp)
@@ -1450,7 +2260,7 @@ Overfull \hbox (4.24834pt too wide) in paragraph at lines 88--89
 ift ad-just-ment method.
  []
 
-[28]
+[34]
 Missing character: There is no 而 in font pplr7t!
 Missing character: There is no 且 in font pplr7t!
 Missing character: There is no 独 in font pplr7t!
@@ -1494,23 +2304,84 @@ Missing character: There is no 。 in font pplr7t!
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <10.95> not available
 (Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 142.
 
-) (./5-future.tex [29] [30
-
-] [31]) (./introduction.tex [32]
-
-LaTeX Warning: Citation `bringhurst1996ets' on page 33 undefined on input line 
-32.
-
-[33
+) (./5-future.tex [35] [36
 
 ]
+Missing character: There is no 道 in font pplr7t!
+Missing character: There is no 路 in font pplr7t!
+Missing character: There is no 检 in font pplr7t!
+Missing character: There is no 测 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 提 in font pplr7t!
+Missing character: There is no 升 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 比 in font pplr7t!
+Missing character: There is no 如 in font pplr7t!
+Missing character: There is no 房 in font pplr7t!
+Missing character: There is no 屋 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 合 in font pplr7t!
+Missing character: There is no 并 in font pplr7t!
+Missing character: There is no 问 in font pplr7t!
+Missing character: There is no 题 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 还 in font pplr7t!
+Missing character: There is no 有 in font pplr7t!
+Missing character: There is no 如 in font pplr7t!
+Missing character: There is no 何 in font pplr7t!
+Missing character: There is no 从 in font pplr7t!
+Missing character: There is no 单 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 源 in font pplr7t!
+Missing character: There is no 说 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 更 in font pplr7t!
+Missing character: There is no 准 in font pplr7t!
+Missing character: There is no 确 in font pplr7t!
+Missing character: There is no 采 in font pplr7t!
+Missing character: There is no 用 in font pplr7t!
+Missing character: There is no 训 in font pplr7t!
+Missing character: There is no 练 in font pplr7t!
+Missing character: There is no 方 in font pplr7t!
+Missing character: There is no 式 in font pplr7t!
+Missing character: There is no 而 in font pplr7t!
+Missing character: There is no 不 in font pplr7t!
+Missing character: There is no 是 in font pplr7t!
+Missing character: There is no 一 in font pplr7t!
+Missing character: There is no 起 in font pplr7t!
+Missing character: There is no 训 in font pplr7t!
+Missing character: There is no 练 in font pplr7t!
+Missing character: There is no 模 in font pplr7t!
+Missing character: There is no 型 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 泛 in font pplr7t!
+Missing character: There is no 化 in font pplr7t!
+Missing character: There is no ， in font pplr7t!
+Missing character: There is no 不 in font pplr7t!
+Missing character: There is no 仅 in font pplr7t!
+Missing character: There is no 可 in font pplr7t!
+Missing character: There is no 以 in font pplr7t!
+Missing character: There is no 做 in font pplr7t!
+Missing character: There is no 别 in font pplr7t!
+Missing character: There is no 的 in font pplr7t!
+Missing character: There is no 东 in font pplr7t!
+Missing character: There is no 西 in font pplr7t!
+) (./introduction.tex [37] [38
+
+]
+
+LaTeX Warning: Citation `bringhurst1996ets' on page 39 undefined on input line 
+32.
+
+[39]
 Package hyperref Info: bookmark level for unknown theorem defaults to 0 on inpu
 t line 73.
 Package hyperref Info: bookmark level for unknown proof defaults to 0 on input 
 line 77.
 Package hyperref Info: bookmark level for unknown proposition defaults to 0 on 
 input line 97.
-) (./rules.tex [34] [35] [36
+) (./rules.tex [40] [41] [42
 
 ]
 Missing character: There is no ö in font pplr7t!
@@ -1520,7 +2391,7 @@ Missing character: There is no § in font pplr7t!
 Missing character: There is no § in font pplr7t!
 Package hyperref Info: bookmark level for unknown Rule defaults to 0 on input l
 ine 21.
- [37] [38]
+ [43] [44]
 Missing character: There is no ä in font pplri7t!
 Missing character: There is no ä in font pplri7t!
 Missing character: There is no ä in font pplri7t!
@@ -1531,7 +2402,7 @@ Overfull \hbox (4.38068pt too wide) in paragraph at lines 178--181
 o-rithm, which was found by the fa-mous math-
  []
 
-[39] [40]
+[45] [46]
 Missing character: There is no ü in font pplri7t!
 Missing character: There is no ä in font pplri7t!
 
@@ -1539,17 +2410,17 @@ Overfull \hbox (1.91208pt too wide) in paragraph at lines 264--278
  [][] 
  []
 
-) (./typography.tex [41] [42
+) (./typography.tex [47] [48
 
 ]
 Missing character: There is no è in font pplri7t!
- [43]
+ [49]
 Overfull \hbox (4.5436pt too wide) in paragraph at lines 94--100
 \OT1/ppl/m/n/10.95 or ques-tion mark is sentence-ending, ex-cept for pe-ri-ods 
 pre-ceded by an upper-
  []
 
-[44]
+[50]
 Underfull \hbox (badness 4726) detected at line 114
 \OT1/ppl/m/n/10.95 Prof. Dr. A. Steger is a member of CADMO. If you
  []
@@ -1560,10 +2431,10 @@ Overfull \hbox (7.97166pt too wide) in paragraph at lines 152--157
 /m/n/10.95 we only changed the shape to small caps. Chang-
  []
 
-[45]
+[51]
 LaTeX Font Info:    Font shape `OT1/lmtt/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/lmtt/b/n' tried instead on input line 218.
- [46]) (./appendix.tex [47] [48
+ [52]) (./appendix.tex [53] [54
 
 ]
 Overfull \hbox (534.7113pt too wide) in paragraph at lines 6--8
@@ -1576,11 +2447,14 @@ Overfull \hbox (458.82715pt too wide) in paragraph at lines 8--9
 ] 
  []
 
-) [49] [50
+) [55] [56
 
 ]
 No file thesis.bbl.
-(./thesis.lof)
+(./thesis.lof
+Underfull \vbox (badness 1831) has occurred while \output is active []
+
+ [57])
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf>
 File: declaration-originality.pdf Graphic file (type pdf)
@@ -1589,14 +2463,15 @@ File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
- [51]
+
+[58]
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
- [52]
+ [59]
 \tf@thm=\write5
 \openout5 = `thesis.thm'.
 
@@ -1617,12 +2492,12 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 19841 strings out of 492998
- 281832 string characters out of 6134492
- 446149 words of memory out of 5000000
- 23357 multiletter control sequences out of 15000+600000
+ 19961 strings out of 492998
+ 283595 string characters out of 6134492
+ 448163 words of memory out of 5000000
+ 23442 multiletter control sequences out of 15000+600000
  63542 words of font info for 113 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  62i,19n,122p,1322b,1751s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on thesis.pdf (60 pages).
+Output written on thesis.pdf (67 pages).
