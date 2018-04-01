@@ -16,13 +16,14 @@ Nowadays, many buildings are constantly being updated in real life and many land
 
 \subsection{Image Segmentation}\label{imgseg}
 
-In computer vision, image segmentation is the process of partitioning a digital image into multiple segments (sets of pixels, also known as super-pixels). The goal of segmentation is to simplify and change the representation of an image into something that is more meaningful and easier to analyze (from Wikipedia). In fact, image segmentation is a process of labelling each pixel in an image. Pixels with the same label are generally similar in the metric of certain visual characteristics, such as color, brightness or texture. Adjacent areas are usually very different under this metric.
+In computer vision, image segmentation is the process of partitioning a digital image into multiple segments (sets of pixels, also known as super-pixels). The goal of segmentation is to simplify and change the representation of an image into something that is more meaningful and easier to analyze (from Wikipedia).
 
-Specifically, binary image segmentation is to label each pixel as 0 or 1. Figure \ref{fig:eg01imgseg} shows an example of binary image segmentation, where the original image is basically segmented as foreground and background.
+In fact, image segmentation is a process of labelling each pixel in an image. Pixels with the same label are generally similar in the metric of certain visual characteristics, such as color, brightness or texture. Adjacent areas are usually very different under this metric. Specifically, for segmentation in aerial images, usually what we do is to label each pixel as buildings, roads or background. Figure \ref{fig:egarlimgseg} shows an example.
+
+\input{fig/1-01}
 
 传统的图像分割技术是为图像中的每一个像素打label。如用0表示，1表示，2表示。航拍图像的图像分割指的是在航拍图像中提取出房屋、道路。（给例子）然而这样的表示方式有很多的局限性——如无法对房屋进行定位、存储上对每个像素，很废空间什么的。
 
-\input{fig/1-01}
 
 \subsection{Geometrical Shape}\label{geosha}
 

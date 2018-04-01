@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  31 MAR 2018 23:34
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  1 APR 2018 13:17
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1102,7 +1102,18 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 ) [1
 
-]
+] (./fig/1-01.tex
+File: fig/1-01-0.png Graphic file (type bmp)
+<fig/1-01-0.png>
+File: fig/1-01-1.pdf Graphic file (type pdf)
+<use fig/1-01-1.pdf>
+File: fig/1-01-2.pdf Graphic file (type pdf)
+<use fig/1-01-2.pdf>
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+)
 Missing character: There is no 传 in font pplr7t!
 Missing character: There is no 统 in font pplr7t!
 Missing character: There is no 的 in font pplr7t!
@@ -1214,16 +1225,6 @@ Missing character: There is no 什 in font pplr7t!
 Missing character: There is no 么 in font pplr7t!
 Missing character: There is no 的 in font pplr7t!
 Missing character: There is no 。 in font pplr7t!
- (./fig/1-01.tex
-File: fig/1-01-0.jpg Graphic file (type bmp)
-<fig/1-01-0.jpg>
-File: fig/1-01-1.pdf Graphic file (type pdf)
-<use fig/1-01-1.pdf>
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-)
 Missing character: There is no 我 in font pplr7t!
 Missing character: There is no 们 in font pplr7t!
 Missing character: There is no 想 in font pplr7t!
@@ -1753,7 +1754,7 @@ Missing character: There is no 用 in font pplr7t!
 Missing character: There is no 于 in font pplr7t!
 Missing character: There is no 。 in font pplr7t!
 
-Overfull \hbox (39.13486pt too wide) in paragraph at lines 46--47
+Overfull \hbox (39.13486pt too wide) in paragraph at lines 47--48
 \OT1/ppl/m/n/10.95 region-based Poly-gonRN-N-Mask R-CNNFPNPolygonRNNFPNRoIPolyg
 onRNNfind
  []
@@ -2492,10 +2493,10 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 19961 strings out of 492998
- 283595 string characters out of 6134492
- 448163 words of memory out of 5000000
- 23442 multiletter control sequences out of 15000+600000
+ 19966 strings out of 492998
+ 283705 string characters out of 6134492
+ 448261 words of memory out of 5000000
+ 23447 multiletter control sequences out of 15000+600000
  63542 words of font info for 113 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  62i,19n,122p,1322b,1751s stack positions out of 5000i,500n,10000p,200000b,80000s

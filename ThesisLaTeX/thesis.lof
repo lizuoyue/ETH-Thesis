@@ -3,9 +3,10 @@
 \contentsline {figure}{\numberline {1.1}{\ignorespaces Example of two satellite images}}{2}{figure.1.1}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces an area of Zurich}}{2}{figure.1.1}
 \contentsline {subfigure}{\numberline {(b)}{\ignorespaces an area of Chicago}}{2}{figure.1.1}
-\contentsline {figure}{\numberline {1.2}{\ignorespaces Example of binary image segmentation}}{3}{figure.1.2}
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Example of segmentation in aerial image.}}{3}{figure.1.2}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces original image}}{3}{figure.1.2}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces image after segmentation}}{3}{figure.1.2}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces segmentation result}}{3}{figure.1.2}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces alpha composition}}{3}{figure.1.2}
 \addvspace {10pt}
 \contentsline {figure}{\numberline {2.1}{\ignorespaces Example outputs of two previous theses}}{6}{figure.2.1}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces pixel-wise labelled mask}}{6}{figure.2.1}
