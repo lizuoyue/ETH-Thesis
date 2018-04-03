@@ -89,55 +89,118 @@ Based on these conclusions, we propose a brute force shift adjustment method. Br
 
 \section{Implementation Details}\label{impdet}
 
-\subsection{Configuration}\label{config}
+In this section, several implementation details are given in order to the replicate the model in the future if needed. Subsection \label{datainfo} gives information and some notes of the dataset. Subsection \ref{config} gives the basic configuration of the model. Subsection \ref{trnphs} and \ref{prdphs} focus on the training and prediction phase respectively.
 
-number of layers
-LSTM
-polygon anticlockwise
-remove point in a line
+\subsection{Dataset Information}\label{datainfo}
 
-\subsection{Training}
+The dataset consists of two cities, Zurich and Chicago, including all the buildings in the range shown in table \ref{tab:bldrange}.
 
-Furthermore, buildings around the edges of areas are typically ignored 
+\begin{table}[!h]
+	\centering
+	\caption[Sampling range of buildings in Zurich and Chicago]{Sampling range of buildings in Zurich and Chicago.}
+	\label{tab:bldrange}
+	\begin{tabular}{l|l|l}
+	\hline
+	City & Zurich & Chicago \\ \hline
+	East Boundary & E $8.4092916^\circ$ & W $87.8039744^\circ$ \\
+	South Boundary & N $47.2879518^\circ$ & N $41.8799477^\circ$ \\
+	West Boundary & E $8.6729490^\circ$ & W $87.6721554^\circ$ \\
+	North Boundary & N $47.4664863^\circ$ & N $41.97799394^\circ$ \\
+	\hline
+	Number of Buildings & 96,573 & 228,074 \\
+	\hline
+	\end{tabular}
+\end{table}
 
-more likely to be incomplete. In this case, the polygon would be clipped by the edges, resulting in new vertices, which can be very hard to compute.
-$$(figure placeholder)$$
+Note that buildings with more than 20 or less than 4 vertices are excluded. The building images are all squares but in different sizes, and include paddings. All polygons are set to be clockwise, and in each polygon, three consecutive vertices cannot be collinear. If so, the second vertex is removed.
 
-Although buildings can extract from areas
+Aerial images are taken based on the information shown in table \ref{tab:arerange}.
 
-Therefore, in this project, two different kinds of ground truth dataset are collected separately.
-而且独立可以保证训练时的batchsize一致，如果每次训练的Building从area提取，可能会导致每次训练PolygonRNN的batchsize不一致。
+\begin{table}[!h]
+	\centering
+	\caption[Sampling range of areas in Zurich and Chicago]{Sampling range of areas in Zurich and Chicago.}
+	\label{tab:arerange}
+	\begin{tabular}{l|l|l}
+	\hline
+	City & Zurich & Chicago \\ \hline
+	Center Longitude & E $8.5468221^\circ$ & W $87.7380649^\circ$ \\
+	Center Latitude & N $47.3768587^\circ$ & N $41.9289708^\circ$ \\
+	Step Longitude & $4.023094^\circ\times10^{-4}$ & $4.469772^\circ\times10^{-4}$ \\
+	Step Latitude & $2.724221^\circ\times10^{-4}$ & $3.324594^\circ\times10^{-4}$ \\
+	Horizontal Step Range & (-144, 144) & (-144, 144) \\
+	Vertical Step Range & (-144, 144) & (-144, 144) \\
+	Zoom Level & 19 & 20 \\
+	Scale & 1 & 1 \\
+	Image Size & (600, 600) & (600, 600) \\
+	\hline
+	Number of Areas & 57,741 & 77,716 \\
+	\hline
+	\end{tabular}
+\end{table}
 
-\subsection{Prediction}
+Note that areas without any buildings are excluded. Besides, there is an overlap between neighboring images because each building is required to appear completely at least once within all area images. For example, in figure \ref{fig:egarea}, for the incomplete buildings locate near the image top edge, we can find their complete shapes in its northern neighboring area image.
 
-Beam search
+\subsection{Model Configuration}\label{config}
+
+Table \ref{tab:configpara} shows the parameters used in our model.
+
+\begin{table}[!h]
+	\centering
+	\caption[Configuration parameters.]{Configuration parameters}
+	\label{tab:configpara}
+	\begin{tabular}{l|l}
+	\hline
+	Item & Value \\
+	\hline
+	Area Image Resize & (256, 256) \\
+	Building Image Resize & (224, 224) \\
+	Resolution of Output & (28, 28) \\
+	\hline
+	RNN Max Sequence Length & 20 \\
+	RNN Number of Layers & 3 \\
+	LSTM Number of Output Channels & (32, 16, 8) \\
+	\hline
+	Number of Layers of Feature Pyramid & 4 \\
+	Anchor Scale & (16, 32, 64, 128) \\
+	Anchor Shapes & (1:4, 1:2, 1:1, 2:1, 4:1) \\
+	Feature Shapes & ($64\times64$, $32\times32$, $16\times16$, $8\times8$) \\
+	Feature Stride & (4, 8, 16, 32) \\
+	\hline
+	\end{tabular}
+\end{table}
+
+\subsection{Training Phase}\label{trnphs}
+
+Table \ref{tab:trnphs} shows the configuration during the training phase of the model.
+
+\begin{table}[!h]
+	\centering
+	\caption[Configuration during training phase.]{Configuration during training phase}
+	\label{tab:trnphs}
+	\begin{tabular}{l|l}
+	\hline
+	Item & Value \\
+	\hline
+	Optimizer & Adam \\
+	Learning Rate & $10^{-4}$ \\
+	Area Batch Size for FPN & 4 \\
+	Building Batch Size for PolygonRNN & 12 \\
+	\hline
+	\end{tabular}
+\end{table}
+
+Furthermore, buildings near the edges of area images are typically ignored when training since they are more likely to be incomplete. In this case, the polygon would be clipped by the edges, resulting in new vertices, which can be very hard to compute. Therefore, in this project, two different kinds of ground truth dataset are collected separately, which means that in a specific round of training, the buildings come from the dataset instead of patches from area image.  Training in this way can keep the batch size of buildings unchanged.
+
+\subsection{Prediction Phase}\label{prdphs}
+
+In the prediction phase, the beam search algorithm is introduced. It is a heuristic graph search algorithm, which is usually used when the solution space of a graph is relatively large. In order to reduce the space and time occupied by the search, at each step of depth expansion, some poor quality knots are cut off, and higher quality nodes are kept. This process can significantly reduce space consumption and improve time efficiency, but the disadvantage is that there may be potentially optimal solutions discarded. Therefore, the search result is not necessarily the optimal solution. In beam search, the beam width refers to the number of nodes to be kept and in our project, the beam width is set to be 6. Figure \ref{fig:egbmsrch} shows a single step of the beam search algorithm with beam width 3.
+
+\input{fig/4-05}
 
 \section{Experiment Results}\label{expres}
 
-Dummy text.
-
 \subsection{Single Building Segmentation}
-
-Dummy text.
 
 \subsection{Buildings Localization}
 
-Dummy text.
-
 \subsection{R-PolygonRNN}
-
-Beam search
-
-
-\subsubsection{Example Subsubsection}
-
-Dummy text.
-
-\paragraph{Example Paragraph}
-
-Dummy text.
-
-\subparagraph{Example Subparagraph}
-
-Dummy text.
-

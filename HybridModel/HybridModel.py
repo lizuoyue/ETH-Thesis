@@ -11,7 +11,7 @@ from UtilityBoxAnchor import *
 config = Config()
 
 class HybridModel(object):
-	def __init__(self, max_num_vertices, lstm_out_channel, v_out_res, two_step = False, roialign = False):
+	def __init__(self, max_num_vertices, lstm_out_channel, v_out_res, two_step = False):
 		"""
 			max_num_vertices  : scalar
 			lstm_out_channel  : list of int numbers
@@ -26,7 +26,6 @@ class HybridModel(object):
 		self.v_out_ncol       = self.v_out_res[1]
 		self.res_num          = self.v_out_nrow * self.v_out_ncol
 		self.two_step         = two_step
-		self.roialign         = roialign
 
 		# FPN parameters
 		self.anchors          = generatePyramidAnchors(

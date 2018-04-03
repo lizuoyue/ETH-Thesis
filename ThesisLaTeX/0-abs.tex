@@ -1,13 +1,30 @@
 \begin{abstract}
-	\addcontentsline{toc}{chapter}{Abstract}
-	This example thesis briefly shows the main features of our thesis
-	style, and how to use it for your purposes.
+\addcontentsline{toc}{chapter}{Abstract}
+Deep learning methods have recently demonstrated remarkable achievements on image segmentation. However, their architectures are still limited to pixel-wise labeling, which makes it hard to exploit high-level topology.
+
+The goal of this project is to develop novel deep learning architectures for exploiting geometrical shapes of arbitrary structure. We want to depart from the standard paradigm that labels pixels but instead directly exploit and learn the geometry of the objects. In practical applications, we use dataset of aerial images, and aiming at extracting buildings' polygon shapes.
+
+Two recent models, PolygonRNN and Mask R-CNN, draw our attention. Given the object bounding box, the former one can extract the geometrical shape of a single object within the box. The latter one integrates multi-target detection, classification and segmentation. Since our goal can be divided into two parts, objects detection and geometrical shapes segmentation, the basic idea of the proposed solution would utilize these two models in two steps.
+
+Specifically, our proposed model, \modelnameshort\ (\modelnamelong) is the integration of FPN (Feature Pyramid Network) part in Mask R-CNN, and PolygonRNN. The model has three different versions, the two-step version, hybrid version and hybrid version with RoIAlign. The model can give multiple bounding boxes for each buildings within an satellite image, and for each bounding box, it outputs the polygon of the building.
+
+Experiments show that (XXX).
+
 \end{abstract}
 
 \newpage
 
 \renewcommand{\abstractname}{Acknowledgment}
 \begin{abstract}
-	\addcontentsline{toc}{chapter}{Acknowledgment}
-	Thanks Mum!
+\addcontentsline{toc}{chapter}{Acknowledgment}
+Foremost, I would like to express my sincere gratitude to Dr. Aurelien Lucchi and Dr. Jan Dirk Wegner for supervising my Master's thesis project, supporting me continuously and contributing many useful ideas. Their guidance helped me in all the time of discussing project and writing thesis, and I have learned a lot in the field of object detection and geometrical shape segmentation.
+
+I would also like to thank Prof. Thomas Hofmann for providing me with the opportunity of this interesting project, and suggestions about beam search. I would say doing Master's thesis project at Data Analytics Lab is an unforgettable experience for me.
+
+Besides my supervisors, I would like to thank Tianhao Wei, a junior to me at Zhejiang University, for giving me many suggestions for the implementation details about PolygonRNN.
+
+My sincere thanks also goes to my friends, Jingxuan He, Xiaojuan Wang, Canxi Chen, Jie Huang, Junlin Yao, and Renfei Liu, for all their helps, supports and companionship.
+
+Last but not the least, I would like to thank my parents Haiyan Dai and Fasheng Li, for their spiritual supports and understandings throughout my studying life in Switzerland.
+
 \end{abstract}

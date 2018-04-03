@@ -16,39 +16,43 @@ Nowadays, many buildings are constantly being updated in real life and many land
 
 \subsection{Image Segmentation}\label{imgseg}
 
-In computer vision, image segmentation is the process of partitioning a digital image into multiple segments (sets of pixels, also known as super-pixels). The goal of segmentation is to simplify and change the representation of an image into something that is more meaningful and easier to analyze (from Wikipedia).
-
-In fact, image segmentation is a process of labelling each pixel in an image. Pixels with the same label are generally similar in the metric of certain visual characteristics, such as color, brightness or texture. Adjacent areas are usually very different under this metric. Specifically, for segmentation in aerial images, usually what we do is to label each pixel as buildings, roads or background. Figure \ref{fig:egarlimgseg} shows an example.
+In computer vision, image segmentation is the process of partitioning a digital image into multiple segments (sets of pixels, also known as super-pixels). The goal of segmentation is to simplify and change the representation of an image into something that is more meaningful and easier to analyze (from Wikipedia). In fact, image segmentation is a process of labelling each pixel in an image. Pixels with the same label are generally similar in the metric of certain visual characteristics, such as color, brightness or texture. Adjacent areas are usually very different under this metric. Specifically, for segmentation in aerial images, usually what we do is to label each pixel as buildings, roads or background. Figure \ref{fig:egarlimgseg} shows an example.
 
 \input{fig/1-01}
 
-传统的图像分割技术是为图像中的每一个像素打label。如用0表示，1表示，2表示。航拍图像的图像分割指的是在航拍图像中提取出房屋、道路。（给例子）然而这样的表示方式有很多的局限性——如无法对房屋进行定位、存储上对每个像素，很废空间什么的。
-
-
 \subsection{Geometrical Shape}\label{geosha}
 
-我们想要脱离每像素标签，并直接通过向量表示学习多边形。当我们偏离标注像素的标准范例并旨在直接利用和学习建筑物的几何形状时
--多边形表示包括比像素方式标签少得多的冗余
--在存储上有优势
--可以矢量表示，即在不同层面都可以用	，建筑物等对象可以更自然地建模
--学习到的多边形可以直接标注在电子地图中，而像素的不行
-因此多边形表示是感兴趣对象的更紧凑和有用的表示。因此我们希望能够从航拍图像中获取多边形
-最近，深度学习方法在诸如图像分割和对象检测等许多计算机视觉任务中展现出了显着的成就。而相关方法已经被应用于航拍图像中[10,11,12,13,14]，但是，这些传统的CNN架构仍然局限于常规的网格结构图。这些网络的僵化使得很难开发关于图像内容的高级先验。他们输出的结果仍然是pixel wise的。那么，如何快速地从航拍图像中检测出矢量图变成了一大问题。
-总之，这个项目的目的是为图形和任意结构的几何形状开发新颖的深度学习方法，我们试图将对象拓扑和形状引入深度学习技术。我们想要脱离标注像素的标准范例，而是直接利用并学习对象的几何图形。
+However, the pixel-wise representation introduced in subsection \ref{imgseg} has many limitations, such as the inability to locate the building, and requirement for relatively more storage. We want to get rid of the pixel-wise labelling and describe geometrical shape of each super-pixel in an image directly. The geometrical shape here generally refers to a polygon represented by a series of vectors or coordinates.
+
+Deviating from the standard paradigm of labeling pixels and aiming to directly learn the geometry of the buildings have following advantages: (1) polygon representation has much less redundancy than pixel-wise labelling; (2) polygon representation has relatively less storage than pixel-wise labelling; (3) polygon representation can be expressed in vectors and used at different levels so that buildings and other objects can be modeled more naturally; (4) the polygons learned can be directly marked in the electronic map, but the pixels can not.
+
+The polygon representation is therefore a more compact and useful representation. Recently, deep learning methods have demonstrated remarkable achievements in image segmentation tasks. The related methods have already been applied to aerial images [10,11,12,13,14]. However, these traditional CNN architectures are still limited to conventional grid structure diagrams and their output is still pixel-wise. So, how to quickly detect geometrical shapes from aerial images has become a big problem.
+
+In short, the purpose of this project is to develop novel deep learning methods for the geometry of graphs and arbitrary structures, and we want to introduce object topologies and shapes into deep learning techniques.
 
 \section{Problem Definition}\label{prodef}
 
+\paragraph{Goal of Project} Given an aerial image, our goal is to extract the polygon shape for each building in the satellite image. Input is an satellite image, denoting 
+\begin{equation}
+I = \{I_{ijk}\}_{i \in \{1,2,\ldots,h\}, j \in \{1,2,\ldots,w\}, k \in \{1,2,3\}},
+\end{equation}
+where $I_{ijk}$ denotes the pixel value of $i$-th row, $j$-th column and $k$-th channel in the image, $w$ and $h$ denote image's width and height, and output is polygons, denoting
+\begin{equation}
+P = \{P^{(n)}\}_{n \in \{1,2,\ldots,N\}},
+\end{equation}
+\begin{equation}
+P^{(n)} = \{(i^{(n)}_t, j^{(n)}_t)\}_{t \in \{1,2,\ldots,l_n\}},
+\end{equation}
+where $N$ denotes the number of buildings in the image, $P^{(n)}$ and $l_n$ denote the $n$-th polygon and its number of vertices, $i^{(n)}_t$ and $j^{(n)}_t$ denote the image coordinates of $t$-th vertex of the polygon $P^{(n)}$ in the original image.
 
-（给图）给定一张航拍图，为航拍图中的每一个房屋，寻找它的多边形shape。输入是什么……输出是什么……
-
-Instance segmentation is challenging because it requires the correct detection of all objects in an image while also precisely segmenting each instance. It therefore combines elements from the classical computer vision tasks of ob- ject detection, where the goal is to classify individual ob- jects and localize each using a bounding box, and semantic segmentation, where the goal is to classify each pixel into a fixed set of categories without differentiating object in- stances.
 \section{Focus of This Work}\label{fcswrk}
 
-为了解决这个问题，本文提出的模型叫region-based PolygonRNN。它是结合了Mask R-CNN中的FPN部分和PolygonRNN的产物。其中，FPN用于进行定位，即检测图像中的RoI，PolygonRNN部分用于find geometric shape。
+The problem is challenging because it requires the correct detection of all buildings in an aerial image while also precisely segmenting each instance in the form of polygon. It therefore combines elements from the classical computer vision tasks of object detection, where the goal is to classify individual objects and localize each using a bounding box, and geometrical segmentation, where the goal is to extract polygon.
+
+In order to solve this problem, we propose a new model, \modelnameshort\ (\modelnamelong), which is a combination of the FPN (Feature Pyramid Network) part in Mask R-CNN and PolygonRNN. FPN is used to localize buildings, i.e. to detect the RoIs (Regions of Interest) in the image, and PolygonRNN is used to find geometrical shapes.
 
 \section{Thesis Organization}\label{thsorg}
 
-本论文组织如下。首先，我们回顾相关工作2 并着眼于像素级别的方法和bbox回归的方法（previous thesis）。并且看一下最近的新模型——mask r-cnn和单个polygon的
-在第3章中，两个新模型的具体架构将会被讨论。成功的对象检测算法Faster R-CNN将在第4章中解释，因为它作为我们在第5章中描述的第一种建筑物分割方法的基础。我们的第二种建筑物分割方法基于建筑物角点提取，其后是连体网络来检测属于同一建筑物的匹配角落。这个方法的描述可以在第6章中找到。我们在第7章中对这两种方法进行了评估。在上一章中对结论进行了描述并对未来的工作进行了讨论。
+This thesis is organized as follows. Chapter 2 reviews related work, focuses on the pixel-wise segmentation method and rotated bounding boxes regression method used in previous theses, and also introduces two recent new models, Mask R-CNN and PolygonRNN. In chapter 3, the specific architectures of the two new models are be discussed, and the structure of our proposed model is also explained in detail. Chapter 4 describes the dataset we use and gives the experiment results. Finally, chapter 5 makes conclusions, points out the problems exist in our project and gives future direction.
 
-Following common terminology, we use object detection to denote detection via bounding boxes, not masks, and semantic segmentation to denote per-pixel classification without differentiating instances. Yet we note that instance segmentation is both semantic and a form of detection.
+Following common terminology, we use object detection to denote detection via bounding boxes, not masks, and semantic segmentation to denote pixel-wise classification without differentiating instances. Yet we note that instance segmentation is both semantic and a form of detection.

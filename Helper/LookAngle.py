@@ -1,7 +1,7 @@
 import numpy as np
-import math
+import math, sys
 import matplotlib.pyplot as plt
-d = np.load('BuildingListZurich.npy').item()
+d = np.load('../DataPreparation/BuildingList%s.npy' % sys.argv[1]).item()
 angles = []
 for bid in d:
 	polygon = d[bid]
@@ -24,7 +24,11 @@ for bid in d:
 			angle = 180 + math.degrees(math.acos(cos))
 		angles.append(angle)
 angles.sort()
-print(angles[0: 10])
-print(angles[-10:])
-plt.hist(angles, bins = 50)
+plt.hist(angles, bins = [i for i in range(0, 365, 5)])
+plt.xlim(xmin = 0, xmax = 360)
+plt.xlabel('Angle Degree', fontname = 'Arial')
+plt.ylabel('Number of Angles', fontname = 'Arial')
+plt.xticks(np.arange(0, 370, step = 30), fontname = 'Arial')
+plt.yticks(fontname = 'Arial')
+plt.title('Polygon Interior Angle Distribution in %s' % sys.argv[1], fontname = 'Arial')
 plt.show()

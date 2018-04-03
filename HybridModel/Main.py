@@ -20,7 +20,6 @@ if __name__ == '__main__':
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
 		two_step = True,
-		roialign = False,
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)
