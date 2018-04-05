@@ -11,7 +11,7 @@ from UtilityBoxAnchor import *
 config = Config()
 
 if __name__ == '__main__':
-	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
+	assert(len(sys.argv) == 3)
 	city_name = sys.argv[1]
 
 	# Define graph
@@ -19,7 +19,7 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
-		two_step = True,
+		two_step = (sys.argv[2] == '2'),
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)
@@ -45,10 +45,6 @@ if __name__ == '__main__':
 	# 	print(v.name)
 	# quit()
 
-	# Create new folder
-	if not os.path.exists('./Model%s/' % city_name):
-		os.makedirs('./Model%s/' % city_name)
-
 	# Create data generator
 	obj = DataGenerator(
 		city_name = city_name,
@@ -56,6 +52,11 @@ if __name__ == '__main__':
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
+
+	# Create new folder
+	city_name = city_name + sys.argv[2]
+	if not os.path.exists('./Model%s/' % city_name):
+		os.makedirs('./Model%s/' % city_name)
 
 	# Launch graph
 	with tf.Session() as sess:
@@ -66,12 +67,12 @@ if __name__ == '__main__':
 		valid_writer = Logger('./Log%s/valid/' % city_name)
 
 		# Restore weights
-		if len(sys.argv) == 3 and sys.argv[1] != None:
-			saver.restore(sess, './Model%s/Model%s-%s.ckpt' % (city_name, city_name, sys.argv[2]))
-			iter_obj = range(int(sys.argv[2]) + 1, config.NUM_ITER)
-		else:
-			sess.run(init)
-			iter_obj = range(config.NUM_ITER)
+		# if len(sys.argv) == 3 and sys.argv[1] != None:
+		# 	saver.restore(sess, './Model%s/Model%s-%s.ckpt' % (city_name, city_name, sys.argv[2]))
+		# 	iter_obj = range(int(sys.argv[2]) + 1, config.NUM_ITER)
+		# else:
+		sess.run(init)
+		iter_obj = range(config.NUM_ITER)
 
 		# Main loop
 		for i in iter_obj:
