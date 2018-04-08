@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  7 APR 2018 23:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  8 APR 2018 12:52
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -1772,25 +1772,26 @@ Package pdftex.def Info: Requested size: 166.04887pt x 166.04932pt on input lin
 e 8.
 ) [5 <./fig/1-03-0.png> <./fig/1-03-1.pdf>]
 
-LaTeX Warning: Citation `fpn' on page 6 undefined on input line 70.
+LaTeX Warning: Citation `fpn' on page 6 undefined on input line 72.
 
 
-LaTeX Warning: Citation `polygonrnn' on page 6 undefined on input line 70.
+LaTeX Warning: Citation `polygonrnn' on page 6 undefined on input line 72.
+
+[6]
+
+LaTeX Warning: Citation `maskrcnn' on page 7 undefined on input line 77.
 
 
-LaTeX Warning: Citation `maskrcnn' on page 6 undefined on input line 73.
-
-
-Underfull \hbox (badness 1014) in paragraph at lines 88--88
+Underfull \hbox (badness 1014) in paragraph at lines 92--92
 []|\OT1/ppl/m/n/10.95 Detection via bound-ing boxes in-
  []
 
 
-Underfull \hbox (badness 3148) in paragraph at lines 88--88
+Underfull \hbox (badness 3148) in paragraph at lines 92--92
 []|\OT1/ppl/m/n/10.95 Geometrical seg-men-ta-tion and a
  []
 
-) (./2-related.tex [6] [7] [8
+) (./2-related.tex [7] [8
 
 ]
 Overfull \hbox (1.2367pt too wide) in paragraph at lines 3--4
@@ -2761,7 +2762,7 @@ onts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2017/texmf-di
 st/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2017/texmf-dist/font
 s/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1
 /urw/palatino/uplri8a.pfb>
-Output written on thesis.pdf (59 pages, 18129543 bytes).
+Output written on thesis.pdf (59 pages, 18129595 bytes).
 PDF statistics:
  2418 PDF objects out of 2487 (max. 8388607)
  1645 compressed objects within 17 object streams
