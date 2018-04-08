@@ -226,7 +226,7 @@ if __name__ == '__main__':
 		f.write('id,acc,pre,rec,f1s,iou\n')
 
 		ff = open('Time%s.csv' % city_name, 'w')
-		ff.write('round,area,num,building,fixbuilding\n')
+		ff.write('round,area,perbuilding,fixbuilding\n')
 
 		for i in range(0, 300):
 			time_res = [i]
@@ -235,7 +235,6 @@ if __name__ == '__main__':
 
 			t = time.time()
 			pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
-			time_res.append(len(pred_box))
 			time_res.append(time.time() - t)
 
 			org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
@@ -243,7 +242,7 @@ if __name__ == '__main__':
 
 			t = time.time()
 			pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-			time_res.append(time.time() - t)
+			time_res.append((time.time() - t) / pred_v_out.shape[1])
 
 			path = './EvalAreaResult%s' % city_name
 			if not os.path.exists(path):
@@ -255,7 +254,7 @@ if __name__ == '__main__':
 
 			t = time.time()
 			pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
-			time_res.append(time.time() - t)
+			time_res.append((time.time() - t) / pred_v_out.shape[1])
 
 			path = './EvalBuildingResult%s' % city_name
 			if not os.path.exists(path):
@@ -270,7 +269,7 @@ if __name__ == '__main__':
 				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
 			f.flush()
 
-			ff.write('%d,%.3lf,%d,%.3lf,%.3lf' % tuple(time_res))
+			ff.write('%d,%.3lf,%d,%.3lf,%.3lf\n' % tuple(time_res))
 			ff.flush()
 
 		f.close()
