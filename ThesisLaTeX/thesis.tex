@@ -73,7 +73,6 @@
 %% above.  We just load it last to be safe.
 \usepackage[linkcolor=black,colorlinks=true,citecolor=black,filecolor=black]{hyperref}
 
-
 %% Document information
 %% ====================
 
@@ -120,15 +119,16 @@
 \appendix
 
 \input{appendix}
+\cite{maskrcnn, polygonrnn, fasterrcnn, fpn, msnadine, mspascal, kippi}
 
 \backmatter
-
-\bibliographystyle{plain}
-\bibliography{refs}
 
 \listoffigures
 \newpage
 \listoftables
+\newpage
+\bibliographystyle{ieeetr} % plain % abbrv
+\bibliography{refs}
 
 \includepdf[pages={-}]{declaration-originality.pdf}
 \includepdf[pages={-}]{declaration-of-consent.pdf}

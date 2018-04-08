@@ -263,11 +263,11 @@ As a result, the training phase of the whole model, \modelnameshort, cannot be s
 
 \subsection{Hybrid Version with RoIAlign}\label{algmod}
 
-Note that both two-step version and hybrid version do convolution for the area image and the building image respectively. However, we know that the building image is taken from the area image, so there is redundancy in the twice convolutions. Considering that we already have the feature map of the area image, it is unnecessary to do a second convolution since we can take the building feature from the corresponding position in the feature map of the area image， when given the RoI.
+Note that both two-step version and hybrid version do convolution for the area image and the building image respectively. However, we know that the building image is taken from the area image, so there is redundancy in the twice convolutions. Considering that we already have the feature map of the area image, it is unnecessary to do a second convolution since we can take the building feature from the corresponding position in the feature map of the area image, when given the RoI.
 
 In Mask R-CNN, RoIAlign is proposed to solve this kind of problem. Actually its previous version, RoIPooling is already used in Faster R-CNN. The role of RoIPooling is to pool the corresponding area in the feature map into a fixed-size tensor, so as to perform subsequent classification phase. The positions of the RoIs are usually obtained by regression of the model, which are generally floating numbers. RoIPooling has twice process of rounding these floating numbers: (1) box boundaries are rounded to integers; (2) the region of box is divided into several cells, boundaries of each cell are rounded to integers. After the twice rounding process, each cell has a certain deviation from its initial position, which will affect the accuracy of subsequent classification or segmentation (for Mask R-CNN). This problem is summarized as `misalignment' in Mask R-CNN paper.
 
-In order to tackle the shortcomings of RoIPooling, Mask R-CNN introduces ​​RoIAlign, using bilinear interpolation instead of rounding numbers. It can be used to obtain the value ​​at the pixel whose coordinates are floating numbers, thereby transforming the pooling process into a continuous operation. Figure \ref{fig:roialg} shows an example of RoIAlign.
+In order to tackle the shortcomings of RoIPooling, Mask R-CNN introduces RoIAlign, using bilinear interpolation instead of rounding numbers. It can be used to obtain the value at the pixel whose coordinates are floating numbers, thereby transforming the pooling process into a continuous operation. Figure \ref{roialg} shows an example of RoIAlign.
 
 \input{fig/3-18}
 
@@ -275,7 +275,6 @@ Therefore, we can simply apply the bounding boxes obtained from FPN calculation 
 
 \input{fig/3-17}
 
-As a result, VGG-16 is used only once and therefore it can speed up the prediction in theory. Note that this version of \modelnameshort is not implemented yet in 
-since the resolution problem of the area image.
+As a result, VGG-16 is used only once and therefore it can speed up the prediction in theory. Note that this version of \modelnameshort is not implemented yet since the resolution problem of the area image.
 
 

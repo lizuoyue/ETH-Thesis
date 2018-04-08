@@ -7,89 +7,89 @@
 \contentsline {section}{\numberline {1.1}Background}{1}{section.1.1}
 \contentsline {subsection}{\numberline {1.1.1}Aerial Image}{1}{subsection.1.1.1}
 \contentsline {subsection}{\numberline {1.1.2}Image Segmentation}{2}{subsection.1.1.2}
-\contentsline {subsection}{\numberline {1.1.3}Geometrical Shape}{3}{subsection.1.1.3}
-\contentsline {section}{\numberline {1.2}Problem Definition}{3}{section.1.2}
-\contentsline {paragraph}{Goal of Project}{3}{section*.2}
-\contentsline {section}{\numberline {1.3}Focus of This Work}{4}{section.1.3}
-\contentsline {section}{\numberline {1.4}Thesis Organization}{4}{section.1.4}
-\contentsline {chapter}{\chapternumberline {2}Related Work}{5}{chapter.2}
-\contentsline {section}{\numberline {2.1}Previous Theses}{5}{section.2.1}
-\contentsline {paragraph}{Image Segmentation in Pixel Level}{5}{section*.3}
-\contentsline {paragraph}{Rotated Bounding Box}{5}{section*.4}
-\contentsline {section}{\numberline {2.2}Recent Models}{6}{section.2.2}
-\contentsline {subsection}{\numberline {2.2.1}PolygonRNN}{7}{subsection.2.2.1}
-\contentsline {subsection}{\numberline {2.2.2}Mask R-CNN}{8}{subsection.2.2.2}
-\contentsline {paragraph}{Feature Pyramid Network}{8}{section*.5}
-\contentsline {paragraph}{Classification Branch}{9}{section*.6}
-\contentsline {paragraph}{Mask Branch}{9}{section*.7}
-\contentsline {section}{\numberline {2.3}Motivation}{9}{section.2.3}
-\contentsline {chapter}{\chapternumberline {3}Model Architecture}{11}{chapter.3}
-\contentsline {section}{\numberline {3.1}PolygonRNN}{11}{section.3.1}
-\contentsline {subsection}{\numberline {3.1.1}CNN Part}{11}{subsection.3.1.1}
-\contentsline {paragraph}{Feature Extraction}{12}{section*.8}
-\contentsline {paragraph}{Mask Prediction}{13}{section*.9}
-\contentsline {subsection}{\numberline {3.1.2}RNN Part}{13}{subsection.3.1.2}
-\contentsline {paragraph}{End Signal}{14}{section*.10}
-\contentsline {paragraph}{Starting Vertex}{14}{section*.11}
-\contentsline {paragraph}{ConvLSTM}{14}{section*.12}
-\contentsline {paragraph}{Multilayer RNN}{15}{section*.13}
-\contentsline {subsection}{\numberline {3.1.3}Loss Function}{17}{subsection.3.1.3}
-\contentsline {section}{\numberline {3.2}Feature Pyramid Network}{17}{section.3.2}
-\contentsline {subsection}{\numberline {3.2.1}Single Bounding Box Regression}{17}{subsection.3.2.1}
-\contentsline {subsection}{\numberline {3.2.2}Anchor and its Properties}{18}{subsection.3.2.2}
-\contentsline {paragraph}{Anchor}{18}{section*.14}
-\contentsline {paragraph}{IoU Score}{18}{section*.15}
-\contentsline {paragraph}{Anchor Polarity}{19}{section*.16}
-\contentsline {subsection}{\numberline {3.2.3}Multiple Bounding Boxes Regression}{20}{subsection.3.2.3}
-\contentsline {paragraph}{Anchor Assignment}{20}{section*.17}
-\contentsline {paragraph}{Classification and Regression on Anchors}{20}{section*.18}
-\contentsline {paragraph}{Loss}{21}{section*.19}
-\contentsline {subsection}{\numberline {3.2.4}Feature Pyramid and Backbone}{22}{subsection.3.2.4}
-\contentsline {section}{\numberline {3.3}R-PolygonRNN}{25}{section.3.3}
-\contentsline {subsection}{\numberline {3.3.1}Two-step Version}{25}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}Hybrid Version}{25}{subsection.3.3.2}
-\contentsline {subsection}{\numberline {3.3.3}Hybrid Version with RoIAlign}{26}{subsection.3.3.3}
-\contentsline {chapter}{\chapternumberline {4}Experiments and Results}{29}{chapter.4}
-\contentsline {section}{\numberline {4.1}Ground Truth}{29}{section.4.1}
-\contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{29}{subsection.4.1.1}
-\contentsline {subsection}{\numberline {4.1.2}OpenStreetMap}{30}{subsection.4.1.2}
-\contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{31}{subsection.4.1.3}
-\contentsline {paragraph}{Areas for FPN}{31}{section*.20}
-\contentsline {paragraph}{Buildings for PolygonRNN}{31}{section*.21}
-\contentsline {subsection}{\numberline {4.1.4}Problems}{32}{subsection.4.1.4}
-\contentsline {paragraph}{General Shift}{33}{section*.22}
-\contentsline {paragraph}{Polygon Size and Shape}{33}{section*.23}
-\contentsline {paragraph}{Angle Issue}{33}{section*.24}
-\contentsline {paragraph}{Adjacent Buildings}{33}{section*.25}
-\contentsline {subsection}{\numberline {4.1.5}Adjustments}{34}{subsection.4.1.5}
-\contentsline {paragraph}{Color Variance}{34}{section*.26}
-\contentsline {paragraph}{Edges}{34}{section*.27}
-\contentsline {paragraph}{Corners}{34}{section*.28}
-\contentsline {section}{\numberline {4.2}Implementation Details}{35}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Dataset Information}{35}{subsection.4.2.1}
-\contentsline {subsection}{\numberline {4.2.2}Model Configuration}{36}{subsection.4.2.2}
-\contentsline {subsection}{\numberline {4.2.3}Training Phase}{36}{subsection.4.2.3}
-\contentsline {subsection}{\numberline {4.2.4}Prediction Phase}{37}{subsection.4.2.4}
-\contentsline {section}{\numberline {4.3}Experiment Results}{37}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{37}{subsection.4.3.1}
-\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{37}{subsection.4.3.2}
-\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{37}{subsection.4.3.3}
-\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{39}{chapter.5}
-\contentsline {section}{\numberline {5.1}Problems}{39}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{39}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}False Vertex}{40}{subsection.5.1.2}
-\contentsline {section}{\numberline {5.2}Future Work}{40}{section.5.2}
-\contentsline {paragraph}{Road Segmentation}{40}{section*.29}
-\contentsline {paragraph}{Ground Truth Correction}{41}{section*.30}
-\contentsline {paragraph}{RoIAlign Implementation}{41}{section*.31}
-\contentsline {paragraph}{Training Method}{41}{section*.32}
-\contentsline {paragraph}{Model Generalization}{41}{section*.33}
-\contentsline {appendix}{\chapternumberline {A}Appendix}{43}{appendix.A}
-\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{43}{section.A.1}
-\contentsline {section}{\numberline {A.2}OpenStreetMap}{43}{section.A.2}
-\contentsline {section}{\numberline {A.3}Projection}{43}{section.A.3}
-\contentsline {section}{\numberline {A.4}Anchor Assignment}{43}{section.A.4}
-\contentsline {section}{\numberline {A.5}Non-max Suppression}{43}{section.A.5}
-\contentsline {section}{\numberline {A.6}Beam Search}{44}{section.A.6}
-\contentsline {chapter}{List of Figures}{45}{section*.34}
-\contentsline {chapter}{List of Tables}{47}{section*.35}
+\contentsline {subsection}{\numberline {1.1.3}Geometrical Shape}{4}{subsection.1.1.3}
+\contentsline {section}{\numberline {1.2}Problem Definition}{5}{section.1.2}
+\contentsline {section}{\numberline {1.3}Focus of This Work}{5}{section.1.3}
+\contentsline {section}{\numberline {1.4}Thesis Organization}{6}{section.1.4}
+\contentsline {chapter}{\chapternumberline {2}Related Work}{9}{chapter.2}
+\contentsline {section}{\numberline {2.1}Deep Learning Methods for Image Segmentation}{9}{section.2.1}
+\contentsline {section}{\numberline {2.2}Previous Theses}{9}{section.2.2}
+\contentsline {paragraph}{Image Segmentation in Pixel Level}{9}{section*.2}
+\contentsline {paragraph}{Rotated Bounding Box}{9}{section*.3}
+\contentsline {section}{\numberline {2.3}Recent Models}{10}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}PolygonRNN}{11}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Mask R-CNN}{12}{subsection.2.3.2}
+\contentsline {paragraph}{Feature Pyramid Network}{12}{section*.4}
+\contentsline {paragraph}{Classification Branch}{13}{section*.5}
+\contentsline {paragraph}{Mask Branch}{13}{section*.6}
+\contentsline {section}{\numberline {2.4}Motivation}{13}{section.2.4}
+\contentsline {chapter}{\chapternumberline {3}Model Architecture}{15}{chapter.3}
+\contentsline {section}{\numberline {3.1}PolygonRNN}{15}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}CNN Part}{15}{subsection.3.1.1}
+\contentsline {paragraph}{Feature Extraction}{16}{section*.7}
+\contentsline {paragraph}{Mask Prediction}{17}{section*.8}
+\contentsline {subsection}{\numberline {3.1.2}RNN Part}{17}{subsection.3.1.2}
+\contentsline {paragraph}{End Signal}{18}{section*.9}
+\contentsline {paragraph}{Starting Vertex}{18}{section*.10}
+\contentsline {paragraph}{ConvLSTM}{18}{section*.11}
+\contentsline {paragraph}{Multilayer RNN}{19}{section*.12}
+\contentsline {subsection}{\numberline {3.1.3}Loss Function}{21}{subsection.3.1.3}
+\contentsline {section}{\numberline {3.2}Feature Pyramid Network}{21}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Single Bounding Box Regression}{21}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Anchor and its Properties}{22}{subsection.3.2.2}
+\contentsline {paragraph}{Anchor}{22}{section*.13}
+\contentsline {paragraph}{IoU Score}{22}{section*.14}
+\contentsline {paragraph}{Anchor Polarity}{23}{section*.15}
+\contentsline {subsection}{\numberline {3.2.3}Multiple Bounding Boxes Regression}{24}{subsection.3.2.3}
+\contentsline {paragraph}{Anchor Assignment}{24}{section*.16}
+\contentsline {paragraph}{Classification and Regression on Anchors}{24}{section*.17}
+\contentsline {paragraph}{Loss}{25}{section*.18}
+\contentsline {subsection}{\numberline {3.2.4}Feature Pyramid and Backbone}{26}{subsection.3.2.4}
+\contentsline {section}{\numberline {3.3}R-PolygonRNN}{29}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Two-step Version}{29}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Hybrid Version}{29}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Hybrid Version with RoIAlign}{30}{subsection.3.3.3}
+\contentsline {chapter}{\chapternumberline {4}Experiments and Results}{33}{chapter.4}
+\contentsline {section}{\numberline {4.1}Ground Truth}{33}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{33}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}OpenStreetMap}{34}{subsection.4.1.2}
+\contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{35}{subsection.4.1.3}
+\contentsline {paragraph}{Areas for FPN}{35}{section*.19}
+\contentsline {paragraph}{Buildings for PolygonRNN}{35}{section*.20}
+\contentsline {subsection}{\numberline {4.1.4}Problems}{36}{subsection.4.1.4}
+\contentsline {paragraph}{General Shift}{37}{section*.21}
+\contentsline {paragraph}{Polygon Size and Shape}{37}{section*.22}
+\contentsline {paragraph}{Angle Issue}{37}{section*.23}
+\contentsline {paragraph}{Adjacent Buildings}{37}{section*.24}
+\contentsline {subsection}{\numberline {4.1.5}Adjustments}{38}{subsection.4.1.5}
+\contentsline {paragraph}{Color Variance}{38}{section*.25}
+\contentsline {paragraph}{Edges}{38}{section*.26}
+\contentsline {paragraph}{Corners}{38}{section*.27}
+\contentsline {section}{\numberline {4.2}Implementation Details}{39}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Dataset Information}{39}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Model Configuration}{40}{subsection.4.2.2}
+\contentsline {subsection}{\numberline {4.2.3}Training Phase}{40}{subsection.4.2.3}
+\contentsline {subsection}{\numberline {4.2.4}Prediction Phase}{41}{subsection.4.2.4}
+\contentsline {section}{\numberline {4.3}Experiment Results}{41}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{41}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{41}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{41}{subsection.4.3.3}
+\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{43}{chapter.5}
+\contentsline {section}{\numberline {5.1}Problems}{43}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{43}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}False Vertex}{44}{subsection.5.1.2}
+\contentsline {section}{\numberline {5.2}Future Work}{44}{section.5.2}
+\contentsline {paragraph}{Road Segmentation}{44}{section*.28}
+\contentsline {paragraph}{Ground Truth Correction}{45}{section*.29}
+\contentsline {paragraph}{RoIAlign Implementation}{45}{section*.30}
+\contentsline {paragraph}{Training Method}{45}{section*.31}
+\contentsline {paragraph}{Model Generalization}{45}{section*.32}
+\contentsline {appendix}{\chapternumberline {A}Appendix}{47}{appendix.A}
+\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{47}{section.A.1}
+\contentsline {section}{\numberline {A.2}OpenStreetMap}{47}{section.A.2}
+\contentsline {section}{\numberline {A.3}Projection}{47}{section.A.3}
+\contentsline {section}{\numberline {A.4}Anchor Assignment}{47}{section.A.4}
+\contentsline {section}{\numberline {A.5}Non-max Suppression}{47}{section.A.5}
+\contentsline {section}{\numberline {A.6}Beam Search}{48}{section.A.6}
+\contentsline {chapter}{List of Figures}{49}{section*.33}
+\contentsline {chapter}{List of Tables}{51}{section*.34}

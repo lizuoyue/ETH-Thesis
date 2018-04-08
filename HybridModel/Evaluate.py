@@ -173,7 +173,7 @@ def score(org_info, gt_vv, vv):
 if __name__ == '__main__':
 	# Create new folder
 	city_name = sys.argv[1]
-	assert(os.path.exists('./Model%s/' % city_name))
+	assert(os.path.exists('./Model%s/' % (city_name + sys.argv[2])))
 	assert(len(sys.argv) == 3)
 
 	# Create data generator
