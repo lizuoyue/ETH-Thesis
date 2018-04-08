@@ -92,7 +92,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info,
 
 	# Reshape
 	batch_size = img.shape[0]
-	img = img + config.COLOR_MEAN['Buildings'][city_name]
+	img = img + config.COLOR_MEAN['Buildings'][city_name[: -1]]
 
 	# Sequence length and polygon
 	polygon = [[] for i in range(batch_size)]
