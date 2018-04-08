@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  8 APR 2018 12:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  8 APR 2018 14:54
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -1782,12 +1782,12 @@ LaTeX Warning: Citation `polygonrnn' on page 6 undefined on input line 72.
 LaTeX Warning: Citation `maskrcnn' on page 7 undefined on input line 77.
 
 
-Underfull \hbox (badness 1014) in paragraph at lines 92--92
+Underfull \hbox (badness 1014) in paragraph at lines 94--94
 []|\OT1/ppl/m/n/10.95 Detection via bound-ing boxes in-
  []
 
 
-Underfull \hbox (badness 3148) in paragraph at lines 92--92
+Underfull \hbox (badness 3148) in paragraph at lines 94--94
 []|\OT1/ppl/m/n/10.95 Geometrical seg-men-ta-tion and a
  []
 
@@ -2762,7 +2762,7 @@ onts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2017/texmf-di
 st/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2017/texmf-dist/font
 s/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1
 /urw/palatino/uplri8a.pfb>
-Output written on thesis.pdf (59 pages, 18129595 bytes).
+Output written on thesis.pdf (59 pages, 18129593 bytes).
 PDF statistics:
  2418 PDF objects out of 2487 (max. 8388607)
  1645 compressed objects within 17 object streams

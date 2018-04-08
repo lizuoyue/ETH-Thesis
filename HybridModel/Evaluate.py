@@ -12,22 +12,22 @@ from PIL import Image, ImageDraw
 config = Config()
 global city_name
 
-def overlay(img, mask, shape, color = (255, 0, 0)):
-	org = Image.fromarray(np.array(img, np.uint8)).convert('RGBA')
-	alpha = np.array(mask * 128.0, np.uint8)
-	alpha = np.concatenate(
-		(
-			np.ones((shape[0], shape[1], 1)) * color[0],
-			np.ones((shape[0], shape[1], 1)) * color[1],
-			np.ones((shape[0], shape[1], 1)) * color[2],
-			np.reshape(alpha, (shape[0], shape[1], 1))
-		),
-		axis = 2
-	)
-	alpha = Image.fromarray(np.array(alpha, np.uint8), mode = 'RGBA')
-	alpha = alpha.resize((224, 224), resample = Image.BICUBIC)
-	merge = Image.alpha_composite(org, alpha)
-	return merge
+# def overlay(img, mask, shape, color = (255, 0, 0)):
+# 	org = Image.fromarray(np.array(img, np.uint8)).convert('RGBA')
+# 	alpha = np.array(mask * 128.0, np.uint8)
+# 	alpha = np.concatenate(
+# 		(
+# 			np.ones((shape[0], shape[1], 1)) * color[0],
+# 			np.ones((shape[0], shape[1], 1)) * color[1],
+# 			np.ones((shape[0], shape[1], 1)) * color[2],
+# 			np.reshape(alpha, (shape[0], shape[1], 1))
+# 		),
+# 		axis = 2
+# 	)
+# 	alpha = Image.fromarray(np.array(alpha, np.uint8), mode = 'RGBA')
+# 	alpha = alpha.resize((224, 224), resample = Image.BICUBIC)
+# 	merge = Image.alpha_composite(org, alpha)
+# 	return merge
 
 def overlayMultiMask(img, mask, shape):
 	merge = Image.fromarray(np.array(img, np.uint8)).convert('RGBA')
@@ -118,7 +118,7 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info,
 		recover = [(int(x * w_rate), int(y * h_rate)) for x, y in polygon[i]]
 		c = np.random.randint(0, len(config.TABLEAU20))
 		draw.polygon(recover, fill = config.TABLEAU20[c], outline = config.TABLEAU20_DEEP[c])
-		res = DataGenerator.overlay(Image.fromarray(np.array(img[i], np.uint8)).resize(size = (w, h), resample = Image.BICUBIC), mask)
+		res = overlay(Image.fromarray(np.array(img[i], np.uint8)).resize(size = (w, h), resample = Image.BICUBIC), mask)
 		res.rotate(-patch_info[i, 2]).save(path + '/%d.png' % (idx + i))
 	# 
 	return

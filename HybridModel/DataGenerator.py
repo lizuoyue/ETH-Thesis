@@ -44,7 +44,7 @@ def overlay(img, mask):
 	img = img.convert('RGBA')
 	mask = np.array(mask, np.uint32)
 	alpha = np.sum(np.array(mask, np.int32), axis = 2)
-	alpha[alpha > 0] = 64
+	alpha[alpha > 0] = 200
 	alpha = np.expand_dims(alpha, axis = 2)
 	alpha = np.concatenate((mask, alpha), axis = 2)
 	alpha = Image.fromarray(np.array(alpha, np.uint8), mode = 'RGBA')
