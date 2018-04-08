@@ -269,7 +269,7 @@ if __name__ == '__main__':
 				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
 			f.flush()
 
-			ff.write('%d,%.3lf,%d,%.3lf,%.3lf\n' % tuple(time_res))
+			ff.write('%d,%.3lf,%.3lf,%.3lf\n' % tuple(time_res))
 			ff.flush()
 
 		f.close()
