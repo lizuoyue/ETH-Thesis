@@ -1,5 +1,5 @@
 import numpy as np
-import os, sys
+import os, sys, time
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 import tensorflow as tf
@@ -92,8 +92,6 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info,
 
 	# Reshape
 	batch_size = img.shape[0]
-	shape = ((v_out_res[1], v_out_res[0]))
-	blank = np.zeros(shape)
 	img = img + config.COLOR_MEAN['Buildings'][city_name]
 
 	# Sequence length and polygon
@@ -110,21 +108,18 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info,
 
 	# 
 	for i in range(batch_size):
-		vv = v_out_pred[i, 0: seq_len[i]]
-		# overlay(img[i], blank      , shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-0-img.png' % i)
-		# overlay(img[i], b_pred[i]  , shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-1-bound-pred.png' % i)
-		# overlay(img[i], v_pred[i]  , shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-2-vertices-pred.png' % i)
-		# overlayMultiMask(img[i], vv, shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-3-vertices-merge.png' % i)
-		# for j in range(seq_len[i]):
-		# 	overlay(img[i], vv[j], shape).save(path + '/%d-3-vtx-%s.png' % (i, str(j).zfill(2)))
-		link = Image.new('P', shape, color = 0)
-		draw = ImageDraw.Draw(link)
+		w, h = tuple(patch_info[i, 0: 2])
+		w_rate = w / v_out_res[0]
+		h_rate = h / v_out_res[1]
+		mask = Image.new('RGB', (w, h), color = (0, 0, 0))
+		draw = ImageDraw.Draw(mask)
 		if len(polygon[i]) == 1:
 			polygon[i].append(polygon[i][0])
-		draw.polygon(polygon[i], fill = 0, outline = 255)
-		link = np.array(link) / 255.0
-		overlay(img[i], link, shape).resize(size = tuple(patch_info[i, 0: 2]), resample = Image.BICUBIC).rotate(-patch_info[i, 2]).save(path + '/%d-4-vertices-link.png' % (idx + i))
-
+		recover = [(int(x * w_rate), int(y * h_rate)) for x, y in polygon[i]]
+		c = np.random.randint(0, len(config.TABLEAU20))
+		draw.polygon(recover, fill = config.TABLEAU20[c], outline = config.TABLEAU20_DEEP[c])
+		res = DataGenerator.overlay(Image.fromarray(np.array(img[i], np.uint8)).resize(size = (w, h), resample = Image.BICUBIC), mask)
+		res.rotate(-patch_info[i, 2]).save(path + '/%d.png' % (idx + i))
 	# 
 	return
 
@@ -194,7 +189,7 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
-		two_step = False,
+		two_step = (sys.argv[2] == '2'),
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)
@@ -215,37 +210,53 @@ if __name__ == '__main__':
 	# 	print(v.name)
 	# quit()
 
-	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
-	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
+	# optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
+	# train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
 	saver = tf.train.Saver(max_to_keep = 3)
-	init = tf.global_variables_initializer()
+	# init = tf.global_variables_initializer()
+	city_name = city_name + sys.argv[2]
 
 	# Launch graph
 	with tf.Session() as sess:
 		# Restore weights
 		assert(len(sys.argv) > 1)
-		saver.restore(sess, './Model%s/Model%s-%s.ckpt' % (city_name, city_name, sys.argv[2]))
+		saver.restore(sess, './Model%s/Model%s-24800.ckpt' % (city_name, city_name))
 
 		f = open('Eval%s.csv' % city_name, 'w')
 		f.write('id,acc,pre,rec,f1s,iou\n')
 
-		for i in range(142, 200):
-			print('Round %d' % i)
+		ff = open('Time%s.csv' % city_name, 'w')
+		ff.write('round,area,num,building,fixbuilding\n')
+
+		for i in range(0, 300):
+			time_res = [i]
 			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {aa: img}
+
+			t = time.time()
 			pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
+			time_res.append(len(pred_box))
+			time_res.append(time.time() - t)
+
 			org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
 			feed_dict = {pp: patch}
+
+			t = time.time()
 			pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
+			time_res.append(time.time() - t)
+
 			path = './EvalAreaResult%s' % city_name
 			if not os.path.exists(path):
 				os.makedirs(path)
-			obj.recover(path, org_img, pred_box, i)
-			obj.recoverGlobal(path, org_img, org_info, pred_v_out, i)
+			obj.recoverGlobal(path, org_img, org_info, pred_v_out, pred_box, i)
 
 			img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info = obj.getBuildingsBatch(config.BUILDING_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {pp: img}
+
+			t = time.time()
 			pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
+			time_res.append(time.time() - t)
+
 			path = './EvalBuildingResult%s' % city_name
 			if not os.path.exists(path):
 				os.makedirs(path)
@@ -259,4 +270,9 @@ if __name__ == '__main__':
 				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
 			f.flush()
 
+			ff.write('%d,%.3lf,%d,%.3lf,%.3lf' % tuple(time_res))
+			ff.flush()
+
 		f.close()
+		f.close()
+

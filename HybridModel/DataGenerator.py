@@ -37,6 +37,18 @@ def rotateBox(size, box):
 	x1, y1, x2, y2 = box
 	return (h, w), (y1, w - x2, y2, w - x1)
 
+def overlay(img, mask):
+	"""
+		both img and mask PIL.Image, rgb
+	"""
+	img = img.convert('RGBA')
+	mask = np.array(mask, np.uint32)
+	alpha = np.sum(np.array(mask, np.int32), axis = 2)
+	alpha[alpha > 0] = 64
+	alpha = np.concatenate((mask, alpha), axis = 2)
+	alpha = Image.fromarray(np.array(alpha, np.uint8), mode = 'RGBA')
+	return Image.alpha_composite(img, alpha)
+
 class DataGenerator(object):
 	def __init__(self, city_name, img_size, v_out_res, max_num_vertices):
 		self.img_size = img_size
@@ -397,7 +409,7 @@ class DataGenerator(object):
 			for j in range(boxes.shape[0]):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
-				if h * w > 24 * 24 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
+				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
 					# y1, x1, y2, x2 = int(max(0, y1 - h * self.pad)), int(max(0, x1 - w * self.pad)), int(min(640, y2 + h * self.pad)), int(min(640, x2 + w * self.pad))
 					h, w = int(max(w, h) * 1.3), int(max(w, h) * 1.3)
 					cx, cy = (x1+x2)/2, (y1+y2)/2
@@ -406,41 +418,48 @@ class DataGenerator(object):
 						patch = np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize(config.PATCH_SIZE, resample = Image.BICUBIC), np.float32)
 						patches.append(patch - config.COLOR_MEAN['Buildings'][self.city_name])
 						org_info.append([i, y1, x1, y2, x2])
-		return self.area_imgs, np.array(patches), org_info
+		return self.area_imgs, np.array(patches), org_info		
 
-	def recover(self, path, imgs, res, base):
-		for i, img in enumerate(imgs):
-			a = img.copy()
-			boxes = res[i] * self.recover_rate
-			draw = ImageDraw.Draw(a)
+	def recoverGlobal(self, path, img, org_info, pred_v_out, pred_box, base):
+		for i, im in enumerate(img):
+			boxes = pred_box[i] * self.recover_rate
+			draw = ImageDraw.Draw(im)
 			for j in range(boxes.shape[0]):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
-				if h * w > 24 * 24 and y1 >= 0 and x1 >= 0 and y2 < a.size[1] and x2 < a.size[0]:
-					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (255, 0, 0))
-			a.save(path + '/box_%d_%d.png' % (base % 100, i))
-
-	def recoverGlobal(self, path, img, org_info, pred_v_out, base):
+				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < im.size[1] and x2 < im.size[0]:
+					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 255, 0))
 		batch_size = len(org_info)
 		assert(len(org_info) == pred_v_out.shape[1])
+		color_count = 0
+		len_c = len(config.TABLEAU20)
 		for kk in range(pred_v_out.shape[0]):
-			polygons = [[] for i in range(batch_size)]
+			masks = [[] for i in range(batch_size)]
 			for i in range(pred_v_out.shape[1]):
 				idx, y1, x1, y2, x2 = org_info[i]
 				w, h = x2 - x1, y2 - y1
-				draw = ImageDraw.Draw(img[idx])
+				polygon = []
+				mask = Image.fromarray(np.zeros((img[idx].size[1], img[idx].size[0], 3), np.uint8))
+				draw = ImageDraw.Draw(mask)
+				flag = False
 				for j in range(pred_v_out.shape[2]):
-					v = pred_v_out[kk, i, j]
+					v = pred_v_out[0, i, j]
 					if v.sum() >= 0.5:
 						r, c = np.unravel_index(v.argmax(), v.shape)
-						polygons[i].append((c/config.V_OUT_RES[0]*w+x1, r/config.V_OUT_RES[1]*h+y1))
+						polygon.append((c/config.V_OUT_RES[0]*w+x1, r/config.V_OUT_RES[1]*h+y1))
 					else:
-						polygons[i].append(polygons[i][0])
+						flag = True
 						break
-				draw.line(polygons[i], fill = config.TABLEAU20[kk], width = 2)
+				if flag:
+					mask = draw.line(polygons[i], fill = config.TABLEAU20[color_count % len_c], outline = TABLEAU20_DEEP[color_count % len_c])
+					color_count += 1
+					masks[idx].append(mask)
 			break
-		for i, im in enumerate(img):
-			im.save(path + '/%d_%d.png' % (base % 100, i))
+		for i, (im, mask) in enumerate(zip(img, masks)):
+			a = im.copy()
+			for msk in mask:
+				a = overlay(a, msk)
+			a.save(path + '/%d_%d.png' % (base, i))
 
 if __name__ == '__main__':
 	dg = DataGenerator(
