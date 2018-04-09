@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2017)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: thesis.aux
+The style file: ieeetr.bst
+Database file #1: refs.bib
+Warning--empty journal in forsytheimgseg
+You've used 35 entries,
+            1876 wiz_defined-function locations,
+            629 strings with 8687 characters,
+and the built_in function-call counts, 7199 in all, are:
+= -- 529
+> -- 409
+< -- 0
++ -- 149
+- -- 114
+* -- 488
+:= -- 1082
+add.period$ -- 37
+call.type$ -- 35
+change.case$ -- 35
+chr.to.int$ -- 0
+cite$ -- 36
+duplicate$ -- 468
+empty$ -- 825
+format.name$ -- 114
+if$ -- 1719
+int.to.chr$ -- 0
+int.to.str$ -- 35
+missing$ -- 36
+newline$ -- 110
+num.names$ -- 35
+pop$ -- 239
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 150
+stack$ -- 0
+substring$ -- 92
+swap$ -- 85
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 1
+while$ -- 42
+width$ -- 37
+write$ -- 296
+(There was 1 warning)
