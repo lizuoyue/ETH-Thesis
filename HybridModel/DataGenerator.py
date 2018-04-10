@@ -423,7 +423,7 @@ class DataGenerator(object):
 	def recoverGlobal(self, path, img, org_info, pred_v_out, pred_box, base):
 		bbox_mask = []
 		for i, im in enumerate(img):
-			mask = Image.fromarray(np.zeros((img[idx].size[1], img[idx].size[0], 3), np.uint8))
+			mask = Image.fromarray(np.zeros((im.size[1], im.size[0], 3), np.uint8))
 			draw = ImageDraw.Draw(mask)
 			boxes = pred_box[i] * self.recover_rate
 			for j in range(boxes.shape[0]):
