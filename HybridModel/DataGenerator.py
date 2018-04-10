@@ -455,7 +455,7 @@ class DataGenerator(object):
 						break
 				if flag:
 					draw.polygon(polygon, fill = config.TABLEAU20[color_count % len_c])
-					draw.line(polygon + polygon[0], fill = config.TABLEAU20_DEEP[color_count % len_c], width = 2)
+					draw.line(polygon + [polygon[0]], fill = config.TABLEAU20_DEEP[color_count % len_c], width = 2)
 					color_count += 1
 					masks[idx].append(mask)
 			break
