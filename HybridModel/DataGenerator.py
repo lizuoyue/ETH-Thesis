@@ -44,7 +44,7 @@ def overlay(img, mask):
 	img = img.convert('RGBA')
 	mask = np.array(mask, np.uint32)
 	alpha = np.sum(np.array(mask, np.int32), axis = 2)
-	alpha[alpha > 0] = 128
+	alpha[alpha > 0] = 160
 	alpha = np.expand_dims(alpha, axis = 2)
 	alpha = np.concatenate((mask, alpha), axis = 2)
 	alpha = Image.fromarray(np.array(alpha, np.uint8), mode = 'RGBA')
@@ -430,7 +430,7 @@ class DataGenerator(object):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < im.size[1] and x2 < im.size[0]:
-					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], fill = (0, 0, 0), outline = (44, 160, 44))
+					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 255, 0))
 			bbox_mask.append(mask)
 		batch_size = len(org_info)
 		assert(len(org_info) == pred_v_out.shape[1])
@@ -454,7 +454,8 @@ class DataGenerator(object):
 						flag = True
 						break
 				if flag:
-					draw.polygon(polygon, fill = config.TABLEAU20[color_count % len_c], outline = config.TABLEAU20_DEEP[color_count % len_c])
+					draw.polygon(polygon, fill = config.TABLEAU20[color_count % len_c])
+					draw.line(polygon + polygon[0], fill = config.TABLEAU20_DEEP[color_count % len_c], width = 2)
 					color_count += 1
 					masks[idx].append(mask)
 			break
