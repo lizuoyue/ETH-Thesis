@@ -430,7 +430,7 @@ class DataGenerator(object):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < im.size[1] and x2 < im.size[0]:
-					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 255, 0))
+					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 200, 0))
 			bbox_mask.append(mask)
 		batch_size = len(org_info)
 		assert(len(org_info) == pred_v_out.shape[1])
