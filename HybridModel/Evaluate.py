@@ -117,7 +117,8 @@ def visualize_pred(path, img, b_pred, v_pred, v_out_pred, v_out_res, patch_info,
 			polygon[i].append(polygon[i][0])
 		recover = [(int(x * w_rate), int(y * h_rate)) for x, y in polygon[i]]
 		c = np.random.randint(0, len(config.TABLEAU20))
-		draw.polygon(recover, fill = config.TABLEAU20[c], outline = config.TABLEAU20_DEEP[c])
+		draw.polygon(recover, fill = config.TABLEAU20[c])
+		draw.line(recover + [recover[0]], fill = config.TABLEAU20_DEEP[c], width = 2)
 		res = overlay(Image.fromarray(np.array(img[i], np.uint8)).resize(size = (w, h), resample = Image.BICUBIC), mask)
 		res.rotate(-patch_info[i, 2]).save(path + '/%d.png' % (idx + i))
 	# 
@@ -260,10 +261,10 @@ if __name__ == '__main__':
 			if not os.path.exists(path):
 				os.makedirs(path)
 			visualize_pred(path, img, pred_boundary, pred_vertices, pred_v_out[0], config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
-			path = './EvalBuildingResultGT%s' % city_name
-			if not os.path.exists(path):
-				os.makedirs(path)
-			visualize_pred(path, img, boundary, vertices, vertex_input, config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
+			# path = './EvalBuildingResultGT%s' % city_name
+			# if not os.path.exists(path):
+			# 	os.makedirs(path)
+			# visualize_pred(path, img, boundary, vertices, vertex_input, config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
 			res = score(org_info, vertex_input, pred_v_out[0])
 			for j, line in enumerate(res):
 				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
