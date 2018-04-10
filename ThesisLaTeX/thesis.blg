@@ -3,46 +3,44 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: thesis.aux
 The style file: ieeetr.bst
 Database file #1: refs.bib
-Warning--empty journal in forsytheimgseg
-You've used 35 entries,
+You've used 40 entries,
             1876 wiz_defined-function locations,
-            629 strings with 8687 characters,
-and the built_in function-call counts, 7199 in all, are:
-= -- 529
-> -- 409
+            652 strings with 9450 characters,
+and the built_in function-call counts, 8350 in all, are:
+= -- 619
+> -- 464
 < -- 0
-+ -- 149
-- -- 114
-* -- 488
-:= -- 1082
-add.period$ -- 37
-call.type$ -- 35
-change.case$ -- 35
++ -- 169
+- -- 129
+* -- 578
+:= -- 1250
+add.period$ -- 42
+call.type$ -- 40
+change.case$ -- 40
 chr.to.int$ -- 0
-cite$ -- 36
-duplicate$ -- 468
-empty$ -- 825
-format.name$ -- 114
-if$ -- 1719
+cite$ -- 40
+duplicate$ -- 531
+empty$ -- 968
+format.name$ -- 129
+if$ -- 1986
 int.to.chr$ -- 0
-int.to.str$ -- 35
-missing$ -- 36
-newline$ -- 110
-num.names$ -- 35
-pop$ -- 239
+int.to.str$ -- 40
+missing$ -- 41
+newline$ -- 125
+num.names$ -- 40
+pop$ -- 273
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 150
+skip$ -- 162
 stack$ -- 0
-substring$ -- 92
-swap$ -- 85
+substring$ -- 162
+swap$ -- 89
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 1
-while$ -- 42
-width$ -- 37
-write$ -- 296
-(There was 1 warning)
+warning$ -- 0
+while$ -- 51
+width$ -- 42
+write$ -- 339

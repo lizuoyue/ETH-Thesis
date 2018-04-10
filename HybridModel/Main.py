@@ -11,7 +11,7 @@ from UtilityBoxAnchor import *
 config = Config()
 
 if __name__ == '__main__':
-	assert(len(sys.argv) == 3)
+	assert(len(sys.argv) == 3 or len(sys.argv) == 4)
 	city_name = sys.argv[1]
 
 	# Define graph
@@ -67,12 +67,12 @@ if __name__ == '__main__':
 		valid_writer = Logger('./Log%s/valid/' % city_name)
 
 		# Restore weights
-		# if len(sys.argv) == 3 and sys.argv[1] != None:
-		# 	saver.restore(sess, './Model%s/Model%s-%s.ckpt' % (city_name, city_name, sys.argv[2]))
-		# 	iter_obj = range(int(sys.argv[2]) + 1, config.NUM_ITER)
-		# else:
-		sess.run(init)
-		iter_obj = range(config.NUM_ITER)
+		if len(sys.argv) == 3 and sys.argv[1] != None:
+			saver.restore(sess, './Model%s/Model%s-%s.ckpt' % (city_name, city_name, sys.argv[3]))
+			iter_obj = range(int(sys.argv[3]) + 1, config.NUM_ITER)
+		else:
+			sess.run(init)
+			iter_obj = range(config.NUM_ITER)
 
 		# Main loop
 		for i in iter_obj:

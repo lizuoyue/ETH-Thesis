@@ -66,7 +66,9 @@ The graph-based approach is proposed in the thesis work \cite{msnadine}, of whic
 
 Actually, each stage of the graph-based approach has its own unsupervised solutions. For corner detection, we have Harris \cite{harris}, SIFT \cite{sift}, SURF \cite{surf} and so on. For the similarity of two image patches, we have histogram-based \cite{histbook} and BoW-based (Bag-of-Words-based) methods \cite{bow}. For graph segmentation, we have graph's minimum cut, and unsupervised learning approaches like spectral clustering.
 
-However, each stage can also employ supervised learning methods, thus the parameters of each stage become learnable and trainable. Specifically, the thesis work \cite{msnadine} uses U-Net \cite{unet} as the corner detector, uses adapted siamese network (called ``triamese network" in the thesis work) described in \cite{siamese} to compute the probabilities for all potential corner pairs, and uses normalized cuts \cite{normcut} with its learning method \cite{normcutlearn} to segment individual objects. Figure \ref{fig:graphbased} shows two example results of the model, where the segmentation effect is just passable. In addition, the thesis work does not provide more complicated situation, such as the number of building corners larger than 4 or the building not horizontally or vertically aligned.
+However, each stage can also employ supervised learning methods, thus the parameters of each stage become learnable and trainable. Specifically, the thesis work \cite{msnadine} uses U-Net \cite{unet} as the corner detector, uses adapted siamese network (called ``triamese network" in the thesis work) described in \cite{siamese} to compute the probabilities for all potential corner pairs, and uses normalized cuts \cite{normcut} with its learning method \cite{normcutlearn} to segment individual objects. Figure \ref{fig:graphbased} shows two example results of the model, where the segmentation effect is just passable.
+
+In addition, the thesis work does not provide more complicated situation, such as the number of building corners larger than four or the building not horizontally or vertically aligned. In theory, even if we find the vertices of an instance, it is also very difficult to determine their orders in order to form a polygon, which requires further processing.
 
 \input{fig/2-08}
 
@@ -84,46 +86,51 @@ From the figure we can see that, different from general superpixel-based methods
 Paper \cite{kippi} also show the applicative potential of the method when used as preprocessing in object contouring. To achieve polygonal object contouring from its partition, the paper associate each polygon with a binary activation variable indicating if it belongs to the objects of interest or not. The output polygonal contours correspond to the set of edges separating active polygons from inactive ones, which ensures that the contours are closed by construction. Figure \ref{fig:kippiarlimg} shows its application in segmenting buildings in an aerial image.
 
 \subsection{Bounding Box Covering Approach}\label{bboxapp}
-Additionally, the thesis work \cite{msnadine} proposes another approach, which utilizes the RPN part in Faster R-CNN \cite{fasterrcnn} and adds a branch for the orientation degree. It predicts the rotated bounding boxes to best cover each building instance in an aerial image. Thus, the problem here becomes a parameters regression problem, which aims at finding out the center coordinates, width, height, and the rotation degrees of the bounding box. 
+Additionally, the thesis work \cite{msnadine} proposes another approach, which we call bounding box covering approach. It utilizes the RPN in Faster R-CNN \cite{fasterrcnn} and additionally adds a branch for calculating the orientation degree. It predicts the rotated bounding box to best cover each building instance in an aerial image. Thus, the problem here becomes a parameters regression problem, which is to find out the center coordinates, width, height, and the rotation degrees of the bounding box. 
 
-The model used here is the adapted RPN. As mentioned in subsection \ref{dlistseg}, the role of RPN part in Faster R-CNN is to find RoIs, which are generally represented as bounding boxes or rectangles. This kind of representation can be very suitable for horizontally or vertically aligned buildings. But we know that buildings' orientations are not always regular, many of them are inclined in the image. Therefore, in this thesis project, RPN is adapted and another branch for rotating the bounding box is added. This can make the boundary of the bounding box closer to the building.
-
-Figure \ref{fig:rotbbox} shows an example output. We can see from the figure that each building instance can correspond to a rotated bounding box, and can be also limited tightly to the box. Results show that this method can detect buildings very well, but the geometrical shapes found are limited to rectangles and cannot be more precise.
+The model used here is the adapted RPN. As mentioned in subsection \ref{dlistseg}, the role of RPN in Faster R-CNN is to find RoIs, which are generally represented as bounding boxes or rectangles. This kind of representation can be very suitable for horizontally or vertically aligned buildings. But we know that buildings' orientations are not always regular, many of them are inclined in the image. Therefore, in this thesis project, RPN is adapted and another branch for rotating the bounding box is added. This can make the boundary of the bounding box closer to the building.
 
 \input{fig/2-11}
 
+Figure \ref{fig:rotbbox} shows an example output. We can see from the figure that each building instance corresponds to a rotated bounding box, and is also limited tightly to the box. Results show that this method can detect buildings very well, but the geometrical shapes found are limited to rectangles and cannot be more precise for buildings that are not rectangular in shape.
+
 \subsection{PolygonRNN}\label{polygonrnn}
-PolygonRNN \cite{polygonrnn} aims at exploiting geometrical shape for an object instance, given its bounding box. The model is originally proposed for speeding up labeling the ground truth since it can achieve semi-automatic annotation of object instances, but the model can be used for single instance segmentation as well.
+PolygonRNN \cite{polygonrnn} aims at exploiting geometrical shape for single object instance within an image. The model is originally proposed for speeding up manually contouring the object since it can achieve semi-automatic annotation of object instances, but the model can also be used for geometrical segmentation for single instance as well.
 
 Most current methods regard the instance segmentation problem as a pixel-wise classification problem, generally labeling each pixel as object or background (see figure \ref{fig:egpxlmsk} for example). Different from this traditional way, the paper treats the segmentation task as a polygon prediction problem. In particular, PolygonRNN takes the image of instance as input and sequentially produces vertices of the polygon outlining the object (see figure \ref{fig:egpoly} for example).
 
 \input{fig/2-01}
 
-We know that predicting a polygon is equivalent to predicting each of its vertices. Thus, the paper regards polygon as a series of vertices, and uses RNN as the model to make coherent prediction. RNN is very powerful when data is related to time series as it can carry complex information about the history. In this case, the prediction of each vertex is dependent on the position of its two previous vertices. The paper also mentioned that another advantage over traditional methods is that RNN can capture the shape of the object even in ambiguous cases like shadows and saturation.
+We know that predicting a polygon is equivalent to predicting each of its vertices. Thus, the paper regards polygon as a series of vertices, and uses RNN as the model to make coherent prediction. RNN is very powerful when data is related to time series as it can carry complex information about the history. In this case, the prediction of each vertex is dependent on the position of its two previous vertices. The paper also mentioned that another advantage over traditional methods is that RNN can capture the shape of the object even in ambiguous cases like shadows and saturation. In short, PolygonRNN can directly learn and predict the geometry of an object. For more details of the model architecture, please refer to section \ref{modpoly}.
 
 \section{Motivation}\label{motivation}
-Table \ref{tab:summod} makes a summary for all models mentioned in this chapter. From the table we can conclude that none of these models meets our requirements. Thus, combination of two or even more models becomes necessary.
+Table \ref{tab:summod} makes a summary for all models introduced in this chapter.
 
 \begin{table}[!h]
 	\centering
 	\caption[Summary of related work]{Summary of related work.}
 	\label{tab:summod}
-	\begin{tabular}{l|l|l|l}
+	\begin{tabularx}{\textwidth}{l|X|X|X|X}
 	\hline
-	Model & Detection & Geometry & Classification \\ \hline
-	FCN & Limited\tablefootnote{As mentioned in subsection \ref{imgseg}, localization requires further pixel connectivity detection.} & No & \textbf{Yes} \\
-	Mask R-CNN & \textbf{Yes} & No & \textbf{Yes} \\
-	RPN/FPN & \textbf{Yes} & No & No \\ \hline
-	Graph-based & \textbf{Yes} & \textbf{Yes} & No \\
-	KIPPI & \textbf{Yes} & \textbf{Yes} & No \\
-	Adapted RPN & \textbf{Yes} & Limited\tablefootnote{As mentioned in section \ref{rotbbox}, only rotated bounding boxes are found.} & No \\
-	PolygonRNN & No & \textbf{Yes} & No \\ \hline
-	What We Want & \textbf{Yes} & \textbf{Yes} & N/A \tablefootnote{Segmentation of roads is currently not considered in our project, thus the cell here shows `N/A'.} \\
+	\textbf{Model} & \textbf{Detection} & \textbf{Geometry} & \textbf{Classifica-tion} & \textbf{End-to-end} \\ \hline
+	FCN \cite{fcn, mspascal} & Limited\footnotemark[1] & No & \textbf{Yes} & \textbf{Yes} \\
+	Mask R-CNN \cite{maskrcnn} & \textbf{Yes} & No & \textbf{Yes} & \textbf{Yes} \\
+	RPN \cite{fasterrcnn} or FPN \cite{fpn} & \textbf{Yes} & No & No & \textbf{Yes} \\ \hline
+	Graph-based \cite{msnadine} & \textbf{Yes} & Limited\footnotemark[2] & No & No\footnotemark[3] \\
+	KIPPI \cite{kippi} & Limited\footnotemark[4] & \textbf{Yes} & No & No\footnotemark[5]\\
+	Adapted RPN \cite{msnadine} & \textbf{Yes} & Limited\footnotemark[6] & No & \textbf{Yes} \\
+	PolygonRNN \cite{polygonrnn} & No & \textbf{Yes} & No & \textbf{Yes} \\ \hline
+	\textbf{What We Want} & \textbf{Yes} & \textbf{Yes} & N/A\footnotemark[7] & \textbf{Yes} \\
 	\hline
-	\end{tabular}
+	\end{tabularx}
 \end{table}
+\footnotetext[1]{As mentioned in subsection \ref{imgseg}, object detection requires further processing of pixel connectivity detection.}
+\footnotetext[2]{As mentioned in subsection \ref{graph}, the thesis work does not provide the result for more complicated geometry, and in theory, even if we find the vertices of an instance, it requires further processing to determine their orders to form a polygon.}
+\footnotetext[3]{As mentioned in paper \cite{msnadine}, the whole model is a step-by-step process, each step is trained separately, so here we do not consider it is an end-to-end training.}
+\footnotetext[4]{As mentioned in subsection \ref{ppapp}, the object outline is form by edges separating active and inactive polygons. However, differentiating multiple instances requires further detection of edge connectivity in the graph.}
+\footnotetext[5]{Since detection and geometrical segmentation are both based on the polygonal partition result, here we do not regard it as an end-to-end training.}
+\footnotetext[6]{As mentioned in section \ref{bboxapp}, the shape is only limited to rectangle.}
+\footnotetext[7]{Segmentation for roads is currently not considered in our project, thus the cell here shows ``N/A", meaning not applicable.}
 
-After observation, we propose a possible approach, simply replacing the mask branch in Mask R-CNN with PolygonRNN so that the modified model can predict polygon rather than pixel-wise mask for each RoI. This model takes advantages from both models, thus it can be applied to our problem. In practice, we just combine FPN and PolygonRNN and name it a new model \modelnameshort\ (\modelnamelong), of which the architecture is shown in detail in section \ref{modmer}.
-
-In short, we hope that PolygonRNN can be used to solve our problems, extracting geometric shapes of buildings in aerial images, since the buildings in such images can be also regarded as polygons. For more details of the model architecture, please refer to section \ref{modpoly}.
+From the table we can conclude that none of these models meets our requirements. Thus, combination of two or even more models becomes necessary. After observation, we propose a possible approach, simply replacing the mask branch in Mask R-CNN with PolygonRNN and removing the classification branch, so that the adapted model can predict polygon rather than per-pixel mask for each RoI. This model takes advantages from both models, thus can be applied to our problem. In practice, we combine FPN and PolygonRNN and name it a new model \modelnameshort\ (\modelnamelong), of which the architecture is shown in detail in section \ref{modmer}.
 

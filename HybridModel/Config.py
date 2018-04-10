@@ -27,7 +27,7 @@ class Config(object):
 		# Learning parameters
 		self.PATH_A = '/local/lizuoyue/Areas%s'
 		self.PATH_B = '../../Buildings%s.zip'
-		self.NUM_ITER = 25000
+		self.NUM_ITER = 30001
 		self.MAX_NUM_VERTICES = 21
 		self.LEARNING_RATE = 0.0001
 		self.LSTM_OUT_CHANNEL = [32, 16, 8]

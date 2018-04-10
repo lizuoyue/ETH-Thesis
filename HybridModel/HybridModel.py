@@ -105,12 +105,15 @@ class HybridModel(object):
 		if not reuse:
 			n_b   = tf.reduce_sum(gt_boundary) / batch_size
 			loss  = tf.losses.log_loss(labels = gt_boundary, predictions = boundary,
-				weights = (gt_boundary * (self.res_num - 2 * n_b) + n_b)
+				# weights = (gt_boundary * (self.res_num - 2 * n_b) + n_b)
+				weights = (gt_boundary * (0.5 / n_b))
 			)
 			n_v   = tf.reduce_sum(gt_vertices) / batch_size
 			loss += tf.losses.log_loss(labels = gt_vertices, predictions = vertices,
-				weights = (gt_vertices * (self.res_num - 2 * n_v) + n_v))
-			loss /= 16
+				# weights = (gt_vertices * (self.res_num - 2 * n_v) + n_v)
+				weights = (gt_boundary * (0.5 / n_v))
+			)
+			# loss /= 16
 			return combine, loss
 		else:
 			prob, idx = tf.nn.top_k(tf.reshape(vertices, [-1, self.res_num]), k = config.BEAM_WIDTH)
@@ -216,8 +219,9 @@ class HybridModel(object):
 		labels = tf.gather_nd(anchor_class, indices) # num_valid_anchors, 2
 		pos_num = tf.reduce_sum(labels[:, 0])
 		neg_num = tf.reduce_sum(labels[:, 1])
-		total_num = pos_num + neg_num
-		w = tf.stack([labels[:, 0] * neg_num / total_num, labels[:, 1] * pos_num / total_num], axis = 1)
+		# total_num = pos_num + neg_num
+		# w = tf.stack([labels[:, 0] * neg_num / total_num, labels[:, 1] * pos_num / total_num], axis = 1)
+		w = tf.stack([labels[:, 0] * 0.5 / pos_num, labels[:, 1] * 0.5 / neg_num], axis = 1)
 		return tf.reduce_mean(tf.losses.log_loss(labels = labels, predictions = tf.nn.softmax(logits), weights = w))
 
 	def RPNDeltaLoss(self, anchor_class, anchor_delta, pred_delta):

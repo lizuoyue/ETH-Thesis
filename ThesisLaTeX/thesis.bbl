@@ -17,12 +17,12 @@ N.~Silberman, D.~Sontag, and R.~Fergus, ``{Instance Segmentation of Indoor
 \bibitem{imgsegclustering}
 L.~arghout and J.~Sheynin, ``{Real-world scene perception and perceptual
   organization: Lessons from Computer Vision},'' {\em {Journal of Vision}},
-  vol.~13, no.~9, p.~709–709, 2013.
+  vol.~13, no.~9, pp.~709–--709, 2013.
 
 \bibitem{imgsegcompress}
 H.~Mobahi, S.~Rao, A.~Yang, S.~Sastry, and Y.~Ma, ``{Segmentation of Natural
   Images by Texture and Boundary Compression},'' {\em {International Journal of
-  Computer Vision}}, no.~95, p.~86–98, 2011.
+  Computer Vision}}, no.~95, pp.~86–--98, 2011.
 
 \bibitem{imgsegregion}
 R.~Nock and F.~Nielsen, ``{Statistical Region Merging},'' {\em {IEEE
@@ -118,11 +118,6 @@ N.~R{\"u}egg, ``{Segmenting Aerial Images into Polygonal Shapes with Deep
   Learning },'' Master's thesis, Swiss Federal Institute of Technology (ETH
   Z{\"u}rich), 2016.
 
-\bibitem{kippi}
-J.-P. Bauchet and F.~Lafarge, ``{KIPPI: KInetic Polygonal Partitioning of
-  Images},'' in {\em IEEE Conference on Computer Vision and Pattern Recognition
-  (CVPR)}, 2018.
-
 \bibitem{harris}
 C.~Harris and M.~Stephens, ``{A Combined Corner and Edge Detector},'' in {\em
   {4th Alvey Vision Conference}}, 1988.
@@ -147,8 +142,7 @@ F.-F. Li and P.~Perona, ``{A Bayesian Hierarchical Model for Learning Natural
 \bibitem{siamese}
 L.~Chen, F.~Rottensteiner, and C.~Heipke, ``{Invariant Descriptor Learning
   Using a Siamese Convolutional Neural Network},'' in {\em {ISPRS Annals of
-  Photogrammetry, Remote Sensing and Spatial Information Sciences}},
-  pp.~11--18, 2016.
+  Photogrammetry, Remote Sensing and Spatial Information Sciences}}, 2016.
 
 \bibitem{normcut}
 J.~Shi and J.~Malik, ``{Normalized cuts and image segmentation},'' in {\em
@@ -160,12 +154,42 @@ C.~Ionescu, O.~Vantzos, and C.~Sminchisescu, ``{Matrix Backpropagation for Deep
   Networks with Structured Layers},'' in {\em {IEEE International Conference on
   Computer Vision (ICCV)}}, 2015.
 
+\bibitem{kippi}
+J.-P. Bauchet and F.~Lafarge, ``{KIPPI: KInetic Polygonal Partitioning of
+  Images},'' in {\em IEEE Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, 2018.
+
 \bibitem{forsytheimgseg}
 J.~Forsythe, V.~Kurlin, and A.~Fitzgibbon, ``{Resolution-Independent
-  Superpixels Based on Convex Constrained Meshes Without Small Angles},'' 2016.
+  Superpixels Based on Convex Constrained Meshes Without Small Angles},'' in
+  {\em International Symposium on Visual Computing (ISVC)}, 2016.
 
 \bibitem{duanimgseg}
 L.~Duan and F.~Lafarge, ``{Image Partitioning into Convex Polygons},'' in {\em
   IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 2015.
+
+\bibitem{vgg16}
+K.~Simonyan and A.~Zisserman, ``{Very Deep Convolutional Networks for
+  Large-Scale Image Recognition},'' in {\em International Conference on
+  Learning Representations (ICLR)}, 2015.
+
+\bibitem{alexnet}
+A.~Krizhevsky, I.~Sutskever, and G.~E. Hinton, ``{ImageNet Classification with
+  Deep Convolutional Neural Networks},'' in {\em International Conference on
+  Neural Information Processing Systems (NIPS)}, 2012.
+
+\bibitem{relu}
+V.~Nair and G.~E. Hinton, ``{Rectified Linear Units Improve Restricted
+  Boltzmann Machines},'' in {\em International Conference on Machine Learning
+  (ICML)}, 2010.
+
+\bibitem{convlstm}
+X.~Shi, Z.~Chen, H.~Wang, D.~Yeung, W.~Wong, and W.~Woo, ``{Convolutional LSTM
+  Network: A Machine Learning Approach for Precipitation Nowcasting},'' in {\em
+  IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 2015.
+
+\bibitem{lstm}
+S.~Hochreiter and J.~Schmidhuber, ``Long short-term memory,'' {\em Neural
+  Computation}, vol.~9, no.~8, pp.~1735--1780, 1997.
 
 \end{thebibliography}

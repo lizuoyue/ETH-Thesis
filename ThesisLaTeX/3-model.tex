@@ -1,45 +1,54 @@
 \chapter{Model Architecture}\label{mdlarc}
+In this chapter, the architectures of several models are presented. Section \ref{modpoly} gives a comprehensive explanation to the structure of PolygonRNN, while section \ref{modfpn} gives basic concepts in both single and multiple bounding box(es) regression and looks into FPN.
 
-In this chapter, the architectures of several models are presented. Section \ref{modpoly} gives a comprehensive explanation to the structure of PolygonRNN, while section \ref{modfpn} looks into the FPN part of Mask R-CNN. Considering our problem, we combine PolygonRNN and FPN part of Mask R-CNN together and come up with a new model, which is called \modelnameshort\ (\modelnamelong, see section \ref{modmer}). In theory, the proposed model can find out the bounding boxes of buildings within an aerial image and give geometrical shape for each building.
+Considering our problem, we combine PolygonRNN and FPN together and come up with a new model, which is called \modelnameshort\ (\modelnamelong, see section \ref{modmer}). In theory, the proposed model can find out the bounding boxes for buildings within an aerial image and give geometrical shape for each building.
  
 \section{PolygonRNN}\label{modpoly}
 
-PolygonRNN is the core model for finding geometrical shapes in this project. Figure \ref{fig:simppoly} shows the simplified structure of PolygonRNN. The CNN part (see subsection \ref{modcnn}) can capture image features through multilayer convolutions and max pooling, which is then fed into the RNN part (see subsection \ref{modrnn}), which can sequentially predict spatial location of the new vertex with the highest probability at each time step.
+PolygonRNN is the core model for exploiting geometrical shapes in this thesis project. Figure \ref{fig:simppoly} shows its simplified architecture, which consists of two parts. The CNN part (see subsection \ref{modcnn}) can capture image features through multilayer convolutions and maximum pooling. Those captured features are then fed into the RNN part (see subsection \ref{modrnn}), which sequentially predicts spatial location of the new vertex with the highest probability at each time step.
 
 \input{fig/3-00}
 
 \subsection{CNN Part}\label{modcnn}
+The CNN part of PolygonRNN uses VGG-16 \cite{vgg16}. Actually, VGG-16 is a form of VGGNet \cite{vgg16}, which is very structured and focusing on deepening the  neural network without a large number of parameters. It generally believes that deeper networks have stronger expressive capabilities than shallow networks, and can accomplish more complex tasks. It also proven in practice that VGGNet has made great progress in performance compared to its previous network architecture (e.g. AlexNet \cite{alexnet}).
 
-The CNN part of PolygonRNN uses VGG-16. Actually, VGG-16 is a form of VGGNet, which is very structured and focusing on deepening the  neural network without a large number of parameters. It generally believes that deeper networks have stronger expressive capabilities than shallow networks, and can accomplish more complex tasks. It also proven in practice that VGGNet has made great progress in performance compared to its previous network architecture (e.g. AlexNet).
-
-The `16' in VGG-16 means that it is a VGGNet with 16 layers containing parameters (13 convolutional layers and 3 fully connected layers). It has around 138 million parameters in total. Figure \ref{fig:vgg16} shows its detailed network structure. From the figure we can see that VGG-16 continuously does convolution with $3\times3$ small kernels and makes $2\times2$ max pooling. As the network deepens, the width and height of the image are reduced by half after each max pooling, and the number of channels is also doubly increasing after some convolution.
+The ``16" in VGG-16 means that it is a VGGNet with 16 layers containing parameters (13 convolutional layers and 3 fully connected layers). It has around 138 million parameters in total. Figure \ref{fig:vgg16} shows its detailed network structure. From the figure we can see that VGG-16 continuously does convolution with 3$\times$3 small kernels and makes 2$\times$2 maximum pooling. As the network deepens, the width and height of the image are reduced by half after each maximum pooling, and the number of channels is also doubly increasing after some convolutional layers.
 
 \input{fig/3-01}
 
-VGG-16 was mostly used for image classification before, so after the convolutional layers and max pooling layers there are fully connected layers and softmax layer for the class labels. However, these two kinds of layers are not required for VGG-16 used in PolygonRNN, because the CNN here is working as a feature extractor and mask predictor. Layer \lstinline{pool5} is omitted as well because of the too low resolution.
+VGG-16 was mostly used for image classification before. Hence, after the convolutional layers and maximum pooling layers, there are fully connected layers and softmax layer for the class labels. However, these two kinds of layers are not required for VGG-16 used in PolygonRNN, because the CNN here is working as a feature extractor and mask predictor. Layer \lstinline{pool5} is omitted as well because of the too low resolution.
 
-\paragraph{Feature Extraction} The modified VGG-16 provides RNN with useful features, which are taken from different convolutional and max pooling layers. Specifically, the features are extracted from layers \lstinline{pool2}, \lstinline{pool3}, \lstinline{conv4_3} and \lstinline{conv5_3}. Note that since the resolution of final features is fixed, when taking features from layer \lstinline{pool2} and \lstinline{conv5_3}, it requires another max pooling and upsampling respectively. All of these can be seen in figure \ref{fig:mdfvgg16}.
+\paragraph{Feature Extraction} The modified VGG-16 provides RNN with useful features, which are taken from different convolutional and maximum pooling layers. Thus, similar to FCN mentioned in subsection \ref{dlsemseg}, the network here also uses skip connection. Specifically, the features are extracted from layers \lstinline{pool2}, \lstinline{pool3}, \lstinline{conv4_3} and \lstinline{conv5_3}. Note that since the resolution of final features is fixed, when taking features from layer \lstinline{pool2} and \lstinline{conv5_3}, it requires another maximum pooling and upsampling respectively. All of these processes can be seen in figure \ref{fig:mdfvgg16}.
 
 \input{fig/3-02}
 
 \paragraph{Mask Prediction}
-Another function of the CNN part is to predict masks of boundary and vertices in a low resolution (one eighth of the original). Figure \ref{fig:vgg16mask} shows the mask prediction phase. Different from the ReLU function used in the former convolutional layers, the activation function used here is the sigmoid function. Each entry of the boundary or the vertices mask indicates the probability that the pixel is located in the boundary or is a vertex respectively. The features and two masks are then sent into RNN together.
+Another function of the CNN part is to predict masks of boundary and vertices in a low resolution (one eighth of the original). Figure \ref{fig:vgg16mask} shows the mask prediction phase. Different from the ReLU (Rectified Linear Units) \cite{relu} non-linearity used in the former convolutional layers, the activation function used here is the general sigmoid function.
+
 \input{fig/3-03}
 
+Each entry of the boundary or the vertices mask indicates the probability that the pixel is located in the boundary or is a vertex, respectively. The features and two masks are then sent into RNN together. In addition, the two masks are used to calculate the loss of CNN part. For the loss function used here, please refer to subsection \ref{losspoly}.
+
 \subsection{RNN Part}\label{modrnn}
-The model used for predicting polygon vertices is RNN. We have already mentioned in subsection \ref{relatpoly} that RNN is very powerful when data is related to time series, and in our case, we regards the polygon as a series of vertices.
+The basic model used for predicting polygon vertices is RNN. We have already mentioned in subsection \ref{polygonrnn} that RNN is very powerful when data is related to time series, and in our case, we regards the polygon as a series of vertices.
 
-We know that given two vertices on a polygon in an order (either clockwise or anticlockwise), the third vertex after the two points can be uniquely determined. What RNN here can do is to predict the probability distribution of the next vertex's position in a low resolution when given the history information about the two vertices before, as well as the image features and the position of the starting vertex. This process can be formulated as follows.
+As we know, given two adjacent vertices on a polygon in an specific order (either clockwise or anticlockwise), the third vertex after the two points can be uniquely determined. What RNN here can do is to predict the probability distribution of the next vertex's position when given the history information about the two vertices before. The calculation process also requires the image features and the position of the starting vertex, which is formulated as follows.
 \begin{equation}\label{eq:vnext}
-	p(v_t \mid v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, f), \forall t \in \{2,3,4,\ldots,T\},
+	P(v_t \mid v_{t-1}, v_{t-2}) = F(v_{t-1}, v_{t-2}, v_0, f), \forall t \in \{2,3,\ldots,T\},
 \end{equation}
-where $f$ denotes the extracted features by CNN (including the masks of boundary and vertices), $F(\cdot)$ denotes a function for computing the conditional probability, $T$ denotes the number of vertices of the polygon, $v_t$ denotes the vertex position at $t$-th prediction. Specifically, the vertex prediction problem can be formulated as a classification problem. The position of $v_t$ can be then quantized to the resolution of output grid, and we can thus use one-hot encoding for $v_t$'s representation.
+where $f$ denotes the extracted features by CNN (including both masks of boundary and vertices as well), $F(\cdot)$ denotes a function (actually the simulation of RNN) for computing the conditional probability, $T$ denotes the number of vertices of the polygon, $v_t$ denotes the vertex position at $t$-th prediction. Specifically, the vertex prediction problem can be formulated as a classification problem. The position of $v_t$ can be then quantized to the resolution of output grid, and we can thus use one-hot encoding for $v_t$'s representation.
 
-\paragraph{End Signal} Note that the positions for $v_t$ are not only limited to the general output grid, the end signal for the closure detection of the polygon is also embedded in $v_t$, just like the `end of sequence' token \lstinline{<eos>} or \lstinline{</s>} in the RNN language model. Thus, the number possible assignments of $v_t$ equals to the resolution of the output grid plus one ($28\times28+1=785$ in our case). In order to correctly predict the end signal, the starting vertex $v_0$ is required for the conditional probability (equation \ref{eq:vnext}) calculation, as it tells the model when to finish the prediction phase. If the current prediction is the same as, or very close to the starting vertex $v_0$, $v_t$ will be forced to raise the end signal, indicating that the entire polygon is close, and the prediction phase is therefore complete. So generally, the end signal works when $t=T$.
+\paragraph{End Signal} Note that the positions for $v_t$ are not only limited to the general output grid, the end signal for the closure detection of the polygon is also embedded in $v_t$'s assignments, just like the ``end of sequence" token \lstinline{<eos>} or \lstinline{</s>} in RNN language model. Thus, the number possible assignments of $v_t$ equals to the resolution of the output grid plus one ($28\times28+1=785$ in our case). In order to correctly predict the end signal, the starting vertex $v_0$ is required for the conditional probability (equation \ref{eq:vnext}) calculation, as it tells the model when to finish the prediction phase. If the current prediction is the same as, or very close to the starting vertex $v_0$, $v_t$ will be forced to raise the end signal, indicating that the entire polygon is close, and the prediction phase is therefore complete. So generally, the end signal works when $t=T$.
 
-\paragraph{Starting Vertex} In equation \ref{eq:vnext}, two special cases $p(v_0)$ and $p(v_1 \mid v_0)$ are not included yet. These two cases are different from the general case, and should be considered in addition. In particular, we can directly regard the mask of vertices (for example, the rightmost image in figure \ref{fig:vgg16mask}) predicted by the CNN as $v_0$'s unnormalized probability distribution $\tilde{p}(v_0)$, and choose the position with the highest probability for $v_0$'s assignment. As $v_0$ is known, there are typically two options for $v_1$, one is the next vertex on its left direction and another on right direction. To tackle this problem, we can simply specify the order of the polygon vertices to be fixed, so that $v_1$ can be uniquely determined. In our project, the order of polygon is set to be anticlockwise.
+\paragraph{Starting Vertex} In equation \ref{eq:vnext}, two special cases $P(v_0)$ and $P(v_1 \mid v_0)$ are not included yet. These two cases are different from the general case, and should be considered in addition. In particular, we can directly regard the mask of vertices (for example, the rightmost image in figure \ref{fig:vgg16mask}) predicted by the CNN as $v_0$'s unnormalized probability distribution $\tilde{P}(v_0)$, and choose the position with the highest probability for $v_0$'s assignment. As $v_0$ is known, there are typically two options for $v_1$, one is the next vertex on its left direction and another on right direction. To tackle the problem of vertices ordering, we can simply specify the order of polygon vertices to be fixed, so that $v_1$ can be uniquely determined. In our project, the order of polygon is set to be anticlockwise, and in practice, we simply use equation \ref{eq:vsecond} to get the conditional probability distribution of $v_1$ given $v_0$.
+\begin{equation}\label{eq:vsecond}
+	P(v_1 \mid v_0) = F(v_0, v_0, v_0, f).
+\end{equation}
 
-\paragraph{ConvLSTM} The RNN uses ConvLSTM (Convolutional LSTM) cells as the polygon decoder to sequentially predict vertices. For simplicity, we can regard ConvLSTM as the function $F(\cdot)$ in equation \ref{eq:vnext}. In fact, the structure of a ConvLSTM cell is almost the same as that of an ordinary LSTM cell, except that it employs convolution in a 2D image with multiple channels instead of matrices or vectors multiplication. The introduction of ConvLSTM can significantly reduce the the number of parameters when it is compared with a fully connected RNN. The following equations define the computation process within a ConvLSTM cell, which is also visualized in figure \ref{fig:lstmcell}.
+\paragraph{ConvLSTM} The RNN uses ConvLSTM (Convolutional LSTM) \cite{convlstm} cells as the polygon decoder to sequentially predict vertices. For simplicity, we can regard ConvLSTM as the function $F(\cdot)$ in equations \ref{eq:vnext} and \ref{eq:vsecond}. In fact, the structure of a ConvLSTM cell is almost the same as that of an ordinary LSTM (Long Short-Term Memory) \cite{lstm} cell, except that it employs convolution in a 2D image with multiple channels instead of multiplication of matrices and vectors. The introduction of ConvLSTM can significantly reduce the the number of parameters when compared with a fully connected RNN. The following equations define the computation process within a ConvLSTM cell, which is also visualized in figure \ref{fig:lstmcell}.
+
+\input{fig/3-04}
+
 \begin{equation}
 	\left[\begin{array}{c}
 		f_t\\i_t\\g_t\\o_t
@@ -59,10 +68,10 @@ where $f$ denotes the extracted features by CNN (including the masks of boundary
 \end{equation}
 where $x_t$, $h_t$, $c_t$ denote the input, the hidden state (or cell output), and the cell state of the cell at time step $t$ respectively, $i_t$, $o_t$, $f_t$ denote the states of input, output, and forget gate at time step $t$ respectively, $g_t$ denotes an intermediate variable, $\sigma(\cdot)$, $*$, $\circ$ denote the sigmoid function, convolution, and Hadamard (element-wise) product respectively, $W_x$ and $W_h$ denotes two convolution kernels for $x_t$ and $h_t$ respectively, $W_{xf}$, $W_{xi}$, $W_{xg}$, $W_{xo}$ denote the four components of $W_x$ in the dimension of channels and $W_{hf}$, $W_{hi}$, $W_{hg}$, $W_{ho}$ denote the four components of $W_h$ in the dimension of channels.
 
-\input{fig/3-04}
+\input{fig/3-05}
 
 \paragraph{Multilayer RNN}
-PolygonRNN uses multilayer RNN with ConvLSTM cells. The connection between two neighboring layers can be described as follows, which means that the cell input of this layer comes from the cell output of the previous layer.
+PolygonRNN uses multilayer RNN with ConvLSTM cells. The connection between two neighboring layers can be described as follows, which means that the cell input of the current layer comes from the cell output of the previous layer.
 \begin{equation}\label{eq:cellconnect}
 	x_t^{(k)} = h_t^{(k-1)}, \forall k \in \{2,3,\ldots,n\},
 \end{equation}
@@ -70,18 +79,34 @@ where $n$ is the number of RNN layers or ConvLSTM cells, $k$ in the superscript 
 \begin{equation}\label{eq:concat}
 	x_t = x_t^{(1)} = v_{t-1} \oplus v_{t-2} \oplus v_0 \oplus f,
 \end{equation}
-where $\oplus$ denotes the concatenation operation in the dimension of image channel. Thus, the equation \ref{eq:vnext} can be written as follows.
+where $\oplus$ denotes the concatenation operation in the dimension of channels. Thus, the equation \ref{eq:vnext} can be written as follows.
 \begin{equation}\label{eq:probcomp}
-	y_t = p(v_t \mid v_{t-1}, v_{t-2}) = \text{softmax}(W_y\text{vec}(h_t^{(n)})),
+	y_t = P(v_t \mid v_{t-1}, v_{t-2}) = \text{softmax}(W_y\text{vec}(h_t^{(n)})),
 \end{equation}
 where $W_y$ denotes the weights of the final fully connected layer, $\text{vec}(\cdot)$ denotes the vectorization function for a matrix. Figure \ref{fig:rnnconvlstm} shows the entire structure of the RNN part and highlights the process at time step $t$, using the same notation as the equations \ref{eq:cellconnect}, \ref{eq:concat} and \ref{eq:probcomp}.
 
-\input{fig/3-05}
-
 Note that at each time step, the features, the masks of boundary and vertices as well as the one-hot encoding of starting vertex are fixed. Only $v_{t-1}$ and $v_{t-2}$ change over time.
 
-\subsection{Loss Function}
-The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The loss function of CNN part uses log loss, since the mask prediction is equivalent to binary classification for each pixel. We also notice that the non-boundary pixels or the non-vertex pixels occupy the majority, the loss function should be further weighted. As for the loss of RNN, the loss function used is cross-entropy loss, because the polygon prediction is equivalent to multiclass classification at every time step.
+\subsection{Loss Function}\label{losspoly}
+The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The loss function of CNN part uses log loss, since the mask prediction is equivalent to binary classification for each pixel. We also notice that the non-boundary pixels or the non-vertex pixels occupy the majority, the loss function should be further weighted.
+\begin{equation}
+	L(M, M^*) = \sum_{i, j} \left[w_p\mathbb{1}[M_{ij} = 1]\log{\frac{1}{M^*_{ij}}} + w_n\mathbb{1}[M_{ij} = 0]\log{\frac{1}{1-M^*_{ij}}} \right],
+\end{equation}
+\begin{equation}
+	w_p = \frac{1}{2\sum_{i, j}\mathbb{1}[M_{ij} = 1]}, w_n = \frac{1}{2\sum_{i, j}\mathbb{1}[M_{ij} = 0]},
+\end{equation}
+where $L(M, M^*)$ denotes the loss function for the ground truth mask $M$ and predicted mask $M^*$, the subscript $i$ and $j$ denotes the $i$-th row and $j$-th column, $\mathbb{1}[\cdot]$ denotes the indicator function, $w_p$ and $w_n$ denote the weights for positive and negative pixels, respectively. Thus, the loss of CNN part $L_{\text{CNN}}$ can be written as follows.
+\begin{equation}
+	L_{\text{CNN}} = L(M_b, M^*_b) + L(M_v, M^*_v),
+\end{equation}
+where subscript $b$ and $v$ denote masks of boundary and vertices, respectively. As for the loss of RNN, the loss function used is cross-entropy loss, because the polygon prediction is equivalent to multiclass classification at every time step. Thus, the loss of RNN part $L_{\text{RNN}}$ can be written as follows.
+\begin{equation}
+	L_{\text{RNN}} = \sum_{t, k}\mathbb{1}[v_{t} = k]\log{\frac{1}{y_tk}},
+\end{equation}
+\begin{equation}
+	y_{tk} = P(v_t = k \mid v_{t-1}, v_{t-2})
+\end{equation}
+where $y_tk$ denotes the $k$-th component of $y_t$, i.e. the conditional probability of $v_t$ at the position $k$, given its two previous vertices.
 
 \section{Feature Pyramid Network}\label{modfpn}
 

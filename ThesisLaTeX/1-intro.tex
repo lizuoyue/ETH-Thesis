@@ -65,21 +65,17 @@ In order to solve this problem, we propose a new model, \modelnameshort\ (\model
 \section{Thesis Organization}\label{thsorg}
 This thesis is organized as follows. Chapter \ref{rltwrk} reviews related work, focusing on the deep learning methods for image segmentation, previous work related to segmentation in aerial images, as well as the two recent new models, Mask R-CNN \cite{maskrcnn} and PolygonRNN. In chapter \ref{mdlarc}, the architectures of PolygonRNN and FPN are presented, and the structure of our proposed model is also explained in detail. Chapter \ref{exres} describes the ground truth dataset we use and gives the experiment configurations and results. Finally, chapter \ref{prbftr} makes conclusions, points out the problems which exist in our project and gives future direction.
 
-In addition, the terminologies we used and its corresponding detailed explanations are shown in table \ref{tab:term}.
-
-\begin{table}[ht!]
-	\centering
-	\caption[Common terminologies used in our project with explanations]{Common terminologies used in our project with explanations.}
-	\label{tab:term}
-	\begin{tabularx}{\textwidth}{X|X}
-	\hline
-	\textbf{Terminology} & \textbf{Explanation}\\ \hline
-	Object Detection & Detection via bounding boxes instead of masks \\
-	Semantic Segmentation & Pixel-wise classification without differentiating instances \\
-	Segmentation of Geometrical Shape (Geometrical Segmentation) & Polygon extraction for single object \\ \hline
-	Instance Segmentation & Both semantic and a form of detection \\
-	Instance Segmentation of Geometrical Shapes (Geometrical Instance Segmentation) & Geometrical segmentation and a form of detection \\
-	\hline
-	\end{tabularx}
-\end{table}
+In addition, the common terminologies used in our project and its corresponding detailed explanations are shown as follows:
+\begin{itemize}
+	\item \textbf{Object Detection (Object Localization)}:\\
+	Detection or localization via bounding boxes instead of masks;
+	\item \textbf{Semantic Segmentation}:\\
+	Pixel-wise classification without differentiating instances;
+	\item \textbf{Instance Segmentation (Semantic Instance Segmentation)}:\\
+	Both semantic and a form of detection;
+	\item \textbf{Segmentation of Geometrical Shape (Geometrical Segmentation)}:\\
+	Extraction of the polygon outlining \textbf{single} object;
+	\item \textbf{Instance Segmentation of Geometrical Shapes \\ (Geometrical Instance Segmentation)}:\\
+	Both geometrical and a form of detection.
+\end{itemize}
 
