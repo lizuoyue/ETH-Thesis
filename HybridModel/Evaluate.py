@@ -10,7 +10,7 @@ from UtilityBoxAnchor import *
 from PIL import Image, ImageDraw
 
 config = Config()
-global city_name
+global city_name 
 
 # def overlay(img, mask, shape, color = (255, 0, 0)):
 # 	org = Image.fromarray(np.array(img, np.uint8)).convert('RGBA')
