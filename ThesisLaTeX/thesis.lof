@@ -59,15 +59,16 @@
 \contentsline {subfigure}{\numberline {(c)}{\ignorespaces $\text {IoU}=0.7$}}{30}{figure.3.9}
 \contentsline {subfigure}{\numberline {(d)}{\ignorespaces $\text {IoU}=1$}}{30}{figure.3.9}
 \contentsline {figure}{\numberline {3.10}{\ignorespaces Simplified structure of multiple bounding box regression}}{32}{figure.3.10}
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Smooth $L_1$ loss function}}{32}{figure.3.11}
-\contentsline {figure}{\numberline {3.12}{\ignorespaces Anchor selection and regression part of RPN/FPN}}{33}{figure.3.12}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Smooth $L_1$ function}}{33}{figure.3.11}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Anchor selection and regression part of RPN/FPN}}{34}{figure.3.12}
 \contentsline {figure}{\numberline {3.13}{\ignorespaces Structure of Feature Pyramid Network}}{34}{figure.3.13}
 \contentsline {figure}{\numberline {3.14}{\ignorespaces Generation of anchors from different layers of feature pyramid}}{35}{figure.3.14}
 \contentsline {figure}{\numberline {3.15}{\ignorespaces FPN with VGG-16 backbone}}{36}{figure.3.15}
-\contentsline {figure}{\numberline {3.16}{\ignorespaces R-PolygonRNN\ , two-step version}}{37}{figure.3.16}
-\contentsline {figure}{\numberline {3.17}{\ignorespaces R-PolygonRNN\ , hybrid version}}{37}{figure.3.17}
-\contentsline {figure}{\numberline {3.18}{\ignorespaces Example of RoIAlign}}{38}{figure.3.18}
-\contentsline {figure}{\numberline {3.19}{\ignorespaces R-PolygonRNN\ , hybrid version with RoIAlign}}{39}{figure.3.19}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces R-PolygonRNN, two-step version}}{37}{figure.3.16}
+\contentsline {figure}{\numberline {3.17}{\ignorespaces R-PolygonRNN, hybrid version}}{37}{figure.3.17}
+\contentsline {figure}{\numberline {3.18}{\ignorespaces Example of bilinear interpolation in RoIAlign}}{38}{figure.3.18}
+\contentsline {figure}{\numberline {3.19}{\ignorespaces R-PolygonRNN, hybrid version with RoIAlign}}{39}{figure.3.19}
+\contentsline {figure}{\numberline {3.20}{\ignorespaces Example of single step of beam search algorithm}}{40}{figure.3.20}
 \addvspace {10pt}
 \contentsline {figure}{\numberline {4.1}{\ignorespaces Example images downloaded through Google Static Maps API}}{42}{figure.4.1}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces satellite image}}{42}{figure.4.1}
@@ -87,10 +88,15 @@
 \contentsline {figure}{\numberline {4.5}{\ignorespaces Adjustment examples}}{46}{figure.4.5}
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces before adjustment}}{46}{figure.4.5}
 \contentsline {subfigure}{\numberline {(b)}{\ignorespaces after adjustment}}{46}{figure.4.5}
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Example of single step of beam search algorithm}}{49}{figure.4.6}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Example of NMS algorithm}}{49}{figure.4.6}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces before NMS}}{49}{figure.4.6}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces after NMS}}{49}{figure.4.6}
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Loss decrease of model in dataset Chicago}}{51}{figure.4.7}
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Loss decrease of model in dataset Zurich}}{51}{figure.4.8}
 \addvspace {10pt}
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Polygon interior angle distribution}}{52}{figure.5.1}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces angle distribution in Zurich}}{52}{figure.5.1}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces angle distribution in Chicago}}{52}{figure.5.1}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Human posture detection in Mask R-CNN}}{53}{figure.5.2}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Polygon interior angle distribution}}{56}{figure.5.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces angle distribution in Zurich}}{56}{figure.5.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces angle distribution in Chicago}}{56}{figure.5.1}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Human posture detection in Mask R-CNN}}{57}{figure.5.2}
+\addvspace {10pt}
 \addvspace {10pt}

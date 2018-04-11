@@ -106,7 +106,11 @@ where subscript $b$ and $v$ denote masks of boundary and vertices, respectively.
 \begin{equation}
 	y_{tk} = P(v_t = k \mid v_{t-1}, v_{t-2}),
 \end{equation}
-where $y_tk$ denotes the $k$-th component of $y_t$, i.e. the conditional probability of $v_t$ at the position $k$, given its two previous vertices, $T$ denotes the number of vertices in the polygon, $K$ denotes the number of possible assignments (positions) for vertex $v_t$ including the end signal. Here we do not consider the loss for the first vertex $v_0$, because it is randomly chosen from the polygon vertices when training.
+where $y_tk$ denotes the $k$-th component of $y_t$, i.e. the conditional probability of $v_t$ at the position $k$, given its two previous vertices, $T$ denotes the number of vertices in the polygon, $K$ denotes the number of possible assignments (positions) for vertex $v_t$ including the end signal. Here we do not consider the loss for the first vertex $v_0$, because it is randomly chosen from the polygon vertices when training. Finally, the total loss of PolygonRNN $L_{\text{PolygonRNN}}$ is defined as
+\begin{equation}
+	L_{\text{PolygonRNN}} = L_{\text{CNN}} + \gamma L_{\text{RNN}},
+\end{equation}
+where $\gamma$ is a self-defined weight.
 
 \section{Feature Pyramid Network}\label{modfpn}
 FPN \cite{fpn} is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{ancpro} introduces some basic concepts related to anchor, and subsection \ref{mulbboxreg} further illustrates multiple bounding boxes regression. Finally, subsection \ref{fpnbone} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
@@ -224,9 +228,9 @@ where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p^*$
 \begin{equation}
 	L_r = f(x_g^* - x_g) + f(y_g^* - y_g) + f(w_g^* - w_g) + f(h_g^* - h_g),
 \end{equation}
-where $L_r$ is the regression loss. The total loss of FPN is defined as follows.
+where $L_r$ is the regression loss. The total loss of FPN $L_{\text{FPN}}$ is defined as
 \begin{equation}
-	L = \sum_{i}^{} L_c^{(i)} + \lambda\sum_{i}^{}\mathbb{1}[p_i = 1]L_r^{(i)},
+	L_{\text{FPN}} = \sum_{i}^{} L_c^{(i)} + \lambda\sum_{i}^{}\mathbb{1}[p_i = 1]L_r^{(i)},
 \end{equation}
 where the superscript $i$ denotes the $i$-th anchor, $\lambda$ denotes a self-defined parameter when training.
 
@@ -256,7 +260,7 @@ where $S_1$ denotes the smallest anchor scale (typically around 20, e.g. 16--24)
 
 Therefore, in FPN, the feature map with larger resolution corresponds to smaller anchor scale, with smaller stride with regard to the original image. Similarly, the feature map with smaller resolution corresponds to larger anchor scale, with larger stride with regard to the original image. This is the core reason why the problems mentioned around figure \ref{fig:ancsel} can be addressed. On the other hand, the total number of anchors $n_l$ has an upper bound $\Theta(wh)$, which can be derived from
 \begin{equation}
-	n_l = \sum_{i=1}^{l}\frac{w}{2^i}\frac{h}{2^i}k=whk\sum_{i=1}^{l}4^{-i}=\frac{1}{3}whk(1-4^{-l}) \leqslant \frac{1}{3}whk,
+	n_l = \sum_{i=1}^{l}\frac{w}{2^i}\frac{h}{2^i}k=whk\sum_{i=1}^{l}4^{-i}=\frac{1}{3}whk(1-4^{-l}) < \frac{1}{3}whk,
 \end{equation}
 where the subscript $l$ denotes the number of layers (or feature maps) in the feature pyramid, i.e. the depth of feature pyramid, $w$ and $h$ denotes the image width and height, $k$ denotes the number of manually designed anchor shapes. Compared with equation \ref{eq:numanchor}, the total number of anchors is reduced by two orders of magnitude.
 
@@ -277,30 +281,37 @@ The two-step version is very natural and easy to think of. In the first step, RP
 
 \input{fig/3-15}
 
-From the figure \ref{fig:stpmod} we can see that RPN and PolygonRNN are completely separate. Therefore, during the training phase, we can train the two models separately and integrate them when making prediction.
+From the figure \ref{fig:stpmod} we can see that RPN and PolygonRNN are completely separate in this version. Therefore, during the training phase, we can train the two models separately and integrate them when making prediction (also possible to train together).
 
 \subsection{Hybrid Version}\label{hybmod}
-
-Note that in figure \ref{fig:stpmod}, either when the area image is inputted to FPN or when the building image is inputted to PolygonRNN, they both pass CNN first, and their CNNs both adopt VGG-16. In fact, regardless of the whole model of FPN or PolygonRNN, the feature extraction in their CNN parts are both from the lateral connection on the basis of VGG-16. Although they extract features from different levels, the backbone of the original VGG-16 is exactly the same for both of them. Therefore, they can share the same VGG-16 skeleton, just like what figure \ref{fig:hybmod} shows.
+Note that in figure \ref{fig:stpmod}, either when the aerial image is taken as input by FPN or when the building image is taken as input by PolygonRNN, they both pass CNN first, and their CNNs both adopt VGG-16. In fact, regardless of the whole model of FPN or PolygonRNN, focusing on their respective CNN part, both features are extracted from the lateral connection on the basis of VGG-16. Although the features come from different levels, the backbone of the original VGG-16 is exactly the same for both of them. Therefore, they can share the same VGG-16 skeleton, just like what figure \ref{fig:hybmod} shows.
 
 \input{fig/3-16}
 
-As a result, the training phase of the whole model, \modelnameshort, cannot be separated and multi-task training is needed. In general, multi-tasking training can make the training phase better, and can therefore improve the the model's prediction effect and accuracy.
+As a result, the training phase of the whole model \modelnameshort cannot be separated, and multi-task training is needed in this version. In general, multi-task training introduces network parameter sharing, which can reduce the model parameters, make the training phase better, and therefore improve the the model's prediction effect and accuracy. In addition, the model's generalization ability can be also improved through multi-task training.
 
 \subsection{Hybrid Version with RoIAlign}\label{algmod}
+Note that both two-step version and hybrid version do convolution for the aerial image and the building image respectively. However, we know that the building image is taken from the aerial image, so there is redundancy in the twice convolutions. Considering that we already have the feature map of the aerial image, it is unnecessary to do a second convolution since we can take the building feature from the corresponding position in the feature map of the aerial image, when given the RoI.
 
-Note that both two-step version and hybrid version do convolution for the area image and the building image respectively. However, we know that the building image is taken from the area image, so there is redundancy in the twice convolutions. Considering that we already have the feature map of the area image, it is unnecessary to do a second convolution since we can take the building feature from the corresponding position in the feature map of the area image, when given the RoI.
-
-In Mask R-CNN, RoIAlign is proposed to solve this kind of problem. Actually its previous version, RoIPooling is already used in Faster R-CNN. The role of RoIPooling is to pool the corresponding area in the feature map into a fixed-size tensor, so as to perform subsequent classification phase. The positions of the RoIs are usually obtained by regression of the model, which are generally floating numbers. RoIPooling has twice process of rounding these floating numbers: (1) box boundaries are rounded to integers; (2) the region of box is divided into several cells, boundaries of each cell are rounded to integers. After the twice rounding process, each cell has a certain deviation from its initial position, which will affect the accuracy of subsequent classification or segmentation (for Mask R-CNN). This problem is summarized as `misalignment' in Mask R-CNN paper.
-
-In order to tackle the shortcomings of RoIPooling, Mask R-CNN introduces RoIAlign, using bilinear interpolation instead of rounding numbers. It can be used to obtain the value at the pixel whose coordinates are floating numbers, thereby transforming the pooling process into a continuous operation. Figure \ref{roialg} shows an example of RoIAlign.
+In Mask R-CNN, RoIAlign \cite{maskrcnn} is proposed to solve this kind of problem. Actually its previous version, RoIPooling \cite{fasterrcnn} is already used in Faster R-CNN. The role of RoIPooling is to pool the corresponding area in the feature map into a fixed-size tensor, so as to perform subsequent classification phase. The positions of the RoIs are usually obtained by regression of the model, which are generally floating numbers. In order to get fixed-size feature, RoIPooling has twice process of rounding these floating numbers: (1) Box boundaries are rounded to integers; (2) The region of box is divided into several cells, boundaries of each cell are rounded to integers. Actually we can also simply regard RoIPooling as a kind of nearest-neighbor interpolation. After twice rounding process, each cell has a certain deviation from its initial position, which will have negative effect on the accuracy of subsequent classification or semantic segmentation (only for Mask R-CNN). This problem is summarized as ``misalignment" in Mask R-CNN paper.
 
 \input{fig/3-18}
 
-Therefore, we can simply apply the bounding boxes obtained from FPN calculation directly on the feature map by RoIAlign and send the pooled features to the RNN part of PolygonRNN. Figure \ref{fig:algmod} shows \modelnameshort model architecture with RoIAlign.
+In order to tackle the shortcomings of RoIPooling, Mask R-CNN introduces RoIAlign, using bilinear interpolation instead of rounding numbers. It can be used to obtain the value at the pixel whose coordinates are floating numbers, thereby transforming the pooling process into a continuous operation. Figure \ref{fig:roialg} shows an example of RoIAlign.
+
+
+Therefore, we can simply apply the bounding boxes obtained from FPN calculation directly on the feature map by RoIAlign and send the pooled features to the RNN part of PolygonRNN. Figure \ref{fig:algmod} shows the model architecture of hybrid version with RoIAlign of \modelnameshort.
 
 \input{fig/3-17}
 
-As a result, VGG-16 is used only once and therefore it can speed up the prediction in theory. Note that this version of \modelnameshort is not implemented yet since the resolution problem of the area image.
+As a result, VGG-16 is used only once and therefore it can speed up both training and prediction in theory. However, in practice, we usually resize the aerial image into a low resolution before feeding it to FPN, in order to make the network faster. Thus, the feature pyramid we obtain is at a ever lower resolution. If we directly use RoIAlign to get the building features, a lot of semantic information of the building would be lost. Hence, RoIAlign requires the input of aerial image with original resolution, and in this case, FPN would slow down. So here we think that this version will not have much improvement in speed. Therefore, due to the reason mentioned above and the time limitation of this thesis project, this version of \modelnameshort\ is not implemented yet, which would remain as future work. 
+
+\subsection{Beam Search}\label{bmsrch}
+In the prediction phase of \modelnameshort, the beam search algorithm is introduced, which is not used in original paper \cite{polygonrnn}. Beam search is a heuristic graph search algorithm, which is usually used when the solution space of a graph is relatively large. In order to reduce the space and time occupied by the search, at each step of depth expansion, some poor quality knots are cut off, and higher quality nodes are kept. This process can significantly reduce space consumption and improve time efficiency, but the disadvantage is that, there may be potentially optimal solutions discarded. Therefore, the search result is not necessarily the optimal solution. Experiments show that the introduction of beam search can tackle the problem of skipped vertex.
+
+Figure \ref{fig:bmsrch} shows a single step of the beam search algorithm with beam width equaling to 3.
+
+\input{fig/3-19}
+
 
 

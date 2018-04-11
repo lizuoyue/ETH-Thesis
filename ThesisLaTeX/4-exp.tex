@@ -1,14 +1,12 @@
 \chapter{Experiments and Results}\label{exres}
-
-In this chapter, the entire experimental process is presented, from the acquisition of the ground truth dataset (see section \ref{gt}), to the implementation, training and prediction phases of the \modelnameshort\ (see section \ref{impdet}), and finally to the results evaluation and analysis (see section \ref{expres}).
+In this chapter, the entire experimental process is presented, from the acquisition of the ground truth dataset (see section \ref{gt}), to the implementation, training and prediction phases of \modelnameshort\ (see section \ref{impdet}), and finally to the results evaluation and analysis (see section \ref{expres}).
 
 \section{Ground Truth}\label{gt}
+Our ground truth dataset consists of aerial images and buildings' coordinates, which are used as inputs and labels respectively when training. In this project, all of the aerial images are collected from Google Static Maps API and all of the latitude and longitude coordinates of the polygon vertices of buildings are collected from OpenStreetMap. For details of the two APIs mentioned above, please refer to subsections \ref{apimap} and \ref{apiosm}.
 
-Our ground truth dataset consists of satellite images and buildings' coordinates, which are used as inputs and labels respectively when training. In this project, all of the satellite images are collected from Google Static Maps API and all of the latitude and longitude coordinates of the polygon vertices of buildings are collected from OpenStreetMap. For details of the two APIs mentioned above, please refer to subsections \ref{apimap} and \ref{apiosm}.
+As mentioned in section \ref{modmer}, the training phase of our model \modelnameshort\ requires two different kinds of ground truth dataset, areas with multiple bounding boxes for FPN and buildings with geometrical shapes for PolygonRNN, both of which are illustrated in subsection \ref{arebui}.
 
-As mentioned in section \ref{modmer}, the training phase of our model \modelnameshort\ requires two different kinds of ground truth dataset, areas with multiple bounding boxes for FPN and buildings with geometrical shapes for PolygonRNN, all of which are illustrated in subsection \ref{arebui}.
-
-Since the whole dataset is collected from two different sources, the problem of inconsistency may exist. Subsection \ref{proble} describes details of the problems in the ground truth dataset, and subsection \ref{adjust} proposes a solution to adjust the shift between buildings' images and polygons.
+Since the whole dataset is collected from two different sources, the problem of inconsistency may exist. Subsection \ref{proble} describes details of the problems in the ground truth dataset, and subsection \ref{adjust} proposes a feasible solution to adjust the shift between buildings' images and polygons.
 
 \subsection{Google Static Maps API}\label{apimap}
 
@@ -21,30 +19,31 @@ The parameters in URL includes the map type (satellite, roadmap, etc.), latitude
 We would have liked to obtain buildings' coordinates from Google Static Maps API as well, but we find that the API does not provide such information directly. Instead, it gives the styled roadmap images like figure \ref{fig:egroadmap}, where querying coordinates requires further corner detection but the boundaries may be still inaccurate (see figure \ref{fig:eghybrid} for example). Thus, this thesis project, only satellite images from Google Static Maps API are used.
 
 \subsection{OpenStreetMap}\label{apiosm}
-
 OpenStreetMap\footnote{\lstinline{https://www.openstreetmap.org/}} provides an interface that implements a map as a XML format \lstinline{.osm} file. The file contains all the information which can be used to recover the map. When the map's bounding box is given, users can retrieve the latitude and longitude coordinates of the buildings' vertices and roads' central lines within the map. For the usage of OpenStreetMap and the format of the \lstinline{.osm} file, please refer to section \ref{app:apiosm} in appendices.
 
 The coordinates obtained by the API is the original latitude and longitude coordinates of the buildings' vertices, which cannot be directly used for training. We need to convert them to relative pixel coordinates with regards to an given satellite image.
 
-As a matter of fact, every fixed point on the earth can correspond to a unique pixel on the map at a specific zoom level. This projection process can be regarded as a function. Since we have already known the relative pixel coordinates of the image center (half width and half height), the projection for an arbitrary point with given latitude and longitude coordinates can be therefore computed. This process can be described as following equations.
+As a matter of fact, every fixed point on the earth can correspond to a unique pixel on the map at a specific zoom level. This projection process can be regarded as a function. Since we have already known the relative pixel coordinates of the image center (half width and half height), the projection for an arbitrary point with given latitude and longitude coordinates can be therefore computed. This process can be described as
 \begin{equation}
-	(c_x, c_y) = (\frac{w}{2}, \frac{h}{2}) = f(c_{lon}, c_{lat}, z) + (\Delta_x, \Delta_y),
+	(c_x, c_y) = (\frac{w}{2}, \frac{h}{2}) = f(c_{\text{lon}}, c_{\text{lat}}, z) + (\Delta_x, \Delta_y),
 \end{equation}
 \begin{equation}
-	(p_x, p_y) = f(p_{lon}, p_{lat}, z) + (\Delta_x, \Delta_y),
+	(p_x, p_y) = f(p_{\text{lon}}, p_{\text{lat}}, z) + (\Delta_x, \Delta_y),
 \end{equation}
-where $f$ is the function that projects latitude and longitude coordinates to global pixel coordinates (see \ref{app:projec} in appendices for more details), $c$ is the image center, $p$ is an arbitrary point, the subscripts $x$, $y$, $lon$, $lat$ mean the relative pixel and longitude and latitude coordinates respectively, $z$ is the zoom level, $\Delta$ is the translation constant from the global to the relative pixel coordinate system. Thus, we have
+where $f$ is the function that projects latitude and longitude coordinates to global pixel coordinates (see \ref{app:projec} in appendices for more details), $c$ is the image center, $p$ is an arbitrary point, the subscripts $x$, $y$, $\text{lon}$, $\text{lat}$ mean the relative pixel and longitude and latitude coordinates respectively, $z$ is the zoom level, $\Delta$ is the translation constant from the global to the relative pixel coordinate system. Thus, we have
 \begin{equation}
-	(p_x, p_y) = f(p_{lon}, p_{lat}, z) - f(c_{lon}, c_{lat}, z) + (\frac{w}{2}, \frac{h}{2}),
+	(p_x, p_y) = f(p_{\text{lon}}, p_{\text{lat}}, z) - f(c_{\text{lon}}, c_{\text{lat}}, z) + (\frac{w}{2}, \frac{h}{2}),
 \end{equation}
 for any arbitrary point $p$.
+
+In addition, we keep the order of a polygon to be anticlockwise when training. However, the orders of coordinates of polygon vertices obtained from OpenStreetMap are not fixed. Thus, the reverse operation for those polygon with clockwise order is required. Please refer to section \ref{app:revpoly} in appendices for more details.
 
 \subsection{Areas and Buildings}\label{arebui}
 
 As mentioned in section \ref{modmer}, \modelnameshort\ is formed by FPN and PolygonRNN. However, the training phase of these two models requires two different kinds of ground truth dataset.
 
 \paragraph{Areas for FPN}
-In subsection \ref{modfpn} we have shown that FPN aims at finding rectangular regions of interests. Thus, training FPN generally requires a relatively large image with several objects in it. When considering our problem, an example of the ground truth can be an area of a city with several bounding boxes. Each box contains a single building, regardless of its tight polygon outline. Figure \ref{fig:egareafpn} gives an example area for training FPN and its visualized ground truth label.
+In subsection \ref{modfpn} we have shown that FPN aims at finding rectangular RoIs. Thus, training FPN generally requires a relatively large image with several objects in it. When considering our problem, an example of the ground truth can be an area of a city with several bounding boxes. Each box contains a single building, regardless of its tight polygon outline. Figure \ref{fig:egareafpn} gives an example area for training FPN and its visualized ground truth label.
 
 \input{fig/4-01}
 
@@ -55,45 +54,33 @@ In section \ref{modpoly} we have mentioned that PolygonRNN can only deal with im
 
 \subsection{Problems}\label{proble}
 
-Recall that the satellite images and polygons' coordinates are collected from two different sources, the problem of inconsistency may exist. That is to say, the polygon and the actual building we see in the image may not match well in some cases. This inconsistency is mainly reflected in the following aspects.
-
+Recall that the aerial images and polygons' coordinates are collected from two different sources, the problem of inconsistency may exist. That is to say, the polygon and the actual building we see in the image may not match well in some cases. This inconsistency is mainly reflected in the following aspects.
 \input{fig/4-03}
-
-\paragraph{General Shift}
-Figure \ref{fig:egshi0} gives two typical shift examples in the dataset. This shift is generally within the range of 30 pixels, either up and down, or left and right.
-
-\paragraph{Polygon Size and Shape}
-Sometimes the polygon size and shape is different from the actual building size as well. This is typically because OpenStreetMap measures the bottom of the building and the aerial image is taken from the top. The roof of the house we see from the top can be different from the floor area. Figure \ref{fig:egshi1} shows a building with a smaller polygon and a building with a too rough outline.
-
-\paragraph{Angle Issue}
-Some tall buildings may suffer from the angle issue. This is because the satellite cannot always be vertically right above the building, so the side of these very high buildings will be photographed. Figure \ref{fig:egshi2} gives two examples.
-
-\paragraph{Adjacent Buildings}
-Some adjacent buildings will be very close together, and some even share a common roof. Thus, from the satellite image, it is generally difficult to distinguish the boundaries between them. However, these buildings are separated in the dataset of OpenStreetMap. It means that where there are originally edges between buildings, it looks like there is no edge in the image. This kind of inaccuracy would have  negative effect on the training phase. Figure \ref{fig:egshi3} and gives two examples.
+\begin{itemize}
+	\item \textbf{General Shift}: Figure \ref{fig:egshi0} gives two typical shift examples in the dataset. The shift is generally within the range of 30 pixels, either up and down, or left and right.
+	\item \textbf{Polygon Size and Shape}: Sometimes the polygon size and shape is different from the actual building size as well. This is typically because OpenStreetMap measures the bottom of the building and the aerial image is taken from the top. The roof of the house we see from the top can be different from the floor area. Figure \ref{fig:egshi1} shows a building with a smaller polygon and a building with a too rough outline.
+	\item \textbf{Angle Issue}: Some tall buildings may suffer from the angle issue. This is because the aircraft that takes the image cannot always be vertically right above the building, so the side of those very high buildings would also be photographed. Figure \ref{fig:egshi2} gives two examples.
+	\item \textbf{Adjacent Buildings}: Some adjacent buildings will be very close together, and some even share a common roof. Thus, from the aerial image, it is generally difficult to distinguish the boundaries between them. However, these buildings are separated in the dataset of OpenStreetMap. It means that where there are originally edges between buildings, it looks like there is no edge from the view of the aerial image. This kind of inaccuracy would have negative effect on the training phase. Figure \ref{fig:egshi3} and gives two examples.
+\end{itemize}
 
 \subsection{Adjustments}\label{adjust}
 Problems such as too rough polygon shape, angle issue and adjacent buildings are unsolvable unless the data sources can correct themselves. What we can improve is to tackle the general shift and the polygon size problem and make the image-polygon pairs more matching. By observation, we can get to some conclusions for a matching image-polygon pair.
-
 \input{fig/4-04}
+\begin{itemize}
+	\item \textbf{Color Variance}: The color variance of image pixels covered by polygon generally reaches the local minimum, because the roof of a building usually has only one color or several similar colors.
+	\item \textbf{Edges}: The polygon edges generally lie within the output of the edge detection (e.g. Sobel, Canny) performed on the image.
+	\item \textbf{Corners}: The polygon vertices can generally match the output of the corner detection (e.g. Harris, SIFT) performed on the image.
+\end{itemize}
 
-\paragraph{Color Variance}
-The color variance of image pixels covered by polygon generally reaches the local minimum, because the roof of a building usually has only one color or several similar colors.
-
-\paragraph{Edges}
-The polygon edges generally lie within the output of the edge detection (e.g. Sobel, Canny) performed on the image.
-
-\paragraph{Corners}
-The polygon vertices can generally match the output of the corner detection (e.g. Harris, SIFT) performed on the image.
-
-Based on these conclusions, we propose a brute force shift adjustment method. Briefly, we resize and translate the initial polygon within a certain range, and traverse all the cases to see where the minimum color variance, maximum edge and corner coverage are reached. Figure \ref{fig:egadj} illustrates some examples which compare the polygons before and after the adjustment. Results show that this algorithm can well address the shift problem to some extent.
+Based on these conclusions, we propose a brute force shift adjustment method. Briefly, we resize and translate the initial polygon within a certain range, and traverse all the cases to see where the minimum color variance, maximum edge and corner coverage are reached. The detailed algorithm, please refer to section \ref{app:shift} in appendices. Figure \ref{fig:egadj} illustrates some examples, which compare the polygons before and after the adjustment. Results show that this algorithm can well address the shift problem to some extent, which guarantees the correctness of the training set.
 
 \section{Implementation Details}\label{impdet}
 
-In this section, several implementation details are given in order to the replicate the model in the future if needed. Subsection \label{datainfo} gives information and some notes of the dataset. Subsection \ref{config} gives the basic configuration of the model. Subsection \ref{trnphs} and \ref{prdphs} focus on the training and prediction phase respectively.
+In this section, several implementation details are given in order to the replicate the model in the future if needed. Subsection \ref{datainfo} gives information and some notes of the dataset. Subsection \ref{config} gives the basic configuration of the model. Subsection \ref{trnphs} and \ref{prdphs} focus on the training and prediction phase respectively.
 
 \subsection{Dataset Information}\label{datainfo}
 
-The dataset consists of two cities, Zurich and Chicago, including all the buildings in the range shown in table \ref{tab:bldrange}.
+The dataset consists of two cities, Zurich and Chicago, including most of the buildings in the range shown in table \ref{tab:bldrange}. In addition, aerial images are taken based on the information shown in table \ref{tab:arerange}.
 
 \begin{table}[!h]
 	\centering
@@ -101,106 +88,202 @@ The dataset consists of two cities, Zurich and Chicago, including all the buildi
 	\label{tab:bldrange}
 	\begin{tabular}{l|l|l}
 	\hline
-	City & Zurich & Chicago \\ \hline
-	East Boundary & E $8.4092916^\circ$ & W $87.8039744^\circ$ \\
-	South Boundary & N $47.2879518^\circ$ & N $41.8799477^\circ$ \\
-	West Boundary & E $8.6729490^\circ$ & W $87.6721554^\circ$ \\
-	North Boundary & N $47.4664863^\circ$ & N $41.97799394^\circ$ \\
+	\textbf{City} & Zurich & Chicago \\ \hline
+	\textbf{East Boundary} & E $8.4092916^\circ$ & W $87.8039744^\circ$ \\
+	\textbf{South Boundary} & N $47.2879518^\circ$ & N $41.8799477^\circ$ \\
+	\textbf{West Boundary} & E $8.6729490^\circ$ & W $87.6721554^\circ$ \\
+	\textbf{North Boundary} & N $47.4664863^\circ$ & N $41.97799394^\circ$ \\
 	\hline
-	Number of Buildings & 96,573 & 228,074 \\
+	\textbf{Number of Buildings} & 96,573 & 228,074 \\
 	\hline
 	\end{tabular}
 \end{table}
-
-Note that buildings with more than 20 or less than 4 vertices are excluded. The building images are all squares but in different sizes, and include paddings. All polygons are set to be clockwise, and in each polygon, three consecutive vertices cannot be collinear. If so, the second vertex is removed.
-
-Aerial images are taken based on the information shown in table \ref{tab:arerange}.
-
 \begin{table}[!h]
 	\centering
 	\caption[Sampling range of areas in Zurich and Chicago]{Sampling range of areas in Zurich and Chicago.}
 	\label{tab:arerange}
 	\begin{tabular}{l|l|l}
 	\hline
-	City & Zurich & Chicago \\ \hline
-	Center Longitude & E $8.5468221^\circ$ & W $87.7380649^\circ$ \\
-	Center Latitude & N $47.3768587^\circ$ & N $41.9289708^\circ$ \\
-	Step Longitude & $4.023094^\circ\times10^{-4}$ & $4.469772^\circ\times10^{-4}$ \\
-	Step Latitude & $2.724221^\circ\times10^{-4}$ & $3.324594^\circ\times10^{-4}$ \\
-	Horizontal Step Range & (-144, 144) & (-144, 144) \\
-	Vertical Step Range & (-144, 144) & (-144, 144) \\
-	Zoom Level & 19 & 20 \\
-	Scale & 1 & 1 \\
-	Image Size & (600, 600) & (600, 600) \\
+	\textbf{City} & Zurich & Chicago \\ \hline
+	\textbf{Center Longitude }& E $8.5468221^\circ$ & W $87.7380649^\circ$ \\
+	\textbf{Center Latitude} & N $47.3768587^\circ$ & N $41.9289708^\circ$ \\
+	\textbf{Step Longitude} & $4.023094^\circ\times10^{-4}$ & $4.469772^\circ\times10^{-4}$ \\
+	\textbf{Step Latitude} & $2.724221^\circ\times10^{-4}$ & $3.324594^\circ\times10^{-4}$ \\
+	\textbf{Horizontal Step Range} & $(-144, 144)$ & $(-144, 144)$ \\
+	\textbf{Vertical Step Range} & $(-144, 144)$ & $(-144, 144)$ \\
+	\textbf{Zoom Level} & 19 & 20 \\
+	\textbf{Scale} & 1 & 1 \\
+	\textbf{Image Size} & $(600, 600)$ & $(600, 600)$ \\
 	\hline
-	Number of Areas & 57,741 & 77,716 \\
+	\textbf{Number of Areas} & 57,741 & 77,716 \\
 	\hline
 	\end{tabular}
 \end{table}
 
-Note that areas without any buildings are excluded. Besides, there is an overlap between neighboring images because each building is required to appear completely at least once within all area images. For example, in figure \ref{fig:egarea}, for the incomplete buildings locate near the image top edge, we can find their complete shapes in its northern neighboring area image.
+There are some notes for buildings should be specified: (1) Buildings with more than 19 or less than 4 vertices are excluded; (2) All of the building images are squares but in different sizes, and include paddings; (3) As mentioned in subsection \ref{apiosm}, the order of all polygons are set to be anclockwise; (4) In each polygon, three consecutive vertices cannot be collinear. If so, the second vertex is removed.
+
+There are some notes for areas should be specified: (1) Areas without any buildings are excluded; (2) There is an overlap between neighboring areas because each building is required to appear completely at least once within all areas. For example, in figure \ref{fig:egarea}, for the incomplete buildings locate near the image top edge, we can find them with complete shapes in its northern neighboring area.
 
 \subsection{Model Configuration}\label{config}
-
-Table \ref{tab:configpara} shows the parameters used in our model.
-
+Table \ref{tab:configpara} shows the parameters used to define the graph of model. The environment of implementation of our model is Python 3.6.1, with TensorFlow 1.6.0\footnote{\lstinline{https://www.tensorflow.org/versions/r1.6/}}.
 \begin{table}[!h]
 	\centering
-	\caption[Configuration parameters.]{Configuration parameters}
+	\caption[Configuration parameters used to define the model graph]{Configuration  parameters used to define the model graph.}
 	\label{tab:configpara}
 	\begin{tabular}{l|l}
 	\hline
-	Item & Value \\
+	\textbf{Item} & \textbf{Value} \\
 	\hline
-	Area Image Resize & (256, 256) \\
-	Building Image Resize & (224, 224) \\
-	Resolution of Output & (28, 28) \\
+	Area Image Resizing & $(256, 256)$ \\
+	Building Image Resizing & $(224, 224)$ \\
+	Resolution of Output Grid & $(28, 28)$ \\
 	\hline
 	RNN Max Sequence Length & 20 \\
 	RNN Number of Layers & 3 \\
-	LSTM Number of Output Channels & (32, 16, 8) \\
+	ConvLSTM Number of Output Channels & $32, 16, 8$ \\
 	\hline
-	Number of Layers of Feature Pyramid & 4 \\
-	Anchor Scale & (16, 32, 64, 128) \\
-	Anchor Shapes & (1:4, 1:2, 1:1, 2:1, 4:1) \\
-	Feature Shapes & ($64\times64$, $32\times32$, $16\times16$, $8\times8$) \\
-	Feature Stride & (4, 8, 16, 32) \\
+	Feature Pyramid Number of Layers & 4 \\
+	Anchor Scale & $16, 32, 64, 128$ \\
+	Anchor Shape & $\frac{1}{2}$:2, $\frac{\sqrt{2}}{2}$:$\sqrt{2}$, 1:1, $\sqrt{2}$:$\frac{\sqrt{2}}{2}$, 2:$\frac{1}{2}$ \\
+	Feature Shapes & 64$\times$64, 32$\times$32, 16$\times$16, 8$\times$8 \\
+	Feature Stride & $4, 8, 16, 32$ \\
 	\hline
 	\end{tabular}
 \end{table}
 
 \subsection{Training Phase}\label{trnphs}
-
-Table \ref{tab:trnphs} shows the configuration during the training phase of the model.
+During the training, buildings near the edges of aerial images are typically ignored since they are more likely to be incomplete. In this case, the polygon would be clipped by the edges, resulting in new vertices, which can be very hard to compute. Therefore, in this project, two different kinds of ground truth dataset are collected separately, which means that in a specific round of training, the building images come from the dataset instead of patches from aerial image. Training in this way can keep the batch size of buildings unchanged. Table \ref{tab:trnphs} shows the configuration parameters during the training phase of the model.
 
 \begin{table}[!h]
 	\centering
-	\caption[Configuration during training phase.]{Configuration during training phase}
+	\caption[Configuration parameters used in the training phase]{Configuration parameters used in the training phase.}
 	\label{tab:trnphs}
 	\begin{tabular}{l|l}
 	\hline
-	Item & Value \\
+	\textbf{Item} & \textbf{Value} \\
 	\hline
 	Optimizer & Adam \\
-	Learning Rate & $10^{-4}$ \\
-	Area Batch Size for FPN & 4 \\
-	Building Batch Size for PolygonRNN & 12 \\
+	Learning Rate & $1\times10^{-4}$ \\
+	Area Batch Size & 4 \\
+	Building Batch Size & 12 \\
+	Number of Rounds & 25,000 \\
 	\hline
 	\end{tabular}
 \end{table}
 
-Furthermore, buildings near the edges of area images are typically ignored when training since they are more likely to be incomplete. In this case, the polygon would be clipped by the edges, resulting in new vertices, which can be very hard to compute. Therefore, in this project, two different kinds of ground truth dataset are collected separately, which means that in a specific round of training, the buildings come from the dataset instead of patches from area image.  Training in this way can keep the batch size of buildings unchanged.
-
 \subsection{Prediction Phase}\label{prdphs}
-
-In the prediction phase, the beam search algorithm is introduced. It is a heuristic graph search algorithm, which is usually used when the solution space of a graph is relatively large. In order to reduce the space and time occupied by the search, at each step of depth expansion, some poor quality knots are cut off, and higher quality nodes are kept. This process can significantly reduce space consumption and improve time efficiency, but the disadvantage is that there may be potentially optimal solutions discarded. Therefore, the search result is not necessarily the optimal solution. In beam search, the beam width refers to the number of nodes to be kept and in our project, the beam width is set to be 6. Figure \ref{fig:egbmsrch} shows a single step of the beam search algorithm with beam width 3.
+Recall subsection \ref{mulbboxreg}, an object bounding box may be regressed on multiple anchors, resulting in duplicate boxes. In order to get the best bounding box of an object, NMS (Non-Maximum Suppression) algorithm is adopted. NMS prunes away boxes that have high IoU overlap with previously selected boxes. Figure \ref{fig:nms} shows an example of NMS algorithm. For more details about the algorithm, please refer to section \ref{app:nms} in appendices.
 
 \input{fig/4-05}
+In practice, during the prediction, we first select a number of anchors with the highest (e.g. top 500) probability, and then remove anchors with probability lower than a threshold (e.g. 0.99). The selected anchors are then feed into NMS algorithm, which outputs the final RoIs. These RoIs are further taken as input of PolygonRNN to predict their geometrical shapes. Note that too small bounding boxes obtained by FPN are typically ignored and would not be used for polygon prediction. Table \ref{tab:prdphs} shows the configuration parameters during the prediction phase of the model.
+\begin{table}[!h]
+	\centering
+	\caption[Configuration parameters used in the prediction phase]{Configuration parameters used in the prediction phase.}
+	\label{tab:prdphs}
+	\begin{tabular}{l|l}
+	\hline
+	\textbf{Item} & \textbf{Value} \\
+	\hline
+	Beam Width & 1 or 6 \\
+	Top Number of Anchors & 500 \\
+	Anchor Probability Threshold & 0.99 \\
+	NMS Max Output Size & 40 \\
+	NMS IoU Threshold & 0.15 \\
+	Minimum Bounding Box Area & 16$\times$16 \\
+	\hline
+	\end{tabular}
+\end{table}
 
 \section{Experiment Results}\label{expres}
+In this section, the experiment results are presented. We evaluate and analyze these results from different aspects. Subsection \ref{lossdec} focuses on loss decrease of both versions of the model. Subsection \ref{tmcsmp} records the time consumption in both training and prediction phases. Subsection \ref{evalmtc} uses kinds of metrics to evaluate the prediction results. Subsection \ref{predres} presents some prediction results of geometrical instance segmentation in aerial images, and makes comparison.
 
-\subsection{Single Building Segmentation}
+\subsection{Loss Decrease}\label{lossdec}
+Figure \ref{fig:losdecch} and figure \ref{fig:losdeczh} show the loss decrease for all kinds of aspects in dataset of Chicago and Zurich, respectively. Note that in both figure, the loss of anchor classification, anchor regression, per-pixel mask prediction, and polygon vertices prediction are the 4 basic losses. The loss of FPN is calculated as the mean of anchor classification and regression losses, while the loss of PolygonRNN is calculated as the mean of mask and polygon prediction losses. The full loss is defined as the the mean of FPN loss and PolygonRNN loss.
 
-\subsection{Buildings Localization}
+We expect to draw some interesting conclusions from the comparison of the results of different cities or different models. From both figures we can conclude that the introduction of shared VGG-16 does not significantly accelerate the training phase of the network. The only change is that, the loss of RNN part (polygon vertices prediction) of PolygonRNN in the hybrid version falls earlier than the two-step version around the iteration 5,000. As for different cities, we find that the loss of Chicago decreases faster and finally becomes lower than the loss of Zurich. We consider that it is because most of the buildings in Chicago are vertically or horizontally aligned, thus it is easier for the machine to learn.
 
-\subsection{R-PolygonRNN}
+\input{fig/4-06}
+\input{fig/4-07}
+
+\subsection{Time Consumption}\label{tmcsmp}
+We use the GPU resources from the Leonhard cluster of ETH Zurich to train our model and make prediction. The overall training time is around 48 hours for overall 25,000 rounds for a single model.
+
+Table \ref{tab:timetrain} gives the time consumption for each batch of different models in different dataset when training. From the table we can conclude that the hybrid model has a negligible increase in training speed.
+\begin{table}[!h]
+	\centering
+	\caption[Time spent by each batch in training phase]{Time spent by each batch in training phase.}
+	\label{tab:timetrain}
+	\begin{tabular}{l|l l}
+	\hline
+	\textbf{City} & Zurich & Chicago \\
+	\hline
+	\textbf{Two-step Version} & 7.237s & 7.150s \\
+	\textbf{Hybrid Version} & 7.214s & 7.074s \\
+	\hline
+	\end{tabular}
+\end{table}
+
+Table \ref{tab:timepred} gives the time consumption of different models in different dataset when prediction. From the table we can conclude that no matter using what model or which dataset, they do not have obvious impact on the prediction time.
+\begin{table}[!h]
+	\centering
+	\caption[Time spent in prediction phase]{Time spent in prediction phase.}
+	\label{tab:timepred}
+	\begin{tabular}{l|l|l|l|l|l}
+	\hline
+	\multicolumn{2}{l|}{\textbf{Stage}} & \multicolumn{2}{l|}{FPN} & \multicolumn{2}{l}{PolygonRNN} \\ \hline
+	\textbf{Model} & \textbf{Beam Width} & Chicago & Zurich & Chicago & Zurich \\ 	\hline
+	\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Two-step\\ Version\end{tabular}} & 6 & 1.414s & 1.421s  & 0.358s & 0.358s \\ 
+	& 1 & 1.428s & 1.386s & 0.134s & 0.128s \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Hybrid\\ Version\end{tabular}} & 6 & 1.459s  & 1.458s & 0.358s & 0.360s \\ 
+	& 1 & 1.451s  & 1.445s & 0.132s & 0.131s \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Evaluation Metrics}\label{evalmtc}
+Since the output of the model is an ordered sequence of pixel coordinates, it is difficult to find a suitable evaluation metric to quantize the degree of fitting between two polygons. Thus, the evaluation metrics we used are still traditional and pixel-based, of which we choose the weighted accuracy and F1 score. We also use IoU score, which can indicate the overlapping extent between two sets of pixels. The evaluation result with internal comparison can be seen in table \ref{tab:evalmodin}.
+
+\begin{table}[!h]
+	\centering
+	\caption[Evaluation of models with internal comparison]{Evaluation of models with internal comparison.}
+	\label{tab:evalmodin}
+	\begin{tabular}{l|l|l|l|l|l}
+	\hline
+	\multicolumn{2}{l|}{\textbf{Beam Width}} & \multicolumn{2}{c|}{1} & \multicolumn{2}{c}{6} \\ \hline
+	\textbf{Metric} & \textbf{City} & Two-step & Hybrid & Two-step & Hybrid \\ \hline
+	\multirow{2}{*}{Accuracy} & Chicago & 0.9043 & 0.8986 & \textbf{0.9105} & 0.9084 \\ \cline{2-6}
+	& Zurich & 0.7856 & 0.8020 & 0.8129 & \textbf{0.8211} \\ \hline
+	\multirow{2}{*}{F1 Score} & Chicago & 0.8672 & 0.8591 & \textbf{0.8777} & 0.8730 \\ \cline{2-6}
+	& Zurich & 0.6711 & 0.7033 & 0.7171 & \textbf{0.7316} \\ \hline
+	\multirow{2}{*}{IoU Score} & Chicago & 0.7922 & 0.7822 & \textbf{0.8037} & 0.7985 \\ \cline{2-6}
+	& Zurich & 0.5486 & 0.5769 & 0.5937 & \textbf{0.6096} \\
+	\hline
+\end{tabular}
+\end{table}
+
+From table \ref{tab:evalmodin} we can see that the introduction of beam search improves the final result in all cases. We also find that the two-step version does well on the dataset of Chicago, and the hybrid version does well on the dataset of Zurich. However, on the dataset of Chicago, two models have just slight difference, thus we still consider the hybrid version performs better. The evaluation result with external comparison can be seen in table \ref{tab:evalmodex}.
+
+\begin{table}[!h]
+	\centering
+	\caption[Evaluation of models with external comparison]{Evaluation of models with external comparison.}
+	\label{tab:evalmodex}
+	\begin{tabular}{l|l|l|l|l|l}
+	\hline
+	\textbf{Metric} & \textbf{City} & Hybrid, BW6 & Paper \cite{polygonrnn} & Paper \cite{mspascal} & Thsis \cite{msnadine} \\ \hline
+	\multirow{2}{*}{Accuracy} & Chicago & 0.9084 & \multirow{4}{*}{N/A} & \multirow{2}{*}{N/A} & \multirow{2}{*}{N/A} \\ \cline{2-3}
+	& Zurich & 0.8211 & & \\ \cline{1-3}\cline{5-6}
+	\multirow{2}{*}{F1 Score} & Chicago & \textbf{0.8730} & & 0.837 & 0.70 \\ \cline{2-3}\cline{5-6}
+	& Zurich & 0.7316 & & \textbf{0.823} & \multirow{3}{*}{N/A} \\ \cline{1-5}
+	\multirow{2}{*}{IoU Score} & Chicago & \textbf{0.7985} & \multirow{2}{*}{0.52--0.72} & \multirow{2}{*}{N/A} & \\ \cline{2-3}
+	& Zurich & 0.6096 & & & \\
+	\hline
+\end{tabular}
+\end{table}
+
+From table \ref{tab:evalmodex} we can see that our model outperforms the paper \cite{mspascal} and the thesis \cite{msnadine} with F1 score evaluation in the dataset of Chicago. As for the IoU evaluation, in the original paper of PolygonRNN, the IoU score typically falls into 0.52--0.72 for the cityscapes, thus our result of dataset Zurich is just normal. The reason why Chicago’s IoU score is relatively high is that most of the buildings are vertically or horizontally aligned.
+
+\subsection{Prediction Results}\label{predres}
+
+
+
+
+

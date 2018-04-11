@@ -51,12 +51,13 @@
 \contentsline {paragraph}{Loss}{32}{section*.20}
 \contentsline {subsection}{\numberline {3.2.4}Feature Pyramid and Backbone}{33}{subsection.3.2.4}
 \contentsline {paragraph}{Anchor Selection in RPN}{33}{section*.21}
-\contentsline {paragraph}{Anchor Selection in FPN}{34}{section*.22}
+\contentsline {paragraph}{Anchor Selection in FPN}{33}{section*.22}
 \contentsline {paragraph}{Backbone of FPN}{35}{section*.23}
 \contentsline {section}{\numberline {3.3}R-PolygonRNN}{36}{section.3.3}
 \contentsline {subsection}{\numberline {3.3.1}Two-step Version}{36}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}Hybrid Version}{36}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.2}Hybrid Version}{37}{subsection.3.3.2}
 \contentsline {subsection}{\numberline {3.3.3}Hybrid Version with RoIAlign}{38}{subsection.3.3.3}
+\contentsline {subsection}{\numberline {3.3.4}Beam Search}{39}{subsection.3.3.4}
 \contentsline {chapter}{\chapternumberline {4}Experiments and Results}{41}{chapter.4}
 \contentsline {section}{\numberline {4.1}Ground Truth}{41}{section.4.1}
 \contentsline {subsection}{\numberline {4.1.1}Google Static Maps API}{41}{subsection.4.1.1}
@@ -64,41 +65,38 @@
 \contentsline {subsection}{\numberline {4.1.3}Areas and Buildings}{43}{subsection.4.1.3}
 \contentsline {paragraph}{Areas for FPN}{43}{section*.24}
 \contentsline {paragraph}{Buildings for PolygonRNN}{43}{section*.25}
-\contentsline {subsection}{\numberline {4.1.4}Problems}{44}{subsection.4.1.4}
-\contentsline {paragraph}{General Shift}{45}{section*.26}
-\contentsline {paragraph}{Polygon Size and Shape}{45}{section*.27}
-\contentsline {paragraph}{Angle Issue}{45}{section*.28}
-\contentsline {paragraph}{Adjacent Buildings}{45}{section*.29}
+\contentsline {subsection}{\numberline {4.1.4}Problems}{45}{subsection.4.1.4}
 \contentsline {subsection}{\numberline {4.1.5}Adjustments}{46}{subsection.4.1.5}
-\contentsline {paragraph}{Color Variance}{46}{section*.30}
-\contentsline {paragraph}{Edges}{46}{section*.31}
-\contentsline {paragraph}{Corners}{46}{section*.32}
 \contentsline {section}{\numberline {4.2}Implementation Details}{47}{section.4.2}
 \contentsline {subsection}{\numberline {4.2.1}Dataset Information}{47}{subsection.4.2.1}
 \contentsline {subsection}{\numberline {4.2.2}Model Configuration}{48}{subsection.4.2.2}
 \contentsline {subsection}{\numberline {4.2.3}Training Phase}{48}{subsection.4.2.3}
 \contentsline {subsection}{\numberline {4.2.4}Prediction Phase}{49}{subsection.4.2.4}
-\contentsline {section}{\numberline {4.3}Experiment Results}{49}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}Single Building Segmentation}{49}{subsection.4.3.1}
-\contentsline {subsection}{\numberline {4.3.2}Buildings Localization}{49}{subsection.4.3.2}
-\contentsline {subsection}{\numberline {4.3.3}R-PolygonRNN}{49}{subsection.4.3.3}
-\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{51}{chapter.5}
-\contentsline {section}{\numberline {5.1}Problems}{51}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{51}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}False Vertex}{52}{subsection.5.1.2}
-\contentsline {section}{\numberline {5.2}Future Work}{52}{section.5.2}
-\contentsline {paragraph}{Road Segmentation}{52}{section*.33}
-\contentsline {paragraph}{Ground Truth Correction}{53}{section*.34}
-\contentsline {paragraph}{RoIAlign Implementation}{53}{section*.35}
-\contentsline {paragraph}{Training Method}{53}{section*.36}
-\contentsline {paragraph}{Model Generalization}{53}{section*.37}
-\contentsline {appendix}{\chapternumberline {A}Appendix}{55}{appendix.A}
-\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{55}{section.A.1}
-\contentsline {section}{\numberline {A.2}OpenStreetMap}{55}{section.A.2}
-\contentsline {section}{\numberline {A.3}Projection}{55}{section.A.3}
-\contentsline {section}{\numberline {A.4}Anchor Assignment}{55}{section.A.4}
-\contentsline {section}{\numberline {A.5}Non-max Suppression}{55}{section.A.5}
-\contentsline {section}{\numberline {A.6}Beam Search}{56}{section.A.6}
-\contentsline {chapter}{List of Figures}{57}{section*.38}
-\contentsline {chapter}{List of Tables}{59}{section*.39}
-\contentsline {chapter}{Bibliography}{61}{section*.41}
+\contentsline {section}{\numberline {4.3}Experiment Results}{50}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Loss Decrease}{50}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Time Consumption}{51}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}Evaluation Metrics}{52}{subsection.4.3.3}
+\contentsline {subsection}{\numberline {4.3.4}Prediction Results}{53}{subsection.4.3.4}
+\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{55}{chapter.5}
+\contentsline {section}{\numberline {5.1}Problems}{55}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{55}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}False Vertex}{56}{subsection.5.1.2}
+\contentsline {section}{\numberline {5.2}Future Work}{56}{section.5.2}
+\contentsline {paragraph}{Road Segmentation}{56}{section*.26}
+\contentsline {paragraph}{Ground Truth Correction}{57}{section*.27}
+\contentsline {paragraph}{RoIAlign Implementation}{57}{section*.28}
+\contentsline {paragraph}{Training Method}{57}{section*.29}
+\contentsline {paragraph}{Model Generalization}{57}{section*.30}
+\contentsline {appendix}{\chapternumberline {A}APIs}{59}{appendix.A}
+\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{59}{section.A.1}
+\contentsline {section}{\numberline {A.2}OpenStreetMap}{59}{section.A.2}
+\contentsline {appendix}{\chapternumberline {B}Algorithms}{61}{appendix.B}
+\contentsline {section}{\numberline {B.1}Projection}{61}{section.B.1}
+\contentsline {section}{\numberline {B.2}Order of Polygon Vertices}{61}{section.B.2}
+\contentsline {section}{\numberline {B.3}Shift Adjustment}{61}{section.B.3}
+\contentsline {section}{\numberline {B.4}Anchor Assignment}{61}{section.B.4}
+\contentsline {section}{\numberline {B.5}Non-Maximum Suppression}{61}{section.B.5}
+\contentsline {section}{\numberline {B.6}Beam Search}{61}{section.B.6}
+\contentsline {chapter}{List of Figures}{63}{section*.31}
+\contentsline {chapter}{List of Tables}{65}{section*.32}
+\contentsline {chapter}{Bibliography}{67}{section*.34}

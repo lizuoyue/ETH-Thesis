@@ -15,14 +15,14 @@ N.~Silberman, D.~Sontag, and R.~Fergus, ``{Instance Segmentation of Indoor
   Vision (ECCV)}}, 2014.
 
 \bibitem{imgsegclustering}
-L.~arghout and J.~Sheynin, ``{Real-world scene perception and perceptual
-  organization: Lessons from Computer Vision},'' {\em {Journal of Vision}},
-  vol.~13, no.~9, pp.~709–--709, 2013.
+L.~arghout and J.~Sheynin, ``{Real-world Scene Perception and Perceptual
+  Organization: Lessons from Computer Vision},'' {\em {Journal of Vision}},
+  vol.~13, no.~9, pp.~709--709, 2013.
 
 \bibitem{imgsegcompress}
 H.~Mobahi, S.~Rao, A.~Yang, S.~Sastry, and Y.~Ma, ``{Segmentation of Natural
   Images by Texture and Boundary Compression},'' {\em {International Journal of
-  Computer Vision}}, no.~95, pp.~86–--98, 2011.
+  Computer Vision}}, no.~95, pp.~86--98, 2011.
 
 \bibitem{imgsegregion}
 R.~Nock and F.~Nielsen, ``{Statistical Region Merging},'' {\em {IEEE
@@ -71,8 +71,8 @@ O.~Ronneberger, P.~Fischer, and T.~Brox, ``{U-Net: Convolutional Networks for
 
 \bibitem{segnet}
 V.~Badrinarayanan, A.~Kendall, and R.~Cipolla, ``{SegNet: A Deep Convolutional
-  Encoder-Decoder Architecture for Image Segmentation},'' {\em {IEEE
-  Transactions on Pattern Analysis and Machine Intelligence}}, 2017.
+  Encoder-Decoder Architecture for Image Segmentation},'' in {\em {IEEE
+  Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}}, 2017.
 
 \bibitem{fasterrcnn}
 S.~Ren, K.~He, R.~Girshick, and J.~Sun, ``{Faster R-CNN: Towards Real-time
@@ -194,8 +194,8 @@ X.~Shi, Z.~Chen, H.~Wang, D.~Yeung, W.~Wong, and W.~Woo, ``{Convolutional LSTM
   {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}}, 2015.
 
 \bibitem{lstm}
-S.~Hochreiter and J.~Schmidhuber, ``Long short-term memory,'' {\em Neural
-  Computation}, vol.~9, no.~8, pp.~1735--1780, 1997.
+S.~Hochreiter and J.~Schmidhuber, ``Long short-term memory,'' {\em {Neural
+  Computation}}, vol.~9, no.~8, pp.~1735--1780, 1997.
 
 \bibitem{resnet}
 K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``{Deep Residual Learning for Image
