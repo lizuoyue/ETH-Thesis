@@ -39,6 +39,16 @@ L.~Castrej{\'o}n, K.~Kundu, R.~Urtasun, and S.~Fidler, ``{Annotating Object
   Instances with a Polygon-RNN},'' in {\em IEEE Conference on Computer Vision
   and Pattern Recognition (CVPR)}, 2017.
 
+\bibitem{vgg16}
+K.~Simonyan and A.~Zisserman, ``{Very Deep Convolutional Networks for
+  Large-Scale Image Recognition},'' in {\em International Conference on
+  Learning Representations (ICLR)}, 2015.
+
+\bibitem{seq2seq}
+I.~Sutskever, O.~Vinyals, and Q.~V. Le, ``{Sequence to Sequence Learning with
+  Neural Networks},'' in {\em {International Conference on Neural Information
+  Processing Systems (NIPS)}}, 2014.
+
 \bibitem{maskrcnn}
 K.~He, G.~Gkioxari, P.~Doll\'{a}r, and R.~Girshick, ``{Mask R-CNN},'' in {\em
   International Conference on Computer Vision (ICCV)}, 2017.
@@ -168,11 +178,6 @@ J.~Forsythe, V.~Kurlin, and A.~Fitzgibbon, ``{Resolution-Independent
 L.~Duan and F.~Lafarge, ``{Image Partitioning into Convex Polygons},'' in {\em
   IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 2015.
 
-\bibitem{vgg16}
-K.~Simonyan and A.~Zisserman, ``{Very Deep Convolutional Networks for
-  Large-Scale Image Recognition},'' in {\em International Conference on
-  Learning Representations (ICLR)}, 2015.
-
 \bibitem{alexnet}
 A.~Krizhevsky, I.~Sutskever, and G.~E. Hinton, ``{ImageNet Classification with
   Deep Convolutional Neural Networks},'' in {\em International Conference on
@@ -186,10 +191,15 @@ V.~Nair and G.~E. Hinton, ``{Rectified Linear Units Improve Restricted
 \bibitem{convlstm}
 X.~Shi, Z.~Chen, H.~Wang, D.~Yeung, W.~Wong, and W.~Woo, ``{Convolutional LSTM
   Network: A Machine Learning Approach for Precipitation Nowcasting},'' in {\em
-  IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 2015.
+  {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}}, 2015.
 
 \bibitem{lstm}
 S.~Hochreiter and J.~Schmidhuber, ``Long short-term memory,'' {\em Neural
   Computation}, vol.~9, no.~8, pp.~1735--1780, 1997.
+
+\bibitem{resnet}
+K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``{Deep Residual Learning for Image
+  Recognition},'' in {\em {IEEE Conference on Computer Vision and Pattern
+  Recognition (CVPR)}}, 2016.
 
 \end{thebibliography}

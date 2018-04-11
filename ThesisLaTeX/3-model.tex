@@ -90,31 +90,29 @@ Note that at each time step, the features, the masks of boundary and vertices as
 \subsection{Loss Function}\label{losspoly}
 The loss of PolygonRNN consists of two parts, loss of CNN and loss of RNN. The loss function of CNN part uses log loss, since the mask prediction is equivalent to binary classification for each pixel. We also notice that the non-boundary pixels or the non-vertex pixels occupy the majority, the loss function should be further weighted.
 \begin{equation}
-	L(M, M^*) = \sum_{i, j} \left[w_p\mathbb{1}[M_{ij} = 1]\log{\frac{1}{M^*_{ij}}} + w_n\mathbb{1}[M_{ij} = 0]\log{\frac{1}{1-M^*_{ij}}} \right],
+	L(M, M^*) = \sum_{i=1}^H\sum_{j=1}^W \left[w_p\mathbb{1}[M_{ij} = 1]\log{\frac{1}{M^*_{ij}}} + w_n\mathbb{1}[M_{ij} = 0]\log{\frac{1}{1-M^*_{ij}}} \right],
 \end{equation}
 \begin{equation}
 	w_p = \frac{1}{2\sum_{i, j}\mathbb{1}[M_{ij} = 1]}, w_n = \frac{1}{2\sum_{i, j}\mathbb{1}[M_{ij} = 0]},
 \end{equation}
-where $L(M, M^*)$ denotes the loss function for the ground truth mask $M$ and predicted mask $M^*$, the subscript $i$ and $j$ denotes the $i$-th row and $j$-th column, $\mathbb{1}[\cdot]$ denotes the indicator function, $w_p$ and $w_n$ denote the weights for positive and negative pixels, respectively. Thus, the loss of CNN part $L_{\text{CNN}}$ can be written as follows.
+where $L(M, M^*)$ denotes the loss function for the ground truth mask $M$ and predicted mask $M^*$, the subscript $i$ and $j$ denotes the $i$-th row and $j$-th column, $W$ and $H$ denote the width and height of mask, $\mathbb{1}[\cdot]$ denotes the indicator function, $w_p$ and $w_n$ denote the weights for positive and negative pixels, respectively. Thus, the loss of CNN part $L_{\text{CNN}}$ can be written as follows.
 \begin{equation}
 	L_{\text{CNN}} = L(M_b, M^*_b) + L(M_v, M^*_v),
 \end{equation}
 where subscript $b$ and $v$ denote masks of boundary and vertices, respectively. As for the loss of RNN, the loss function used is cross-entropy loss, because the polygon prediction is equivalent to multiclass classification at every time step. Thus, the loss of RNN part $L_{\text{RNN}}$ can be written as follows.
 \begin{equation}
-	L_{\text{RNN}} = \sum_{t, k}\mathbb{1}[v_{t} = k]\log{\frac{1}{y_tk}},
+	L_{\text{RNN}} = \frac{1}{TK} \sum_{t=1}^T\sum_{k=1}^K\mathbb{1}[v_{t} = k]\log{\frac{1}{y_{tk}}},
 \end{equation}
 \begin{equation}
-	y_{tk} = P(v_t = k \mid v_{t-1}, v_{t-2})
+	y_{tk} = P(v_t = k \mid v_{t-1}, v_{t-2}),
 \end{equation}
-where $y_tk$ denotes the $k$-th component of $y_t$, i.e. the conditional probability of $v_t$ at the position $k$, given its two previous vertices.
+where $y_tk$ denotes the $k$-th component of $y_t$, i.e. the conditional probability of $v_t$ at the position $k$, given its two previous vertices, $T$ denotes the number of vertices in the polygon, $K$ denotes the number of possible assignments (positions) for vertex $v_t$ including the end signal. Here we do not consider the loss for the first vertex $v_0$, because it is randomly chosen from the polygon vertices when training.
 
 \section{Feature Pyramid Network}\label{modfpn}
-
-FPN is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{ancpro} introduces some basic concepts related to anchor, and subsection \ref{mulbboxreg} further illustrates multiple bounding boxes regression. Finally, subsection \ref{fpnbone} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
+FPN \cite{fpn} is the core model for object detection in this project. Object detection problem is exactly multiple bounding boxes regression problem, which finds out multiple RoIs within an image. Subsection \ref{sglbboxreg} first illustrates problem of single bounding box regression. Subsection \ref{ancpro} introduces some basic concepts related to anchor, and subsection \ref{mulbboxreg} further illustrates multiple bounding boxes regression. Finally, subsection \ref{fpnbone} looks into the backbone of FPN, presents how feature pyramid is generated and how FPN can tackle the multi-scale detection problem.
 
 \subsection{Single Bounding Box Regression}\label{sglbboxreg}
-
-Single bounding box regression can be used for such a scenario, where the target image has only one RoI. Generally, a bounding box can be uniquely determined by four parameters, either box center and box size, denoting $(x, y)$ and $(w, h)$ or the coordinates of the upper left and lower right corners of the box, denoting $(l, u)$ and $(r, d)$. They have following relationships.
+Single bounding box regression can be used for such a scenario, where the image contains only one object. Generally, a bounding box can be uniquely determined by four parameters, either box center and box size, denoting $(x, y)$ and $(w, h)$ or the coordinates of the upper left and lower right corners of the box, denoting $(l, u)$ and $(r, d)$. They have following relationships.
 \begin{equation}
 	\left[\begin{array}{c}
 		x\\y\\w\\h
@@ -139,13 +137,13 @@ Single bounding box regression can be used for such a scenario, where the target
 		x\\y\\w\\h
 	\end{array}\right].
 \end{equation}
-Therefore, we can regard the problem of finding out single bounding box of RoI as a parameter regression problem. With the image as input, any set of the four parameters, $(x, y, w, h)$ or $(l, u, r, d)$, can be selected as the target of the regression. Figure \ref{fig:sglbboxreg} shows the architecture of the network for the single bounding box regression, using box center and size as outputs.
+Therefore, we can regard the problem of finding out object's bounding box as a parameter regression problem. With the image as input, either set of the four parameters, $(x, y, w, h)$ or $(l, u, r, d)$, can be selected as the target for the regression. Figure \ref{fig:sglbboxreg} shows the architecture of the network for single bounding box regression, using box center and size as outputs.
 
 \input{fig/3-06}
 
-In practice, usually the normalized parameters of box center and size rather than the coordinates of two corners are used as training targets. As for the normalization functions, see subsection \ref{mulbboxreg} for more details.
+In practice, usually the normalized parameters of box center and size rather than the coordinates of two corners are used as training targets. As for the normalization functions, please see subsection \ref{mulbboxreg} for more details.
 
-\subsection{Anchor and its Properties}\label{ancpro}
+\subsection{Anchor and Its Properties}\label{ancpro}
 Anchor is a basic concept in multiple bounding boxes regression. The following paragraphs introduce the idea of anchor and its properties in detail.
 
 \paragraph{Anchor}
@@ -158,16 +156,16 @@ Thus, even for a very small image patch with size 224$\times$224, $n$ is already
 \input{fig/3-07}
 
 \paragraph{IoU Score}
-Usually IoU (Intersection over Union) score is used to evaluate the similarity between an anchor and a ground truth bounding box. The following equation shows its computation.
+Usually IoU (Intersection over Union) score is used to evaluate the distance between an anchor and a ground truth bounding box. The following equation shows its calculation. Note that the score's computation is irrelevant to the actual image content in either anchor or the ground truth bounding box.
 \begin{equation}
 	s = \frac{\lvert A \cap T \rvert}{\lvert A \cup T \rvert} \in [0, 1],
 \end{equation}
-where $s$ denotes the IoU score, $\lvert \cdot \rvert$ denotes the size of the set, $A$ and $T$ refer to the sets of pixels covered by the anchor and the ground truth bounding box respectively. $s = 1$ means that the anchor and the ground truth bounding box overlap perfectly. Figure \ref{fig:egiou} shows the coverage level under different IoU scores.
+where $s$ denotes the IoU score, $\lvert \cdot \rvert$ denotes the size of a set, $A$ and $T$ refer to the sets of pixels covered by the anchor and the ground truth bounding box respectively. $s = 1$ means that the anchor and the ground truth bounding box overlap perfectly. Figure \ref{fig:egiou} shows the coverage level under different IoU scores.
 
 \input{fig/3-08}
 
 \paragraph{Anchor Polarity}
-Generally, there are several buildings in an aerial image, thus multiple RoIs exist. Based on the IoU scores of an anchor with these ground truth bounding boxes, we can make a judgment on the polarity of this anchor, which is defined as follows.
+Typically, there are several buildings in an aerial image, thus multiple RoIs exist. Based on the IoU scores of an anchor with these ground truth bounding boxes, we can make a judgment on the polarity of this anchor, which is defined as follows.
 \begin{equation}
 	d_i = \argmax_{j} \text{IoU}(a_i, g_j),
 \end{equation}
@@ -183,37 +181,37 @@ Generally, there are several buildings in an aerial image, thus multiple RoIs ex
 	\end{cases}
 \end{aligned}
 \end{equation}
-where $a_i$ and $g_j$ denote the $i$-th anchor and $j$-th ground truth bounding box, $s_i$, $d_i$, and $p_i$ denote the highest IoU score that $a_i$ can get, the index of the `closest' ground truth box of $a_i$, and the polarity of $a_i$, $t_l$ and $t_h$ denote two threshold for the polarity judgment, and typically, $t_h = 0.7$, $t_l = 0.3$. An anchor is labeled as positive, natural or negative in case of $p_i = 1$, $p_i = 0$ or $p_i = -1$ respectively. Figure \ref{fig:eganchor} also shows anchors with different polarities.
+where $a_i$ and $g_j$ denote the $i$-th anchor and $j$-th ground truth bounding box, $s_i$ denotes the highest IoU score that $a_i$ can get, $d_i$ denotes the index of $a_i$'s ``closest" ground truth bounding box, $p_i$ denotes the polarity of $a_i$, $t_l$ and $t_h$ denote two manually set thresholds for polarity judgment, and typically, $t_h = 0.7$, $t_l = 0.3$. An anchor is labeled as positive, natural or negative in case of $p_i = 1$, $p_i = 0$ or $p_i = -1$, respectively. Figure \ref{fig:eganchor} also shows anchors with different polarities using typical thresholds.
 
 \subsection{Multiple Bounding Boxes Regression}\label{mulbboxreg}
-Multiple bounding boxes regression can be very different from the single one. Since the number of RoIs is unknown, if we still directly use the parameters regression as what we do in case of the single bounding box, then the number of nodes of the FC output layer will not be fixed. Besides, the RoIs in the image usually reflects the local information, usually we cannot directly use all global features obtained by CNN, either.
+Multiple bounding boxes regression can be very different from the single one. Since the number of RoIs is unknown, if we still directly use the idea of parameters regression as what we do in case of the single bounding box, then the number of nodes of the FC output layer will not be fixed. In addition, the RoIs in the image usually reflect the local information, thus we cannot directly use all global features obtained by CNN, either.
 
 \paragraph{Anchor Assignment}
-The basic idea for multiple bounding boxes regression is to regress them on positive anchors. Specifically, each RoI is regressed on the anchors which are assigned to it. There are two rules for the assignment: (1) each ground truth bounding box should have at least one anchor (either positive, natural or negative) assigned to it; (2) each positive anchor should be assigned to its `closest' ground truth bounding box. For those non-positive anchors that have assignments, we also treat them as positive anchors. For details of the matching algorithm, please refer to section \ref{app:assignanchor}.
+The basic idea for multiple bounding boxes regression is to regress them on positive anchors. Specifically, each RoI is regressed on the anchors which are assigned to it. There are two rules for the assignment: (1) each ground truth bounding box should have at least one anchor (either positive, natural or negative) assigned to it; (2) each positive anchor should be assigned to its ``closest" ground truth bounding box. For those non-positive anchors that have assignments, we also treat them as positive anchors. For details of the matching algorithm, please refer to section \ref{app:assignanchor}.
 
 \paragraph{Classification and Regression on Anchors}
-As a matter of fact, the single bounding box regression can be regarded as regression on the anchor, which is exactly the whole image. Similar to this, we can simply increase the number of nodes in the FC output layer (see figure \ref{fig:sglbboxreg}) according to the number of anchors. Generally, each anchor requires 6 output nodes, 2 for binary classification and 4 for parameters regression. Specifically, 2 classification nodes output the logits, denoting $l_p$ and $l_n$, indicating how close the anchor is to an RoI. Thus the predicted probability of an anchor referring to an RoI $p^*$ can be described as
+As a matter of fact, the single bounding box regression can be also regarded as regression on the anchor. Here the anchor is exactly the whole image. Similar to this, we can simply increase the number of nodes in the FC output layer (see figure \ref{fig:sglbboxreg}) according to the number of anchors. Generally, each anchor requires 6 output nodes, 2 for binary classification and 4 for parameters regression. Specifically, 2 classification nodes output the logits, denoting $l_p$ and $l_n$, indicating how close the anchor is to an RoI. Thus, the predicted probability of an anchor referring to an RoI $p^*$ can be calculated as follows, using softmax function.
 \begin{equation}
 	p^* = \frac{e^{l_p}}{e^{l_p} + e^{l_n}}, 1 - p^* = \frac{e^{l_n}}{e^{l_p} + e^{l_n}}.
 \end{equation}
-The rest 4 regression nodes output the refined box information, for recovering the corresponding RoI. Suppose we have a fixed positive anchor, which is assigned to a ground truth bounding box. The refined (or normalized) box parameters are used for regression target, which can be described as follows.
+The rest 4 regression nodes output the information of the refined box, for recovering the corresponding RoI. Suppose we have a fixed positive anchor, which is assigned to a ground truth bounding box. The parameters of refined (or normalized) box are used for regression target, which can be calculated as
 \begin{equation}
 	r_x = \frac{x_g - x_a}{w_a}, r_y = \frac{y_g - y_a}{h_a}, r_w = \log\frac{w_g}{w_a}, r_h = \log\frac{h_g}{h_a},
 \end{equation}
-where $(x_a, y_a, w_a, h_a)$ and $(x_g, y_g, w_g, h_g)$ denotes the four parameters of the anchor and the ground truth bounding box respectively, $(r_x, r_y, r_w, r_h)$ denotes the refined parameters for regression target. As for the recovery phase, we have
+where $(x_a, y_a, w_a, h_a)$ and $(x_g, y_g, w_g, h_g)$ denotes the four parameters of the anchor and the ground truth bounding box respectively, $(r_x, r_y, r_w, r_h)$ denotes the refined parameters for regression target. The following equations define the recovery phase.
 \begin{equation}
 	x_g^* = x_a + r_x^*w_a, y_g^* = h_a + r_y^*h_a, w_g^* = w_ae^{r_w^*}, h_g^* = h_ae^{r_h^*},
 \end{equation}
-where $(r_x^*, r_y^*, r_w^*, r_h^*)$ and $(x_g^*, y_g^*, w_g^*, h_g^*)$ denote the predicted refinement parameters and the parameters of the final predicted bounding box respectively. The reason why the refined parameters are used for training, instead of original box, is that the former one eliminates the location information thus more reasonable.
+where $(r_x^*, r_y^*, r_w^*, r_h^*)$ and $(x_g^*, y_g^*, w_g^*, h_g^*)$ denote the predicted refinement parameters and the parameters of the final predicted bounding box respectively. The reason why the refined parameters are used for training, instead of original box, is that the former one eliminates the shape and location information of original box, hence it is more suitable for calculating the loss.
 
 \input{fig/3-09}
 
 \paragraph{Loss}
-As for training, only positive and negative anchors are used, where classification uses both and regression only uses positive anchors. The loss used for classification is the log loss, described as follows.
+As for training, only positive and negative anchors are used, where classification uses both and regression uses positive anchors only. The loss function used for classification is log loss, which is described as follows (for a single anchor).
 \begin{equation}
 	L_c = \mathbb{1}[p = 1]\log{\frac{1}{p^*}} + \mathbb{1}[p = -1]\log{\frac{1}{1-p^*}},
 \end{equation}
-where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p'$ is the predicted probability, $\mathbb{1}[\cdot]$ is the indicator function. The loss used for regression is the smooth $L_1$ loss, described as follows.
+where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p^*$ is the predicted probability, $\mathbb{1}[\cdot]$ is the indicator function. Additionally, the loss used for regression is the smooth $L_1$ loss, which is described as
 \begin{equation}
 \begin{aligned}
 	f(x) = \begin{cases}
@@ -226,23 +224,25 @@ where $L_c$ is the classification loss, $p$ is the polarity of the anchor, $p'$ 
 \begin{equation}
 	L_r = f(x_g^* - x_g) + f(y_g^* - y_g) + f(w_g^* - w_g) + f(h_g^* - h_g),
 \end{equation}
-where $L_r$ is the regression loss. The total loss is defined as
+where $L_r$ is the regression loss. The total loss of FPN is defined as follows.
 \begin{equation}
 	L = \sum_{i}^{} L_c^{(i)} + \lambda\sum_{i}^{}\mathbb{1}[p_i = 1]L_r^{(i)},
 \end{equation}
-where $\lambda$ is a self-defined parameter.
+where the superscript $i$ denotes the $i$-th anchor, $\lambda$ denotes a self-defined parameter when training.
 
 \subsection{Feature Pyramid and Backbone}\label{fpnbone}
 
-From equation \ref{eq:numanchor} we know that even a small image can have a huge number of possible anchors. However, it is impossible to involve all anchors in the calculation, since the output layer would have too many nodes. Thus, how to select the proper anchors in the original image remains a problem. The selected anchors should cover the ground truth bounding boxes as much as possible. Under this guideline, selected anchors should have different kinds of shapes, in different scales and evenly distributed in the image.
+From equation \ref{eq:numanchor} we know that even a small image can have a huge number of possible anchors. However, it is impossible to involve all anchors in the training phase, since the output layer would have too many nodes and the number of parameters in the network would explode. Thus, how to select appropriate number of anchors in the original image remains a problem. But there is no doubt that the selected anchors should not ``miss" any ground truth bounding box (i.e. should ``cover" the ground truth bounding boxes as much as possible). Under this guideline, selected anchors should have different kinds of shapes, in different scales and evenly distributed in the image.
 
-In fact, in RPN from Faster R-CNN, there is a simple way to select anchors. For each entry of the convoluted feature map (or each pixel of the original image with corresponding stride), we generate $k$ different shapes of anchors also in different scales, which is shown in figure \ref{fig:ancsel}. For example, if we select anchors from image with size 320$\times$320, stride 8$\times$8, 3 different shapes ($1:1$, $\sqrt{2}/{2}:\sqrt{2}$, $\sqrt{2}:\sqrt{2}/{2}$) and 4 scales (16, 32, 64, 128), we will have $(320/8)^2\times3\times4=19200$ anchors.
+\paragraph{Anchor Selection in RPN}
+In fact, in RPN from Faster R-CNN \cite{fasterrcnn}, there is a simple way to select anchors. For each entry of the convoluted feature map (or for each pixel of the original image with corresponding stride), we generate $k$ different shapes of anchors with different scales, which is shown in figure \ref{fig:ancsel}. For example, if we select anchors from an image with size 320$\times$320, choosing stride 8$\times$8 (corresponding to the feature map with size 40$\times$40), 3 different shapes (1:1, $\frac{\sqrt{2}}{2}$:$\sqrt{2}$, $\sqrt{2}$:$\frac{\sqrt{2}}{2}$) and 4 scales (16, 32, 64, 128), then we have $40^2\times3\times4=19200$ anchors.
 
 \input{fig/3-11}
 
-But this method produces two problems: (1) large anchors are too close to each other, resulting in redundancy; (2) the stride may be too large for small anchors, thus a typically small ground truth bounding box which are sandwiched between two small anchors is very likely to be missed. Both problems are tackled with the introduction of feature pyramid.
+But this method produces two problems: (1) Large anchors are very close to each other, resulting in redundancy; (2) The stride may be too large for small anchors, thus a typically small ground truth bounding box, which are sandwiched between two small anchors, is very likely to be ``missed". Actually, the second one is the reason why RPN cannot well detect small objects. However, both problems are tackled with the introduction of feature pyramid.
 
-Feature pyramid is a basic component in recognition systems for detecting objects. It actually refers to semantic feature maps at different scales. FPN exploits the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to construct feature pyramids. The network uses a top-down architecture with lateral connections is developed for building an in-network feature pyramid from a single-scale input. Figure \ref{fig:fpn} shows its architecture.
+\paragraph{Anchor Selection in FPN}
+Feature pyramid is a basic component in recognition systems for detecting objects. It actually refers to semantic feature maps at different scales. FPN exploits the inherent multi-scale, pyramidal hierarchy of deep convolutional networks to construct feature pyramids. The network uses a top-down architecture with lateral connections, which is developed for constructing an in-network feature pyramid from a single-scale input. Figure \ref{fig:fpn} shows its architecture.
 
 \input{fig/3-12}
 
@@ -250,19 +250,20 @@ The relationship between the feature pyramid and anchors is that each level of t
 \begin{equation}
 	S_i = 2^{i-1}S_1, i \in \{1,2,\ldots\},
 \end{equation}
-where $S_i$ denotes the smallest anchor size, $S_i$ denotes the anchor size corresponding to the feature map with $2^{-i}$ resolution. For example, for an image with size 320$\times$320, if the smallest anchor size is set to be 16, the anchor size for the feature map with resolution 40$\times$40 would be 128.
+where $S_1$ denotes the smallest anchor scale (typically around 20, e.g. 16--24), $S_i$ denotes the anchor scale corresponding to the feature map with $2^{-i}$ resolution. For example, for an image with size 320$\times$320, if the smallest anchor scale is set to be 16, the anchor scale for the feature map with resolution 40$\times$40 would be 128.
 
 \input{fig/3-13}
 
-Therefore, in FPN, the feature map with larger resolution corresponds to smaller anchor size (i.e. smaller stride with regard to the original image). That is the core reason why the problems mentioned above can be addressed. On the other hand, the total number of anchors $n_l$ has an upper bound $\Theta(wh)$, which can be derived as
+Therefore, in FPN, the feature map with larger resolution corresponds to smaller anchor scale, with smaller stride with regard to the original image. Similarly, the feature map with smaller resolution corresponds to larger anchor scale, with larger stride with regard to the original image. This is the core reason why the problems mentioned around figure \ref{fig:ancsel} can be addressed. On the other hand, the total number of anchors $n_l$ has an upper bound $\Theta(wh)$, which can be derived from
 \begin{equation}
 	n_l = \sum_{i=1}^{l}\frac{w}{2^i}\frac{h}{2^i}k=whk\sum_{i=1}^{l}4^{-i}=\frac{1}{3}whk(1-4^{-l}) \leqslant \frac{1}{3}whk,
 \end{equation}
-where the subscript $l$ denotes the number of feature maps, i.e. the depth of feature pyramid, $w$ and $h$ denotes the image width and height, $k$ denotes the number of designed anchor shapes. Compared with equation \ref{eq:numanchor}, the total number of anchors is reduced by two orders of magnitude.
+where the subscript $l$ denotes the number of layers (or feature maps) in the feature pyramid, i.e. the depth of feature pyramid, $w$ and $h$ denotes the image width and height, $k$ denotes the number of manually designed anchor shapes. Compared with equation \ref{eq:numanchor}, the total number of anchors is reduced by two orders of magnitude.
 
-The upper left part of figure \ref{fig:fpn} is so-called backbone of FPN, which is exactly a general CNN. In Mask R-CNN, the backbone used for feature extraction is ResNet-101, which can give excellent gains in both accuracy and speed. However, in our project, VGG-16 is chosen as the backbone of FPN, because we want FPN and PolygonRNN share the same VGG-16. For more details about the shared VGG-16, please refer to subsection \ref{hybmod}.
+\paragraph{Backbone of FPN}
+The upper left part of figure \ref{fig:fpn} is so-called backbone of FPN, which is exactly a general CNN. In Mask R-CNN \cite{maskrcnn}, the backbone used for feature extraction is ResNet-101 \cite{resnet}, which can give excellent gains in both accuracy and speed. However, in our project, VGG-16 \cite{vgg16} is chosen as the backbone of FPN, because we want FPN and PolygonRNN share the same VGG-16. For more details about the shared VGG-16, please refer to subsection \ref{hybmod}.
 
-Figure \ref{fig:fpnvgg} shows the architecture of FPN with VGG-16 backbone used in our project for feature pyramid extraction. Actually, the lateral connections are not fixed. It means that each layer of VGG-16 can be lead out in a reasonable situation. Here we use 4-layer feature pyramid, and features are taken from layers \lstinline{conv3_3}, \lstinline{conv4_3} and \lstinline{conv5_3}. For the network to make further prediction is already shown in figure \ref{fig:ancsel}.
+Figure \ref{fig:fpnvgg} shows the architecture of FPN with VGG-16 backbone used in our project for feature pyramid extraction. Actually, the lateral connections are not limited to a fixed method, which means that each layer of VGG-16 can be lead out using a reasonable connection. Here we use 4-layer feature pyramid, and features are taken from layers \lstinline{conv3_3}, \lstinline{conv4_3} and \lstinline{conv5_3}, respectively. For the network to make further prediction of refined box parameters, it is the same as what is shown in figure \ref{fig:ancsel}.
 
 \input{fig/3-14}
 
