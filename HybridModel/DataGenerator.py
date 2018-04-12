@@ -411,14 +411,14 @@ class DataGenerator(object):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
-					h, w = int(max(w, h) * 1.2), int(max(w, h) * 1.2)
+					h, w = int(h * 1.14), int(w * 1.14)
 					cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
 					y1, x1, y2, x2 = int(max(0, cy - h / 2)), int(max(0, cx - w / 2)), int(min(img.shape[0], cy + h / 2)), int(min(img.shape[1], cx + w / 2))
 					if y1 < y2 and x1 < x2:
 						patch = np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize(config.PATCH_SIZE, resample = Image.BICUBIC), np.float32)
 						patches.append(patch - config.COLOR_MEAN['Buildings'][self.city_name])
 						org_info.append([i, y1, x1, y2, x2])
-		return self.area_imgs, np.array(patches), org_info		
+		return self.area_imgs, np.array(patches), org_info
 
 	def recoverGlobal(self, path, img, org_info, pred_v_out, pred_box, base):
 		bbox_mask = []
@@ -453,7 +453,7 @@ class DataGenerator(object):
 					else:
 						flag = True
 						break
-				if flag:
+				if flag and len(polygon) > 3:
 					draw.polygon(polygon, fill = config.TABLEAU20[color_count % len_c])
 					draw.line(polygon + [polygon[0]], fill = config.TABLEAU20_DEEP[color_count % len_c], width = 2)
 					color_count += 1
