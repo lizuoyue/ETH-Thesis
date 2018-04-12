@@ -96,9 +96,10 @@
 \contentsline {figure}{\numberline {4.9}{\ignorespaces Prediction results on the test set of Zurich}}{54}{figure.4.9}
 \contentsline {figure}{\numberline {4.10}{\ignorespaces Prediction results on the test set of Chicago}}{54}{figure.4.10}
 \addvspace {10pt}
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Polygon interior angle distribution}}{56}{figure.5.1}
-\contentsline {subfigure}{\numberline {(a)}{\ignorespaces angle distribution in Zurich}}{56}{figure.5.1}
-\contentsline {subfigure}{\numberline {(b)}{\ignorespaces angle distribution in Chicago}}{56}{figure.5.1}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Human posture detection in Mask R-CNN}}{57}{figure.5.2}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Polygon interior angle distribution}}{58}{figure.5.1}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces angle distribution in Zurich}}{58}{figure.5.1}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces angle distribution in Chicago}}{58}{figure.5.1}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Human posture detection in Mask R-CNN}}{59}{figure.5.2}
+\addvspace {10pt}
 \addvspace {10pt}
 \addvspace {10pt}

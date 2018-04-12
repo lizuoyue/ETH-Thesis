@@ -77,26 +77,29 @@
 \contentsline {subsection}{\numberline {4.3.2}Time Consumption}{52}{subsection.4.3.2}
 \contentsline {subsection}{\numberline {4.3.3}Evaluation Metrics}{52}{subsection.4.3.3}
 \contentsline {subsection}{\numberline {4.3.4}Prediction Results}{54}{subsection.4.3.4}
-\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{55}{chapter.5}
-\contentsline {section}{\numberline {5.1}Problems}{55}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{55}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}False Vertex}{56}{subsection.5.1.2}
-\contentsline {section}{\numberline {5.2}Future Work}{56}{section.5.2}
-\contentsline {paragraph}{Road Segmentation}{56}{section*.26}
-\contentsline {paragraph}{Ground Truth Correction}{57}{section*.27}
-\contentsline {paragraph}{RoIAlign Implementation}{57}{section*.28}
-\contentsline {paragraph}{Training Method}{57}{section*.29}
-\contentsline {paragraph}{Model Generalization}{57}{section*.30}
-\contentsline {appendix}{\chapternumberline {A}Algorithms}{59}{appendix.A}
-\contentsline {section}{\numberline {A.1}Projection}{59}{section.A.1}
-\contentsline {section}{\numberline {A.2}Order of Polygon Vertices}{59}{section.A.2}
-\contentsline {section}{\numberline {A.3}Shift Adjustment}{59}{section.A.3}
-\contentsline {section}{\numberline {A.4}Anchor Assignment}{59}{section.A.4}
-\contentsline {section}{\numberline {A.5}Non-Maximum Suppression}{59}{section.A.5}
-\contentsline {section}{\numberline {A.6}Beam Search}{59}{section.A.6}
-\contentsline {appendix}{\chapternumberline {B}APIs}{61}{appendix.B}
-\contentsline {section}{\numberline {B.1}Example URL of Google Static Maps API}{61}{section.B.1}
-\contentsline {section}{\numberline {B.2}OpenStreetMap}{61}{section.B.2}
-\contentsline {chapter}{List of Figures}{63}{section*.31}
-\contentsline {chapter}{List of Tables}{65}{section*.32}
-\contentsline {chapter}{Bibliography}{67}{section*.34}
+\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{57}{chapter.5}
+\contentsline {section}{\numberline {5.1}Problems}{57}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{57}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}False Vertex}{58}{subsection.5.1.2}
+\contentsline {section}{\numberline {5.2}Future Work}{59}{section.5.2}
+\contentsline {paragraph}{Segmentation of Roads}{59}{section*.26}
+\contentsline {paragraph}{Ground Truth Correction}{59}{section*.27}
+\contentsline {paragraph}{RoIAlign Implementation}{59}{section*.28}
+\contentsline {paragraph}{Training Method}{60}{section*.29}
+\contentsline {paragraph}{Model Generalization}{60}{section*.30}
+\contentsline {appendix}{\chapternumberline {A}APIs}{61}{appendix.A}
+\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{61}{section.A.1}
+\contentsline {section}{\numberline {A.2}OpenStreetMap}{61}{section.A.2}
+\contentsline {appendix}{\chapternumberline {B}Algorithms}{63}{appendix.B}
+\contentsline {section}{\numberline {B.1}Projection}{63}{section.B.1}
+\contentsline {section}{\numberline {B.2}Order of Polygon Vertices}{63}{section.B.2}
+\contentsline {section}{\numberline {B.3}Shift Adjustment}{63}{section.B.3}
+\contentsline {section}{\numberline {B.4}Anchor Assignment}{63}{section.B.4}
+\contentsline {section}{\numberline {B.5}Non-Maximum Suppression}{63}{section.B.5}
+\contentsline {section}{\numberline {B.6}Beam Search}{63}{section.B.6}
+\contentsline {appendix}{\chapternumberline {C}Prediction Results}{65}{appendix.C}
+\contentsline {section}{\numberline {C.1}Zurich}{65}{section.C.1}
+\contentsline {section}{\numberline {C.2}Chicago}{65}{section.C.2}
+\contentsline {chapter}{List of Figures}{67}{section*.31}
+\contentsline {chapter}{List of Tables}{69}{section*.32}
+\contentsline {chapter}{Bibliography}{71}{section*.34}
