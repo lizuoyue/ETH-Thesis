@@ -407,6 +407,7 @@ class DataGenerator(object):
 		pad = 200
 		box_info = []
 		for i, (org, bbox) in enumerate(zip(self.area_imgs, pred_box)):
+			box_info.append([])
 			im = np.array(org)[..., 0: 3]
 			img = np.zeros((im.shape[0] + pad * 2, im.shape[1] + pad * 2, 3), np.uint8)
 			img[pad: pad + im.shape[0], pad: pad + im.shape[1], :] = im
@@ -415,7 +416,7 @@ class DataGenerator(object):
 				y1, x1, y2, x2 = tuple(list(boxes[j] + pad))
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
-					box_info.append((y1 - pad, x1 - pad, y2 - pad, x2 - pad))
+					box_info[-1].append((y1 - pad, x1 - pad, y2 - pad, x2 - pad))
 					h, w = int(max(h, w) * 1.3), int(max(h, w) * 1.3)
 					cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
 					y1, x1, y2, x2 = int(max(0, cy - h / 2)), int(max(0, cx - w / 2)), int(min(img.shape[0], cy + h / 2)), int(min(img.shape[1], cx + w / 2))
@@ -430,7 +431,7 @@ class DataGenerator(object):
 		for i, im in enumerate(img):
 			mask = Image.fromarray(np.zeros((im.size[1], im.size[0], 3), np.uint8))
 			draw = ImageDraw.Draw(mask)
-			for y1, x1, y2, x2 in box_info:
+			for y1, x1, y2, x2 in box_info[i]:
 				draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 227, 0))
 			bbox_mask.append(mask)
 		batch_size = len(org_info)
