@@ -175,7 +175,7 @@ if __name__ == '__main__':
 	# Create new folder
 	city_name = sys.argv[1]
 	assert(os.path.exists('./Model%s/' % (city_name + sys.argv[2])))
-	assert(len(sys.argv) == 3)
+	assert(len(sys.argv) == 3 or len(sys.argv) == 5)
 
 	# Create data generator
 	obj = DataGenerator(
@@ -229,7 +229,11 @@ if __name__ == '__main__':
 		ff = open('Time%s.csv' % city_name, 'w')
 		ff.write('round,area,perbuilding,fixbuilding\n')
 
-		for i in range(0, 300):
+		if len(sys.argv) == 3:
+			iter_obj = range(0, 300)
+		else:
+			iter_obj = range(int(sys.argv[3]), int(sys.argv[4]))
+		for i in iter_obj:
 			time_res = [i]
 			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {aa: img}
