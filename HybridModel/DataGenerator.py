@@ -404,12 +404,13 @@ class DataGenerator(object):
 		assert(len(pred_box) == len(self.area_imgs))
 		patches = []
 		org_info = []
+		pad = 150
 		for i, (org, bbox) in enumerate(zip(self.area_imgs, pred_box)):
-			img = np.zeros((900, 900, 3), np.uint8)
-			img[150: 750, 150: 750, :] = np.array(org)[..., 0: 3]
+			img = np.zeros((org.shape[0] + pad * 2, org.shape[1] + pad * 2, 3), np.uint8)
+			img[pad: pad + org.shape[0], pad: pad + org.shape[1], :] = np.array(org)[..., 0: 3]
 			boxes = bbox * self.recover_rate
 			for j in range(boxes.shape[0]):
-				y1, x1, y2, x2 = tuple(list(boxes[j]) + 150)
+				y1, x1, y2, x2 = tuple(list(boxes[j] + pad))
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
 					h, w = int(max(h, w) * 1.15), int(max(h, w) * 1.15)
@@ -418,7 +419,7 @@ class DataGenerator(object):
 					if y1 < y2 and x1 < x2:
 						patch = np.array(Image.fromarray(img[y1: y2, x1: x2, :]).resize(config.PATCH_SIZE, resample = Image.BICUBIC), np.float32)
 						patches.append(patch - config.COLOR_MEAN['Buildings'][self.city_name])
-						org_info.append([i, y1 - 150, x1 - 150, y2 - 150, x2 - 150])
+						org_info.append([i, y1 - pad, x1 - pad, y2 - pad, x2 - pad])
 		return self.area_imgs, np.array(patches), org_info
 
 	def recoverGlobal(self, path, img, org_info, pred_v_out, pred_box, base):

@@ -57,12 +57,12 @@
 \BOOKMARK [2][-]{subsection.5.1.2}{False Vertex}{section.5.1}% 57
 \BOOKMARK [1][-]{section.5.2}{Future Work}{chapter.5}% 58
 \BOOKMARK [0][-]{appendix.A}{APIs}{}% 59
-\BOOKMARK [1][-]{section.A.1}{Example URL of Google Static Maps API}{appendix.A}% 60
+\BOOKMARK [1][-]{section.A.1}{Google Static Maps API}{appendix.A}% 60
 \BOOKMARK [1][-]{section.A.2}{OpenStreetMap}{appendix.A}% 61
 \BOOKMARK [0][-]{appendix.B}{Algorithms}{}% 62
 \BOOKMARK [1][-]{section.B.1}{Projection}{appendix.B}% 63
 \BOOKMARK [1][-]{section.B.2}{Order of Polygon Vertices}{appendix.B}% 64
-\BOOKMARK [1][-]{section.B.3}{Shift Adjustment}{appendix.B}% 65
+\BOOKMARK [1][-]{section.B.3}{Shift and Resizing Adjustment}{appendix.B}% 65
 \BOOKMARK [1][-]{section.B.4}{Anchor Assignment}{appendix.B}% 66
 \BOOKMARK [1][-]{section.B.5}{Non-Maximum Suppression}{appendix.B}% 67
 \BOOKMARK [1][-]{section.B.6}{Beam Search}{appendix.B}% 68

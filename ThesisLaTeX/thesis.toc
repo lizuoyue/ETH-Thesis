@@ -88,15 +88,15 @@
 \contentsline {paragraph}{Training Method}{60}{section*.29}
 \contentsline {paragraph}{Model Generalization}{60}{section*.30}
 \contentsline {appendix}{\chapternumberline {A}APIs}{61}{appendix.A}
-\contentsline {section}{\numberline {A.1}Example URL of Google Static Maps API}{61}{section.A.1}
-\contentsline {section}{\numberline {A.2}OpenStreetMap}{61}{section.A.2}
+\contentsline {section}{\numberline {A.1}Google Static Maps API}{61}{section.A.1}
+\contentsline {section}{\numberline {A.2}OpenStreetMap}{62}{section.A.2}
 \contentsline {appendix}{\chapternumberline {B}Algorithms}{63}{appendix.B}
 \contentsline {section}{\numberline {B.1}Projection}{63}{section.B.1}
 \contentsline {section}{\numberline {B.2}Order of Polygon Vertices}{63}{section.B.2}
-\contentsline {section}{\numberline {B.3}Shift Adjustment}{63}{section.B.3}
-\contentsline {section}{\numberline {B.4}Anchor Assignment}{63}{section.B.4}
-\contentsline {section}{\numberline {B.5}Non-Maximum Suppression}{63}{section.B.5}
-\contentsline {section}{\numberline {B.6}Beam Search}{63}{section.B.6}
+\contentsline {section}{\numberline {B.3}Shift and Resizing Adjustment}{64}{section.B.3}
+\contentsline {section}{\numberline {B.4}Anchor Assignment}{64}{section.B.4}
+\contentsline {section}{\numberline {B.5}Non-Maximum Suppression}{64}{section.B.5}
+\contentsline {section}{\numberline {B.6}Beam Search}{64}{section.B.6}
 \contentsline {appendix}{\chapternumberline {C}Prediction Results}{65}{appendix.C}
 \contentsline {section}{\numberline {C.1}Zurich}{65}{section.C.1}
 \contentsline {section}{\numberline {C.2}Chicago}{65}{section.C.2}
