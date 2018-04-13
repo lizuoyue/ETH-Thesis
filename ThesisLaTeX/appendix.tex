@@ -97,48 +97,66 @@ The shift adjustment is exactly an optimization problem defined as follows. We u
 \begin{equation}
 \text{match}(I_c, c_{ij\alpha}) \geqslant t_7,
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:opt1}
 \text{diff}(I,f_{ij\alpha},f_{0,0,1}) \leqslant t_8,
 \end{equation}
-\begin{equation}
+\begin{equation}\label{eq:opt2}
 \text{ground}(I,f_{ij\alpha}) \leqslant t_9,
 \end{equation}
 \end{subequations}
-where $i$ and $j$ denote the shift of polygon, $\alpha$ denotes the resizing rate of polygon, $I$, $I_e$, $I_c$ denote the original image, mask of edges, mask of corners respectively, $f_{ij\alpha}$, $e_{ij\alpha}$, $c_{ij\alpha}$ denote the set of pixels of polygon's face, edges, and corners, respectively, $\text{var}(\cdot,\cdot)$, $\text{match}(\cdot,\cdot)$, $\text{diff}(\cdot,\cdot,\cdot)$, $\text{ground}(\cdot, \cdot)$ denote the color variance of pixels, matching degrees, color difference and similarity with ground, $t_{1:9}$ and $\beta_{1:3}$ denote self-defined parameters.
+where $i$ and $j$ denote the shift of polygon, $\alpha$ denotes the resizing rate of polygon, $I$, $I_e$, $I_c$ denote the original image, mask of edges, mask of corners respectively, $f_{ij\alpha}$, $e_{ij\alpha}$, $c_{ij\alpha}$ denote the set of pixels of polygon's face, edges, and corners after the transformation $(i, j, \alpha)$, respectively, $\text{var}(\cdot,\cdot)$, $\text{match}(\cdot,\cdot)$, $\text{diff}(\cdot,\cdot,\cdot)$, $\text{ground}(\cdot, \cdot)$ denote the color variance of pixels, matching degrees, color difference and similarity with ground, $t_{1:9}$ and $\beta_{1:3}$ denote self-defined parameters. Equations \ref{eq:opt1} and \ref{eq:opt2} are the regularization terms, meaning that the pixels covered by adjusted polygon should not be too different from the original, and should not too similar to the ground.
 
 \section{Anchor Assignment}\label{app:assignanchor}
+As mentioned in subsection \ref{mulbboxreg}, the matching result has two requirements: (1) Each ground truth bounding box should have at least one anchor (either positive, natural or negative) assigned to it; (2) Each positive anchor should be assigned to its ``closest" ground truth bounding box. Here gives the matching process.
+
+Firstly, we compute the IoU score matrix $O = \{O_{ij}\}_{i \in \{1,2,\ldots,n_a\}, j \in \{1,2,\ldots,n_b\}}$,
+\begin{equation}
+	O_{ij} = \text{IoU}(a_i, b_j),
+\end{equation}
+where $n_a$ and $n_b$ denote the number of anchors and the number of ground truth bounding boxes, $a_i$ and $b_j$ denote the $i$-th anchor and $j$-th ground truth bounding box.
+
+Secondly, we use maximum bipartite matching algorithm (e.g. maximum flow), denoting $\text{MaxBiMatchForCol}(\cdot)$, to select corresponding anchor for each ground truth bounding box.
+\begin{equation}
+	B_{ij} = \text{MaxBiMatchForCol}(O),
+\end{equation}
+where $B_{ij}$ denotes the primary assignment relationship between $a_i$ and $b_j$, and we have
+\begin{equation}
+\begin{aligned}
+	B_{ij} = \begin{cases}
+		1, & \text{if $a_i$ is primarily assigned to $b_j$,}\\
+		0, & \text{otherwise}.\\
+	\end{cases}
+\end{aligned}
+\end{equation}
+Note that an anchor should not be assigned twice, thus we have
+\begin{equation}
+	\sum_{i=1}^{n_a}B_{ij} = 1, \forall j \in \{1,2,\ldots,n_b\},
+\end{equation}
+\begin{equation}
+	\sum_{j=1}^{n_b}B_{ij} \leqslant 1, \forall i \in \{1,2,\ldots,n_a\}.
+\end{equation}
+
+Thirdly, we compute the final assignment matrix $A$ as
 \begin{equation}
 \begin{aligned}
 	A_{ij} = \begin{cases}
-		1, & \text{if } p_i = 1 \text{ and } j = d_i, \text{ or }\\
-		& j \notin \{d_i \mid i = 1,2,\ldots\} \text{ and } i = \argmax\limits_{k} \text{IoU}(a_k, g_j) \\
+		1, & \text{if } B_{ij} = 1,\text{ or }\\
+		& \sum_{k}B_{ik} = 0 \text{ and } j = \argmax_{k} O_{ik} \text{ and } O_{ij} \geqslant t_h, \\
 		0, & \text{otherwise},\\
 	\end{cases}
 \end{aligned}
 \end{equation}
+and decide the polarity of these anchors as
 \begin{equation}
 \begin{aligned}
-	A_{ij} = \begin{cases}
-		1, & \text{if $a_i$ is assigned to $g_j$,}\\
+	p_i = \begin{cases}
+		1, & \text{if } \sum_{j}A_{ij} = 1, \\
+		-1, & \text{else if } \max_{j}O_{ij} \leqslant t_l, \\
 		0, & \text{otherwise},\\
 	\end{cases}
 \end{aligned}
 \end{equation}
-where $A$ is the assignment matrix. 
-
-\section{Non-Maximum Suppression}\label{app:nms}
-dummy text
-
-
-\section{Beam Search}\label{app:bmsrch}
-
-\begin{equation}
-	p(v_0v_1 \ldots v_n) = p(v_0)p(v_1 \mid v_0)p(v_2 \mid v_0v_1) \ldots p(v_n \mid v_0v_1 \ldots v_{n-1}),
-\end{equation}
-
-$p(v_0^{(1)}),\ldots,p(v_0^{(b)})$
-
-$p(v_1^{(1)} \mid v_0^{(i)}),\ldots,p(v_1^{(b)} \mid v_0^{(i)})$
+where the the notations of $p_i$, $t_h$ and $t_l$ have the same meanings as what we mentioned in subsection \ref{ancpro}.
 
 \chapter{Prediction Results}
 \section{Zurich}\label{app:predzh}

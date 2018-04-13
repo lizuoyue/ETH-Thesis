@@ -95,11 +95,9 @@
 \contentsline {section}{\numberline {B.2}Order of Polygon Vertices}{63}{section.B.2}
 \contentsline {section}{\numberline {B.3}Shift and Resizing Adjustment}{64}{section.B.3}
 \contentsline {section}{\numberline {B.4}Anchor Assignment}{64}{section.B.4}
-\contentsline {section}{\numberline {B.5}Non-Maximum Suppression}{64}{section.B.5}
-\contentsline {section}{\numberline {B.6}Beam Search}{64}{section.B.6}
-\contentsline {appendix}{\chapternumberline {C}Prediction Results}{65}{appendix.C}
-\contentsline {section}{\numberline {C.1}Zurich}{65}{section.C.1}
-\contentsline {section}{\numberline {C.2}Chicago}{65}{section.C.2}
-\contentsline {chapter}{List of Figures}{67}{section*.31}
-\contentsline {chapter}{List of Tables}{69}{section*.32}
-\contentsline {chapter}{Bibliography}{71}{section*.34}
+\contentsline {appendix}{\chapternumberline {C}Prediction Results}{67}{appendix.C}
+\contentsline {section}{\numberline {C.1}Zurich}{67}{section.C.1}
+\contentsline {section}{\numberline {C.2}Chicago}{67}{section.C.2}
+\contentsline {chapter}{List of Figures}{69}{section*.31}
+\contentsline {chapter}{List of Tables}{71}{section*.32}
+\contentsline {chapter}{Bibliography}{73}{section*.34}

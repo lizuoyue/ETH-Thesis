@@ -202,4 +202,9 @@ K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``{Deep Residual Learning for Image
   Recognition},'' in {\em {IEEE Conference on Computer Vision and Pattern
   Recognition (CVPR)}}, 2016.
 
+\bibitem{softnms}
+N.~Bodla, B.~Singh, R.~Chellappa, and L.~S. Davis, ``{Soft-NMS: Improving
+  Object Detection With One Line of Code},'' in {\em {IEEE International
+  Conference on Computer Vision (ICCV)}}, 2017.
+
 \end{thebibliography}
