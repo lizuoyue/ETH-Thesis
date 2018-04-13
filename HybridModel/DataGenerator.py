@@ -405,19 +405,20 @@ class DataGenerator(object):
 		patches = []
 		org_info = []
 		for i, (org, bbox) in enumerate(zip(self.area_imgs, pred_box)):
-			img = np.array(org)
+			img = np.zeros((900, 900, 3), np.uint8)
+			img[150: 750, 150: 750, :] = np.array(org)[..., 0: 3]
 			boxes = bbox * self.recover_rate
 			for j in range(boxes.shape[0]):
-				y1, x1, y2, x2 = tuple(list(boxes[j]))
+				y1, x1, y2, x2 = tuple(list(boxes[j]) + 150)
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
-					h, w = int(h * 1.14), int(w * 1.14)
+					h, w = int(max(h, w) * 1.15), int(max(h, w) * 1.15)
 					cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
 					y1, x1, y2, x2 = int(max(0, cy - h / 2)), int(max(0, cx - w / 2)), int(min(img.shape[0], cy + h / 2)), int(min(img.shape[1], cx + w / 2))
 					if y1 < y2 and x1 < x2:
-						patch = np.array(Image.fromarray(img[y1: y2, x1: x2, 0: 3]).resize(config.PATCH_SIZE, resample = Image.BICUBIC), np.float32)
+						patch = np.array(Image.fromarray(img[y1: y2, x1: x2, :]).resize(config.PATCH_SIZE, resample = Image.BICUBIC), np.float32)
 						patches.append(patch - config.COLOR_MEAN['Buildings'][self.city_name])
-						org_info.append([i, y1, x1, y2, x2])
+						org_info.append([i, y1 - 150, x1 - 150, y2 - 150, x2 - 150])
 		return self.area_imgs, np.array(patches), org_info
 
 	def recoverGlobal(self, path, img, org_info, pred_v_out, pred_box, base):
