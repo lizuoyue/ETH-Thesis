@@ -242,7 +242,7 @@ if __name__ == '__main__':
 			pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
 			time_res.append(time.time() - t)
 
-			org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
+			org_img, patch, org_info, box_info = obj.getPatchesFromAreas(pred_box)
 			feed_dict = {pp: patch}
 
 			t = time.time()
@@ -252,7 +252,7 @@ if __name__ == '__main__':
 			path = './EvalAreaResult%s' % city_name
 			if not os.path.exists(path):
 				os.makedirs(path)
-			obj.recoverGlobal(path, org_img, org_info, pred_v_out, pred_box, i)
+			obj.recoverGlobal(path, org_img, org_info, pred_v_out, box_info, i)
 
 			img, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info = obj.getBuildingsBatch(config.BUILDING_PRED_BATCH, mode = 'test', idx = i)
 			feed_dict = {pp: img}

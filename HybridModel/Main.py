@@ -127,13 +127,13 @@ if __name__ == '__main__':
 				img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_PRED_BATCH, mode = 'valid')
 				feed_dict = {aa: img}
 				pred_box = sess.run(pred_rpn_res, feed_dict = feed_dict)
-				org_img, patch, org_info = obj.getPatchesFromAreas(pred_box)
+				org_img, patch, org_info, box_info = obj.getPatchesFromAreas(pred_box)
 				feed_dict = {pp: patch}
 				pred_boundary, pred_vertices, pred_v_out = sess.run(pred_poly_res, feed_dict = feed_dict)
 				path = './Result%s' % city_name
 				if not os.path.exists(path):
 					os.makedirs(path)
-				obj.recoverGlobal(path, org_img, org_info, pred_v_out, pred_box, int((i - 1) / 200))
+				obj.recoverGlobal(path, org_img, org_info, pred_v_out, box_info, int((i - 1) / 200))
 
 			# Save model
 			if i % 200 == 0:
