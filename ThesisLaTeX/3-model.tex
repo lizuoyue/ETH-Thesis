@@ -171,10 +171,7 @@ where $s$ denotes the IoU score, $\lvert \cdot \rvert$ denotes the size of a set
 \paragraph{Anchor Polarity}
 Typically, there are several buildings in an aerial image, thus multiple RoIs exist. Based on the IoU scores of an anchor with these ground truth bounding boxes, we can make a judgment on the polarity of this anchor, which is defined as follows.
 \begin{equation}
-	d_i = \argmax_{j} \text{IoU}(a_i, g_j),
-\end{equation}
-\begin{equation}
-	s_i = \text{IoU}(a_i, g_{d_i}),
+	s_i = \max_{j} \text{IoU}(a_i, b_j),
 \end{equation}
 \begin{equation}
 \begin{aligned}
@@ -185,7 +182,7 @@ Typically, there are several buildings in an aerial image, thus multiple RoIs ex
 	\end{cases}
 \end{aligned}
 \end{equation}
-where $a_i$ and $g_j$ denote the $i$-th anchor and $j$-th ground truth bounding box, $s_i$ denotes the highest IoU score that $a_i$ can get, $d_i$ denotes the index of $a_i$'s ``closest" ground truth bounding box, $p_i$ denotes the polarity of $a_i$, $t_l$ and $t_h$ denote two manually set thresholds for polarity judgment, and typically, $t_h = 0.7$, $t_l = 0.3$. An anchor is labeled as positive, natural or negative in case of $p_i = 1$, $p_i = 0$ or $p_i = -1$, respectively. Figure \ref{fig:eganchor} also shows anchors with different polarities using typical thresholds.
+where $a_i$ and $b_j$ denote the $i$-th anchor and $j$-th ground truth bounding box, $s_i$ denotes the highest IoU score that $a_i$ can get, i.e. the IoU score of $a_i$ and its ``closest" ground truth bounding box, $p_i$ denotes the polarity of $a_i$, $t_l$ and $t_h$ denote two manually set thresholds for polarity judgment, and typically, $t_h = 0.7$, $t_l = 0.3$. An anchor is labeled as positive, natural or negative in case of $p_i = 1$, $p_i = 0$ or $p_i = -1$, respectively. Figure \ref{fig:eganchor} also shows anchors with different polarities using typical thresholds.
 
 \subsection{Multiple Bounding Boxes Regression}\label{mulbboxreg}
 Multiple bounding boxes regression can be very different from the single one. Since the number of RoIs is unknown, if we still directly use the idea of parameters regression as what we do in case of the single bounding box, then the number of nodes of the FC output layer will not be fixed. In addition, the RoIs in the image usually reflect the local information, thus we cannot directly use all global features obtained by CNN, either.

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  12 APR 2018 22:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  13 APR 2018 10:58
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -2188,14 +2188,14 @@ Package pdftex.def Info: Requested size: 83.02725pt x 83.02725pt on input line
 ) [30 <./fig/3-07-0.pdf> <./fig/3-07-1.pdf> <./fig/3-07-2.pdf> <./fig/3-07-3.pd
 f> <./fig/3-08-0.pdf> <./fig/3-08-1.pdf> <./fig/3-08-2.pdf> <./fig/3-08-3.pdf>]
  [31] (./fig/3-09.tex
-<fig/3-09.pdf, id=6614, pagebox=cropbox, 941.5175pt x 182.6825pt>
+<fig/3-09.pdf, id=6613, pagebox=cropbox, 941.5175pt x 182.6825pt>
 File: fig/3-09.pdf Graphic file (type pdf)
 <use fig/3-09.pdf>
 Package pdftex.def Info: fig/3-09.pdf  used on input line 3. on input line 3.
 Package pdftex.def Info: Requested size: 332.09775pt x 64.43599pt on input line
  3.
 ) (./fig/3-10.tex
-<fig/3-10.pdf, id=6615, pagebox=cropbox, 829.0975pt x 512.91624pt>
+<fig/3-10.pdf, id=6614, pagebox=cropbox, 829.0975pt x 512.91624pt>
 File: fig/3-10.pdf Graphic file (type pdf)
 <use fig/3-10.pdf>
 Package pdftex.def Info: fig/3-10.pdf  used on input line 3. on input line 3.
@@ -2209,7 +2209,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/3-11.pdf): PDF inclusi
 on: found PDF version <1.6>, but at most version <1.5> allowed
-<fig/3-11.pdf, id=6659, pagebox=cropbox, 258.1043pt x 153.0538pt>
+<fig/3-11.pdf, id=6658, pagebox=cropbox, 258.1043pt x 153.0538pt>
 File: fig/3-11.pdf Graphic file (type pdf)
 <use fig/3-11.pdf>
 Package pdftex.def Info: fig/3-11.pdf  used on input line 3. on input line 3.
@@ -2222,34 +2222,34 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/3-12.pdf): PDF inclusi
 on: found PDF version <1.6>, but at most version <1.5> allowed
-<fig/3-12.pdf, id=6687, pagebox=cropbox, 181.1839pt x 157.77144pt>
+<fig/3-12.pdf, id=6686, pagebox=cropbox, 181.1839pt x 157.77144pt>
 File: fig/3-12.pdf Graphic file (type pdf)
 <use fig/3-12.pdf>
 Package pdftex.def Info: fig/3-12.pdf  used on input line 3. on input line 3.
 Package pdftex.def Info: Requested size: 221.40225pt x 192.80342pt on input lin
 e 3.
 ) [34 <./fig/3-11.pdf> <./fig/3-12.pdf>] (./fig/3-13.tex
-<fig/3-13.pdf, id=6774, pagebox=cropbox, 681.54625pt x 484.81125pt>
+<fig/3-13.pdf, id=6773, pagebox=cropbox, 681.54625pt x 484.81125pt>
 File: fig/3-13.pdf Graphic file (type pdf)
 <use fig/3-13.pdf>
 Package pdftex.def Info: fig/3-13.pdf  used on input line 3. on input line 3.
 Package pdftex.def Info: Requested size: 221.40225pt x 157.49521pt on input lin
 e 3.
 )
-Overfull \hbox (2.05913pt too wide) in paragraph at lines 261--262
+Overfull \hbox (2.05913pt too wide) in paragraph at lines 258--259
 \OT1/ppl/m/n/10.95 core rea-son why the prob-lems men-tioned around fig-ure [][
 ]3.12[][] can be ad-dressed.
  []
 
 [35 <./fig/3-13.pdf>] (./fig/3-14.tex
-<fig/3-14.pdf, id=6805, pagebox=cropbox, 1500.60625pt x 970.62625pt>
+<fig/3-14.pdf, id=6804, pagebox=cropbox, 1500.60625pt x 970.62625pt>
 File: fig/3-14.pdf Graphic file (type pdf)
 <use fig/3-14.pdf>
 Package pdftex.def Info: fig/3-14.pdf  used on input line 3. on input line 3.
 Package pdftex.def Info: Requested size: 332.09775pt x 214.79733pt on input lin
 e 3.
 ) (./fig/3-15.tex
-<fig/3-15.pdf, id=6810, pagebox=cropbox, 941.5175pt x 515.9275pt>
+<fig/3-15.pdf, id=6809, pagebox=cropbox, 941.5175pt x 515.9275pt>
 File: fig/3-15.pdf Graphic file (type pdf)
 <use fig/3-15.pdf>
 Package pdftex.def Info: fig/3-15.pdf  used on input line 3. on input line 3.
@@ -2260,7 +2260,7 @@ Package pdftex.def Info: Requested size: 332.09775pt x 181.9786pt on input line
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 ) [36 <./fig/3-14.pdf>] (./fig/3-16.tex
-<fig/3-16.pdf, id=6831, pagebox=cropbox, 941.5175pt x 515.9275pt>
+<fig/3-16.pdf, id=6830, pagebox=cropbox, 941.5175pt x 515.9275pt>
 File: fig/3-16.pdf Graphic file (type pdf)
 <use fig/3-16.pdf>
 Package pdftex.def Info: fig/3-16.pdf  used on input line 3. on input line 3.
@@ -2270,7 +2270,7 @@ Package pdftex.def Info: Requested size: 332.09775pt x 181.9786pt on input line
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [37 <./fig/3-15.pdf> <./fig/3-16.pdf>] (./fig/3-18.tex
-<fig/3-18.pdf, id=6899, pagebox=cropbox, 82.55844pt x 102.63344pt>
+<fig/3-18.pdf, id=6898, pagebox=cropbox, 82.55844pt x 102.63344pt>
 File: fig/3-18.pdf Graphic file (type pdf)
 <use fig/3-18.pdf>
 Package pdftex.def Info: fig/3-18.pdf  used on input line 3. on input line 3.
@@ -2280,14 +2280,14 @@ e 3.
 Underfull \vbox (badness 1742) has occurred while \output is active []
 
  [38 <./fig/3-18.pdf>] (./fig/3-17.tex
-<fig/3-17.pdf, id=6915, pagebox=cropbox, 941.5175pt x 515.9275pt>
+<fig/3-17.pdf, id=6914, pagebox=cropbox, 941.5175pt x 515.9275pt>
 File: fig/3-17.pdf Graphic file (type pdf)
 <use fig/3-17.pdf>
 Package pdftex.def Info: fig/3-17.pdf  used on input line 3. on input line 3.
 Package pdftex.def Info: Requested size: 332.09775pt x 181.9786pt on input line
  3.
 ) [39 <./fig/3-17.pdf>] (./fig/3-19.tex
-<fig/3-19.pdf, id=6955, pagebox=cropbox, 806.01125pt x 588.1975pt>
+<fig/3-19.pdf, id=6954, pagebox=cropbox, 806.01125pt x 588.1975pt>
 File: fig/3-19.pdf Graphic file (type pdf)
 <use fig/3-19.pdf>
 Package pdftex.def Info: fig/3-19.pdf  used on input line 3. on input line 3.
@@ -2302,7 +2302,7 @@ ame{subfigure.1}) has been already used, duplicate ignored
                    \relax 
 l.3 	\subbottom
                [satellite image\label{fig:egsatellite}]
-<fig/4-00-0.png, id=7001, 602.25pt x 602.25pt>
+<fig/4-00-0.png, id=7000, 602.25pt x 602.25pt>
 File: fig/4-00-0.png Graphic file (type png)
 <use fig/4-00-0.png>
 Package pdftex.def Info: fig/4-00-0.png  used on input line 4. on input line 4.
@@ -2315,7 +2315,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
                    \relax 
 l.5 	\subbottom
                [roadmap image\label{fig:egroadmap}]
-<fig/4-00-1.png, id=7002, 602.25pt x 602.25pt>
+<fig/4-00-1.png, id=7001, 602.25pt x 602.25pt>
 File: fig/4-00-1.png Graphic file (type png)
 <use fig/4-00-1.png>
 Package pdftex.def Info: fig/4-00-1.png  used on input line 6. on input line 6.
@@ -2328,7 +2328,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
                    \relax 
 l.7 	\subbottom
                [hybrid image\label{fig:eghybrid}]
-<fig/4-00-2.png, id=7003, 602.25pt x 602.25pt>
+<fig/4-00-2.png, id=7002, 602.25pt x 602.25pt>
 File: fig/4-00-2.png Graphic file (type png)
 <use fig/4-00-2.png>
 Package pdftex.def Info: fig/4-00-2.png  used on input line 8. on input line 8.
@@ -2342,7 +2342,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.1})
                    \relax 
 l.3 	\subbottom
                [example area\label{fig:egarea}]
-<fig/4-01-0.png, id=7022, 602.25pt x 602.25pt>
+<fig/4-01-0.png, id=7021, 602.25pt x 602.25pt>
 File: fig/4-01-0.png Graphic file (type png)
 <use fig/4-01-0.png>
 Package pdftex.def Info: fig/4-01-0.png  used on input line 4. on input line 4.
@@ -2355,7 +2355,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
                    \relax 
 l.5 	\subbottom
                [example area with bounding boxes\label{fig:egareabox}]
-<fig/4-01-1.png, id=7023, 602.25pt x 602.25pt>
+<fig/4-01-1.png, id=7022, 602.25pt x 602.25pt>
 File: fig/4-01-1.png Graphic file (type png)
 <use fig/4-01-1.png>
 Package pdftex.def Info: fig/4-01-1.png  used on input line 6. on input line 6.
@@ -2372,28 +2372,28 @@ er (name{subfigure.1}) has been already used, duplicate ignored
                    \relax 
 l.3 	\subbottom
                [example buildings\label{fig:egbui0}]{
-<fig/4-02-0.png, id=7037, 224.84pt x 224.84pt>
+<fig/4-02-0.png, id=7036, 224.84pt x 224.84pt>
 File: fig/4-02-0.png Graphic file (type png)
 <use fig/4-02-0.png>
 Package pdftex.def Info: fig/4-02-0.png  used on input line 8. on input line 8.
 
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 8.
-<fig/4-02-1.png, id=7038, 224.84pt x 224.84pt>
+<fig/4-02-1.png, id=7037, 224.84pt x 224.84pt>
 File: fig/4-02-1.png Graphic file (type png)
 <use fig/4-02-1.png>
 Package pdftex.def Info: fig/4-02-1.png  used on input line 8. on input line 8.
 
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 8.
-<fig/4-02-2.png, id=7039, 224.84pt x 224.84pt>
+<fig/4-02-2.png, id=7038, 224.84pt x 224.84pt>
 File: fig/4-02-2.png Graphic file (type png)
 <use fig/4-02-2.png>
 Package pdftex.def Info: fig/4-02-2.png  used on input line 8. on input line 8.
 
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 8.
-<fig/4-02-3.png, id=7040, 224.84pt x 224.84pt>
+<fig/4-02-3.png, id=7039, 224.84pt x 224.84pt>
 File: fig/4-02-3.png Graphic file (type png)
 <use fig/4-02-3.png>
 Package pdftex.def Info: fig/4-02-3.png  used on input line 8. on input line 8.
@@ -2406,28 +2406,28 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
                    \relax 
 l.9 	\subbottom
                [example buildings with polygon outlines\label{fig:egbui1}]{
-<fig/4-02-4.png, id=7041, 224.84pt x 224.84pt>
+<fig/4-02-4.png, id=7040, 224.84pt x 224.84pt>
 File: fig/4-02-4.png Graphic file (type png)
 <use fig/4-02-4.png>
 Package pdftex.def Info: fig/4-02-4.png  used on input line 14. on input line 1
 4.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 14.
-<fig/4-02-5.png, id=7042, 224.84pt x 224.84pt>
+<fig/4-02-5.png, id=7041, 224.84pt x 224.84pt>
 File: fig/4-02-5.png Graphic file (type png)
 <use fig/4-02-5.png>
 Package pdftex.def Info: fig/4-02-5.png  used on input line 14. on input line 1
 4.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 14.
-<fig/4-02-6.png, id=7043, 224.84pt x 224.84pt>
+<fig/4-02-6.png, id=7042, 224.84pt x 224.84pt>
 File: fig/4-02-6.png Graphic file (type png)
 <use fig/4-02-6.png>
 Package pdftex.def Info: fig/4-02-6.png  used on input line 14. on input line 1
 4.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 14.
-<fig/4-02-7.png, id=7044, 224.84pt x 224.84pt>
+<fig/4-02-7.png, id=7043, 224.84pt x 224.84pt>
 File: fig/4-02-7.png Graphic file (type png)
 <use fig/4-02-7.png>
 Package pdftex.def Info: fig/4-02-7.png  used on input line 14. on input line 1
@@ -2444,14 +2444,14 @@ licate ignored
                    \relax 
 l.3 	\subbottom
                [general shift\label{fig:egshi0}]{
-<fig/4-03-0.png, id=7059, 224.84pt x 224.84pt>
+<fig/4-03-0.png, id=7058, 224.84pt x 224.84pt>
 File: fig/4-03-0.png Graphic file (type png)
 <use fig/4-03-0.png>
 Package pdftex.def Info: fig/4-03-0.png  used on input line 6. on input line 6.
 
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 6.
-<fig/4-03-1.png, id=7060, 224.84pt x 224.84pt>
+<fig/4-03-1.png, id=7059, 224.84pt x 224.84pt>
 File: fig/4-03-1.png Graphic file (type png)
 <use fig/4-03-1.png>
 Package pdftex.def Info: fig/4-03-1.png  used on input line 6. on input line 6.
@@ -2464,14 +2464,14 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
                    \relax 
 l.7 	\subbottom
                [polygon size and shape\label{fig:egshi1}]{
-<fig/4-03-2.png, id=7061, 224.84pt x 224.84pt>
+<fig/4-03-2.png, id=7060, 224.84pt x 224.84pt>
 File: fig/4-03-2.png Graphic file (type png)
 <use fig/4-03-2.png>
 Package pdftex.def Info: fig/4-03-2.png  used on input line 10. on input line 1
 0.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 10.
-<fig/4-03-3.png, id=7062, 224.84pt x 224.84pt>
+<fig/4-03-3.png, id=7061, 224.84pt x 224.84pt>
 File: fig/4-03-3.png Graphic file (type png)
 <use fig/4-03-3.png>
 Package pdftex.def Info: fig/4-03-3.png  used on input line 10. on input line 1
@@ -2484,14 +2484,14 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
                    \relax 
 l.11 	\subbottom
                 [angle issue\label{fig:egshi2}]{
-<fig/4-03-4.png, id=7063, 224.84pt x 224.84pt>
+<fig/4-03-4.png, id=7062, 224.84pt x 224.84pt>
 File: fig/4-03-4.png Graphic file (type png)
 <use fig/4-03-4.png>
 Package pdftex.def Info: fig/4-03-4.png  used on input line 14. on input line 1
 4.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 14.
-<fig/4-03-5.png, id=7064, 224.84pt x 224.84pt>
+<fig/4-03-5.png, id=7063, 224.84pt x 224.84pt>
 File: fig/4-03-5.png Graphic file (type png)
 <use fig/4-03-5.png>
 Package pdftex.def Info: fig/4-03-5.png  used on input line 14. on input line 1
@@ -2504,14 +2504,14 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.4})
                    \relax 
 l.15 	\subbottom
                 [adjacent buildings\label{fig:egshi3}]{
-<fig/4-03-6.png, id=7065, 224.84pt x 224.84pt>
+<fig/4-03-6.png, id=7064, 224.84pt x 224.84pt>
 File: fig/4-03-6.png Graphic file (type png)
 <use fig/4-03-6.png>
 Package pdftex.def Info: fig/4-03-6.png  used on input line 18. on input line 1
 8.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 18.
-<fig/4-03-7.png, id=7066, 224.84pt x 224.84pt>
+<fig/4-03-7.png, id=7065, 224.84pt x 224.84pt>
 File: fig/4-03-7.png Graphic file (type png)
 <use fig/4-03-7.png>
 Package pdftex.def Info: fig/4-03-7.png  used on input line 18. on input line 1
@@ -2526,28 +2526,28 @@ me{subfigure.1}) has been already used, duplicate ignored
                    \relax 
 l.3 	\subbottom
                [before adjustment\label{fig:egbfradj}]{
-<fig/4-04-0.png, id=7084, 224.84pt x 224.84pt>
+<fig/4-04-0.png, id=7083, 224.84pt x 224.84pt>
 File: fig/4-04-0.png Graphic file (type png)
 <use fig/4-04-0.png>
 Package pdftex.def Info: fig/4-04-0.png  used on input line 8. on input line 8.
 
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 8.
-<fig/4-04-1.png, id=7085, 224.84pt x 224.84pt>
+<fig/4-04-1.png, id=7084, 224.84pt x 224.84pt>
 File: fig/4-04-1.png Graphic file (type png)
 <use fig/4-04-1.png>
 Package pdftex.def Info: fig/4-04-1.png  used on input line 8. on input line 8.
 
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 8.
-<fig/4-04-2.png, id=7086, 224.84pt x 224.84pt>
+<fig/4-04-2.png, id=7085, 224.84pt x 224.84pt>
 File: fig/4-04-2.png Graphic file (type png)
 <use fig/4-04-2.png>
 Package pdftex.def Info: fig/4-04-2.png  used on input line 8. on input line 8.
 
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 8.
-<fig/4-04-3.png, id=7087, 224.84pt x 224.84pt>
+<fig/4-04-3.png, id=7086, 224.84pt x 224.84pt>
 File: fig/4-04-3.png Graphic file (type png)
 <use fig/4-04-3.png>
 Package pdftex.def Info: fig/4-04-3.png  used on input line 8. on input line 8.
@@ -2560,28 +2560,28 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
                    \relax 
 l.9 	\subbottom
                [after adjustment\label{fig:egaftadj}]{
-<fig/4-04-4.png, id=7088, 224.84pt x 224.84pt>
+<fig/4-04-4.png, id=7087, 224.84pt x 224.84pt>
 File: fig/4-04-4.png Graphic file (type png)
 <use fig/4-04-4.png>
 Package pdftex.def Info: fig/4-04-4.png  used on input line 14. on input line 1
 4.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 14.
-<fig/4-04-5.png, id=7089, 224.84pt x 224.84pt>
+<fig/4-04-5.png, id=7088, 224.84pt x 224.84pt>
 File: fig/4-04-5.png Graphic file (type png)
 <use fig/4-04-5.png>
 Package pdftex.def Info: fig/4-04-5.png  used on input line 14. on input line 1
 4.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 14.
-<fig/4-04-6.png, id=7090, 224.84pt x 224.84pt>
+<fig/4-04-6.png, id=7089, 224.84pt x 224.84pt>
 File: fig/4-04-6.png Graphic file (type png)
 <use fig/4-04-6.png>
 Package pdftex.def Info: fig/4-04-6.png  used on input line 14. on input line 1
 4.
 Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
 14.
-<fig/4-04-7.png, id=7091, 224.84pt x 224.84pt>
+<fig/4-04-7.png, id=7090, 224.84pt x 224.84pt>
 File: fig/4-04-7.png Graphic file (type png)
 <use fig/4-04-7.png>
 Package pdftex.def Info: fig/4-04-7.png  used on input line 14. on input line 1
@@ -2605,7 +2605,7 @@ ifier (name{subfigure.1}) has been already used, duplicate ignored
                    \relax 
 l.3 	\subbottom
                [before NMS\label{fig:bfrnms}]
-<fig/4-05-0.pdf, id=7134, pagebox=cropbox, 341.275pt x 341.275pt>
+<fig/4-05-0.pdf, id=7133, pagebox=cropbox, 341.275pt x 341.275pt>
 File: fig/4-05-0.pdf Graphic file (type pdf)
 <use fig/4-05-0.pdf>
 Package pdftex.def Info: fig/4-05-0.pdf  used on input line 4. on input line 4.
@@ -2618,7 +2618,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
                    \relax 
 l.5 	\subbottom
                [after NMS\label{fig:aftnms}]
-<fig/4-05-1.pdf, id=7135, pagebox=cropbox, 341.275pt x 341.275pt>
+<fig/4-05-1.pdf, id=7134, pagebox=cropbox, 341.275pt x 341.275pt>
 File: fig/4-05-1.pdf Graphic file (type pdf)
 <use fig/4-05-1.pdf>
 Package pdftex.def Info: fig/4-05-1.pdf  used on input line 6. on input line 6.
@@ -2629,14 +2629,14 @@ e 6.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [49 <./fig/4-05-0.pdf> <./fig/4-05-1.pdf>] [50] (./fig/4-06.tex
-<fig/4-06.pdf, id=7178, pagebox=cropbox, 680.94714pt x 407.67934pt>
+<fig/4-06.pdf, id=7177, pagebox=cropbox, 680.94714pt x 407.67934pt>
 File: fig/4-06.pdf Graphic file (type pdf)
 <use fig/4-06.pdf>
 Package pdftex.def Info: fig/4-06.pdf  used on input line 3. on input line 3.
 Package pdftex.def Info: Requested size: 332.09775pt x 198.82529pt on input lin
 e 3.
 ) (./fig/4-07.tex
-<fig/4-07.pdf, id=7179, pagebox=cropbox, 680.94714pt x 407.67934pt>
+<fig/4-07.pdf, id=7178, pagebox=cropbox, 680.94714pt x 407.67934pt>
 File: fig/4-07.pdf Graphic file (type pdf)
 <use fig/4-07.pdf>
 Package pdftex.def Info: fig/4-07.pdf  used on input line 3. on input line 3.
@@ -2650,7 +2650,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/4-07.pdf): PDF inclusi
 on: multiple pdfs with page group included in a single page
 >] [52] (./fig/4-08.tex
-<fig/4-08.png, id=7321, 1051.7694pt x 699.5736pt>
+<fig/4-08.png, id=7320, 1051.7694pt x 699.5736pt>
 File: fig/4-08.png Graphic file (type png)
 <use fig/4-08.png>
 Package pdftex.def Info: fig/4-08.png  used on input line 3. on input line 3.
@@ -2661,7 +2661,7 @@ Underfull \vbox (badness 1715) has occurred while \output is active []
 
  [53])
 (./fig/4-09.tex
-<fig/4-09.png, id=7329, 1051.7694pt x 699.5736pt>
+<fig/4-09.png, id=7328, 1051.7694pt x 699.5736pt>
 File: fig/4-09.png Graphic file (type png)
 <use fig/4-09.png>
 Package pdftex.def Info: fig/4-09.png  used on input line 3. on input line 3.
@@ -2678,7 +2678,7 @@ er (name{subfigure.1}) has been already used, duplicate ignored
                    \relax 
 l.3 	\subbottom
                [angle distribution in Zurich\label{fig:agldstbzurich}]{
-<fig/5-02-0.pdf, id=7358, pagebox=cropbox, 462.52798pt x 346.89601pt>
+<fig/5-02-0.pdf, id=7357, pagebox=cropbox, 462.52798pt x 346.89601pt>
 File: fig/5-02-0.pdf Graphic file (type pdf)
 <use fig/5-02-0.pdf>
 Package pdftex.def Info: fig/5-02-0.pdf  used on input line 5. on input line 5.
@@ -2691,7 +2691,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
                    \relax 
 l.6 	\subbottom
                [angle distribution in Chicago\label{fig:agldstbchicago}]{
-<fig/5-02-1.pdf, id=7359, pagebox=cropbox, 462.52798pt x 346.89601pt>
+<fig/5-02-1.pdf, id=7358, pagebox=cropbox, 462.52798pt x 346.89601pt>
 File: fig/5-02-1.pdf Graphic file (type pdf)
 <use fig/5-02-1.pdf>
 Package pdftex.def Info: fig/5-02-1.pdf  used on input line 8. on input line 8.
@@ -2706,7 +2706,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/5-02-1.pdf): PDF inclu
 sion: multiple pdfs with page group included in a single page
 >] (./fig/5-03.tex
-<fig/5-03.pdf, id=7449, pagebox=cropbox, 441.86981pt x 123.09087pt>
+<fig/5-03.pdf, id=7448, pagebox=cropbox, 441.86981pt x 123.09087pt>
 File: fig/5-03.pdf Graphic file (type pdf)
 <use fig/5-03.pdf>
 Package pdftex.def Info: fig/5-03.pdf  used on input line 3. on input line 3.
@@ -2735,7 +2735,7 @@ n, and
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./declaration-originality.pd
 f): PDF inclusion: found PDF version <1.6>, but at most version <1.5> allowed
-<declaration-originality.pdf, id=8155, pagebox=cropbox, 597.55246pt x 845.07718
+<declaration-originality.pdf, id=8154, pagebox=cropbox, 597.55246pt x 845.07718
 pt>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf>
@@ -2761,7 +2761,7 @@ f): PDF inclusion: found PDF version <1.6>, but at most version <1.5> allowed
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./declaration-originality.pd
 f): PDF inclusion: found PDF version <1.6>, but at most version <1.5> allowed
-<declaration-originality.pdf, id=8158, page=1, pagebox=cropbox, 597.55246pt x 8
+<declaration-originality.pdf, id=8157, page=1, pagebox=cropbox, 597.55246pt x 8
 45.07718pt>
 File: declaration-originality.pdf Graphic file (type pdf)
 <use declaration-originality.pdf, page 1>
@@ -2798,7 +2798,7 @@ Package pdftex.def Info: Requested size: 597.57834pt x 845.1138pt on input line
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./declaration-of-consent.pdf
 ): PDF inclusion: found PDF version <1.6>, but at most version <1.5> allowed
-<declaration-of-consent.pdf, id=8193, pagebox=cropbox, 597.432pt x 870.25125pt>
+<declaration-of-consent.pdf, id=8192, pagebox=cropbox, 597.432pt x 870.25125pt>
 
 File: declaration-of-consent.pdf Graphic file (type pdf)
 <use declaration-of-consent.pdf>
@@ -2824,7 +2824,7 @@ pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./declaration-of-consent.pdf
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./declaration-of-consent.pdf
 ): PDF inclusion: found PDF version <1.6>, but at most version <1.5> allowed
-<declaration-of-consent.pdf, id=8196, page=1, pagebox=cropbox, 597.432pt x 870.
+<declaration-of-consent.pdf, id=8195, page=1, pagebox=cropbox, 597.432pt x 870.
 25125pt>
 File: declaration-of-consent.pdf Graphic file (type pdf)
 <use declaration-of-consent.pdf, page 1>
@@ -2874,24 +2874,14 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 130.
  (./thesis.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 130.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 130.
-
-
-Package rerunfilecheck Warning: File `thesis.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `thesis.out':
-(rerunfilecheck)             Before: 35E603E8195B54E7BA5609E9705CAF5C;4849
-(rerunfilecheck)             After:  3973DB812F57E80EAFD8B973A27C19E0;4862.
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
+Package rerunfilecheck Info: File `thesis.out' has not changed.
+(rerunfilecheck)             Checksum: 3973DB812F57E80EAFD8B973A27C19E0;4862.
  ) 
 Here is how much of TeX's memory you used:
- 17456 strings out of 492990
- 246421 string characters out of 6132637
- 412815 words of memory out of 5000000
- 20087 multiletter control sequences out of 15000+600000
+ 17454 strings out of 492990
+ 246395 string characters out of 6132637
+ 412841 words of memory out of 5000000
+ 20086 multiletter control sequences out of 15000+600000
  48386 words of font info for 150 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  54i,19n,91p,1109b,1174s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -2913,10 +2903,10 @@ onts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2017/texmf-di
 st/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2017/texmf-dist/font
 s/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1
 /urw/palatino/uplri8a.pfb>
-Output written on thesis.pdf (84 pages, 48867420 bytes).
+Output written on thesis.pdf (84 pages, 48867270 bytes).
 PDF statistics:
- 8394 PDF objects out of 8907 (max. 8388607)
- 4638 compressed objects within 47 object streams
- 358 named destinations out of 1000 (max. 500000)
+ 8393 PDF objects out of 8907 (max. 8388607)
+ 4637 compressed objects within 47 object streams
+ 357 named destinations out of 1000 (max. 500000)
  13396 words of extra memory for PDF output out of 14400 (max. 10000000)
 
