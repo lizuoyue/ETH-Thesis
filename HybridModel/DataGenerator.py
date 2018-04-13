@@ -405,6 +405,7 @@ class DataGenerator(object):
 		patches = []
 		org_info = []
 		pad = 200
+		box_info = []
 		for i, (org, bbox) in enumerate(zip(self.area_imgs, pred_box)):
 			im = np.array(org)[..., 0: 3]
 			img = np.zeros((im.shape[0] + pad * 2, im.shape[1] + pad * 2, 3), np.uint8)
@@ -414,6 +415,7 @@ class DataGenerator(object):
 				y1, x1, y2, x2 = tuple(list(boxes[j] + pad))
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
+					box_info.append((y1 - pad, x1 - pad, y2 - pad, x2 - pad))
 					h, w = int(max(h, w) * 1.3), int(max(h, w) * 1.3)
 					cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
 					y1, x1, y2, x2 = int(max(0, cy - h / 2)), int(max(0, cx - w / 2)), int(min(img.shape[0], cy + h / 2)), int(min(img.shape[1], cx + w / 2))
@@ -421,19 +423,15 @@ class DataGenerator(object):
 						patch = np.array(Image.fromarray(img[y1: y2, x1: x2, :]).resize(config.PATCH_SIZE, resample = Image.BICUBIC), np.float32)
 						patches.append(patch - config.COLOR_MEAN['Buildings'][self.city_name])
 						org_info.append([i, y1 - pad, x1 - pad, y2 - pad, x2 - pad])
-		return self.area_imgs, np.array(patches), org_info
+		return self.area_imgs, np.array(patches), org_info, box_info
 
-	def recoverGlobal(self, path, img, org_info, pred_v_out, pred_box, base):
+	def recoverGlobal(self, path, img, org_info, pred_v_out, box_info, base):
 		bbox_mask = []
 		for i, im in enumerate(img):
 			mask = Image.fromarray(np.zeros((im.size[1], im.size[0], 3), np.uint8))
 			draw = ImageDraw.Draw(mask)
-			boxes = pred_box[i] * self.recover_rate
-			for j in range(boxes.shape[0]):
-				y1, x1, y2, x2 = tuple(list(boxes[j]))
-				h, w = y2 - y1, x2 - x1
-				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < im.size[1] and x2 < im.size[0]:
-					draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 227, 0))
+			for y1, x1, y2, x2 in box_info:
+				draw.polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 227, 0))
 			bbox_mask.append(mask)
 		batch_size = len(org_info)
 		assert(len(org_info) == pred_v_out.shape[1])

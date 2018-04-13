@@ -223,11 +223,11 @@ if __name__ == '__main__':
 		assert(len(sys.argv) > 1)
 		saver.restore(sess, './Model%s/Model%s-24800.ckpt' % (city_name, city_name))
 
-		f = open('Eval%s.csv' % city_name, 'w')
-		f.write('id,acc,pre,rec,f1s,iou\n')
+		# f = open('Eval%s.csv' % city_name, 'w')
+		# f.write('id,acc,pre,rec,f1s,iou\n')
 
-		ff = open('Time%s.csv' % city_name, 'w')
-		ff.write('round,area,perbuilding,fixbuilding\n')
+		# ff = open('Time%s.csv' % city_name, 'w')
+		# ff.write('round,area,perbuilding,fixbuilding\n')
 
 		if len(sys.argv) == 3:
 			iter_obj = range(0, 300)
@@ -270,13 +270,13 @@ if __name__ == '__main__':
 			# 	os.makedirs(path)
 			# visualize_pred(path, img, boundary, vertices, vertex_input, config.V_OUT_RES, org_info, i * config.BUILDING_PRED_BATCH)
 			res = score(org_info, vertex_input, pred_v_out[0])
-			for j, line in enumerate(res):
-				f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
-			f.flush()
+			# for j, line in enumerate(res):
+				# f.write('%d,%.6lf,%.6lf,%.6lf,%.6lf,%.6lf\n' % tuple([i * config.BUILDING_PRED_BATCH + j] + line))
+			# f.flush()
 
-			ff.write('%d,%.3lf,%.3lf,%.3lf\n' % tuple(time_res))
-			ff.flush()
+			# ff.write('%d,%.3lf,%.3lf,%.3lf\n' % tuple(time_res))
+			# ff.flush()
 
-		f.close()
-		f.close()
+		# f.close()
+		# f.close()
 
