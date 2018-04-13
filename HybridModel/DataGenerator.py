@@ -406,8 +406,9 @@ class DataGenerator(object):
 		org_info = []
 		pad = 150
 		for i, (org, bbox) in enumerate(zip(self.area_imgs, pred_box)):
-			img = np.zeros((org.shape[0] + pad * 2, org.shape[1] + pad * 2, 3), np.uint8)
-			img[pad: pad + org.shape[0], pad: pad + org.shape[1], :] = np.array(org)[..., 0: 3]
+			im = np.array(org)[..., 0: 3]
+			img = np.zeros((im.shape[0] + pad * 2, im.shape[1] + pad * 2, 3), np.uint8)
+			img[pad: pad + im.shape[0], pad: pad + im.shape[1], :] = im
 			boxes = bbox * self.recover_rate
 			for j in range(boxes.shape[0]):
 				y1, x1, y2, x2 = tuple(list(boxes[j] + pad))
