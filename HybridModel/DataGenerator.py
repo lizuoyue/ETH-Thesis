@@ -404,7 +404,7 @@ class DataGenerator(object):
 		assert(len(pred_box) == len(self.area_imgs))
 		patches = []
 		org_info = []
-		pad = 150
+		pad = 200
 		for i, (org, bbox) in enumerate(zip(self.area_imgs, pred_box)):
 			im = np.array(org)[..., 0: 3]
 			img = np.zeros((im.shape[0] + pad * 2, im.shape[1] + pad * 2, 3), np.uint8)
@@ -414,7 +414,7 @@ class DataGenerator(object):
 				y1, x1, y2, x2 = tuple(list(boxes[j] + pad))
 				h, w = y2 - y1, x2 - x1
 				if h * w > 16 * 16 and y1 >= 0 and x1 >= 0 and y2 < img.shape[0] and x2 < img.shape[1]:
-					h, w = int(max(h, w) * 1.15), int(max(h, w) * 1.15)
+					h, w = int(max(h, w) * 1.3), int(max(h, w) * 1.3)
 					cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
 					y1, x1, y2, x2 = int(max(0, cy - h / 2)), int(max(0, cx - w / 2)), int(min(img.shape[0], cy + h / 2)), int(min(img.shape[1], cx + w / 2))
 					if y1 < y2 and x1 < x2:
