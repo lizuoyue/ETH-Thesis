@@ -52,7 +52,7 @@
 \contentsline {subsection}{\numberline {3.2.4}Feature Pyramid and Backbone}{33}{subsection.3.2.4}
 \contentsline {paragraph}{Anchor Selection in RPN}{33}{section*.21}
 \contentsline {paragraph}{Anchor Selection in FPN}{33}{section*.22}
-\contentsline {paragraph}{Backbone of FPN}{35}{section*.23}
+\contentsline {paragraph}{The Backbone of FPN}{35}{section*.23}
 \contentsline {section}{\numberline {3.3}R-PolygonRNN}{36}{section.3.3}
 \contentsline {subsection}{\numberline {3.3.1}Two-step Version}{36}{subsection.3.3.1}
 \contentsline {subsection}{\numberline {3.3.2}Hybrid Version}{37}{subsection.3.3.2}
@@ -76,28 +76,28 @@
 \contentsline {subsection}{\numberline {4.3.1}Loss Decrease}{50}{subsection.4.3.1}
 \contentsline {subsection}{\numberline {4.3.2}Time Consumption}{52}{subsection.4.3.2}
 \contentsline {subsection}{\numberline {4.3.3}Evaluation Metrics}{52}{subsection.4.3.3}
-\contentsline {subsection}{\numberline {4.3.4}Prediction Results}{54}{subsection.4.3.4}
-\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{57}{chapter.5}
-\contentsline {section}{\numberline {5.1}Problems}{57}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{57}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}False Vertex}{58}{subsection.5.1.2}
-\contentsline {section}{\numberline {5.2}Future Work}{59}{section.5.2}
-\contentsline {paragraph}{Segmentation of Roads}{59}{section*.26}
-\contentsline {paragraph}{Ground Truth Correction}{59}{section*.27}
-\contentsline {paragraph}{RoIAlign Implementation}{59}{section*.28}
-\contentsline {paragraph}{Training Method}{60}{section*.29}
-\contentsline {paragraph}{Model Generalization}{60}{section*.30}
-\contentsline {appendix}{\chapternumberline {A}APIs}{61}{appendix.A}
-\contentsline {section}{\numberline {A.1}Google Static Maps API}{61}{section.A.1}
-\contentsline {section}{\numberline {A.2}OpenStreetMap}{62}{section.A.2}
-\contentsline {appendix}{\chapternumberline {B}Algorithms}{63}{appendix.B}
-\contentsline {section}{\numberline {B.1}Projection}{63}{section.B.1}
-\contentsline {section}{\numberline {B.2}Order of Polygon Vertices}{63}{section.B.2}
-\contentsline {section}{\numberline {B.3}Shift and Resizing Adjustment}{64}{section.B.3}
-\contentsline {section}{\numberline {B.4}Anchor Assignment}{64}{section.B.4}
-\contentsline {appendix}{\chapternumberline {C}Prediction Results}{67}{appendix.C}
-\contentsline {section}{\numberline {C.1}Zurich}{67}{section.C.1}
-\contentsline {section}{\numberline {C.2}Chicago}{67}{section.C.2}
-\contentsline {chapter}{List of Figures}{69}{section*.31}
-\contentsline {chapter}{List of Tables}{71}{section*.32}
-\contentsline {chapter}{Bibliography}{73}{section*.34}
+\contentsline {subsection}{\numberline {4.3.4}Prediction Results}{55}{subsection.4.3.4}
+\contentsline {chapter}{\chapternumberline {5}Problems and Future Work}{59}{chapter.5}
+\contentsline {section}{\numberline {5.1}Problems}{59}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Output Resolution}{59}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}False Vertex}{60}{subsection.5.1.2}
+\contentsline {section}{\numberline {5.2}Future Work}{62}{section.5.2}
+\contentsline {paragraph}{Segmentation of Roads}{62}{section*.26}
+\contentsline {paragraph}{Ground Truth Correction}{63}{section*.27}
+\contentsline {paragraph}{RoIAlign Implementation}{63}{section*.28}
+\contentsline {paragraph}{Training Method}{63}{section*.29}
+\contentsline {paragraph}{Model Generalization}{63}{section*.30}
+\contentsline {appendix}{\chapternumberline {A}APIs}{65}{appendix.A}
+\contentsline {section}{\numberline {A.1}Google Static Maps API}{65}{section.A.1}
+\contentsline {section}{\numberline {A.2}OpenStreetMap}{66}{section.A.2}
+\contentsline {appendix}{\chapternumberline {B}Algorithms}{67}{appendix.B}
+\contentsline {section}{\numberline {B.1}Projection}{67}{section.B.1}
+\contentsline {section}{\numberline {B.2}Order of Polygon Vertices}{67}{section.B.2}
+\contentsline {section}{\numberline {B.3}Shift and Resizing Adjustment}{68}{section.B.3}
+\contentsline {section}{\numberline {B.4}Anchor Assignment}{68}{section.B.4}
+\contentsline {appendix}{\chapternumberline {C}Prediction Results}{71}{appendix.C}
+\contentsline {section}{\numberline {C.1}Zurich}{71}{section.C.1}
+\contentsline {section}{\numberline {C.2}Chicago}{71}{section.C.2}
+\contentsline {chapter}{List of Figures}{75}{section*.31}
+\contentsline {chapter}{List of Tables}{77}{section*.32}
+\contentsline {chapter}{Bibliography}{79}{section*.34}

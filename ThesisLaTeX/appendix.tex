@@ -46,7 +46,7 @@ https://www.openstreetmap.org/api/0.6/map?bbox=
 	<RIGHT BOUND>%2C
 \end{lstlisting}
 
-The corresponding possible values of parameters are illustrated in table \ref{tab:osmapi}. Note that the parameters should be valid and the bounding box should not be too large.
+The corresponding possible values of parameters are illustrated in table \ref{tab:osmapi}. Note that the parameters should be valid, and the bounding box should not be too large.
 
 \begin{table}[!h]
 	\centering
@@ -62,7 +62,7 @@ The corresponding possible values of parameters are illustrated in table \ref{ta
 	\end{tabular}
 \end{table}
 
-For the detailed XML structure of obtained \lstinline{.osm} file, please refer to  its official website\footnote{\lstinline{https://wiki.openstreetmap.org/wiki/OSM_XML}}.
+For the detailed XML structure of the obtained \lstinline{.osm} file, please refer to  its official website\footnote{\lstinline{https://wiki.openstreetmap.org/wiki/OSM_XML}}.
 
 \chapter{Algorithms}
 \section{Projection}\label{app:projec}
@@ -83,7 +83,7 @@ The area $S$ of a polygon $P = \{(x_t, y_t)\}_{t \in \{1,2,\ldots,T\}}$ in Carte
 		x_{t+1} & y_{t+1} \\
 	\end{array},
 \end{equation}
-where $(x_{T+1}, y_{T+1})$ refers to $(x_1, y_1)$. $S > 0$ if and only if the order of the polygon vertices is anticlockwise, and vice versa. Note that the Y axis in the pixel coordinates is contrary to the Y axis in the Cartesian coordinate system, thus $S > 0$ refers to a clockwise polygon.
+where $(x_{T+1}, y_{T+1})$ refers to $(x_1, y_1)$. $S > 0$ if and only if the order of the polygon vertices is anticlockwise, and vice versa. Note that the Y-axis in the pixel coordinates is contrary to the Y-axis in the Cartesian coordinate system, thus $S > 0$ refers to a clockwise polygon.
 
 \section{Shift and Resizing Adjustment}\label{app:shift}
 The shift adjustment is exactly an optimization problem defined as follows. We use brute force to find out the best shift and resizing rate.
@@ -115,7 +115,7 @@ Firstly, we compute the IoU score matrix $O = \{O_{ij}\}_{i \in \{1,2,\ldots,n_a
 \end{equation}
 where $n_a$ and $n_b$ denote the number of anchors and the number of ground truth bounding boxes, $a_i$ and $b_j$ denote the $i$-th anchor and $j$-th ground truth bounding box.
 
-Secondly, we use maximum bipartite matching algorithm (e.g. maximum flow), denoting $\text{MaxBiMatchForCol}(\cdot)$, to select corresponding anchor for each ground truth bounding box.
+Secondly, we use the maximum bipartite matching algorithm (e.g. maximum flow), denoting $\text{MaxBiMatchForCol}(\cdot)$, to select the corresponding anchor for each ground truth bounding box.
 \begin{equation}
 	B_{ij} = \text{MaxBiMatchForCol}(O),
 \end{equation}
@@ -160,4 +160,9 @@ where the the notations of $p_i$, $t_h$ and $t_l$ have the same meanings as what
 
 \chapter{Prediction Results}
 \section{Zurich}\label{app:predzh}
+Figure \ref{fig:finalzhmore} gives more examples of prediction results in the test set of Zurich. Please zoom in for more details.
+\input{fig/6-00}
+
 \section{Chicago}\label{app:predch}
+Figure \ref{fig:finalchmore} gives more examples of prediction results in the test set of Chicago. Please zoom in for more details.
+\input{fig/6-01}

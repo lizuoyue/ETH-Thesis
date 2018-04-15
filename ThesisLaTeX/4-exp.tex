@@ -21,7 +21,7 @@ We would have liked to obtain buildings' coordinates from Google Static Maps API
 \subsection{OpenStreetMap}\label{apiosm}
 OpenStreetMap\setcounter{footnote}{0}\footnote{\lstinline{https://www.openstreetmap.org/}} provides an interface that implements a map as a XML format \lstinline{.osm} file. The file contains all the information which can be used to recover the map. When the map's bounding box is given, users can retrieve the latitude and longitude coordinates of the buildings' vertices and roads' central lines within the map. For the usage of OpenStreetMap and the format of the \lstinline{.osm} file, please refer to section \ref{app:apiosm} in appendices.
 
-The coordinates obtained by the API is the original latitude and longitude coordinates of the buildings' vertices, which cannot be directly used for training. We need to convert them to relative pixel coordinates with regards to an given satellite image.
+The coordinates obtained by the API is the original latitude and longitude coordinates of the buildings' vertices, which cannot be directly used for training. We need to convert them to relative pixel coordinates with regards to a given aerial image.
 
 As a matter of fact, every fixed point on the earth can correspond to a unique pixel on the map at a specific zoom level. This projection process can be regarded as a function. Since we have already known the relative pixel coordinates of the image center (half width and half height), the projection for an arbitrary point with given latitude and longitude coordinates can be therefore computed. This process can be described as
 \begin{equation}
@@ -36,7 +36,7 @@ where $f$ is the function that projects latitude and longitude coordinates to gl
 \end{equation}
 for any arbitrary point $p$.
 
-In addition, we keep the order of a polygon to be anticlockwise when training. However, the orders of coordinates of polygon vertices obtained from OpenStreetMap are not fixed. Thus, the reverse operation for those polygon with clockwise order is required. Please refer to section \ref{app:revpoly} in appendices for more details.
+In addition, we keep the order of a polygon to be anticlockwise when training. However, the orders of coordinates of polygon vertices obtained from OpenStreetMap are not fixed. Thus, the reverse operation for those polygons with the clockwise order is required. Please refer to section \ref{app:revpoly} in appendices for more details.
 
 \subsection{Areas and Buildings}\label{arebui}
 
@@ -48,7 +48,7 @@ In subsection \ref{modfpn} we have shown that FPN aims at finding rectangular Ro
 \input{fig/4-01}
 
 \paragraph{Buildings for PolygonRNN}
-In section \ref{modpoly} we have mentioned that PolygonRNN can only deal with images with single object, meaning that the bounding box of the object should be first given. Thus, training PolygonRNN generally requires a relatively small image with single object, as well as the information of its polygon outline. When it comes to our problem, an example of the ground truth can be a building with some padding and the pixel coordinates of building's vertices. Figure \ref{fig:egbui} gives example buildings for training PolygonRNN and its visualized ground truth label.
+In section \ref{modpoly} we have mentioned that PolygonRNN can only deal with images with a single object, meaning that the bounding box of the object should be first given. Thus, training PolygonRNN generally requires a relatively small image with a single object, as well as the information of its polygon outline. When it comes to our problem, an example of the ground truth can be a building with some padding and the pixel coordinates of building's vertices. Figure \ref{fig:egbui} gives example buildings for training PolygonRNN and its visualized ground truth label.
 
 \input{fig/4-02}
 
@@ -58,9 +58,9 @@ Recall that the aerial images and polygons' coordinates are collected from two d
 \input{fig/4-03}
 \begin{itemize}
 	\item \textbf{General Shift}: Figure \ref{fig:egshi0} gives two typical shift examples in the dataset. The shift is generally within the range of 30 pixels, either up and down, or left and right.
-	\item \textbf{Polygon Size and Shape}: Sometimes the polygon size and shape is different from the actual building size as well. This is typically because OpenStreetMap measures the bottom of the building and the aerial image is taken from the top. The roof of the house we see from the top can be different from the floor area. Figure \ref{fig:egshi1} shows a building with a smaller polygon and a building with a too rough outline.
+	\item \textbf{Polygon Size and Shape}: Sometimes the polygon size and shape is different from the actual building size as well. This is typical because OpenStreetMap measures the bottom of the building and the aerial image is taken from the top. The roof of the house we see from the top can be different from the floor area. Figure \ref{fig:egshi1} shows a building with a smaller polygon and a building with a too rough outline.
 	\item \textbf{Angle Issue}: Some tall buildings may suffer from the angle issue. This is because the aircraft that takes the image cannot always be vertically right above the building, so the side of those very high buildings would also be photographed. Figure \ref{fig:egshi2} gives two examples.
-	\item \textbf{Adjacent Buildings}: Some adjacent buildings will be very close together, and some even share a common roof. Thus, from the aerial image, it is generally difficult to distinguish the boundaries between them. However, these buildings are separated in the dataset of OpenStreetMap. It means that where there are originally edges between buildings, it looks like there is no edge from the view of the aerial image. This kind of inaccuracy would have negative effect on the training phase. Figure \ref{fig:egshi3} and gives two examples.
+	\item \textbf{Adjacent Buildings}: Some adjacent buildings will be very close together, and some even share a common roof. Thus, from the aerial image, it is generally difficult to distinguish the boundaries between them. However, these buildings are separated in the dataset of OpenStreetMap. It means that where there are originally edges between buildings, it looks like there is no edge from the view of the aerial image. This kind of inaccuracy would have a negative effect on the training phase. Figure \ref{fig:egshi3} and gives two examples.
 \end{itemize}
 
 \subsection{Adjustments}\label{adjust}
@@ -124,12 +124,12 @@ The dataset consists of two cities, Zurich and Chicago, including most of the bu
 	\end{tabular}
 \end{table}
 
-There are some notes for buildings should be specified: (1) Buildings with more than 19 or less than 4 vertices are excluded; (2) All of the building images are squares but in different sizes, and include paddings; (3) As mentioned in subsection \ref{apiosm}, the order of all polygons are set to be anclockwise; (4) In each polygon, three consecutive vertices cannot be collinear. If so, the second vertex is removed.
+There are some notes for buildings should be specified: (1) Buildings with more than 19 or less than 4 vertices are excluded; (2) All of the building images are squares but in different sizes, and include paddings; (3) As mentioned in subsection \ref{apiosm}, the order of all polygons are set to be anticlockwise; (4) In each polygon, three consecutive vertices cannot be collinear. If so, the second vertex is removed.
 
-There are some notes for areas should be specified: (1) Areas without any buildings are excluded; (2) There is an overlap between neighboring areas because each building is required to appear completely at least once within all areas. For example, in figure \ref{fig:egarea}, for the incomplete buildings locate near the image top edge, we can find them with complete shapes in its northern neighboring area.
+There are some notes for areas should be specified: (1) Areas without any buildings are excluded; (2) There is an overlap between neighboring areas because each building is required to appear completely at least once within all areas. For example, in figure \ref{fig:egarea}, for the incomplete buildings located near the image top edge, we can find them with complete shapes in its northern neighboring area.
 
 \subsection{Model Configuration}\label{config}
-Table \ref{tab:configpara} shows the parameters used to define the graph of model. The environment of implementation of our model is Python 3.6.1, with TensorFlow 1.6.0\setcounter{footnote}{0}\footnote{\lstinline{https://www.tensorflow.org/versions/r1.6/}}.
+Table \ref{tab:configpara} shows the parameters used to define the graph of the model. The environment of implementation of our model is Python 3.6.1, with TensorFlow 1.6.0\setcounter{footnote}{0}\footnote{\lstinline{https://www.tensorflow.org/versions/r1.6/}}.
 \begin{table}[!h]
 	\centering
 	\caption[Configuration parameters used to define the model graph]{Configuration  parameters used to define the model graph.}
@@ -157,7 +157,7 @@ Table \ref{tab:configpara} shows the parameters used to define the graph of mode
 \end{table}
 
 \subsection{Training Phase}\label{trnphs}
-During the training, buildings near the edges of aerial images are typically ignored since they are more likely to be incomplete. In this case, the polygon would be clipped by the edges, resulting in new vertices, which can be very hard to compute. Therefore, in this project, two different kinds of ground truth dataset are collected separately, which means that in a specific round of training, the building images come from the dataset instead of patches from aerial image. Training in this way can keep the batch size of buildings unchanged. Table \ref{tab:trnphs} shows the configuration parameters during the training phase of the model.
+During the training, buildings near the edges of aerial images are typically ignored since they are more likely to be incomplete. In this case, the polygon would be clipped by the edges, resulting in new vertices, which can be very hard to compute. Therefore, in this project, two different kinds of ground truth dataset are collected separately, which means that in a specific round of training, the building images come from the dataset instead of patches from the aerial image. Training in this way can keep the batch size of buildings unchanged. In addition, we perform data augmentation on the training set. We rotate the building image and its polygon by $0^\circ$, $90^\circ$, $180^\circ$ or $270^\circ$ in order to create more training set and make model more robust in different situations. Table \ref{tab:trnphs} shows the configuration parameters during the training phase of the model.
 
 \begin{table}[!h]
 	\centering
@@ -177,10 +177,13 @@ During the training, buildings near the edges of aerial images are typically ign
 \end{table}
 
 \subsection{Prediction Phase}\label{prdphs}
-Recall subsection \ref{mulbboxreg}, an object bounding box may be regressed on multiple anchors, resulting in duplicate boxes. In order to get the best bounding box of an object, NMS (Non-Maximum Suppression) algorithm is adopted. NMS prunes away boxes that have high IoU overlap with previously selected boxes, thus the ``best" boxes can be remained. Figure \ref{fig:nms} shows an example of NMS algorithm. For more details about the algorithm, please refer to the paper \cite{softnms}, which includes both NMS and its improved version Soft-NMS.
+Recall subsection \ref{mulbboxreg}, an object bounding box may be regressed on multiple anchors, resulting in duplicate boxes. In order to get the best bounding box of an object, NMS (Non-Maximum Suppression) algorithm is adopted. NMS prunes away boxes that have high IoU overlap with previously selected boxes, thus the ``best" boxes can remain.
 
 \input{fig/4-05}
-In practice, during the prediction, we first select a number of anchors with the highest (e.g. top 500) probability, and then remove anchors with probability lower than a threshold (e.g. 0.99). The selected anchors are then feed into NMS algorithm, which outputs the final RoIs. These RoIs are further taken as input of PolygonRNN to predict their geometrical shapes. Note that too small bounding boxes obtained by FPN are typically ignored and would not be used for polygon prediction. Table \ref{tab:prdphs} shows the configuration parameters during the prediction phase of the model.
+
+Figure \ref{fig:nms} shows an example of NMS algorithm. For more details about the algorithm, please refer to the paper \cite{softnms}, which includes both NMS and its improved version Soft-NMS.
+
+In practice, during the prediction, we first select a number of anchors with the highest (e.g. top 500) probability, and then remove anchors with probability lower than a threshold (e.g. 0.99). The selected anchors are then fed into NMS algorithm, which outputs the final RoIs. These RoIs are further taken as input of PolygonRNN to predict their geometrical shapes. Note that too small bounding boxes obtained by FPN are typically ignored and would not be used for polygon prediction. Table \ref{tab:prdphs} shows the configuration parameters during the prediction phase of the model.
 \begin{table}[!h]
 	\centering
 	\caption[Configuration parameters used in the prediction phase]{Configuration parameters used in the prediction phase.}
@@ -200,22 +203,24 @@ In practice, during the prediction, we first select a number of anchors with the
 \end{table}
 
 \section{Experiment Results}\label{expres}
-In this section, the experiment results are presented. We evaluate and analyze these results from different aspects. Subsection \ref{lossdec} focuses on loss decrease of both versions of the model. Subsection \ref{tmcsmp} records the time consumption in both training and prediction phases. Subsection \ref{evalmtc} uses kinds of metrics to evaluate the prediction results. Subsection \ref{predres} presents some prediction results of geometrical instance segmentation in aerial images, and makes comparison.
+In this section, the experiment results are presented. We evaluate and analyze these results from different aspects. Subsection \ref{lossdec} focuses on loss decrease of both versions of the model. Subsection \ref{tmcsmp} records the time consumption in both training and prediction phases. Subsection \ref{evalmtc} uses kinds of metrics to evaluate the prediction results. Subsection \ref{predres} presents final prediction results of geometrical instance segmentation in aerial images, and makes comparison.
 
 \subsection{Loss Decrease}\label{lossdec}
 Figure \ref{fig:losdecch} and figure \ref{fig:losdeczh} show the loss decrease for all kinds of aspects in dataset of Chicago and Zurich, respectively. Note that in both figure, the loss of anchor classification, anchor regression, per-pixel mask prediction, and polygon vertices prediction are the 4 basic losses. The loss of FPN is calculated as the mean of anchor classification and regression losses, while the loss of PolygonRNN is calculated as the mean of mask and polygon prediction losses. The full loss is defined as the the mean of FPN loss and PolygonRNN loss. In the figures \ref{fig:losdecch} and \ref{fig:losdeczh}, the losses for two-step version are in shallow colors, while the losses for hybrid version are in deep colors.
 
-We expect to draw some interesting conclusions from the comparison of the results of different cities or different models. From both figures we can conclude that the introduction of shared VGG-16 does not significantly accelerate the training phase of the network. The only change is that, the loss of RNN part (polygon vertices prediction) of PolygonRNN in the hybrid version falls earlier than the two-step version around the iteration 5,000. As for different cities, we find that the loss of Chicago decreases faster and finally becomes lower than the loss of Zurich. We consider that it is because most of the buildings in Chicago are vertically or horizontally aligned, thus it is easier for the machine to learn.
-
 \input{fig/4-06}
 \input{fig/4-07}
+
+We expect to draw some interesting conclusions from the comparison of the results of different cities or different models. From both figures we can conclude that the introduction of shared VGG-16 does not significantly accelerate the training phase of the network. The only change is that, the loss of RNN part (polygon vertices prediction) of PolygonRNN in the hybrid version falls earlier than the two-step version around the iteration 5,000.
+
+As for different cities, we find that the loss of Chicago decreases faster and finally becomes lower than the loss of Zurich. We consider that it is because most of the buildings in Chicago are vertically or horizontally aligned, thus it is easier for the machine to learn.
 
 In addition, we found that after completing 25,000 rounds on the training set of Zurich, the loss is still on the decline. However, because it has been trained for a long time and we want to compare it with Chicago under the same criterion, there is no further training for Zurich.
 
 \subsection{Time Consumption}\label{tmcsmp}
-We use the GPU resources from the Leonhard cluster of ETH Zurich to train our model and make prediction. The overall training time is around 48 hours for totally 25,000 rounds for a single model in the dataset of each city.
+We use the GPU resources from the Leonhard cluster of ETH Zurich to train our model and make a prediction. The overall training time is around 48 hours for totally 25,000 rounds for a single model in the dataset of each city.
 
-Table \ref{tab:timetrain} gives the time consumption for each batch of different models in different dataset when training. From the table we can conclude that the hybrid model has a negligible increase in training speed.
+Table \ref{tab:timetrain} gives the time consumption for each batch of different models in the different dataset when training. From the table we can conclude that the hybrid model has a negligible increase in training speed.
 \begin{table}[!h]
 	\centering
 	\caption[Time spent by each batch in training phase]{Time spent by each batch in training phase.}
@@ -230,7 +235,7 @@ Table \ref{tab:timetrain} gives the time consumption for each batch of different
 	\end{tabular}
 \end{table}
 
-Table \ref{tab:timepred} gives the time consumption of different models in different dataset when prediction. From the table we can conclude that no matter using what model or which dataset, they do not have obvious impact on the prediction time.
+Table \ref{tab:timepred} gives the time consumption of different models in the different dataset when prediction. From the table we can conclude that no matter using what model or which dataset, they do not have an obvious impact on the prediction time.
 \begin{table}[!h]
 	\centering
 	\caption[Time spent in prediction phase]{Time spent in prediction phase.}
@@ -253,54 +258,62 @@ Since the output of the model is an ordered sequence of pixel coordinates, it is
 
 \begin{table}[!h]
 	\centering
-	\caption[Evaluation of models with internal comparison]{Evaluation of models with internal comparison.}
+	\caption[Evaluation of models with the internal comparison]{Evaluation of models with internal comparison.}
 	\label{tab:evalmodin}
 	\begin{tabular}{l|l|r|r|r|r}
 	\hline
 	\multirow{3}{*}{\textbf{Metric}} & \multirow{3}{*}{\textbf{City}} & \multicolumn{4}{c}{\textbf{Model}} \\ \cline{3-6}
 	& & \multicolumn{2}{c|}{BW1\footnotemark[1]} & \multicolumn{2}{c}{BW6\footnotemark[1]} \\ \cline{3-6}
-	& & Two-step & Hybrid & Two-step & Hybrid \\ \hline
+	& & 2-Stp.\footnotemark[1] & Hyb.\footnotemark[1] & 2-Stp.\footnotemark[1] & Hyb.\footnotemark[1] \\ \hline
 	\multirow{2}{*}{Accuracy} & Chicago & 0.9043 & 0.8986 & \textbf{0.9105} & 0.9084 \\ \cline{2-6}
 	& Zurich & 0.7856 & 0.8020 & 0.8129 & \textbf{0.8211} \\ \hline
 	\multirow{2}{*}{F1 Score} & Chicago & 0.8672 & 0.8591 & \textbf{0.8777} & 0.8730 \\ \cline{2-6}
 	& Zurich & 0.6711 & 0.7033 & 0.7171 & \textbf{0.7316} \\ \hline
 	\multirow{2}{*}{IoU Score} & Chicago & 0.7922 & 0.7822 & \textbf{0.8037} & 0.7985 \\ \cline{2-6}
-	& Zurich & 0.5486 & 0.5769 & 0.5937 & \textbf{0.6096} \\
+	& Zurich & 0.5486 & 0.5769 & 0.5937 & \textbf{0.6069} \\
 	\hline
 \end{tabular}
 \end{table}
-\footnotetext[1]{BW$x$ refers to beam width $x$.}
+\footnotetext[1]{BW$x$ refers to beam width $x$. 2-Stp. refers to ``Two-step version". Hyb. refers to ``Hybrid version".}
 
-From table \ref{tab:evalmodin} we can see that the introduction of beam search improves the final result in all cases, especially for city Zurich using the IoU score evaluation. We also find that the two-step version does well on the dataset of Chicago, and the hybrid version does well on the dataset of Zurich. However, on the dataset of Chicago, two models have just slight difference, thus we still consider the hybrid version performs better. The evaluation result with external comparison can be seen in table \ref{tab:evalmodex}.
+From table \ref{tab:evalmodin} we can see that the introduction of beam search improves the final result in all cases, especially for city Zurich using the IoU score evaluation. We also find that the two-step version does well on the dataset of Chicago, and the hybrid version does well on the dataset of Zurich. However, on the dataset of Chicago, two models have a just slight difference, thus we still consider the hybrid version performs better. The evaluation result with existing methods (external comparison) can be seen in table \ref{tab:evalmodex}.
 
 \begin{table}[!h]
 	\centering
-	\caption[Evaluation of models with external comparison]{Evaluation of models with external comparison.}
+	\caption[Evaluation of models with existing methods]{Evaluation of models with existing methods.}
 	\label{tab:evalmodex}
 	\begin{tabular}{l|l|r|r|r|r}
 	\hline
 	\multirow{2}{*}{\textbf{Metric}} & \multirow{2}{*}{\textbf{City}} & \multicolumn{4}{c}{\textbf{Model}} \\ \cline{3-6}
-	 & & Hybrid, BW6\footnotemark[1] & Paper \cite{polygonrnn} & Paper \cite{mspascal} & Thsis \cite{msnadine} \\ \hline
+	 & & Hyb., BW6\footnotemark[1] & Paper \cite{polygonrnn} & Paper \cite{mspascal} & Thesis \cite{msnadine} \\ \hline
 	\multirow{2}{*}{Accuracy} & Chicago & 0.9084 & \multirow{4}{*}{N/A} & \multirow{2}{*}{N/A} & \multirow{2}{*}{N/A} \\ \cline{2-3}
 	& Zurich & 0.8211 & & \\ \cline{1-3}\cline{5-6}
-	\multirow{2}{*}{F1 Score} & Chicago & \textbf{0.8730} & & 0.837 & 0.70 \\ \cline{2-3}\cline{5-6}
-	& Zurich & 0.7316 & & \textbf{0.823} & \multirow{3}{*}{N/A} \\ \cline{1-5}
-	\multirow{2}{*}{IoU Score} & Chicago & \textbf{0.7985} & \multirow{2}{*}{0.52--0.72\footnotemark[2]} & \multirow{2}{*}{N/A} & \\ \cline{2-3}
+	\multirow{2}{*}{F1 Score} & Chicago & \textbf{0.8730} & & 0.837\footnotemark[2] & 0.70 \\ \cline{2-3}\cline{5-6}
+	& Zurich & 0.7316 & & \textbf{0.823}\footnotemark[2] & \multirow{3}{*}{N/A} \\ \cline{1-5}
+	\multirow{2}{*}{IoU Score} & Chicago & \textbf{0.7985} & \multirow{2}{*}{0.52--0.72\footnotemark[3]} & \multirow{2}{*}{N/A} & \\ \cline{2-3}
 	& Zurich & 0.6096 & & & \\
 	\hline
 \end{tabular}
 \end{table}
-\footnotetext[2]{The IoU score here is for the cityscapes dataset (e.g. cars, trains, bicycles) in the original paper \cite{polygonrnn}, \textbf{NOT} for the dataset of aerial images of Zurich or Chicago.}
+\footnotetext[2]{The dataset used by paper \cite{mspascal} has lower zoom level than ours, which means that its dataset ``is collected from a higher altitude", and does not contain much building details (buildings are very small).}
+\footnotetext[3]{The IoU score here is for the cityscapes dataset (e.g. cars, trains, bicycles) in the original paper \cite{polygonrnn}, \textbf{NOT} for the dataset of aerial images of Zurich or Chicago.}
 
 From table \ref{tab:evalmodex} we can see that our model outperforms the paper \cite{mspascal} and the thesis \cite{msnadine} with F1 score evaluation in the dataset of Chicago. As for the IoU evaluation, in the original paper of PolygonRNN, the IoU score typically falls into 0.52--0.72 for the cityscapes, thus our result of dataset Zurich is just normal. The reason why Chicago’s IoU score is relatively high is that most of the buildings are vertically or horizontally aligned.
 
+\pagebreak
+
 \subsection{Prediction Results}\label{predres}
-Figure \ref{fig:finalzh} and figure \ref{fig:finalch} presents the final prediction results on the test set of Zurich and Chicago respectively, using the hybrid version, beam width 6.
+We first make a comparison in terms of beam search, using the model with the hybrid version, which is presented in figure \ref{fig:compbs}. Please zoom in for more details.
+
+\input{fig/4-11}
+
+From the figures we can conclude that beam search makes a certain improvement in the dataset of Zurich, indeed, especially for the buildings with complicated shapes. However, such improvement is not obvious for Chicago.
+
+Figure \ref{fig:finalzh} and figure \ref{fig:finalch} presents the more prediction results on the test set of Zurich and Chicago respectively, using the hybrid version, beam width 6. Please zoom in for more details.
 
 \input{fig/4-08}
+\pagebreak
 \input{fig/4-09}
 
-(There will be more results here).
-For more prediction results, please refer to section \ref{app:predzh} and \ref{app:predch}.
-
+In summary, our new proposed model \modelnameshort\ can well outline the buildings in a given aerial image and can give details. For the problems existed in the prediction results, please refer to section \ref{prblms}. For more prediction results, please refer to sections \ref{app:predzh} and \ref{app:predch} in appendices.
 
