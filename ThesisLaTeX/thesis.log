@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  15 APR 2018 21:11
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  15 APR 2018 23:27
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -3181,7 +3181,7 @@ onts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2017/texmf-di
 st/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2017/texmf-dist/font
 s/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1
 /urw/palatino/uplri8a.pfb>
-Output written on thesis.pdf (92 pages, 73713764 bytes).
+Output written on thesis.pdf (92 pages, 73713754 bytes).
 PDF statistics:
  8572 PDF objects out of 8907 (max. 8388607)
  4735 compressed objects within 48 object streams
