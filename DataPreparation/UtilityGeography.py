@@ -42,6 +42,11 @@ class BoundingBox(object):
 		px, py = lonLatToPixel(lon, lat, self.z)
 		return math.floor(px - self.c_px + self.width / 2), math.floor(py - self.c_py + self.height / 2)
 
+	def relativePixelToLonLat(self, x, y):
+		x = math.floor(self.c_px + x - self.width / 2)
+		y = math.floor(self.c_py + y - self.height / 2)
+		return pixelToLonLat(x, y, self.z)
+
 
 if __name__ == '__main__':
 	zoom = 18
