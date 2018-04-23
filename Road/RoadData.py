@@ -81,17 +81,21 @@ def GetData(img_size, max_path_width, show = False):
 	r = [(w, random.randint(int(1.0 / num_per_edge * h * i) + pad_h, int(1.0 / num_per_edge * h * (i + 1)) - pad_h)) for i in range(num_per_edge)]
 	d = [(random.randint(int(1.0 / num_per_edge * w * i) + pad_w, int(1.0 / num_per_edge * w * (i + 1)) - pad_w), h) for i in range(num_per_edge)]
 	p = l + u + r + d
-	random.shuffle(p)
+	while True:
+		random.shuffle(p)
+		segs = []
+		for x, y in zip(p[: num_per_edge * 2], p[num_per_edge * 2: ]):
+			if x[0] == 0 and y[0] == 0 or x[0] == w and y[0] == w or x[1] == 0 and y[1] == 0 or x[1] == h and y[1] == h:
+				continue
+			segs.append([x, y])
+		if segs:
+			break
+
 	img = Image.new('RGB', img_size, color = (255, 255, 255))
 	road_color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 	draw = ImageDraw.Draw(img)
-	segs = []
 	dirfld = np.zeros((h, w, 2), np.float32)
 	pts = []
-	for x, y in zip(p[: num_per_edge * 2], p[num_per_edge * 2: ]):
-		if x[0] == 0 and y[0] == 0 or x[0] == w and y[0] == w or x[1] == 0 and y[1] == 0 or x[1] == h and y[1] == h:
-			continue
-		segs.append([x, y])
 	for seg in segs:
 		seg_w = random.randint(int(max_path_width * 0.6), max_path_width)
 		seg1, seg2 = direction(seg, seg_w)
@@ -147,7 +151,8 @@ def GetData(img_size, max_path_width, show = False):
 	return img, gt
 
 for i in range(2000):
-	img = GetData((256, 256), 30, False)
+	img, gt = GetData((256, 256), 30, False)
+	print(gt.sum())
 
 
 
