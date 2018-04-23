@@ -21,7 +21,7 @@ gt = tf.placeholder(tf.float32, [None, 32, 32, 3])
 loss = Model('train', img, gt)
 pred = Model('test', img)
 
-optimizer = tf.train.AdamOptimizer(learning_rate = 1e-4)
+optimizer = tf.train.AdamOptimizer(learning_rate = 5e-5)
 train = optimizer.minimize(loss)
 saver = tf.train.Saver(max_to_keep = 1)
 init = tf.global_variables_initializer()

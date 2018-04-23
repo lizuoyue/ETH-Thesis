@@ -29,10 +29,10 @@ def FirstStageBranch(feature, num, scope, reuse = None):
 		feature: [batch_size, height, width, num_channels]
 	"""
 	with tf.variable_scope(scope, reuse = reuse):
-		conv1   = tf.layers.conv2d       (inputs = feature, filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
-		conv2   = tf.layers.conv2d       (inputs = conv1  , filters =  64, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
-		conv3   = tf.layers.conv2d       (inputs = conv2  , filters =  16, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
-		conv4   = tf.layers.conv2d       (inputs = conv3  , filters =   4, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
+		conv1   = tf.layers.conv2d       (inputs = feature, filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
+		conv2   = tf.layers.conv2d       (inputs = conv1  , filters = 512, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
+		conv3   = tf.layers.conv2d       (inputs = conv2  , filters = 256, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
+		conv4   = tf.layers.conv2d       (inputs = conv3  , filters = 256, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
 		conv5   = tf.layers.conv2d       (inputs = conv4  , filters = num, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
 		return conv5
 
@@ -41,19 +41,19 @@ def StageBranch(feature, num, scope, reuse = None):
 		feature: [batch_size, height, width, num_channels]
 	"""
 	with tf.variable_scope(scope, reuse = reuse):
-		conv1   = tf.layers.conv2d       (inputs = feature, filters = 256, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
-		conv2   = tf.layers.conv2d       (inputs = conv1  , filters = 128, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
-		conv3   = tf.layers.conv2d       (inputs = conv2  , filters =  64, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
-		conv4   = tf.layers.conv2d       (inputs = conv3  , filters =  32, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
-		conv5   = tf.layers.conv2d       (inputs = conv4  , filters =  16, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
-		conv6   = tf.layers.conv2d       (inputs = conv5  , filters =   8, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
+		conv1   = tf.layers.conv2d       (inputs = feature, filters = 512, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
+		conv2   = tf.layers.conv2d       (inputs = conv1  , filters = 512, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
+		conv3   = tf.layers.conv2d       (inputs = conv2  , filters = 256, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
+		conv4   = tf.layers.conv2d       (inputs = conv3  , filters = 256, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
+		conv5   = tf.layers.conv2d       (inputs = conv4  , filters = 128, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
+		conv6   = tf.layers.conv2d       (inputs = conv5  , filters = 128, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
 		conv7   = tf.layers.conv2d       (inputs = conv6  , filters = num, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
 		return conv7
 
 def LossL2(pred_map, gt_map):
-	return tf.reduce_mean(tf.square(pred_map - gt_map))
+	return tf.reduce_sum(tf.square(pred_map - gt_map))
 
-def Model(mode, img, gt = None, num_stage = 3):
+def Model(mode, img, gt = None, num_stage = 4):
 	if mode == 'train':
 		reuse = None
 	else:
