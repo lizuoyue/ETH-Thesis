@@ -1,8 +1,8 @@
+import numpy as np
 import os, sys
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 import tensorflow as tf
-import numpy as np
 
 def VGG19(img, scope, reuse = None):
 	"""
