@@ -1,3 +1,4 @@
+import os, sys
 if os.path.exists('../../Python-Lib/'):
 	sys.path.insert(1, '../../Python-Lib')
 import tensorflow as tf
