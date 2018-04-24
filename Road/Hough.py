@@ -1,6 +1,6 @@
-import math
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 from PIL import Image, ImageDraw
 
 img = Image.new('P', (256, 256), color = 255)

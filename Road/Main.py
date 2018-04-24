@@ -5,8 +5,10 @@ if os.path.exists('../../Python-Lib/'):
 import tensorflow as tf
 import math, time
 from BasicModel import *
-import RoadData
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import RoadData
 
 def getData(num):
 	aa, bb, cc = [], [], []
