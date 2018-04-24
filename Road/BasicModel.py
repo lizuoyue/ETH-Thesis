@@ -52,10 +52,11 @@ def StageBranch(feature, num, scope, reuse = None):
 		conv7   = tf.layers.conv2d       (inputs = conv6  , filters = num, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
 		return conv7
 
-def LossL2(pred_map, gt_map):
-	return tf.reduce_mean(tf.square(pred_map - gt_map))
+def LossL2(pred_map, gt_map, mask):
+	loss = tf.multiply(tf.reduce_sum(tf.square(pred_map - gt_map), axis = -1), mask)
+	return tf.reduce_sum(loss) / tf.reduce_sum(mask)
 
-def Model(mode, img, gt = None, num_stage = 4):
+def Model(mode, img, gt = None, msk = None, num_stage = 6):
 	if mode == 'train':
 		reuse = None
 	else:
@@ -68,13 +69,13 @@ def Model(mode, img, gt = None, num_stage = 4):
 		s.append(StageBranch(stage_input, 1, 's%d' % (i + 1), reuse = reuse))
 		l.append(StageBranch(stage_input, 2, 'l%d' % (i + 1), reuse = reuse))
 	if mode == 'train':
-		loss = 0
+		loss_s, loss_l = 0, 0
 		gt_s, gt_l = gt[..., 0: 1], gt[..., 1: 3]
 		for ss in s:
-			loss += LossL2(ss, gt_s)
+			loss_s += LossL2(ss, gt_s, msk)
 		for ll in l:
-			loss += LossL2(ll, gt_l)
-		return loss
+			loss_l += LossL2(ll, gt_l, msk)
+		return loss_s, loss_l
 	else:
 		return s[-1], l[-1]
 

@@ -148,11 +148,20 @@ def GetData(img_size, max_path_width, show = False):
 
 	gt = np.zeros((hh, ww, 3))
 	gt[..., 0], gt[..., 1], gt[..., 2] = heatmap, U, V
-	return img, gt
+	mask = U ** 2 + V ** 2
+	mask[mask < 0.5] = 0
+	mask[mask >= 0.5] = 1
+	if show:
+		plt.figure()
+		plt.imshow(mask)
+		plt.axis('equal')
+		plt.show()
+	return img, gt, mask
 
-for i in range(2000):
-	img, gt = GetData((256, 256), 30, False)
-	print(gt.sum())
+if __name__ == '__main__':
+	for i in range(10):
+		img, gt, a = GetData((256, 256), 30, True)
+		print(gt[..., 1].sum(), gt[..., 2].sum())
 
 
 
