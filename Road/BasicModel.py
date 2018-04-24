@@ -26,7 +26,7 @@ def VGG19(img, scope, reuse = None):
 		conv4_4 = tf.layers.conv2d       (inputs = conv4_3, filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu) #  32
 		return conv4_4
 
-def FirstStageBranch(feature, num, scope, reuse = None):
+def FirstStageBranch(feature, num, scope, last_active = None, reuse = None):
 	"""
 		feature: [batch_size, height, width, num_channels]
 	"""
@@ -34,11 +34,11 @@ def FirstStageBranch(feature, num, scope, reuse = None):
 		conv1   = tf.layers.conv2d       (inputs = feature, filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
 		conv2   = tf.layers.conv2d       (inputs = conv1  , filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
 		conv3   = tf.layers.conv2d       (inputs = conv2  , filters = 128, kernel_size = (3, 3), padding = 'same', activation = tf.nn.relu)
-		conv4   = tf.layers.conv2d       (inputs = conv3  , filters = 512, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
-		conv5   = tf.layers.conv2d       (inputs = conv4  , filters = num, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
+		conv4   = tf.layers.conv2d       (inputs = conv3  , filters = 512, kernel_size = (1, 1), padding = 'valid', activation = last_active)
+		conv5   = tf.layers.conv2d       (inputs = conv4  , filters = num, kernel_size = (1, 1), padding = 'valid', activation = last_active)
 		return conv5
 
-def StageBranch(feature, num, scope, reuse = None):
+def StageBranch(feature, num, scope, last_active = None, reuse = None):
 	"""
 		feature: [batch_size, height, width, num_channels]
 	"""
@@ -48,8 +48,8 @@ def StageBranch(feature, num, scope, reuse = None):
 		conv3   = tf.layers.conv2d       (inputs = conv2  , filters = 128, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
 		conv4   = tf.layers.conv2d       (inputs = conv3  , filters = 128, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
 		conv5   = tf.layers.conv2d       (inputs = conv4  , filters = 128, kernel_size = (7, 7), padding = 'same', activation = tf.nn.relu)
-		conv6   = tf.layers.conv2d       (inputs = conv5  , filters = 128, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
-		conv7   = tf.layers.conv2d       (inputs = conv6  , filters = num, kernel_size = (1, 1), padding = 'same', activation = tf.nn.relu)
+		conv6   = tf.layers.conv2d       (inputs = conv5  , filters = 128, kernel_size = (1, 1), padding = 'valid', activation = last_active)
+		conv7   = tf.layers.conv2d       (inputs = conv6  , filters = num, kernel_size = (1, 1), padding = 'valid', activation = last_active)
 		return conv7
 
 def LossL2(pred_map, gt_map, mask):
@@ -62,11 +62,11 @@ def Model(mode, img, gt = None, msk = None, num_stage = 6):
 	else:
 		reuse = True
 	feature = VGG19(img, 'VGG19', reuse = reuse)
-	s = [FirstStageBranch(feature, 1, 's1', reuse = reuse)]
+	s = [FirstStageBranch(feature, 1, 's1', last_active = tf.sigmoid, reuse = reuse)]
 	l = [FirstStageBranch(feature, 2, 'l1', reuse = reuse)]
 	for i in range(1, num_stage):
 		stage_input = tf.concat([feature, s[-1], l[-1]], axis = -1)
-		s.append(StageBranch(stage_input, 1, 's%d' % (i + 1), reuse = reuse))
+		s.append(StageBranch(stage_input, 1, 's%d' % (i + 1), last_active = tf.sigmoid, reuse = reuse))
 		l.append(StageBranch(stage_input, 2, 'l%d' % (i + 1), reuse = reuse))
 	if mode == 'train':
 		loss_s, loss_l = 0, 0
