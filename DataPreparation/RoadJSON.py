@@ -228,10 +228,6 @@ if __name__ == '__main__':
 			img = np.array(Image.open(io.BytesIO(img_data)))[pad: img_size + pad, pad: img_size + pad, ...]
 			Image.fromarray(img).save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '.png')
 			img_id += 1
-			if img_id == 25:
-				break
-		if img_id == 25:
-			break
 
 	with open('Road%s.json' % city_name, 'w') as outfile:
 		json.dump(res, outfile)
