@@ -62,11 +62,11 @@ def Model(mode, img, gt = None, msk = None, num_stage = 6):
 	else:
 		reuse = True
 	feature = VGG19(img, 'VGG19', reuse = reuse)
-	s = [FirstStageBranch(feature, 1, 's1', last_active = tf.sigmoid, reuse = reuse)]
+	s = [FirstStageBranch(feature, 1, 's1', last_active = tf.nn.relu, reuse = reuse)]
 	l = [FirstStageBranch(feature, 2, 'l1', reuse = reuse)]
 	for i in range(1, num_stage):
 		stage_input = tf.concat([feature, s[-1], l[-1]], axis = -1)
-		s.append(StageBranch(stage_input, 1, 's%d' % (i + 1), last_active = tf.sigmoid, reuse = reuse))
+		s.append(StageBranch(stage_input, 1, 's%d' % (i + 1), last_active = tf.nn.relu, reuse = reuse))
 		l.append(StageBranch(stage_input, 2, 'l%d' % (i + 1), reuse = reuse))
 	if mode == 'train':
 		loss_s, loss_l = 0, 0
