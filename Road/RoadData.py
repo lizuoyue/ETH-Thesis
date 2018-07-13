@@ -93,7 +93,7 @@ def getData(img_id, num_path, show = False):
 		g.add_e(t, s)
 	g.dijkstra_all()
 
-	img = Image.open('../DataPreparation/RoadZurich/%s.png' % str(img_id).zfill(8))
+	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8))
 	draw = ImageDraw.Draw(img)
 	for v in g.v:
 		draw.ellipse(make_ellipse(v, pad = 6), fill = (255, 0, 0), outline = (255, 0, 0))
