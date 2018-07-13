@@ -47,12 +47,17 @@ class directed_graph(object):
 		diff = np.array(v1) - np.array(v2)
 		return np.sqrt(np.dot(diff, diff))
 
-	def dijkstra(self, source):
-		print(source)
-		print(self.v)
-		print(self.e)
+	def dfs(self, u):
+		self.visited[u] = True
+		for v, w in self.nb[u]:
+			if not self.visited[v]:
+				self.dfs(v)
+		return
 
-		Q = set(list(range(len(self.v))))
+	def dijkstra(self, source):
+		self.visited = [False for i in range(len(self.v))]
+		self.dfs(source)
+		Q = set([idx for idx, flag in enumerate(self.visited) if flag])
 		dist = [np.inf for i in range(len(self.v))]
 		prev = [None for i in range(len(self.v))]
 
