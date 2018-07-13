@@ -109,9 +109,9 @@ def getData(img_id, num_path, show = False):
 	h8 = int(h8 / float(downsample))
 	draw = ImageDraw.Draw(img)
 	for v in g.v:
-		draw.ellipse(make_ellipse(v, pad = 6), fill = (255, 0, 0), outline = (255, 0, 0))
+		draw.ellipse(make_ellipse(v, pad = 2), fill = (255, 0, 0), outline = (255, 0, 0))
 	for e in g.e:
-		draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 3)
+		draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 2)
 	if show:
 		img.show()
 		time.sleep(1)
