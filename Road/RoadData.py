@@ -111,9 +111,9 @@ def getData(img_id, num_path, show = False):
 	for v in g.v:
 		draw.ellipse(make_ellipse(v, pad = 6), fill = (255, 0, 0), outline = (255, 0, 0))
 	for e in g.e:
-		draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 5)
+		draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 3)
 	if show:
-		Image.fromarray(img).show()
+		Image.show()
 		time.sleep(1)
 
 	# Draw boundary and vertices
