@@ -142,6 +142,9 @@ def getData(img_id, num_path, show = False):
 		s = random.randint(0, len(g.v) - 1)
 		t = g.sp_max_idx[s]
 		dist, prev = g.sp[s]
+		print(s, t)
+		print(dist)
+		print(prev)
 		path = []
 		p = t
 		while p != s:
@@ -267,7 +270,7 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	a = getDataBatch(5)
+	a = getDataBatch(1)
 	b = getAllTerminal(a[2][0])
 	print(b.shape)
 	quit()
