@@ -98,6 +98,9 @@ def getData(img_id, num_path, show = False):
 	g.dijkstra_all()
 
 	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8))
+	w8, h8 = img.size
+	w8 = int(w8 / float(downsample))
+	h8 = int(h8 / float(downsample))
 	draw = ImageDraw.Draw(img)
 	for v in g.v:
 		draw.ellipse(make_ellipse(v, pad = 6), fill = (255, 0, 0), outline = (255, 0, 0))
