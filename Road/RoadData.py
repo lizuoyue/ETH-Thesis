@@ -113,7 +113,7 @@ def getData(img_id, num_path, show = False):
 	for e in g.e:
 		draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 3)
 	if show:
-		Image.show()
+		img.show()
 		time.sleep(1)
 
 	# Draw boundary and vertices
