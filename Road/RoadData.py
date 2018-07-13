@@ -95,7 +95,7 @@ def getData(img_id, num_path, show = False):
 	road = roadJSON[img_id]
 	g = directed_graph()
 	for item in road['v']:
-		g.add_v(item)
+		g.add_v(np.array(item) / 600.0 * 256.0)
 	for s, t in road['e']:
 		g.add_e(s, t)
 	g.dijkstra_all()
@@ -103,7 +103,7 @@ def getData(img_id, num_path, show = False):
 	# print(road['v'])
 	# print(road['e'])
 
-	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8))
+	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8)).resize((256, 256))
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
 	h8 = int(h8 / float(downsample))
