@@ -76,6 +76,7 @@ class directed_graph(object):
 					u = i
 					d = dist[i]
 
+		dist = np.array(dist)
 		dist[[idx for idx, flag in enumerate(self.visited) if flag]] = -np.inf
 		return dist, prev
 
