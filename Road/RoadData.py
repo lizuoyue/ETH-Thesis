@@ -94,7 +94,7 @@ def getData(img_id, num_path, show = False):
 	g = directed_graph()
 	for item in road['v']:
 		g.add_v(base_pts[i])
-	for s, t in road['e']::
+	for s, t in road['e']:
 		g.add_e(s, t, mode = 'idx')
 		g.add_e(t, s, mode = 'idx')
 	g.dijkstra_all()
