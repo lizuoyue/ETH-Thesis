@@ -100,8 +100,8 @@ def getData(img_id, num_path, show = False):
 		g.add_e(s, t)
 	g.dijkstra_all()
 
-	print(road['v'])
-	print(road['e'])
+	# print(road['v'])
+	# print(road['e'])
 
 	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8))
 	w8, h8 = img.size
@@ -145,9 +145,9 @@ def getData(img_id, num_path, show = False):
 		s = random.randint(0, len(g.v) - 1)
 		t = g.sp_max_idx[s]
 		dist, prev = g.sp[s]
-		print(s, t)
-		print(dist)
-		print(prev)
+		# print(s, t)
+		# print(dist)
+		# print(prev)
 		path = []
 		p = t
 		while p != s:
@@ -156,6 +156,7 @@ def getData(img_id, num_path, show = False):
 		path.append(p)
 		path.reverse()
 		path_v = [np.array(g.v[idx]) / downsample for idx in path]
+		print(path_v)
 		vertex_input = [vertex_pool[int(r)][int(c)] for c, r in path_v]
 		vertex_output = vertex_input[1:]
 		vertex_terminal = [vertex_input[0], vertex_input[-1]]
