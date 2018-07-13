@@ -100,6 +100,9 @@ def getData(img_id, num_path, show = False):
 		g.add_e(s, t)
 	g.dijkstra_all()
 
+	print(road['v'])
+	print(road['e'])
+
 	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8))
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
