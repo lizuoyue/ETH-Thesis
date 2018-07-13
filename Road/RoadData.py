@@ -1,6 +1,5 @@
 import math, random
 import numpy as np
-import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 import time, json
 from scipy.stats import multivariate_normal
