@@ -188,6 +188,7 @@ def getData(img_id, num_path, show = False):
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
 def getDataBatch(batch_size, show = False):
+	res = []
 	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show))
