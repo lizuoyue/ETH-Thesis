@@ -160,6 +160,7 @@ def getData(img_id, num_path, show = False):
 		path.append(p)
 		path.reverse()
 		path_v = [np.array(g.v[idx]) / downsample for idx in path]
+		print(path_v)
 		vertex_input = [vertex_pool[int(r)][int(c)] for c, r in path_v]
 		vertex_output = vertex_input[1:]
 		vertex_terminal = [vertex_input[0], vertex_input[-1]]
