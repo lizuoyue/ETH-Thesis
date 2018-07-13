@@ -48,6 +48,10 @@ class directed_graph(object):
 		return np.sqrt(np.dot(diff, diff))
 
 	def dijkstra(self, source):
+		print(source)
+		print(self.v)
+		print(self.e)
+
 		Q = set(list(range(len(self.v))))
 		dist = [np.inf for i in range(len(self.v))]
 		prev = [None for i in range(len(self.v))]
