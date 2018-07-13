@@ -75,6 +75,8 @@ class directed_graph(object):
 				if dist[i] < d:
 					u = i
 					d = dist[i]
+
+		dist[[idx for idx, flag in enumerate(self.visited) if flag]] = -np.inf
 		return dist, prev
 
 	def dijkstra_all(self):
