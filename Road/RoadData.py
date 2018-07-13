@@ -143,9 +143,12 @@ def getData(img_id, num_path, show = False):
 	ends = []
 	seq_lens = []
 	for i in range(num_path):
-		s = random.randint(0, len(g.v) - 1)
-		t = g.sp_max_idx[s]
-		dist, prev = g.sp[s]
+		if len(g.v) > 0:
+			s = random.randint(0, len(g.v) - 1)
+			t = g.sp_max_idx[s]
+			dist, prev = g.sp[s]
+		else:
+			s, t = -1, -1
 		# print(s, t)
 		# print(dist)
 		# print(prev)
