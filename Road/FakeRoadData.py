@@ -2,13 +2,16 @@ import math, random
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
-import time, json
+import time
 from scipy.stats import multivariate_normal
 from Config import *
 from scipy.ndimage.filters import gaussian_filter
-import scipy
 
 config = Config()
+
+choices = [[0,1], [1,2], [2,3], [3,0], [0,1,2], [1,2,3], [2,3,0], [3,0,1], [0,1,2,3]]
+choices = [[(i in item) for i in range(4)] for item in choices]
+edge_choices = [(True, False), (False, True), (True, True)]
 
 max_seq_len = config.MAX_NUM_VERTICES
 blank = np.zeros(config.V_OUT_RES, dtype = np.uint8)
@@ -19,9 +22,6 @@ for i in range(config.V_OUT_RES[1]):
 		vertex_pool[i][j][i, j] = 255
 		vertex_pool[i][j] = Image.fromarray(vertex_pool[i][j])
 blank = Image.fromarray(blank)
-
-roadJSON = json.load(open('../DataPreparation/RoadZurich.json'))
-downsample = 8
 
 class directed_graph(object):
 	def __init__(self):
@@ -85,26 +85,67 @@ class directed_graph(object):
 		self.sp_max_idx = [np.argmax(dist) for dist, _ in self.sp]
 		return
 
+
 def make_ellipse(p, pad = 10):
 	return [(p[0] - pad, p[1] - pad), (p[0] + pad, p[1] + pad)]
 
-def getData(img_id, num_path, show = False):
-	# img = scipy.misc.imread('../DataPreparation/RoadZurich/%s.png' % str(img_id).zfill(8))
-	road = roadJSON[img_id]
-	g = directed_graph()
-	for item in road['v']:
-		g.add_v(base_pts[i])
-	for s, t in road['e']::
-		g.add_e(s, t, mode = 'idx')
-		g.add_e(t, s, mode = 'idx')
-	g.dijkstra_all()
+def pepper(img):
+	row, col, ch = img.shape
+	mean, var = 0, 1000
+	gauss = np.random.normal(mean, var ** 0.5, img.shape)
+	noisy = img + gauss
+	noisy = (noisy - noisy.min()) / (noisy.max() - noisy.min())
+	return np.array(noisy * 255, np.uint8)
 
-	img = Image.open('../DataPreparation/RoadZurich/%s.png' % str(img_id).zfill(8))
+def getData(img_size, num_path, show = False):
+	w , h  = img_size
+	w2, h2 = int(w / 2.0), int(h / 2.0)
+	w4, h4 = int(w / 4.0), int(h / 4.0)
+	w8, h8 = int(w / 8.0), int(h / 8.0)
+	downsample = 8
+
+	base_pts = [
+		(random.randint(w8     , w8 + w4), random.randint(h8     , h8 + h4)),
+		(random.randint(w8 + w2, w  - w8), random.randint(h8     , h8 + h4)),
+		(random.randint(w8 + w2, w  - w8), random.randint(h8 + h2, h  - h8)),
+		(random.randint(w8     , w8 + w4), random.randint(h8 + h2, h  - h8)),
+	]
+	edge_pts = [
+		[(random.randint(w8     , w8 + w4), 0    ), (0    , random.randint(h8     , h8 + h4))],
+		[(random.randint(w8 + w2, w  - w8), 0    ), (w - 1, random.randint(h8     , h8 + h4))],
+		[(random.randint(w8 + w2, w  - w8), h - 1), (w - 1, random.randint(h8 + h2, h  - h8))],
+		[(random.randint(w8     , w8 + w4), h - 1), (0    , random.randint(h8 + h2, h  - h8))],
+	]
+
+	g = directed_graph()
+	choice = choices[random.randint(0, len(choices) - 1)]
+	for i in range(4):
+		if choice[i]:
+			g.add_v(base_pts[i])
+			edge_choice = edge_choices[random.randint(0, len(edge_choices) - 1)]
+			if edge_choice[0]:
+				g.add_v(edge_pts[i][0])
+				g.add_e(base_pts[i], edge_pts[i][0])
+				g.add_e(edge_pts[i][0], base_pts[i])
+			if edge_choice[1]:
+				g.add_v(edge_pts[i][1])
+				g.add_e(base_pts[i], edge_pts[i][1])
+				g.add_e(edge_pts[i][1], base_pts[i])
+	for i in range(4):
+		if choice[i] and choice[i - 1]:
+			g.add_e(base_pts[i], base_pts[i - 1])
+			g.add_e(base_pts[i - 1], base_pts[i])
+	g.dijkstra_all()
+	# print(len(g.v))
+
+	img = Image.new('RGB', img_size, color = (255, 255, 255))
 	draw = ImageDraw.Draw(img)
+	road_color = tuple(random.randint(64, 192) for _ in range(3))
 	for v in g.v:
-		draw.ellipse(make_ellipse(v, pad = 6), fill = (255, 0, 0), outline = (255, 0, 0))
+		draw.ellipse(make_ellipse(v, pad = 6), fill = road_color, outline = road_color)
 	for e in g.e:
-		draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 5)
+		draw.line(g.v[e[0]] + g.v[e[1]], fill = road_color, width = random.randint(10, 16))
+	img = pepper(np.array(img))
 	if show:
 		Image.fromarray(img).show()
 		time.sleep(1)
@@ -189,9 +230,9 @@ def getData(img_id, num_path, show = False):
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
 def getDataBatch(batch_size, show = False):
-	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
+	res = []
 	for i in range(batch_size):
-		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show))
+		res.append(getData(config.AREA_SIZE, config.TRAIN_NUM_PATH, show))
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
@@ -262,7 +303,7 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	a = getDataBatch(5)
+	a = getDataBatch(1)
 	b = getAllTerminal(a[2][0])
 	print(b.shape)
 	quit()

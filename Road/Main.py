@@ -1,99 +1,109 @@
-import numpy as np
 import os, sys
-if os.path.exists('../../Python-Lib/'):
-	sys.path.insert(1, '../../Python-Lib')
+import numpy as np
 import tensorflow as tf
-import math, time
-from BasicModel import *
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import RoadData
+from Config import *
+from Model import *
+from RoadData import *
 
-def getData(num):
-	aa, bb, cc = [], [], []
-	for i in range(num):
-		a, b, c = RoadData.GetData((256, 256), 30, False)
-		aa.append(a)
-		bb.append(b)
-		cc.append(c)
-	return np.array(aa), np.array(bb), np.array(cc)
+config = Config()
 
-img = tf.placeholder(tf.float32, [None, 256, 256, 3])
-gt = tf.placeholder(tf.float32, [None, 32, 32, 3])
-msk = tf.placeholder(tf.float32, [None, 32, 32])
+if __name__ == '__main__':
+	assert(len(sys.argv) == 1 or len(sys.argv) == 2)
 
-loss = Model('train', img, gt, msk)
-pred = Model('test', img)
+	# Define graph
+	graph = Model(
+		max_num_vertices = config.MAX_NUM_VERTICES,
+		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
+		v_out_res = config.V_OUT_RES,
+	)
+	aa = tf.placeholder(tf.float32)
+	bb = tf.placeholder(tf.float32)
+	vv = tf.placeholder(tf.float32)
+	ii = tf.placeholder(tf.float32)
+	oo = tf.placeholder(tf.float32)
+	tt = tf.placeholder(tf.float32)
+	ee = tf.placeholder(tf.float32)
+	ll = tf.placeholder(tf.float32)
+	# ff = tf.placeholder(tf.float32)
 
-optimizer = tf.train.AdamOptimizer(learning_rate = 1e-4)
-train = optimizer.minimize(loss[0] + loss[1])
-saver = tf.train.Saver(max_to_keep = 1)
-init = tf.global_variables_initializer()
+	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll)
+	# pred_mask_res  = graph.predict_mask(aa)
+	# pred_path_res = graph.predict_path(ff, tt)
 
-# Launch graph
-with tf.Session() as sess:
-	# Create loggers
-	train_loss = open('./LossTrain.out', 'w')
-	valid_loss = open('./LossValid.out', 'w')
+	# for v in tf.global_variables():
+	# 	print(v.name)
+	# quit()
+
+	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
+	train = optimizer.minimize(train_res[0] + train_res[1])
+	saver = tf.train.Saver(max_to_keep = 1)
+	init = tf.global_variables_initializer()
+
+	# Create new folder
 	if not os.path.exists('./Model/'):
 		os.makedirs('./Model/')
-	if not os.path.exists('./Result/'):
-		os.makedirs('./Result/')
 
-	# Restore weights
-	if len(sys.argv) == 2 and sys.argv[1] != None:
-		saver.restore(sess, './Model/%s.ckpt' % sys.argv[1])
-		iter_obj = range(int(sys.argv[1]) + 1, 10000)
-	else:
-		sess.run(init)
-		iter_obj = range(10000)
+	# Launch graph
+	with tf.Session() as sess:
+		# Create loggers
+		train_loss = open('./LossTrain.out', 'w')
+		valid_loss = open('./LossValid.out', 'w')
+		train_writer = Logger('./Log/train/')
+		valid_writer = Logger('./Log/valid/')
 
-	# Main loop
-	for i in iter_obj:
-		aa, bb, cc = getData(8)
-		feed_dict = {img: aa - 160, gt: bb, msk: cc}
+		# Restore weights
+		if len(sys.argv) == 2 and sys.argv[1] == 'restore':
+			files = glob.glob('./Model/Model-*.ckpt.meta')
+			files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
+			num, model_path = files[-1]
+			saver.restore(sess, model_path.replace('.meta', ''))
+			iter_obj = range(num + 1, config.NUM_ITER)
+		else:
+			sess.run(init)
+			iter_obj = range(config.NUM_ITER)
 
-		# Training and get result
-		init_time = time.time()
-		_, (loss1, loss2) = sess.run([train, loss], feed_dict)
-		cost_time = time.time() - init_time
-		train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lfs\n' % (i, loss1, loss2, cost_time))
-		train_loss.flush()
+		# Main loop
+		for i in iter_obj:
+			# Get training batch data and create feed dictionary
+			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+			feed_dict = {
+				aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
+			}
 
-		# Validation
-		if i % 200 == 0:
-			aa, bb, cc = getData(8)
-			feed_dict = {img: aa - 160, gt: bb, msk: cc}
+			# Training and get result
 			init_time = time.time()
-			loss1, loss2 = sess.run(loss, feed_dict)
+			_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
 			cost_time = time.time() - init_time
-			valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lfs' % (i, loss1, loss2, cost_time))
-			valid_loss.flush()
-			saver.save(sess, './Model/%s.ckpt' % i)
+			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
+			train_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
+			train_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
+			
+			# Write loss to file
+			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
+			train_loss.flush()
 
-		# Test
-		if i % 200 == 0:
-			aa, bb, cc = getData(8)
-			feed_dict = {img: aa - 160}
-			sss, lll = sess.run(pred, feed_dict)
-			for j in range(8):
-				plt.figure()
-				plt.imshow(aa[j])
-				plt.axis('equal')
-				plt.savefig('./Result/%d-%d.pdf' % (i, j))
-				plt.figure()
-				plt.imshow(sss[j, ..., 0])
-				plt.axis('equal')
-				plt.savefig('./Result/%d-%d-s.pdf' % (i, j))
-				plt.figure()
-				Y, X = np.mgrid[0: 32, 0: 32]
-				U, V = lll[j, :, :, 0], lll[j, :, :, 1]
-				Q = plt.quiver(X, 32 - Y, U, -V)
-				plt.axis('equal')
-				plt.savefig('./Result/%d-%d-l.pdf' % (i, j))
+			# Validation
+			if i % 200 == 0:
+				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+				feed_dict = {
+					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
+				}
+				init_time = time.time()
+				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end = sess.run(train_res, feed_dict)
+				cost_time = time.time() - init_time
+				valid_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
+				valid_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
+				valid_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
+				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
+				valid_loss.flush()
 
+			# Save model
+			if i % 5000 == 0:
+				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
-
-
+		# End main loop
+		train_writer.close()
+		valid_writer.close()
+		train_loss.close()
+		valid_loss.close()
 
