@@ -143,27 +143,28 @@ def getData(img_id, num_path, show = False):
 	ends = []
 	seq_lens = []
 	for i in range(num_path):
+		path = []
 		if len(g.v) > 0:
 			s = random.randint(0, len(g.v) - 1)
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
-		else:
-			s, t = -1, -1
-		# print(s, t)
-		# print(dist)
-		# print(prev)
-		path = []
-		p = t
-		while p != s:
+			# print(s, t)
+			# print(dist)
+			# print(prev)
+			p = t
+			while p != s:
+				path.append(p)
+				p = prev[p]
 			path.append(p)
-			p = prev[p]
-		path.append(p)
-		path.reverse()
+			path.reverse()
 		path_v = [np.array(g.v[idx]) / downsample for idx in path]
-		print(path_v)
 		vertex_input = [vertex_pool[int(r)][int(c)] for c, r in path_v]
-		vertex_output = vertex_input[1:]
-		vertex_terminal = [vertex_input[0], vertex_input[-1]]
+		if len(vertex_input) > 0:
+			vertex_output = vertex_input[1:]
+			vertex_terminal = [vertex_input[0], vertex_input[-1]]
+		else:
+			vertex_output = []
+			vertex_terminal = [blank, blank]
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(blank)
 		while len(vertex_output) < max_seq_len:
