@@ -90,7 +90,6 @@ def getData(img_id, num_path, show = False):
 		g.add_v(item)
 	for s, t in road['e']:
 		g.add_e(s, t)
-		g.add_e(t, s)
 	g.dijkstra_all()
 
 	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8))
