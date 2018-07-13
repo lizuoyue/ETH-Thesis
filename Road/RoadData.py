@@ -26,30 +26,21 @@ class directed_graph(object):
 	def __init__(self):
 		self.v = []
 		self.e = []
-		self.d = {}
 		self.nb = []
 		return
 
 	def add_v(self, v):
-		self.d[v] = len(self.v)
 		self.v.append(v)
 		self.nb.append([])
 		return
 
-	def add_e(self, v1, v2, w = None, mode = 'val'):
-		assert(mode == 'val' or mode == 'idx')
-		if mode == 'val':
-			if w is None:
-				w = self.dist(v1, v2)
-			self.e.append((self.d[v1], self.d[v2], w))
-			self.nb[self.d[v1]].append((self.d[v2], w))
-		if mode == 'idx':
-			assert(v1 in range(len(self.v)))
-			assert(v2 in range(len(self.v)))
-			if w is None:
-				w = self.dist(self.v[v1], self.v[v2])
-			self.e.append((v1, v2, w))
-			self.nb[v1].append((v2, w))
+	def add_e(self, v1, v2, w = None):
+		assert(v1 in range(len(self.v)))
+		assert(v2 in range(len(self.v)))
+		if w is None:
+			w = self.dist(self.v[v1], self.v[v2])
+		self.e.append((v1, v2, w))
+		self.nb[v1].append((v2, w))
 		return
 
 	def dist(self, v1, v2):
