@@ -77,7 +77,7 @@ class directed_graph(object):
 					d = dist[i]
 
 		dist = np.array(dist)
-		dist[[idx for idx, flag in enumerate(self.visited) if flag]] = -np.inf
+		dist[dist == np.inf] = -np.inf
 		return dist, prev
 
 	def dijkstra_all(self):
