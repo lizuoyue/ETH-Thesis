@@ -92,7 +92,7 @@ def getData(img_id, num_path, show = False):
 	road = roadJSON[img_id]
 	g = directed_graph()
 	for item in road['v']:
-		g.add_v(base_pts[i])
+		g.add_v(item)
 	for s, t in road['e']:
 		g.add_e(s, t, mode = 'idx')
 		g.add_e(t, s, mode = 'idx')
