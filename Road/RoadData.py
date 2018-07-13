@@ -274,11 +274,11 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	a = getDataBatch(1)
-	b = getAllTerminal(a[2][0])
-	print(b.shape)
-	quit()
-	c = recoverMultiPath(a[0][0], a[4][0])
-	Image.fromarray(a[0][0]).show()
-	Image.fromarray(c).show()
+	a = getDataBatch(1, show = True)
+	# b = getAllTerminal(a[2][0])
+	# print(b.shape)
+	# quit()
+	# c = recoverMultiPath(a[0][0], a[4][0])
+	# Image.fromarray(a[0][0]).show()
+	# Image.fromarray(c).show()
 
