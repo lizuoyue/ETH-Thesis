@@ -95,7 +95,7 @@ def getData(img_id, num_path, show = False):
 	road = roadJSON[img_id]
 	g = directed_graph()
 	for item in road['v']:
-		g.add_v(np.array(item) / 600.0 * 256.0)
+		g.add_v(list(np.array(item) / 600.0 * 256.0))
 	for s, t in road['e']:
 		g.add_e(s, t)
 	g.dijkstra_all()
@@ -156,7 +156,6 @@ def getData(img_id, num_path, show = False):
 		path.append(p)
 		path.reverse()
 		path_v = [np.array(g.v[idx]) / downsample for idx in path]
-		print(path_v)
 		vertex_input = [vertex_pool[int(r)][int(c)] for c, r in path_v]
 		vertex_output = vertex_input[1:]
 		vertex_terminal = [vertex_input[0], vertex_input[-1]]
@@ -164,7 +163,7 @@ def getData(img_id, num_path, show = False):
 			vertex_input.append(blank)
 		while len(vertex_output) < max_seq_len:
 			vertex_output.append(blank)
-		if show:
+		if False:
 			for item in vertex_input:
 				item.show()
 				time.sleep(1)
