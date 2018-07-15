@@ -215,6 +215,7 @@ def getDataBatch(batch_size, show = False):
 			for subitem in item:
 				print(subitem.shape)
 			print('===')
+			a = np.array(item)
 	return res
 
 def findPeaks(heatmap, sigma = 0):
