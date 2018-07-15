@@ -210,9 +210,11 @@ def getDataBatch(batch_size, show = False):
 	for i in range(batch_size):
 		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show))
 	res = [[item[i] for item in res] for i in range(8)]
-	if False:
+	if True:
 		for item in res:
-			print(len(item))
+			for subitem in res:
+				print(subitem.shape)
+			print('===')
 	return res
 
 def findPeaks(heatmap, sigma = 0):
