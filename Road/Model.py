@@ -74,9 +74,9 @@ class Model(object):
 		else:
 			feature = PolygonRNNFeature(VGG16(img, True), True)
 		with tf.variable_scope('CNN', reuse = reuse):
-			boundary = tf.layers.conv2d(inputs = feature, filters = 2, kernel_size = (1, 1), padding = 'valid', activation = None)
+			boundary = tf.layers.conv2d(inputs = feature, filters = 2, kernel_size = 1, padding = 'valid', activation = None)
 			combine  = tf.concat([feature, boundary], 3)
-			vertices = tf.layers.conv2d(inputs = combine, filters = 2, kernel_size = (1, 1), padding = 'valid', activation = None)
+			vertices = tf.layers.conv2d(inputs = combine, filters = 2, kernel_size = 1, padding = 'valid', activation = None)
 		boundary_prob = tf.nn.softmax(boundary)[..., 0: 1]
 		vertices_prob = tf.nn.softmax(vertices)[..., 0: 1]
 		combine = tf.concat([feature, boundary, vertices], 3)
