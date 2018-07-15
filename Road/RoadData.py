@@ -193,14 +193,14 @@ def getData(img_id, num_path, show = False):
 	ends = np.array(ends)
 	seq_lens = np.array(seq_lens)
 
-	# print(img.shape)
-	# print(boundary.shape)
-	# print(vertices.shape)
-	# print(vertex_inputs.shape)
-	# print(vertex_outputs.shape)
-	# print(vertex_terminals.shape)
-	# print(ends.shape)
-	# print(seq_lens.shape)
+	print(img.shape)
+	print(boundary.shape)
+	print(vertices.shape)
+	print(vertex_inputs.shape)
+	print(vertex_outputs.shape)
+	print(vertex_terminals.shape)
+	print(ends.shape)
+	print(seq_lens.shape)
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
@@ -279,7 +279,8 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	a = getDataBatch(10, show = False)
+	for _ in range(10):
+		getDataBatch(10, show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
