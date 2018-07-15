@@ -209,10 +209,10 @@ def getDataBatch(batch_size, show = False):
 	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show))
-	res = [np.array([item[i] for item in res]) for i in range(8)]
+	res = [[item[i] for item in res] for i in range(8)]
 	if False:
 		for item in res:
-			print(item.shape)
+			print(len(item))
 	return res
 
 def findPeaks(heatmap, sigma = 0):
