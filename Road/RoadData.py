@@ -169,7 +169,7 @@ def getData(img_id, num_path, show = False):
 			vertex_input.append(blank)
 		while len(vertex_output) < max_seq_len:
 			vertex_output.append(blank)
-		if len(vertex_input) != max_seq_len
+		if len(vertex_input) != max_seq_len:
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
 		if False:
