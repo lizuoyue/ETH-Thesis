@@ -25,7 +25,7 @@ class Config(object):
 		# Learning parameters
 		self.NUM_ITER = 2000001
 		self.MAX_NUM_VERTICES = 30
-		self.LEARNING_RATE = 1e-8
+		self.LEARNING_RATE = 1e-6
 		self.LSTM_OUT_CHANNEL = [64, 32, 16]
 		self.V_OUT_RES = (32, 32)
 		self.AREA_TRAIN_BATCH = 4
