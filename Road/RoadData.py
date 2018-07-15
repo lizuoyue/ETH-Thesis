@@ -212,7 +212,7 @@ def getDataBatch(batch_size, show = False):
 	res = [[item[i] for item in res] for i in range(8)]
 	if True:
 		for item in res:
-			for subitem in res:
+			for subitem in item:
 				print(subitem.shape)
 			print('===')
 	return res
