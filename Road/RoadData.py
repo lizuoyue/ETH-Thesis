@@ -115,7 +115,7 @@ def getData(img_id, num_path, show = False):
 	if show:
 		img.show()
 		time.sleep(1)
-	img = np.array(img)
+	img = np.array(img)[..., 0: 3]
 
 	# Draw boundary and vertices
 	boundary = Image.new('P', (w8, h8), color = 0)
