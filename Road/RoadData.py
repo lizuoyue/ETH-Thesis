@@ -158,7 +158,11 @@ def getData(img_id, num_path, show = False):
 			path.append(p)
 			path.reverse()
 		path_v = [np.array(g.v[idx]) / downsample for idx in path]
-		vertex_input = [vertex_pool[int(r)][int(c)] for c, r in path_v]
+		path_v = [(int(c), int(r)) for c, r in path_v]
+		flag_v = [path_v[k] == path_v[k - 1] for k in range(len(path_v))]
+		path_v = [item for k, item in enumerate(path_v) if flag_v[k]]
+		path_v = path_v[: max_seq_len]
+		vertex_input = [vertex_pool[r][c] for c, r in path_v]
 		if len(vertex_input) > 0:
 			vertex_output = vertex_input[1:]
 			vertex_terminal = [vertex_input[0], vertex_input[-1]]
