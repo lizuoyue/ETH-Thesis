@@ -59,7 +59,7 @@ class Model(object):
 		nf = tf.maximum(tf.minimum(nf, 0.999999), 0.000001)
 		weights = gt * 0.5 / nt + (1 - gt) * 0.5 / nf
 		weights = weights / tf.reduce_sum(weights)
-		return tf.reduce_sum(tf.multiply(tf.square(gt - pred) * 33, weights))
+		return tf.reduce_sum(tf.multiply(tf.square(gt - pred) * 10, weights))
 
 	def CNN(self, img, gt_boundary = None, gt_vertices = None, reuse = None):
 		"""
@@ -103,7 +103,7 @@ class Model(object):
 			loss = tf.reduce_sum(
 				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
 			) / (tf.reduce_sum(gt_seq_len) + 1)
-			return logits, loss / 100.0
+			return logits, loss / 10.0
 		else:
 			prob = tf.nn.softmax(logits)
 			val, idx = tf.nn.top_k(prob[:, 0, :], k = config.BEAM_WIDTH)
