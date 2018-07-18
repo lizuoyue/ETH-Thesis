@@ -165,7 +165,7 @@ def getData(img_id, num_path, show = False):
 		if True:
 			for item in vertex_input:
 				item.show()
-				input()
+				time.sleep(1)
 		end = []
 		for i in range(max_seq_len):
 			if i < len(path_v) - 1:
