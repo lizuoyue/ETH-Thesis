@@ -73,7 +73,6 @@ class directed_graph(object):
 		self.sp = []
 		for i in range(len(self.v)):
 			self.sp.append(self.spfa(i))
-			print(self.v[i], self.sp[-1][0])
 		self.sp_max_idx = [np.argmax(dist) for dist, _ in self.sp]
 		return
 
@@ -138,9 +137,9 @@ def getData(img_id, num_path, show = False):
 			s = random.randint(0, len(g.v) - 1)
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
-			# print(s, t)
-			# print(dist)
-			# print(prev)
+			print(s, t)
+			print(dist)
+			print(prev)
 			p = t
 			while p != s:
 				path.append(p)
