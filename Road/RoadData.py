@@ -12,7 +12,7 @@ config = Config()
 if socket.gethostname() == 'cnb-d102-50':
 	file_path = '../DataPreparation'
 else:
-	filepath = '/cluster/scratch/zoli/road'
+	file_path = '/cluster/scratch/zoli/road'
 max_seq_len = config.MAX_NUM_VERTICES
 blank = np.zeros(config.V_OUT_RES, dtype = np.uint8)
 vertex_pool = [[] for _ in range(config.V_OUT_RES[1])]
