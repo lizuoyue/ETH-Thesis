@@ -162,7 +162,7 @@ def getData(img_id, num_path, show = False):
 		if len(vertex_input) != max_seq_len:
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
-		if True:
+		if show:
 			for item in vertex_input:
 				item.show()
 				time.sleep(1)
@@ -272,7 +272,7 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	getDataBatch(8, show = True)
+	getDataBatch(8, show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
