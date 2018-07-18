@@ -47,43 +47,32 @@ class directed_graph(object):
 		diff = np.array(v1) - np.array(v2)
 		return np.sqrt(np.dot(diff, diff))
 
-	def dfs(self, u):
-		self.visited[u] = True
-		for v, w in self.nb[u]:
-			if not self.visited[v]:
-				self.dfs(v)
-		return
-
-	def dijkstra(self, source):
-		self.visited = [False for i in range(len(self.v))]
-		self.dfs(source)
-		Q = set([idx for idx, flag in enumerate(self.visited) if flag])
+	def spfa(self, source):
 		dist = [1e9 for i in range(len(self.v))]
 		prev = [None for i in range(len(self.v))]
-
+		in_q = [False for i in range(len(self.v))]
 		dist[source] = 0
-		u = source
-		while len(Q) > 0:
-			Q.remove(u)
+		q = [source]
+		in_q[source] = True
+		while len(q) > 0:
+			u = q.pop(0)
+			in_q[u] = False
 			for v, w in self.nb[u]:
 				alt = dist[u] + w
 				if alt < dist[v]:
 					dist[v] = alt
 					prev[v] = u
-			d = 1e9
-			for i in Q:
-				if dist[i] < d:
-					u = i
-					d = dist[i]
-
+					if not in_q[v]:
+						in_q[v] = True
+						q.append(v)
 		dist = np.array(dist)
 		dist[dist > 1e8] = -1e9
 		return dist, prev
 
-	def dijkstra_all(self):
+	def shortest_path_all(self):
 		self.sp = []
 		for i in range(len(self.v)):
-			self.sp.append(self.dijkstra(i))
+			self.sp.append(self.spfa(i))
 		self.sp_max_idx = [np.argmax(dist) for dist, _ in self.sp]
 		return
 
@@ -98,7 +87,7 @@ def getData(img_id, num_path, show = False):
 		g.add_v(list(np.array(item) / 600.0 * 256.0))
 	for s, t in road['e']:
 		g.add_e(s, t)
-	g.dijkstra_all()
+	g.shortest_path_all()
 
 	# print(road['v'])
 	# print(road['e'])
