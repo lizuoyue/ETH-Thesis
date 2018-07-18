@@ -137,20 +137,16 @@ def getData(img_id, num_path, show = False):
 			s = random.randint(0, len(g.v) - 1)
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
-			print(s, t)
-			print(dist)
-			print(prev)
 			p = t
 			while p != s:
 				path.append(p)
 				p = prev[p]
 			path.append(p)
 			path.reverse()
-			print(path)
 		path_v = [np.array(g.v[idx]) / downsample for idx in path]
 		path_v = [(int(c), int(r)) for c, r in path_v]
 		flag_v = [path_v[k] == path_v[k - 1] for k in range(len(path_v))]
-		path_v = [item for k, item in enumerate(path_v) if flag_v[k]]
+		path_v = [item for k, item in enumerate(path_v) if not flag_v[k]]
 		path_v = path_v[: max_seq_len]
 		vertex_input = [vertex_pool[r][c] for c, r in path_v]
 		if len(vertex_input) > 0:
