@@ -73,6 +73,7 @@ class directed_graph(object):
 		self.sp = []
 		for i in range(len(self.v)):
 			self.sp.append(self.spfa(i))
+			print(self.v[i], self.sp[-1][0])
 		self.sp_max_idx = [np.argmax(dist) for dist, _ in self.sp]
 		return
 
