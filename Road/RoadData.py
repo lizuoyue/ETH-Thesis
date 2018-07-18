@@ -5,10 +5,14 @@ import time, json
 from scipy.stats import multivariate_normal
 from Config import *
 from scipy.ndimage.filters import gaussian_filter
-import scipy
+import scipy, socket
 
 config = Config()
 
+if socket.gethostname() == 'cnb-d102-50':
+	file_path = '../DataPreparation'
+else:
+	filepath = '/cluster/scratch/zoli/road'
 max_seq_len = config.MAX_NUM_VERTICES
 blank = np.zeros(config.V_OUT_RES, dtype = np.uint8)
 vertex_pool = [[] for _ in range(config.V_OUT_RES[1])]
@@ -19,7 +23,7 @@ for i in range(config.V_OUT_RES[1]):
 		vertex_pool[i][j] = Image.fromarray(vertex_pool[i][j])
 blank = Image.fromarray(blank)
 
-roadJSON = json.load(open('../DataPreparation/RoadZurich.json'))
+roadJSON = json.load(open(file_path + '/RoadZurich.json'))
 downsample = 8
 
 class directed_graph(object):
@@ -92,7 +96,7 @@ def getData(img_id, num_path, show = False):
 	# print(road['v'])
 	# print(road['e'])
 
-	img = Image.open('../DataPreparation/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8)).resize((256, 256))
+	img = Image.open(file_path + '/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8)).resize((256, 256))
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
 	h8 = int(h8 / float(downsample))
