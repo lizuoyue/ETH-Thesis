@@ -58,7 +58,7 @@ class directed_graph(object):
 		self.visited = [False for i in range(len(self.v))]
 		self.dfs(source)
 		Q = set([idx for idx, flag in enumerate(self.visited) if flag])
-		dist = [np.inf for i in range(len(self.v))]
+		dist = [1e9 for i in range(len(self.v))]
 		prev = [None for i in range(len(self.v))]
 
 		dist[source] = 0
@@ -70,14 +70,14 @@ class directed_graph(object):
 				if alt < dist[v]:
 					dist[v] = alt
 					prev[v] = u
-			d = np.inf
+			d = 1e9
 			for i in Q:
 				if dist[i] < d:
 					u = i
 					d = dist[i]
 
 		dist = np.array(dist)
-		dist[dist == np.inf] = -np.inf
+		dist[dist > 1e8] = -1e9
 		return dist, prev
 
 	def dijkstra_all(self):
@@ -176,10 +176,10 @@ def getData(img_id, num_path, show = False):
 		if len(vertex_input) != max_seq_len:
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
-		if False:
+		if True:
 			for item in vertex_input:
 				item.show()
-				time.sleep(1)
+				input()
 		end = []
 		for i in range(max_seq_len):
 			if i < len(path_v) - 1:
@@ -286,7 +286,7 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	getDataBatch(4, show = True)
+	getDataBatch(8, show = True)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()

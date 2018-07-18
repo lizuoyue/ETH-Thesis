@@ -98,7 +98,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Save model
-			if i % 5000 == 0:
+			if i % 1000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
