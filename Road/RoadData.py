@@ -146,6 +146,7 @@ def getData(img_id, num_path, show = False):
 				p = prev[p]
 			path.append(p)
 			path.reverse()
+			print(path)
 		path_v = [np.array(g.v[idx]) / downsample for idx in path]
 		path_v = [(int(c), int(r)) for c, r in path_v]
 		flag_v = [path_v[k] == path_v[k - 1] for k in range(len(path_v))]
