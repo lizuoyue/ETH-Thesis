@@ -224,31 +224,31 @@ if __name__ == '__main__':
 						dd['v'].append(crs_res[1])
 						dd['e'].extend([(id1, id2), (id2, id1)])
 
-			# img = Image.new('P', (img_size, img_size))
-			# draw = ImageDraw.Draw(img)
-			# for xx, yy in dd['v']:
-			# 	draw.rectangle([xx-5,yy-5,xx+5,yy+5], fill = 255)
-			# for id1, id2 in dd['e']:
-			# 	draw.line(dd['v'][id1] + dd['v'][id2], fill = 255, width = 5)
-			# img.save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '_Road.png')
+			img = Image.new('P', (img_size, img_size))
+			draw = ImageDraw.Draw(img)
+			for xx, yy in dd['v']:
+				draw.rectangle([xx-5,yy-5,xx+5,yy+5], fill = 255)
+			for id1, id2 in dd['e']:
+				draw.line(dd['v'][id1] + dd['v'][id2], fill = 255, width = 5)
+			img.save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '_Road.png')
 			res.append(dd)
-			# while True:
-			# 	try:
-			# 		img_data = requests.get(
-			# 			'https://maps.googleapis.com/maps/api/staticmap?' 					+ \
-			# 			'maptype=%s&' 			% 'satellite' 								+ \
-			# 			'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 							+ \
-			# 			'zoom=%d&' 				% z 										+ \
-			# 			'size=%dx%d&' 			% (img_size + pad * 2, img_size + pad * 2) 	+ \
-			# 			'scale=%d&' 			% s 										+ \
-			# 			'format=%s&' 			% 'png32' 									+ \
-			# 			'key=%s' 				% keys[img_id % len(keys)] 					  \
-			# 		).content
-			# 		break
-			# 	except:
-			# 		print('Try again to get the image.')
-			# img = np.array(Image.open(io.BytesIO(img_data)))[pad: img_size + pad, pad: img_size + pad, ...]
-			# Image.fromarray(img).save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '.png')
+			while True:
+				try:
+					img_data = requests.get(
+						'https://maps.googleapis.com/maps/api/staticmap?' 					+ \
+						'maptype=%s&' 			% 'satellite' 								+ \
+						'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 							+ \
+						'zoom=%d&' 				% z 										+ \
+						'size=%dx%d&' 			% (img_size + pad * 2, img_size + pad * 2) 	+ \
+						'scale=%d&' 			% s 										+ \
+						'format=%s&' 			% 'png32' 									+ \
+						'key=%s' 				% keys[img_id % len(keys)] 					  \
+					).content
+					break
+				except:
+					print('Try again to get the image.')
+			img = np.array(Image.open(io.BytesIO(img_data)))[pad: img_size + pad, pad: img_size + pad, ...]
+			Image.fromarray(img).save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '.png')
 			img_id += 1
 
 	with open('Road%s.json' % city_name, 'w') as outfile:
