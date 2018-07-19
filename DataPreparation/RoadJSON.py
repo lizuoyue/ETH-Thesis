@@ -60,8 +60,6 @@ class Graph(object):
 		self.vSorted['lat'].sort()
 		self.minVal = {'lon': self.vSorted['lon'][ 0][0], 'lat': self.vSorted['lat'][ 0][0]}
 		self.maxVal = {'lon': self.vSorted['lon'][-1][0], 'lat': self.vSorted['lat'][-1][0]}
-		print(self.minVal)
-		print(self.maxVal)
 		return
 
 	def _findV_GQ(self, coo_type, th):
@@ -101,12 +99,10 @@ class Graph(object):
 	def findV(self, minLon, maxLon, minLat, maxLat):
 		assert(minLon <= maxLon)
 		assert(minLat <= maxLat)
-		print(minLon, maxLon)
 		minLonIdx = self._findV_GQ('lon', minLon)
 		maxLonIdx = self._findV_LQ('lon', maxLon)
 		minLatIdx = self._findV_GQ('lat', minLat)
 		maxLatIdx = self._findV_LQ('lat', maxLat)
-		print(minLonIdx, maxLonIdx)
 		assert(minLonIdx <= maxLonIdx)
 		assert(minLatIdx <= maxLatIdx)
 		if minLonIdx == -1 or maxLonIdx == -1 or minLatIdx == -1 or maxLatIdx == -1:
