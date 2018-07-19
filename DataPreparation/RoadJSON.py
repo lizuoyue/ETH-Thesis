@@ -103,6 +103,7 @@ class Graph(object):
 		maxLonIdx = self._findV_LQ('lon', maxLon)
 		minLatIdx = self._findV_GQ('lat', minLat)
 		maxLatIdx = self._findV_LQ('lat', maxLat)
+		print(minLonIdx, maxLonIdx)
 		assert(minLonIdx <= maxLonIdx)
 		assert(minLatIdx <= maxLatIdx)
 		if minLonIdx == -1 or maxLonIdx == -1 or minLatIdx == -1 or maxLatIdx == -1:
