@@ -167,9 +167,15 @@ def getData(img_id, num_path, show = False):
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
 		if show:
-			for item in vertex_input:
-				item.show()
+			color = [0] + [1, 2] * 30
+			for vvv in [vertex_input, vertex_output, vertex_terminal]:
+				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3))
+				for i, item in enumerate(vertex_input):
+					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
+				Image.fromarray(visualize).resize((256, 256)).show()
 				time.sleep(1)
+			print(end)
+			print(len(path_v))
 		end = []
 		for i in range(max_seq_len):
 			if i < len(path_v) - 1:
