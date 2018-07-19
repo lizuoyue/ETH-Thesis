@@ -166,22 +166,24 @@ def getData(img_id, num_path, show = False):
 		if len(vertex_input) != max_seq_len:
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
-		if show:
-			color = [0] + [1, 2] * 30
-			for vvv in [vertex_input, vertex_output, vertex_terminal]:
-				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
-				for i, item in enumerate(vertex_input):
-					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
-				Image.fromarray(visualize).resize((256, 256)).show()
-				time.sleep(1)
-			print(end)
-			print(len(path_v))
 		end = []
 		for i in range(max_seq_len):
 			if i < len(path_v) - 1:
 				end.append(0)
 			else:
 				end.append(1)
+
+		if show:
+			color = [0] + [1, 2] * 30
+			for vvv in [vertex_input, vertex_output, vertex_terminal]:
+				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
+				for i, item in enumerate(vvv):
+					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
+				Image.fromarray(visualize).resize((256, 256)).show()
+				time.sleep(1)
+			print(end)
+			print(len(path_v))
+
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
 		vertex_terminal = [np.array(item) / 255.0 for item in vertex_terminal]
