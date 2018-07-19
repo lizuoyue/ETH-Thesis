@@ -169,7 +169,7 @@ def getData(img_id, num_path, show = False):
 		if show:
 			color = [0] + [1, 2] * 30
 			for vvv in [vertex_input, vertex_output, vertex_terminal]:
-				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3))
+				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
 				for i, item in enumerate(vertex_input):
 					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
 				Image.fromarray(visualize).resize((256, 256)).show()
@@ -212,6 +212,7 @@ def getDataBatch(batch_size, show = False):
 	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show))
+		input()
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
