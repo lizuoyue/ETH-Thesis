@@ -99,6 +99,7 @@ class Graph(object):
 	def findV(self, minLon, maxLon, minLat, maxLat):
 		assert(minLon <= maxLon)
 		assert(minLat <= maxLat)
+		print(minLon, maxLon)
 		minLonIdx = self._findV_GQ('lon', minLon)
 		maxLonIdx = self._findV_LQ('lon', maxLon)
 		minLatIdx = self._findV_GQ('lat', minLat)
