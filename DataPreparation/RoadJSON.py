@@ -60,6 +60,8 @@ class Graph(object):
 		self.vSorted['lat'].sort()
 		self.minVal = {'lon': self.vSorted['lon'][ 0][0], 'lat': self.vSorted['lat'][ 0][0]}
 		self.maxVal = {'lon': self.vSorted['lon'][-1][0], 'lat': self.vSorted['lat'][-1][0]}
+		print(self.minVal)
+		print(self.maxVal)
 		return
 
 	def _findV_GQ(self, coo_type, th):
