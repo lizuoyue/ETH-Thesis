@@ -116,7 +116,7 @@ def getData(img_id, num_path, show = False):
 	for e in g.e:
 		draw.line(list(np.array(g.v[e[0]]) / downsample) + list(np.array(g.v[e[1]]) / downsample), fill = 255, width = 1)
 	if show:
-		boundary.show()
+		boundary.resize((256, 256)).show()
 		time.sleep(1)
 	boundary = np.array(boundary) / 255.0
 
@@ -125,7 +125,7 @@ def getData(img_id, num_path, show = False):
 	for v in g.v:
 		draw.ellipse(make_ellipse(list(np.array(v) / downsample), pad = 0), fill = 255, outline = 255)
 	if show:
-		vertices.show()
+		vertices.resize((256, 256)).show()
 		time.sleep(1)
 	vertices = np.array(vertices) / 255.0
 
@@ -183,6 +183,7 @@ def getData(img_id, num_path, show = False):
 				time.sleep(1)
 			print(end)
 			print(len(path_v))
+			input()
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
@@ -214,7 +215,6 @@ def getDataBatch(batch_size, show = False):
 	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show))
-		input()
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
