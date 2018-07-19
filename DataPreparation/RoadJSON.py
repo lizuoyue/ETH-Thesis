@@ -125,7 +125,7 @@ if __name__ == '__main__':
 	os.popen('mkdir Road%s' % city_name)
 
 	g = Graph()
-	d = np.load('RoadListZurich.npy').item()
+	d = np.load('RoadList%s.npy' % city_name).item()
 	for rid in d:
 		for lon, lat, nid in d[rid]:
 			g.addV(nid, (lon, lat))
