@@ -168,8 +168,12 @@ if __name__ == '__main__':
 			minLon, maxLat = box.relativePixelToLonLat(0, 0)
 			maxLon, minLat = box.relativePixelToLonLat(img_size, img_size)
 			vids = g.findV(minLon, maxLon, minLat, maxLat)
+			minLon, maxLat = box.relativePixelToLonLat(-img_size, -img_size)
+			maxLon, minLat = box.relativePixelToLonLat(2 * img_size, 2 * img_size)
+			grand_vids = g.findV(minLon, maxLon, minLat, maxLat)
 			tmp_id = {}
 			for vid in vids:
+				grand_vids.remove(vid)
 				lon, lat = g.v[vid]
 				xx1, yy1 = box.lonLatToRelativePixel(lon, lat)
 				assert(0 <= xx1 and xx1 < 600)
@@ -202,31 +206,49 @@ if __name__ == '__main__':
 					if vid in tmp_id and evid in tmp_id:
 						dd['e'].append((tmp_id[vid], tmp_id[evid]))
 
-			img = Image.new('P', (img_size, img_size))
-			draw = ImageDraw.Draw(img)
-			for xx, yy in dd['v']:
-				draw.rectangle([xx-5,yy-5,xx+5,yy+5], fill = 255)
-			for id1, id2 in dd['e']:
-				draw.line(dd['v'][id1] + dd['v'][id2], fill = 255, width = 5)
-			img.save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '_Road.png')
+			for vid in grand_vids:
+				lon, lat = g.v[vid]
+				xx1, yy1 = box.lonLatToRelativePixel(lon, lat)
+				for evid in g.e[vid]:
+					lon, lat = g.v[evid]
+					xx2, yy2 = box.lonLatToRelativePixel(lon, lat)
+					crs_res = [get_crossing(((xx1, yy1), (xx2, yy2)), bseg) for bseg in bsegs]
+					crs_res = [item for item in crs_res if item is not None]
+					crs_res = [(int(round(xx)), int(round(yy))) for xx, yy in crs_res]
+					crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
+					assert(len(crs_res) <= 2)
+					if len(crs_res) == 2:
+						id1 = len(dd['v'])
+						dd['v'].append(crs_res[0])
+						id2 = len(dd['v'])
+						dd['v'].append(crs_res[1])
+						dd['e'].extend([(id1, id2), (id2, id1)])
+
+			# img = Image.new('P', (img_size, img_size))
+			# draw = ImageDraw.Draw(img)
+			# for xx, yy in dd['v']:
+			# 	draw.rectangle([xx-5,yy-5,xx+5,yy+5], fill = 255)
+			# for id1, id2 in dd['e']:
+			# 	draw.line(dd['v'][id1] + dd['v'][id2], fill = 255, width = 5)
+			# img.save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '_Road.png')
 			res.append(dd)
-			while True:
-				try:
-					img_data = requests.get(
-						'https://maps.googleapis.com/maps/api/staticmap?' 					+ \
-						'maptype=%s&' 			% 'satellite' 								+ \
-						'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 							+ \
-						'zoom=%d&' 				% z 										+ \
-						'size=%dx%d&' 			% (img_size + pad * 2, img_size + pad * 2) 	+ \
-						'scale=%d&' 			% s 										+ \
-						'format=%s&' 			% 'png32' 									+ \
-						'key=%s' 				% keys[img_id % len(keys)] 					  \
-					).content
-					break
-				except:
-					print('Try again to get the image.')
-			img = np.array(Image.open(io.BytesIO(img_data)))[pad: img_size + pad, pad: img_size + pad, ...]
-			Image.fromarray(img).save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '.png')
+			# while True:
+			# 	try:
+			# 		img_data = requests.get(
+			# 			'https://maps.googleapis.com/maps/api/staticmap?' 					+ \
+			# 			'maptype=%s&' 			% 'satellite' 								+ \
+			# 			'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 							+ \
+			# 			'zoom=%d&' 				% z 										+ \
+			# 			'size=%dx%d&' 			% (img_size + pad * 2, img_size + pad * 2) 	+ \
+			# 			'scale=%d&' 			% s 										+ \
+			# 			'format=%s&' 			% 'png32' 									+ \
+			# 			'key=%s' 				% keys[img_id % len(keys)] 					  \
+			# 		).content
+			# 		break
+			# 	except:
+			# 		print('Try again to get the image.')
+			# img = np.array(Image.open(io.BytesIO(img_data)))[pad: img_size + pad, pad: img_size + pad, ...]
+			# Image.fromarray(img).save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '.png')
 			img_id += 1
 
 	with open('Road%s.json' % city_name, 'w') as outfile:
