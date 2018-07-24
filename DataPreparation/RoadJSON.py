@@ -150,6 +150,8 @@ if __name__ == '__main__':
 	]
 	for x in range(x1, x2):
 		for y in range(y1, y2):
+			if ((x, y) != (60, -81)):
+				continue
 			print('Step', x, y)
 			c_lon, c_lat = cen_lon + dx * x, cen_lat + dy * y
 			dd = {
@@ -184,9 +186,9 @@ if __name__ == '__main__':
 					if evid not in vids:
 						lon, lat = g.v[evid]
 						xx2, yy2 = box.lonLatToRelativePixel(lon, lat)
-						# print((xx1, yy1), (xx2, yy2))
+						print((xx1, yy1), (xx2, yy2))
 						crs_res = [get_crossing(((xx1, yy1), (xx2, yy2)), bseg) for bseg in bsegs]
-						# print(crs_res)
+						print(crs_res)
 						crs_res = [item for item in crs_res if item is not None]
 						crs_res = [(int(round(xx)), int(round(yy))) for xx, yy in crs_res]
 						crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
@@ -251,6 +253,6 @@ if __name__ == '__main__':
 			Image.fromarray(img).save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '.png')
 			img_id += 1
 
-	with open('Road%s.json' % city_name, 'w') as outfile:
-		json.dump(res, outfile)
+		with open('Road%s.json' % city_name, 'w') as outfile:
+			json.dump(res, outfile)
 
