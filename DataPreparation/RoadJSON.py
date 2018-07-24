@@ -211,7 +211,7 @@ if __name__ == '__main__':
 					lon, lat = g.v[evid]
 					xx2, yy2 = box.lonLatToRelativePixel(lon, lat)
 					crs_res = [get_crossing(((xx1, yy1), (xx2, yy2)), bseg) for bseg in bsegs]
-					crs_res = [(int(round(item[0])), int(round(item[1]))) item for item in crs_res if item is not None]
+					crs_res = [(int(round(item[0])), int(round(item[1]))) for item in crs_res if item is not None]
 					crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
 					crs_res = list(set(crs_res))
 					assert(len(crs_res) <= 2)
