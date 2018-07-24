@@ -193,6 +193,7 @@ if __name__ == '__main__':
 						crs_res = [(int(round(xx)), int(round(yy))) for xx, yy in crs_res]
 						crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
 						# print(crs_res)
+						quit()
 						assert(len(crs_res) <= 2)
 						if len(crs_res) == 2:
 							assert(crs_res[0] == crs_res[1])
