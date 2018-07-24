@@ -186,14 +186,13 @@ if __name__ == '__main__':
 					if evid not in vids:
 						lon, lat = g.v[evid]
 						xx2, yy2 = box.lonLatToRelativePixel(lon, lat)
-						print((xx1, yy1), (xx2, yy2))
+						# print((xx1, yy1), (xx2, yy2))
 						crs_res = [get_crossing(((xx1, yy1), (xx2, yy2)), bseg) for bseg in bsegs]
-						print(crs_res)
+						# print(crs_res)
 						crs_res = [item for item in crs_res if item is not None]
 						crs_res = [(int(round(xx)), int(round(yy))) for xx, yy in crs_res]
 						crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
 						# print(crs_res)
-						quit()
 						assert(len(crs_res) <= 2)
 						if len(crs_res) == 2:
 							assert(crs_res[0] == crs_res[1])
@@ -215,7 +214,9 @@ if __name__ == '__main__':
 				for evid in g.e[vid]:
 					lon, lat = g.v[evid]
 					xx2, yy2 = box.lonLatToRelativePixel(lon, lat)
+					print((xx1, yy1), (xx2, yy2))
 					crs_res = [get_crossing(((xx1, yy1), (xx2, yy2)), bseg) for bseg in bsegs]
+					print(crs_res)
 					crs_res = [item for item in crs_res if item is not None]
 					crs_res = [(int(round(xx)), int(round(yy))) for xx, yy in crs_res]
 					crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
