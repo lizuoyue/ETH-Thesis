@@ -5,7 +5,7 @@ import time, json
 from scipy.stats import multivariate_normal
 from Config import *
 from scipy.ndimage.filters import gaussian_filter
-import scipy, socket
+import scipy, socket, sys
 
 config = Config()
 
@@ -23,7 +23,9 @@ for i in range(config.V_OUT_RES[1]):
 		vertex_pool[i][j] = Image.fromarray(vertex_pool[i][j])
 blank = Image.fromarray(blank)
 
-roadJSON = json.load(open(file_path + '/RoadZurich.json'))
+city_name = sys.argv[1]
+
+roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 class directed_graph(object):
@@ -96,7 +98,7 @@ def getData(img_id, num_path, show = False):
 	# print(road['v'])
 	# print(road['e'])
 
-	img = Image.open(file_path + '/RoadZurich/Zurich_%s.png' % str(img_id).zfill(8)).resize((256, 256))
+	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize((256, 256))
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
 	h8 = int(h8 / float(downsample))
