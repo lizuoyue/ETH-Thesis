@@ -20,7 +20,7 @@ class NumpyEncoder(json.JSONEncoder):
 config = Config()
 
 if __name__ == '__main__':
-	assert(len(sys.argv) == 1 or len(sys.argv) == 2)
+	city_name = sys.argv[1]
 
 	# Define graph
 	graph = HybridModel(
@@ -47,9 +47,9 @@ if __name__ == '__main__':
 	# quit()
 
 	saver = tf.train.Saver(max_to_keep = 1)
-	files = glob.glob('./Model/Model-*.ckpt.meta')
-	files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
-	model_path = './Model/Model-%d.ckpt' % files[-1][0]
+	files = glob.glob('./Model/Model%s/Model-*.ckpt.meta' % city_name)
+	files = [(int(file.replace('./Model/Model%s/Model-' % city_name, '').replace('.ckpt.meta', '')), file) for file in files]
+	model_path = './Model/Model%s/Model-%d.ckpt' % (city_name, files[-1][0])
 
 	path = './test_res/'
 	os.popen('mkdir %s' % path.replace('./', ''))
@@ -67,8 +67,8 @@ if __name__ == '__main__':
 				time_res.append(time.time() - t)
 
 				cv2.imwrite(path + '%d-0.png' % i, img[0])
-				# cv2.imwrite(path + '%d-2.png' % i, pred_boundary[0] * 255)
-				# cv2.imwrite(path + '%d-3.png' % i, pred_vertices[0] * 255)
+				cv2.imwrite(path + '%d-2.png' % i, pred_boundary[0] * 255)
+				cv2.imwrite(path + '%d-3.png' % i, pred_vertices[0] * 255)
 
 				terminal = getAllTerminal(pred_vertices[0])
 
