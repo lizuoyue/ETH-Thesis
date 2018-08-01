@@ -2,7 +2,7 @@ import os, sys
 import numpy as np
 import tensorflow as tf
 from Config import *
-from HybridModel import *
+from Model import *
 from RoadData import *
 import cv2, json, glob
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
 	city_name = sys.argv[1]
 
 	# Define graph
-	graph = HybridModel(
+	graph = Model(
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
