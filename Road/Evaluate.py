@@ -77,7 +77,10 @@ if __name__ == '__main__':
 				for j in range(terminal.shape[0]):
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal[j]})
 					res.append(pred_v_out[0, 0])
-				time_res.append((time.time() - t) / terminal.shape[0])
+				if terminal.shape[0] == 0:
+					time_res.append(0)
+				else:
+					time_res.append((time.time() - t) / terminal.shape[0])
 
 				newImg = recoverMultiPath(img[0], np.array(res))
 				cv2.imwrite(path + '%d-1.png' % i, newImg)
