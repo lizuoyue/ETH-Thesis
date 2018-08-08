@@ -214,7 +214,7 @@ def getData(img_id, num_path, show = False):
 
 def getDataBatch(batch_size, show = False):
 	res = []
-	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
+	ids = np.random.choice(30, batch_size, replace = False) # len(roadJSON)
 	for i in range(batch_size):
 		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show))
 	res = [np.array([item[i] for item in res]) for i in range(8)]
