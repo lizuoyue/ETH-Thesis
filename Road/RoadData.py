@@ -259,7 +259,7 @@ def findPeaks(heatmap, sigma = 0):
 def getAllTerminal(hmap):
 	res = []
 	peaks_with_score = findPeaks(hmap)
-	# print(len(peaks_with_score))
+	print(len(peaks_with_score))
 	for i in range(len(peaks_with_score)):
 		x1, y1, _ = peaks_with_score[i]
 		for j in range(len(peaks_with_score)):
