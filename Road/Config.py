@@ -31,4 +31,4 @@ class Config(object):
 		self.AREA_TRAIN_BATCH = 4
 		self.AREA_VALID_BATCH = 6
 		self.AREA_TEST_BATCH = 12
-		self.TRAIN_NUM_PATH = 8
+		self.TRAIN_NUM_PATH = 1

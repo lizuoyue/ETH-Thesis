@@ -140,7 +140,7 @@ def getData(img_id, num_path, show = False):
 	for i in range(num_path):
 		path = []
 		if len(g.v) > 0:
-			s = random.randint(0, len(g.v) - 1)
+			s = 0#random.randint(0, len(g.v) - 1)
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
