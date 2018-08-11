@@ -216,7 +216,7 @@ def getDataBatch(batch_size, show = False):
 	res = []
 	ids = np.random.choice(8, batch_size, replace = False) # len(roadJSON)
 	for i in range(batch_size):
-		res.append(getData(ids[i * 10000 + 4384], config.TRAIN_NUM_PATH, show))
+		res.append(getData(ids[i] * 10000 + 4384, config.TRAIN_NUM_PATH, show))
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
