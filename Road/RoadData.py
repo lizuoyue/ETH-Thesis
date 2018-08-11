@@ -185,7 +185,7 @@ def getData(img_id, num_path, show = False):
 				time.sleep(1)
 			print(end)
 			print(len(path_v))
-			input()
+			# input()
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
@@ -212,11 +212,16 @@ def getData(img_id, num_path, show = False):
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
+def transform(num):
+	ret = (num % 10) * 10000 + 4383
+	print('id', ret)
+	return ret
+
 def getDataBatch(batch_size, show = False):
 	res = []
-	ids = np.random.choice(8, batch_size, replace = False) # len(roadJSON)
+	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
 	for i in range(batch_size):
-		res.append(getData(ids[i], config.TRAIN_NUM_PATH, show)) #  * 10000 + 4384
+		res.append(getData(transform(ids[i]), config.TRAIN_NUM_PATH, show))
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
