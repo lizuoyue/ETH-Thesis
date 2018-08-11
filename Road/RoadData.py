@@ -214,7 +214,7 @@ def getData(img_id, num_path, show = False):
 
 def transform(num):
 	ret = (num % 8) * 10000 + 4383
-	print('id', ret)
+	# print('id', ret)
 	return ret
 
 def getDataBatch(batch_size, show = False):
