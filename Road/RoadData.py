@@ -292,7 +292,8 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	getDataBatch(8, show = True)
+	for _ in range(10):
+		getDataBatch(8, show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
