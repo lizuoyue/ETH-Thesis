@@ -213,7 +213,7 @@ def getData(img_id, num_path, show = False):
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
 def transform(num):
-	ret = (num % 10) * 10000 + 4383
+	ret = (num % 8) * 10000 + 4383
 	print('id', ret)
 	return ret
 
