@@ -103,7 +103,7 @@ if __name__ == '__main__':
 			train_loss.flush()
 
 			# Validation
-			if i % 200 == 0:
+			if i > 0 and i % 2000 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
