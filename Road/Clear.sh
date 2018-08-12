@@ -1,0 +1,1 @@
+rm -rf Log __pychache__ LossTrain.out LossValid.out Eval.out
