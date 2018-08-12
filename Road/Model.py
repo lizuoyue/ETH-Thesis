@@ -189,7 +189,11 @@ class Model(object):
 
 		# PolygonRNN part
 		feature, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		feature = tf.concat([feature, gt_boundary, gt_vertices], 3)
+		gt_b_p = gt_boundary * 2000 - 1000
+		gt_b_n = -gt_b_p
+		gt_v_p = gt_vertices * 2000 - 1000
+		gt_v_n = -gt_v_p
+		feature = tf.concat([feature, gt_b_p, gt_b_n, gt_v_p, gt_v_n], 3)
 		logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
 
 		# 
