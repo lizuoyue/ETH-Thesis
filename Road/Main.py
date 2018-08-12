@@ -79,7 +79,7 @@ if __name__ == '__main__':
 				for k in range(config.MAX_NUM_VERTICES):
 					plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
 					plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
-					print(k, ends[j,k])
+					print(k, ends[j,0,k])
 			print('press enter to continue')
 			input()
 			continue
