@@ -58,9 +58,9 @@ if __name__ == '__main__':
 		with open('Eval.out', 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_path)
-			for i in range(100):
+			for i in range(10):
 				time_res = [i]
-				img, _, _, _, _, _, _, _ = getDataBatch(1)
+				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
 
 				t = time.time()
 				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img})
@@ -75,7 +75,7 @@ if __name__ == '__main__':
 				t = time.time()
 				res = []
 				for j in range(terminal.shape[0]):
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal[j]})
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
 					res.append(pred_v_out[0, 0])
 				if terminal.shape[0] == 0:
 					time_res.append(0)
