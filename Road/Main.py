@@ -27,11 +27,11 @@ if __name__ == '__main__':
 	tt = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
-	# ff = tf.placeholder(tf.float32)
+	ff = tf.placeholder(tf.float32)
 
 	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll)
-	# pred_mask_res  = graph.predict_mask(aa)
-	# pred_path_res = graph.predict_path(ff, tt)
+	pred_mask_res  = graph.predict_mask(aa)
+	pred_path_res = graph.predict_path(ff, tt)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
