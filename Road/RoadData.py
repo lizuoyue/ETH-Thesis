@@ -213,8 +213,8 @@ def getData(img_id, num_path, show = False):
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
 def transform(num):
-	# num = (num % 1) * 10000 + 14383
-	print('id', num)
+	num = (num % 1) * 10000 + 26461
+	# print('id', num)
 	return num
 
 def getDataBatch(batch_size, show = False):
@@ -293,7 +293,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(10):
-		getDataBatch(8, show = True)
+		getDataBatch(1, show = True)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
