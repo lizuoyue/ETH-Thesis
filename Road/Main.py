@@ -73,6 +73,7 @@ if __name__ == '__main__':
 				plt.imsave('0-img.png', img[j])
 				plt.imsave('1-b.png', boundary[j])
 				plt.imsave('2-v.png', vertices[j])
+				print(vertex_terminals.shape)
 				plt.imsave('3-s.png', vertex_terminals[j, 0])
 				plt.imsave('3-t.png', vertex_terminals[j, 1])
 				print('seq_len', seq_lens[j])
