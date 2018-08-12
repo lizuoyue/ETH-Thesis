@@ -47,10 +47,10 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		train_loss = open('./LossTrain.out', 'w')
-		valid_loss = open('./LossValid.out', 'w')
-		train_writer = Logger('./Log/train/')
-		valid_writer = Logger('./Log/valid/')
+		# train_loss = open('./LossTrain.out', 'w')
+		# valid_loss = open('./LossValid.out', 'w')
+		# train_writer = Logger('./Log/train/')
+		# valid_writer = Logger('./Log/valid/')
 
 		# Restore weights
 		if len(sys.argv) == 2 and sys.argv[1] == 'restore':
