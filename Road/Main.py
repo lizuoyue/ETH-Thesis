@@ -120,7 +120,7 @@ if __name__ == '__main__':
 				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
 				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-				path = 'test_res'
+				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
 				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
