@@ -71,7 +71,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			# img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 			# for j in range(config.AREA_TRAIN_BATCH):
 			# 	plt.imsave('0-img.png', img[j])
 			# 	plt.imsave('1-b.png', boundary[j])
