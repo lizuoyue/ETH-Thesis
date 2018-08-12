@@ -46,6 +46,9 @@ if __name__ == '__main__':
 	if not os.path.exists('./Model/'):
 		os.makedirs('./Model/')
 
+	if not os.path.exists('./test_res/'):
+		os.makedirs('./test_res/')
+
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
@@ -114,8 +117,26 @@ if __name__ == '__main__':
 				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
 				valid_loss.flush()
 
+				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
+				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img})
+
+				path = 'test_res'
+				plt.imsave(path + '%d-0.png' % i, img[0])
+				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
+				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
+
+				terminal = getAllTerminal(pred_vertices[0])
+
+				res = []
+				for j in range(terminal.shape[0]):
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
+					res.append(pred_v_out[0, 0])
+
+				newImg = recoverMultiPath(img[0], np.array(res))
+				plt.imsave(path + '%d-3.png' % i, newImg)
+
 			# Save model
-			if i % 200 == 0:
+			if i % 2000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
