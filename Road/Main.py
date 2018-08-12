@@ -103,7 +103,7 @@ if __name__ == '__main__':
 			train_loss.flush()
 
 			# Validation
-			if i > 0 and i % 2000 == 0:
+			if i % 2000 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
@@ -126,10 +126,9 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
 				terminal = getAllTerminal(pred_vertices[0])
-
 				res = []
-				for j in range(terminal.shape[0]):
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal[j]})
+				for j in range(1): # terminal.shape[0]
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
 					res.append(pred_v_out[0, 0])
 
 				newImg = recoverMultiPath(img[0], np.array(res))
