@@ -99,8 +99,8 @@ if __name__ == '__main__':
 			train_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
 			
 			# Write loss to file
-			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
-			train_loss.flush()
+			# train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
+			# train_loss.flush()
 
 			# Validation
 			if i % 200 == 0:
@@ -114,8 +114,8 @@ if __name__ == '__main__':
 				valid_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
 				valid_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
 				valid_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
-				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
-				valid_loss.flush()
+				# valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
+				# valid_loss.flush()
 
 				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
 				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img})
