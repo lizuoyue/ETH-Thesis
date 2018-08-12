@@ -77,9 +77,8 @@ if __name__ == '__main__':
 				plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
 				print('seq_len', seq_lens[j])
 				for k in range(config.MAX_NUM_VERTICES):
-					print(vertex_inputs.shape)
-					plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,k])
-					plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,k])
+					plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
+					plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
 					print(k, ends[j,k])
 			print('press enter to continue')
 			input()
