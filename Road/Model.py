@@ -52,8 +52,13 @@ class Model(object):
 			kernel_shape = [3, 3]
 		)
 
+	def smoothL1Loss(self, labels, predictions):
+		diff = tf.abs(predictions - labels)
+		val = tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
+		return tf.reduce_mean(val)
+
 	def L2LossWeighted(self, gt, pred):
-		return tf.reduce_sum(tf.square(gt - pred) * 10)
+		return 3 * self.smoothL1Loss(gt, pred)
 		batch_size = tf.cast(tf.shape(gt)[0], tf.float32)
 		nt, nf = tf.reduce_sum(gt) / batch_size, tf.reduce_sum(1 - gt) / batch_size
 		nt = tf.maximum(tf.minimum(nt, 0.999999), 0.000001)
