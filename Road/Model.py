@@ -53,6 +53,7 @@ class Model(object):
 		)
 
 	def L2LossWeighted(self, gt, pred):
+		return tf.reduce_sum(tf.square(gt - pred) * 10)
 		batch_size = tf.cast(tf.shape(gt)[0], tf.float32)
 		nt, nf = tf.reduce_sum(gt) / batch_size, tf.reduce_sum(1 - gt) / batch_size
 		nt = tf.maximum(tf.minimum(nt, 0.999999), 0.000001)
@@ -83,7 +84,7 @@ class Model(object):
 		if not reuse:
 			loss  = self.L2LossWeighted(gt_boundary, boundary_prob)
 			loss += self.L2LossWeighted(gt_vertices, vertices_prob)
-			return combine, loss
+			return feature, loss
 		else:
 			return combine
 
@@ -188,6 +189,7 @@ class Model(object):
 
 		# PolygonRNN part
 		feature, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
+		feature = tf.concat([feature, gt_boundary, gt_vertices], 3)
 		logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
 
 		# 
