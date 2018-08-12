@@ -69,20 +69,20 @@ if __name__ == '__main__':
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
 			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
-			for j in range(config.AREA_TRAIN_BATCH):
-				plt.imsave('0-img.png', img[j])
-				plt.imsave('1-b.png', boundary[j])
-				plt.imsave('2-v.png', vertices[j])
-				plt.imsave('3-s.png', vertex_terminals[j, 0, 0])
-				plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
-				print('seq_len', seq_lens[j])
-				for k in range(config.MAX_NUM_VERTICES):
-					plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
-					plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
-					print(k, ends[j,0,k])
-			print('press enter to continue')
-			input()
-			continue
+			# for j in range(config.AREA_TRAIN_BATCH):
+			# 	plt.imsave('0-img.png', img[j])
+			# 	plt.imsave('1-b.png', boundary[j])
+			# 	plt.imsave('2-v.png', vertices[j])
+			# 	plt.imsave('3-s.png', vertex_terminals[j, 0, 0])
+			# 	plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
+			# 	print('seq_len', seq_lens[j])
+			# 	for k in range(config.MAX_NUM_VERTICES):
+			# 		plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
+			# 		plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
+			# 		print(k, ends[j,0,k])
+			# print('press enter to continue')
+			# input()
+			# continue
 			feed_dict = {
 				aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
 			}
