@@ -213,9 +213,9 @@ def getData(img_id, num_path, show = False):
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
 def transform(num):
-	ret = (num % 1) * 10000 + 4383
+	# num = (num % 1) * 10000 + 14383
 	# print('id', ret)
-	return ret
+	return num
 
 def getDataBatch(batch_size, show = False):
 	res = []
