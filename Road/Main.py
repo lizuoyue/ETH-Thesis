@@ -74,22 +74,15 @@ if __name__ == '__main__':
 			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatchPolygon(config.AREA_TRAIN_BATCH)
 			for j in range(config.AREA_TRAIN_BATCH):
 				plt.imsave('0-img.png', img[j])
-				print(img[j].min(), img[j].max())
 				plt.imsave('1-b.png', boundary[j])
-				print(boundary[j].min(), boundary[j].max())
 				plt.imsave('2-v.png', vertices[j])
-				print(vertices[j].min(), vertices[j].max())
 				plt.imsave('3-s.png', vertex_terminals[j, 0, 0])
-				print(vertex_terminals[j, 0, 0].min(), vertex_terminals[j, 0, 0].max())
 				plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
-				print(vertex_terminals[j, 0, 1].min(), vertex_terminals[j, 0, 1].max())
 				print('seq_len', seq_lens[j, 0])
 				for k in range(config.MAX_NUM_VERTICES):
 					plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
-					print(vertex_inputs[j,0,k].min(), vertex_inputs[j,0,k].max())
 					plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
-					print(vertex_outputs[j,0,k].min(), vertex_outputs[j,0,k].max())
-					print(k, ends[j,0,k])
+				print(ends[j,0])
 			print('press enter to continue')
 			input()
 			continue
