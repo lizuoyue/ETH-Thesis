@@ -395,9 +395,9 @@ def plotPolygon(img_size = config.AREA_SIZE, num_vertices = 6, show = False):
 
 def getDataBatchPolygon(batch_size):
 	res = []
-	num_v = np.random.choice(6, batch_size, replace = True) + 4
+	num_v = np.random.choice(5, batch_size, replace = True) + 4
 	for n in num_v:
-		img, b, v, vertex_list = plotPolygon(num_vertices = n, show = True)
+		img, b, v, vertex_list = plotPolygon(num_vertices = n, show = False)
 		while len(vertex_list) < config.MAX_NUM_VERTICES:
 			vertex_list.append(np.zeros(config.V_OUT_RES, dtype = np.float32))
 		vertex_outputs = vertex_list[1:] + [np.zeros(config.V_OUT_RES, dtype = np.float32)]
@@ -406,7 +406,7 @@ def getDataBatchPolygon(batch_size):
 		end = [0.0 for i in range(config.MAX_NUM_VERTICES)]
 		end[n - 1] = 1.0
 		end = np.array(end)
-		res.append((img, b, v, vertex_list, vertex_outputs, vertex_terminals, end, n))
+		res.append((img, b, v, [vertex_list], [vertex_outputs], [vertex_terminals], end, n))
 	return (np.array([item[i] for item in res]) for i in range(8))
 
 if __name__ == '__main__':
