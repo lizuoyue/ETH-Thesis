@@ -62,6 +62,7 @@ if __name__ == '__main__':
 		if len(sys.argv) == 2 and sys.argv[1] == 'restore':
 			files = glob.glob('./Model/Model-*.ckpt.meta')
 			files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
+			files.sort()
 			num, model_path = files[-1]
 			saver.restore(sess, model_path.replace('.meta', ''))
 			iter_obj = range(num + 1, config.NUM_ITER)
