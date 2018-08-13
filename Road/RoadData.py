@@ -110,7 +110,7 @@ def getData(img_id, num_path, show = False):
 	if show:
 		draw = ImageDraw.Draw(img)
 		for v in g.v:
-			draw.ellipse(make_ellipse(v, pad = 2), fill = (255, 0, 0), outline = (255, 0, 0))
+			draw.ellipse(make_ellipse(v, pad = 5), fill = (255, 0, 0), outline = (255, 0, 0))
 		for e in g.e:
 			draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 2)
 		img.show()
@@ -129,8 +129,8 @@ def getData(img_id, num_path, show = False):
 
 	vertices = Image.new('P', (w8, h8), color = 0)
 	draw = ImageDraw.Draw(vertices)
-	for v in g.v:
-		draw.ellipse(make_ellipse([list(v_downsample[i]) for i in range(v_downsample.shape[0])], pad = 0), fill = 255, outline = 255)
+	for i in range(v_downsample.shape[0]):
+		draw.ellipse(make_ellipse(v_downsample[i], pad = 0), fill = 255, outline = 255)
 	if show:
 		vertices.resize(config.AREA_SIZE).show()
 		time.sleep(1)
