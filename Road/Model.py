@@ -127,7 +127,7 @@ class Model(object):
 				[1, config.TRAIN_NUM_PATH, self.max_num_vertices, 1, 1, 1]),
 				[config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 132]
 			)
-			v_in_0 = tf.tile(terminal[:, 0: 1, ...], [1, self.max_num_vertices, 1, 1, 1])
+			v_in_0 = tf.tile(terminal[:, 1: 2, ...], [1, self.max_num_vertices, 1, 1, 1])
 			v_in_e = tf.tile(terminal[:, 1: 2, ...], [1, self.max_num_vertices, 1, 1, 1])
 			v_in_1 = v_in
 			v_in_2 = tf.stack([v_in[:, 0, ...]] + tf.unstack(v_in, axis = 1)[: -1], axis = 1)
@@ -151,7 +151,7 @@ class Model(object):
 				prob, time, cell = [], [], [[[], []] for item in self.lstm_out_channel]
 				for j in range(config.BEAM_WIDTH):
 					prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, config.BEAM_WIDTH])
-					v_first = rnn_time[j][..., 0: 1]
+					v_first = terminal[:, 1, ...] # rnn_time[j][..., 0: 1]
 					v_last_ = rnn_time[j][..., i - 1: i]
 					v__last = rnn_time[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
 					inputs = tf.concat([feature, v_first, v_last_, v__last, terminal[:, 1, ...]], 3)
