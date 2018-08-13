@@ -93,7 +93,7 @@ def getData(img_id, num_path, show = False):
 	road = roadJSON[img_id]
 	g = directed_graph()
 	for item in road['v']:
-		g.add_v(list(np.array(item) / 600.0 * 255.0))
+		g.add_v(list(np.array(item) / 599.0 * 255.0))
 	for s, t in road['e']:
 		g.add_e(s, t)
 	g.shortest_path_all()
@@ -101,6 +101,7 @@ def getData(img_id, num_path, show = False):
 	print(road['v'])
 	print(road['e'])
 	v_downsample = np.floor(np.array(g.v) / downsample).astype(np.int32)
+	print(v_downsample)
 
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
