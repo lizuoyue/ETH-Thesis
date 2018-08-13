@@ -199,6 +199,7 @@ class Model(object):
 		# 
 		pred_rnn      = tf.nn.softmax(logits)
 		pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num], [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
+		pred_v_out    = tf.concat([gt_terminal[:, 0: 1, :, :, 0], pred_v_out[:, :-1, ...]], axis = 1)
 		pred_end      = tf.reshape(pred_rnn[..., self.res_num], [-1, self.max_num_vertices])
 
 		return loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end
