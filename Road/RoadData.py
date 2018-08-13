@@ -100,7 +100,7 @@ def getData(img_id, num_path, show = False):
 
 	print(road['v'])
 	print(road['e'])
-	v_downsample = np.floor(np.array(g.v) / downsample, dtype = np.int32)
+	v_downsample = np.floor(np.array(g.v) / downsample).astype(np.int32)
 
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
