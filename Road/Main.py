@@ -135,10 +135,10 @@ if __name__ == '__main__':
 				for j in range(1): # terminal.shape[0]
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
 					print(pred_v_out.shape)
-					for k in range(config.MAX_NUM_VERTICES):
+					for k in range(config.MAX_NUM_VERTICES - 1):
 						res.append(pred_v_out[0, 0, k])
 
-				newImg = recoverMultiPath(img[0], np.array(res))
+				newImg = recoverMultiPath(img[0], np.array([res]))
 				plt.imsave(path + '%d-3.png' % i, newImg)
 
 			# Save model
