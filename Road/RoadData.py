@@ -28,7 +28,7 @@ city_name = sys.argv[1]
 roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
-np.random.seed(31415926)
+np.random.seed(888)
 mini_ids = np.random.choice(len(roadJSON), 10, replace = False)
 
 class directed_graph(object):
