@@ -1,7 +1,7 @@
 import math, random
 import numpy as np
 import matplotlib
-matplotlib.use('agg')
+# matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 import time
@@ -382,7 +382,7 @@ def plotPolygon(img_size = config.AREA_SIZE, num_vertices = 6, show = False):
 		draw.point([polygon_s[i]], fill = 255)
 		vertex = pil2np(vertex, show)
 		vertex_list.append(vertex)
-	vertex_list.append(np.zeros(img_size_s, dtype = np.float32))
+	# vertex_list.append(np.zeros(img_size_s, dtype = np.float32))
 	# vertex_list = np.array(vertex_list)
 
 	# Return
@@ -390,14 +390,14 @@ def plotPolygon(img_size = config.AREA_SIZE, num_vertices = 6, show = False):
 		print(img.shape)
 		print(boundary.shape)
 		print(vertices.shape)
-		print(vertex_list.shape)
+		print(np.array(vertex_list).shape)
 	return img, boundary, vertices, vertex_list
 
 def getDataBatchPolygon(batch_size):
 	res = []
 	num_v = np.random.choice(6, batch_size, replace = True) + 4
 	for n in num_v:
-		img, b, v, vertex_list = plotPolygon(num_vertices = n)
+		img, b, v, vertex_list = plotPolygon(num_vertices = n, show = True)
 		while len(vertex_list) < config.MAX_NUM_VERTICES:
 			vertex_list.append(np.zeros(config.V_OUT_RES, dtype = np.float32))
 		vertex_outputs = vertex_list[1:] + [np.zeros(config.V_OUT_RES, dtype = np.float32)]
@@ -410,7 +410,7 @@ def getDataBatchPolygon(batch_size):
 	return (np.array([item[i] for item in res]) for i in range(8))
 
 if __name__ == '__main__':
-	a = getDataBatchPolygon(100)
+	a = getDataBatchPolygon(4)
 	for item in list(a):
 		print(item.shape)
 	quit()
