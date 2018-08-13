@@ -103,7 +103,7 @@ if __name__ == '__main__':
 			train_loss.flush()
 
 			# Validation
-			if i % 2000 == 0:
+			if i % 500 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatchPolygon(config.AREA_TRAIN_BATCH)
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-3.png' % i, newImg)
 
 			# Save model
-			if i % 2000 == 0:
+			if i % 500 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
