@@ -194,22 +194,12 @@ class Model(object):
 
 		# PolygonRNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		# gt_b_p = gt_boundary * 2000 - 1000
-		# gt_b_n = -gt_b_p
-		# gt_v_p = gt_vertices * 2000 - 1000
-		# gt_v_n = -gt_v_p
-		# feature = tf.concat([feature, gt_b_p, gt_b_n, gt_v_p, gt_v_n], 3)
-		#logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
-		# pred_boundary = gt_boundary
-		# pred_vertices = gt_vertices
-		loss_RNN = tf.zeros([])
-		pred_v_out, pred_end = tf.zeros([]), tf.zeros([])
+		logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
+
 		# 
-		# pred_boundary = tf.nn.softmax(feature[..., -4: -2])[..., 0]
-		# pred_vertices = tf.nn.softmax(feature[..., -2: ])[..., 0]
-		# pred_rnn      = tf.nn.softmax(logits)
-		# pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num], [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
-		# pred_end      = tf.reshape(pred_rnn[..., self.res_num], [-1, self.max_num_vertices])
+		pred_rnn      = tf.nn.softmax(logits)
+		pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num], [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
+		pred_end      = tf.reshape(pred_rnn[..., self.res_num], [-1, self.max_num_vertices])
 
 		return loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end
 
