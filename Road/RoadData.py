@@ -186,7 +186,7 @@ def getData(img_id, num_path, show = False):
 
 		if show:
 			color = [0] + [1, 2] * 30
-			for vvv in [vertex_input, vertex_output, vertex_terminal]:
+			for vvv in [vertex_input, vertex_output, [vertex_terminal]]:
 				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
 				for i, item in enumerate(vvv):
 					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
