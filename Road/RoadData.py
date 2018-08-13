@@ -139,7 +139,7 @@ def getData(img_id, num_path, show = False):
 	ddd, s_chosen = -1e9, 0
 	for s in range(len(g.v)):
 		tmp_d = g.sp[s][0][g.sp_max_idx[s]]
-		if tmp_d < ddd:
+		if tmp_d > ddd:
 			s_chosen = s
 			ddd = tmp_d
 	###########
