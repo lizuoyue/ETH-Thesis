@@ -87,8 +87,8 @@ class Model(object):
 		vertices_prob = tf.nn.softmax(vertices)[..., 0]
 		combine = tf.concat([feature, boundary, vertices], 3)
 		if not reuse:
-			loss  = self.L2LossWeighted(gt_boundary, boundary_prob)
-			loss += self.L2LossWeighted(gt_vertices, vertices_prob)
+			loss  = tf.losses.log_loss(gt_boundary, boundary_prob)#self.L2LossWeighted(gt_boundary, boundary_prob)
+			loss += tf.losses.log_loss(gt_vertices, vertices_prob)#self.L2LossWeighted(gt_vertices, vertices_prob)
 			return combine, boundary_prob, vertices_prob, loss
 		else:
 			return combine, boundary_prob, vertices_prob
