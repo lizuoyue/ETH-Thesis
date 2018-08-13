@@ -58,7 +58,7 @@ class Model(object):
 		return tf.reduce_mean(val)
 
 	def L2LossWeighted(self, gt, pred):
-		return 3 * self.smoothL1Loss(gt, pred)
+		# return 3 * self.smoothL1Loss(gt, pred)
 		batch_size = tf.cast(tf.shape(gt)[0], tf.float32)
 		nt, nf = tf.reduce_sum(gt) / batch_size, tf.reduce_sum(1 - gt) / batch_size
 		nt = tf.maximum(tf.minimum(nt, 0.999999), 0.000001)
