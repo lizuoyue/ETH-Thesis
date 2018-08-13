@@ -129,7 +129,7 @@ if __name__ == '__main__':
 				res = []
 				for j in range(1): # terminal.shape[0]
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
-					print(pred_v_out.shape)
+					# print(pred_v_out.shape)
 					res.append(pred_v_out[0, 0])
 
 				newImg = recoverMultiPath(img[0], np.array(res))
