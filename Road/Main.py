@@ -130,10 +130,11 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
 				# terminal = getAllTerminal(pred_vertices[0])
-				res = []
+				res = [terminal_gt[0, 0]]
 				for j in range(1): # terminal.shape[0]
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
-					res.append(pred_v_out[0, 0])
+					for k in range(config.MAX_NUM_VERTICES):
+						res.append(pred_v_out[0, 0, k])
 
 				newImg = recoverMultiPath(img[0], np.array(res))
 				plt.imsave(path + '%d-3.png' % i, newImg)
