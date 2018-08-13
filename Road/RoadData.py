@@ -28,7 +28,7 @@ city_name = sys.argv[1]
 roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
-np.random.seed(888)
+np.random.seed(8888)
 mini_ids = np.random.choice(len(roadJSON), 10, replace = False)
 
 class directed_graph(object):
@@ -136,7 +136,7 @@ def getData(img_id, num_path, show = False):
 	vertices = np.array(vertices) / 255.0
 
 	###########
-	ddd = -1e9
+	ddd, s_chosen = -1e9, 0
 	for s in range(len(g.v)):
 		tmp_d = g.sp[s][0][g.sp_max_idx[s]]
 		if tmp_d < ddd:
