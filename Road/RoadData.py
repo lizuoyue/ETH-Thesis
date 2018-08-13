@@ -130,7 +130,7 @@ def getData(img_id, num_path, show = False):
 	vertices = Image.new('P', (w8, h8), color = 0)
 	draw = ImageDraw.Draw(vertices)
 	for v in g.v:
-		draw.ellipse(make_ellipse(list(v_downsample), pad = 0), fill = 255, outline = 255)
+		draw.ellipse(make_ellipse([list(v_downsample[i]) for i in range(v_downsample.shape[0])], pad = 0), fill = 255, outline = 255)
 	if show:
 		vertices.resize(config.AREA_SIZE).show()
 		time.sleep(1)
@@ -163,8 +163,7 @@ def getData(img_id, num_path, show = False):
 				p = prev[p]
 			path.append(p)
 			path.reverse()
-		path_v = [np.array(g.v[idx]) / downsample for idx in path]
-		path_v = [(int(c), int(r)) for c, r in path_v]
+		path_v = [tuple(v_downsample[idx]) for idx in path]
 		flag_v = [path_v[k] == path_v[k - 1] for k in range(len(path_v))]
 		path_v = [item for k, item in enumerate(path_v) if not flag_v[k]]
 		path_v = path_v[: max_seq_len]
