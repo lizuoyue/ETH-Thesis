@@ -171,10 +171,10 @@ def getData(img_id, num_path, show = False):
 		vertex_input = [vertex_pool[r][c] for c, r in path_v]
 		if len(vertex_input) > 0:
 			vertex_output = vertex_input[1:]
-			vertex_terminal = vertex_input[-1]
+			vertex_terminal = [vertex_input[0], vertex_input[-1]]
 		else:
 			vertex_output = []
-			vertex_terminal = blank
+			vertex_terminal = [blank, blank]
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(blank)
 		while len(vertex_output) < max_seq_len:
@@ -187,7 +187,7 @@ def getData(img_id, num_path, show = False):
 
 		if show:
 			color = [0] + [1, 2] * 30
-			for vvv in [vertex_input, vertex_output, [vertex_terminal]]:
+			for vvv in [vertex_input, vertex_output, vertex_terminal]:
 				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
 				for i, item in enumerate(vvv):
 					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
@@ -199,7 +199,7 @@ def getData(img_id, num_path, show = False):
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
-		vertex_terminal = np.array(vertex_terminal) / 255.0
+		vertex_terminal = [np.array(item) / 255.0 for item in vertex_terminal]
 		vertex_inputs.append(vertex_input)
 		vertex_outputs.append(vertex_output)
 		vertex_terminals.append(vertex_terminal)
@@ -211,15 +211,14 @@ def getData(img_id, num_path, show = False):
 	ends = np.array(ends)
 	seq_lens = np.array(seq_lens)
 
-	print(img.shape)
-	print(boundary.shape)
-	print(vertices.shape)
-	print(vertex_inputs.shape)
-	print(vertex_outputs.shape)
-	print(vertex_terminals.shape)
-	print(ends.shape)
-	print(seq_lens.shape)
-	input()
+	# print(img.shape)
+	# print(boundary.shape)
+	# print(vertices.shape)
+	# print(vertex_inputs.shape)
+	# print(vertex_outputs.shape)
+	# print(vertex_terminals.shape)
+	# print(ends.shape)
+	# print(seq_lens.shape)
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 

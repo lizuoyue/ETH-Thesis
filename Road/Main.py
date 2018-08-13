@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from Config import *
 from Model import *
-from FakeRoadData import *
+from RoadData import *
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatchPolygon(config.AREA_TRAIN_BATCH)
+			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 			# for j in range(config.AREA_TRAIN_BATCH):
 			# 	plt.imsave('0-img.png', img[j])
 			# 	plt.imsave('1-b.png', boundary[j])
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
 			# Validation
 			if i % 200 == 0:
-				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatchPolygon(config.AREA_TRAIN_BATCH)
+				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
 				}
@@ -119,6 +119,8 @@ if __name__ == '__main__':
 				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
 				valid_loss.flush()
 
+			# Test
+			if i % 1000 == 0:
 				img, _, _, _, _, terminal_gt, _, _ = getDataBatchPolygon(1)
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
