@@ -89,7 +89,7 @@ class Model(object):
 		if not reuse:
 			loss  = self.L2LossWeighted(gt_boundary, boundary_prob)
 			loss += self.L2LossWeighted(gt_vertices, vertices_prob)
-			return combine, loss
+			return combine, boundary_prob, vertices_prob, loss
 		else:
 			return combine, boundary_prob, vertices_prob
 
@@ -193,7 +193,7 @@ class Model(object):
 		gt_rnn_out   = tf.concat([gt_v_out, gt_end], 2)
 
 		# PolygonRNN part
-		feature, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
+		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
 		# gt_b_p = gt_boundary * 2000 - 1000
 		# gt_b_n = -gt_b_p
 		# gt_v_p = gt_vertices * 2000 - 1000
@@ -202,8 +202,8 @@ class Model(object):
 		logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
 
 		# 
-		pred_boundary = tf.nn.softmax(feature[..., -4: -2])[..., 0]
-		pred_vertices = tf.nn.softmax(feature[..., -2: ])[..., 0]
+		# pred_boundary = tf.nn.softmax(feature[..., -4: -2])[..., 0]
+		# pred_vertices = tf.nn.softmax(feature[..., -2: ])[..., 0]
 		pred_rnn      = tf.nn.softmax(logits)
 		pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num], [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
 		pred_end      = tf.reshape(pred_rnn[..., self.res_num], [-1, self.max_num_vertices])

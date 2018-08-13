@@ -122,6 +122,7 @@ if __name__ == '__main__':
 
 				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
+				print(pred_boundary.shape)
 				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
