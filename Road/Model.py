@@ -83,8 +83,8 @@ class Model(object):
 			boundary = tf.layers.conv2d(inputs = feature, filters = 2, kernel_size = 1, padding = 'valid', activation = None)
 			combine  = tf.concat([feature, boundary], 3)
 			vertices = tf.layers.conv2d(inputs = combine, filters = 2, kernel_size = 1, padding = 'valid', activation = None)
-		boundary_prob = tf.nn.softmax(boundary)[..., 0: 1]
-		vertices_prob = tf.nn.softmax(vertices)[..., 0: 1]
+		boundary_prob = tf.nn.softmax(boundary)[..., 0]
+		vertices_prob = tf.nn.softmax(vertices)[..., 0]
 		combine = tf.concat([feature, boundary, vertices], 3)
 		if not reuse:
 			loss  = self.L2LossWeighted(gt_boundary, boundary_prob)
@@ -183,8 +183,8 @@ class Model(object):
 	def train(self, aa, bb, vv, ii, oo, tt, ee, ll):
 		#
 		img          = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
-		gt_boundary  = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
-		gt_vertices  = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
+		gt_boundary  = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
+		gt_vertices  = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
 		gt_v_in      = tf.reshape(ii, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_v_out     = tf.reshape(oo, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num])
 		gt_terminal  = tf.reshape(tt, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, 2, self.v_out_nrow, self.v_out_ncol, 1])
