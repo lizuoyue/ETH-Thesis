@@ -28,6 +28,9 @@ city_name = sys.argv[1]
 roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
+np.random.seed(31415926)
+mini_ids = np.random.choice(len(roadJSON), 10, replace = False)
+
 class directed_graph(object):
 	def __init__(self):
 		self.v = []
@@ -98,7 +101,7 @@ def getData(img_id, num_path, show = False):
 	# print(road['v'])
 	# print(road['e'])
 
-	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize((256, 256))
+	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
 	h8 = int(h8 / float(downsample))
@@ -132,6 +135,15 @@ def getData(img_id, num_path, show = False):
 		time.sleep(1)
 	vertices = np.array(vertices) / 255.0
 
+	###########
+	ddd = -1e9
+	for s in range(len(g.v)):
+		tmp_d = g.sp[s][0][g.sp_max_idx[s]]
+		if tmp_d < ddd:
+			s_chosen = s
+			ddd = tmp_d
+	###########
+
 	# RNN in and out
 	vertex_terminals = []
 	vertex_inputs = []
@@ -141,7 +153,7 @@ def getData(img_id, num_path, show = False):
 	for i in range(num_path):
 		path = []
 		if len(g.v) > 0:
-			s = 0#random.randint(0, len(g.v) - 1)
+			s = s_chosen # random.randint(0, len(g.v) - 1)
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
@@ -158,10 +170,10 @@ def getData(img_id, num_path, show = False):
 		vertex_input = [vertex_pool[r][c] for c, r in path_v]
 		if len(vertex_input) > 0:
 			vertex_output = vertex_input[1:]
-			vertex_terminal = [vertex_input[0], vertex_input[-1]]
+			vertex_terminal = vertex_input[-1]
 		else:
 			vertex_output = []
-			vertex_terminal = [blank, blank]
+			vertex_terminal = blank
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(blank)
 		while len(vertex_output) < max_seq_len:
@@ -169,12 +181,8 @@ def getData(img_id, num_path, show = False):
 		if len(vertex_input) != max_seq_len:
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
-		end = []
-		for i in range(max_seq_len):
-			if i < len(path_v) - 1:
-				end.append(0)
-			else:
-				end.append(1)
+		end = [0 for i in range(max_seq_len)]
+		end[len(path_v) - 1] = 1
 
 		if show:
 			color = [0] + [1, 2] * 30
@@ -182,7 +190,7 @@ def getData(img_id, num_path, show = False):
 				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
 				for i, item in enumerate(vvv):
 					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
-				Image.fromarray(visualize).resize((256, 256)).show()
+				Image.fromarray(visualize).resize(config.AREA_SIZE).show()
 				time.sleep(1)
 			print(end)
 			print(len(path_v))
@@ -190,7 +198,7 @@ def getData(img_id, num_path, show = False):
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
-		vertex_terminal = [np.array(item) / 255.0 for item in vertex_terminal]
+		vertex_terminal = np.array(vertex_terminal) / 255.0
 		vertex_inputs.append(vertex_input)
 		vertex_outputs.append(vertex_output)
 		vertex_terminals.append(vertex_terminal)
@@ -202,27 +210,22 @@ def getData(img_id, num_path, show = False):
 	ends = np.array(ends)
 	seq_lens = np.array(seq_lens)
 
-	# print(img.shape)
-	# print(boundary.shape)
-	# print(vertices.shape)
-	# print(vertex_inputs.shape)
-	# print(vertex_outputs.shape)
-	# print(vertex_terminals.shape)
-	# print(ends.shape)
-	# print(seq_lens.shape)
+	print(img.shape)
+	print(boundary.shape)
+	print(vertices.shape)
+	print(vertex_inputs.shape)
+	print(vertex_outputs.shape)
+	print(vertex_terminals.shape)
+	print(ends.shape)
+	print(seq_lens.shape)
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
-def transform(num):
-	num = (num % 2) * 26461 + (1 - num % 2) * 77686
-	# print('id', num)
-	return num
-
 def getDataBatch(batch_size, show = False):
 	res = []
-	ids = np.random.choice(len(roadJSON), batch_size, replace = False)
+	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
-		res.append(getData(transform(ids[i]), config.TRAIN_NUM_PATH, show))
+		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
