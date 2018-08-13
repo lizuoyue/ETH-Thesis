@@ -85,13 +85,13 @@ class Model(object):
 			vertices = tf.layers.conv2d(inputs = combine, filters = 2, kernel_size = 1, padding = 'valid', activation = None)
 		boundary_prob = tf.nn.softmax(boundary)[..., 0]
 		vertices_prob = tf.nn.softmax(vertices)[..., 0]
-		combine = tf.concat([feature, boundary, vertices], 3)
+		new_combine = tf.concat([feature, boundary, vertices], 3)
 		if not reuse:
 			loss  = tf.losses.log_loss(gt_boundary, boundary_prob)#self.L2LossWeighted(gt_boundary, boundary_prob)
 			loss += tf.losses.log_loss(gt_vertices, vertices_prob)#self.L2LossWeighted(gt_vertices, vertices_prob)
-			return combine, boundary_prob, vertices_prob, loss
+			return new_combine, boundary_prob, vertices_prob, loss
 		else:
-			return combine, boundary_prob, vertices_prob
+			return new_combine, boundary_prob, vertices_prob
 
 	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None):
 		""" 
@@ -200,8 +200,8 @@ class Model(object):
 		# gt_v_n = -gt_v_p
 		# feature = tf.concat([feature, gt_b_p, gt_b_n, gt_v_p, gt_v_n], 3)
 		#logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
-		pred_boundary = gt_boundary
-		pred_vertices = gt_vertices
+		# pred_boundary = gt_boundary
+		# pred_vertices = gt_vertices
 		loss_RNN = tf.zeros([])
 		pred_v_out, pred_end = tf.zeros([]), tf.zeros([])
 		# 
