@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from Config import *
 from Model import *
-from RoadData import *
+from FakeRoadData import *
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
