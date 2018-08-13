@@ -103,7 +103,7 @@ if __name__ == '__main__':
 			train_loss.flush()
 
 			# Validation
-			if i % 500 == 0:
+			if i % 200 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatchPolygon(config.AREA_TRAIN_BATCH)
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
@@ -117,8 +117,8 @@ if __name__ == '__main__':
 				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
 				valid_loss.flush()
 
-				img, _, _, _, _, terminal_gt, _, _ = getDataBatchPolygon(1)
-				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+				# img, _, _, _, _, terminal_gt, _, _ = getDataBatchPolygon(1)
+				# feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 				terminal = getAllTerminal(pred_vertices[0])
 				res = []
 				for j in range(1): # terminal.shape[0]
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
+					# pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
 					# print(pred_v_out.shape)
 					res.append(pred_v_out[0, 0])
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-3.png' % i, newImg)
 
 			# Save model
-			if i % 500 == 0:
+			if i % 2000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
