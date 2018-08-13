@@ -93,7 +93,7 @@ def getData(img_id, num_path, show = False):
 	road = roadJSON[img_id]
 	g = directed_graph()
 	for item in road['v']:
-		g.add_v(list(np.array(item) / 599.0 * 255.0))
+		g.add_v(list(np.array(item) / 599.0 * (config.AREA_SIZE[0] - 1)))
 	for s, t in road['e']:
 		g.add_e(s, t)
 	g.shortest_path_all()
