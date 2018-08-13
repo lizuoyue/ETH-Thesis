@@ -108,8 +108,8 @@ class Model(object):
 		if not reuse:
 			loss = tf.reduce_sum(
 				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
-			) / (tf.reduce_sum(gt_seq_len) + 1)
-			return logits, loss / 10.0
+			) / tf.reduce_sum(gt_seq_len)
+			return logits, loss
 		else:
 			prob = tf.nn.softmax(logits)
 			val, idx = tf.nn.top_k(prob[:, 0, :], k = config.BEAM_WIDTH)

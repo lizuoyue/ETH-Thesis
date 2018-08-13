@@ -1,7 +1,7 @@
 class Config(object):
 	def __init__(self):
 		# 
-		self.AREA_SIZE      = [256, 256]
+		self.AREA_SIZE      = [224, 224]
 		self.AREA_SIZE_2    = [int(item /  2) for item in self.AREA_SIZE]
 		self.AREA_SIZE_4    = [int(item /  4) for item in self.AREA_SIZE]
 		self.AREA_SIZE_8    = [int(item /  8) for item in self.AREA_SIZE]
@@ -27,7 +27,7 @@ class Config(object):
 		self.MAX_NUM_VERTICES = 10
 		self.LEARNING_RATE = 3e-5
 		self.LSTM_OUT_CHANNEL = [64, 32, 16]
-		self.V_OUT_RES = (32, 32)
+		self.V_OUT_RES = tuple(self.AREA_SIZE_8)
 		self.AREA_TRAIN_BATCH = 4
 		self.AREA_VALID_BATCH = 6
 		self.AREA_TEST_BATCH = 12
