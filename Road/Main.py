@@ -118,7 +118,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 				img, _, _, _, _, terminal_gt, _, _ = getDataBatchPolygon(1)
-				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img})
+				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
@@ -129,6 +129,7 @@ if __name__ == '__main__':
 				res = []
 				for j in range(1): # terminal.shape[0]
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
+					print(pred_v_out.shape)
 					res.append(pred_v_out[0, 0])
 
 				newImg = recoverMultiPath(img[0], np.array(res))

@@ -65,7 +65,7 @@ class Model(object):
 		nf = tf.maximum(tf.minimum(nf, 0.999999), 0.000001)
 		weights = gt * 0.5 / nt + (1 - gt) * 0.5 / nf
 		weights = weights / tf.reduce_sum(weights)
-		return tf.reduce_sum(tf.multiply(tf.square(gt - pred) * 10, weights))
+		return tf.reduce_sum(tf.multiply(tf.square(gt - pred) * 33, weights))
 
 	def CNN(self, img, gt_boundary = None, gt_vertices = None, reuse = None):
 		"""
@@ -89,9 +89,9 @@ class Model(object):
 		if not reuse:
 			loss  = self.L2LossWeighted(gt_boundary, boundary_prob)
 			loss += self.L2LossWeighted(gt_vertices, vertices_prob)
-			return feature, loss
+			return combine, loss
 		else:
-			return combine
+			return combine, boundary_prob, vertices_prob
 
 	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None):
 		""" 
@@ -194,11 +194,11 @@ class Model(object):
 
 		# PolygonRNN part
 		feature, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		gt_b_p = gt_boundary * 2000 - 1000
-		gt_b_n = -gt_b_p
-		gt_v_p = gt_vertices * 2000 - 1000
-		gt_v_n = -gt_v_p
-		feature = tf.concat([feature, gt_b_p, gt_b_n, gt_v_p, gt_v_n], 3)
+		# gt_b_p = gt_boundary * 2000 - 1000
+		# gt_b_n = -gt_b_p
+		# gt_v_p = gt_vertices * 2000 - 1000
+		# gt_v_n = -gt_v_p
+		# feature = tf.concat([feature, gt_b_p, gt_b_n, gt_v_p, gt_v_n], 3)
 		logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
 
 		# 
@@ -212,10 +212,8 @@ class Model(object):
 
 	def predict_mask(self, aa):
 		img = tf.reshape(aa, [1, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
-		feature = self.CNN(img, reuse = True)
-		pred_boundary = tf.nn.softmax(feature[..., -4: -2])[..., 0]
-		pred_vertices = tf.nn.softmax(feature[..., -2: ])[..., 0]
-		return pred_boundary, pred_vertices, feature
+		feature, pred_boundary, pred_vertices = self.CNN(img, reuse = True)
+		return feature, pred_boundary, pred_vertices
 
 	def predict_path(self, ff, tt):
 		#
