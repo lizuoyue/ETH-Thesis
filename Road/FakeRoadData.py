@@ -406,7 +406,7 @@ def getDataBatchPolygon(batch_size):
 		end = [0.0 for i in range(config.MAX_NUM_VERTICES)]
 		end[n - 1] = 1.0
 		end = np.array(end)
-		res.append((img, b, v, [vertex_list], [vertex_outputs], [vertex_terminals], end, n))
+		res.append((img, b, v, [vertex_list], [vertex_outputs], [vertex_terminals], [end], [n]))
 	return (np.array([item[i] for item in res]) for i in range(8))
 
 if __name__ == '__main__':

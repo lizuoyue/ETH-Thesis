@@ -83,7 +83,7 @@ if __name__ == '__main__':
 				print(vertex_terminals[j, 0, 0].min(), vertex_terminals[j, 0, 0].max())
 				plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
 				print(vertex_terminals[j, 0, 1].min(), vertex_terminals[j, 0, 1].max())
-				print('seq_len', seq_lens[j])
+				print('seq_len', seq_lens[j, 0])
 				for k in range(config.MAX_NUM_VERTICES):
 					plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
 					print(vertex_inputs[j,0,k].min(), vertex_inputs[j,0,k].max())
