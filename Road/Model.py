@@ -200,6 +200,8 @@ class Model(object):
 		# gt_v_n = -gt_v_p
 		# feature = tf.concat([feature, gt_b_p, gt_b_n, gt_v_p, gt_v_n], 3)
 		#logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
+		pred_boundary = gt_boundary
+		pred_vertices = gt_vertices
 		loss_RNN = tf.zeros([])
 		pred_v_out, pred_end = tf.zeros([]), tf.zeros([])
 		# 
