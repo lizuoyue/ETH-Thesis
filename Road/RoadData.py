@@ -100,6 +100,7 @@ def getData(img_id, num_path, show = False):
 
 	print(road['v'])
 	print(road['e'])
+	v_downsample = np.floor(np.array(g.v) / downsample, dtype = np.int32)
 
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
@@ -120,18 +121,18 @@ def getData(img_id, num_path, show = False):
 	boundary = Image.new('P', (w8, h8), color = 0)
 	draw = ImageDraw.Draw(boundary)
 	for e in g.e:
-		draw.line(list(np.array(g.v[e[0]]) / downsample) + list(np.array(g.v[e[1]]) / downsample), fill = 255, width = 1)
+		draw.line(list(v_downsample[e[0]]) + list(v_downsample[e[1]]), fill = 255, width = 1)
 	if show:
-		boundary.resize((256, 256)).show()
+		boundary.resize(config.AREA_SIZE).show()
 		time.sleep(1)
 	boundary = np.array(boundary) / 255.0
 
 	vertices = Image.new('P', (w8, h8), color = 0)
 	draw = ImageDraw.Draw(vertices)
 	for v in g.v:
-		draw.ellipse(make_ellipse(list(np.array(v) / downsample), pad = 0), fill = 255, outline = 255)
+		draw.ellipse(make_ellipse(list(v_downsample), pad = 0), fill = 255, outline = 255)
 	if show:
-		vertices.resize((256, 256)).show()
+		vertices.resize(config.AREA_SIZE).show()
 		time.sleep(1)
 	vertices = np.array(vertices) / 255.0
 
