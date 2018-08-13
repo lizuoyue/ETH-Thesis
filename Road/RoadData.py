@@ -98,10 +98,10 @@ def getData(img_id, num_path, show = False):
 		g.add_e(s, t)
 	g.shortest_path_all()
 
-	print(road['v'])
-	print(road['e'])
 	v_downsample = np.floor(np.array(g.v) / downsample).astype(np.int32)
-	print(v_downsample)
+	# print(road['v'])
+	# print(road['e'])
+	# print(v_downsample)
 
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
@@ -219,6 +219,7 @@ def getData(img_id, num_path, show = False):
 	print(vertex_terminals.shape)
 	print(ends.shape)
 	print(seq_lens.shape)
+	input()
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
