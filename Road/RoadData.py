@@ -192,11 +192,19 @@ def getData(img_id, num_path, show = False, pcs = False):
 					while nvid in v_rm_set:
 						visited[nvid] = True
 						v1, v2 = nb[nvid]
+						assert(v1 not in v_rm_set and v2 not in v_rm_set)
+						if v1 not in v_rm_set:
+							nvid = v1
+							continue
+						if v2 not in v_rm_set:
+							nvid = v2
+							continue
 						if visited[v1]:
 							nvid = v2
 						else:
 							nvid = v1
 					res.append(nvid)
+				assert(len(res) == 2)
 				e_add.append((res[0], res[1]))
 				e_add.append((res[1], res[0]))
 
@@ -230,7 +238,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 		for e in g.e:
 			draw.line(g.v_org[e[0]] + g.v_org[e[1]], fill = (255, 0, 0), width = 2)
 		img.show()
-		time.sleep(0.2)
+		time.sleep(0.1)
 	img = np.array(img)[..., 0: 3]
 
 	# Draw boundary and vertices
@@ -240,7 +248,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 		draw.line(list(g.v[e[0]]) + list(g.v[e[1]]), fill = 255, width = 1)
 	if show:
 		boundary.resize(config.AREA_SIZE).show()
-		time.sleep(0.2)
+		time.sleep(0.1)
 	boundary = np.array(boundary) / 255.0
 
 	vertices = Image.new('P', (w8, h8), color = 0)
@@ -249,7 +257,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 		draw.ellipse(make_ellipse(g.v[i], pad = 0), fill = 255, outline = 255)
 	if show:
 		vertices.resize(config.AREA_SIZE).show()
-		time.sleep(0.2)
+		time.sleep(0.1)
 	vertices = np.array(vertices) / 255.0
 
 	###########
@@ -304,7 +312,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 				for i, item in enumerate(vvv):
 					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
 				Image.fromarray(visualize).resize(config.AREA_SIZE).show()
-				time.sleep(0.2)
+				time.sleep(0.1)
 			print(end)
 			print(len(path_v))
 			# input()
