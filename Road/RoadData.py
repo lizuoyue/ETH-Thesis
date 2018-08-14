@@ -168,6 +168,7 @@ def getData(img_id, num_path, show = False):
 	for s, t in e_idx:
 		nb[s].add(t)
 	v_rm = []
+	print(nb)
 	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
 		if len(vnb) == 2:
 			vnb_li = list(vnb)
@@ -296,7 +297,7 @@ def getData(img_id, num_path, show = False):
 		end = [0 for i in range(max_seq_len)]
 		end[len(path_v) - 1] = 1
 
-		if show:
+		if False:
 			color = [0] + [1, 2] * 30
 			for vvv in [vertex_input, vertex_output, vertex_terminal]:
 				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
@@ -409,7 +410,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(100):
-		getDataBatch(10, show = False)
+		getDataBatch(10, show = True)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
