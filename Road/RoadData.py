@@ -28,8 +28,8 @@ city_name = sys.argv[1]
 roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
-np.random.seed(8888)
-mini_ids = np.random.choice(len(roadJSON), 10000, replace = False)
+np.random.seed(6666)
+mini_ids = np.random.choice(len(roadJSON), 20, replace = False)
 
 class disjoint_set(object):
 	def __init__(self, num = 0):
@@ -173,7 +173,7 @@ def getData(img_id, num_path, show = False):
 			if colinear(v, v0, v1):
 				v_rm.append(v_val2idx[v])
 	v_rm_set = set(v_rm)
-	if len(v_rm_set):
+	if len(v_rm_set) < 0:
 		show = True
 
 	# 3. Get e to be added
@@ -328,8 +328,6 @@ def getData(img_id, num_path, show = False):
 	# print(vertex_terminals.shape)
 	# print(ends.shape)
 	# print(seq_lens.shape)
-	if show:
-		input()
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
@@ -404,7 +402,7 @@ def recoverMultiPath(img, paths):
 		draw = ImageDraw.Draw(pathImg)
 		draw.line(path, fill = 1, width = 5)
 		res += np.array(pathImg, np.float32)
-	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min()), np.uint8)
+	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min() + 1e-9), np.uint8)
 	return res
 
 if __name__ == '__main__':
