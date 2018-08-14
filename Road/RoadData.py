@@ -29,7 +29,7 @@ roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 np.random.seed(8888)
-mini_ids = np.random.choice(len(roadJSON), 10, replace = False)
+mini_ids = np.random.choice(len(roadJSON), 10000, replace = False)
 
 class directed_graph(object):
 	def __init__(self, downsample = 8):
@@ -124,10 +124,10 @@ def getData(img_id, num_path, show = False):
 
 	if show:
 		draw = ImageDraw.Draw(img)
-		for v in g.v:
+		for v in g.v_org:
 			draw.ellipse(make_ellipse(v, pad = 5), fill = (255, 0, 0), outline = (255, 0, 0))
 		for e in g.e:
-			draw.line(g.v[e[0]] + g.v[e[1]], fill = (255, 0, 0), width = 2)
+			draw.line(g.v_org[e[0]] + g.v_org[e[1]], fill = (255, 0, 0), width = 2)
 		img.show()
 		time.sleep(1)
 	img = np.array(img)[..., 0: 3]
@@ -309,7 +309,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(10):
-		getDataBatch(1, show = True)
+		getDataBatch(1, show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
