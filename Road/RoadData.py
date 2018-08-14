@@ -150,7 +150,7 @@ def path_processing(g, path):
 	new_path_v = path_v[: max_seq_len]
 	return new_path_v
 
-def getData(img_id, num_path, show = False, pcs = False):
+def getData(img_id, num_path, show = False):
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
@@ -162,62 +162,50 @@ def getData(img_id, num_path, show = False, pcs = False):
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 	e_idx = [(s, t) for s, t in e_idx if s != t]
 
-	if not pcs:
-		print('Before v_val')
-		for i, item in enumerate(v_val):
-			print(i, item)
-		print('Before e_idx', e_idx)
-	else:
-		# 2. Get v to be removed
-		nb = [[] for _ in range(len(v_val))]
-		for s, t in e_idx:
-			nb[s].append(t)
-		v_rm = []
-		print('Neighbour')
-		for i, item in enumerate(nb):
-			print(i, item)
-		for vid, (v, vnb) in enumerate(zip(v_val, nb)):
-			if len(vnb) == 2:
-				v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
-				if colinear(v, v0, v1):
-					v_rm.append(v_val2idx[v])
-		v_rm_set = set(v_rm)
-		print('Remove', v_rm_set)
+	# 2. Get v to be removed
+	nb = [[] for _ in range(len(v_val))]
+	for s, t in e_idx:
+		nb[s].append(t)
+	v_rm = []
+	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
+		if len(vnb) == 2:
+			v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
+			if colinear(v, v0, v1):
+				v_rm.append(v_val2idx[v])
+	v_rm_set = set(v_rm)
+	if len(v_rm_set):
+		show = True
 
-		# 3. Get e to be added
-		e_add = []
-		visited = [False for _ in range(len(v_val))]
-		for vid in v_rm_set:
-			print('vid', vid)
-			if not visited[vid]:
-				visited[vid] = True
-				assert(len(nb[vid]) == 2)
-				res = []
-				for nvid_iter in nb[vid]:
-					nvid = int(nvid_iter)
-					while nvid in v_rm_set:
-						visited[nvid] = True
-						v1, v2 = nb[nvid]
-						assert((v1 in v_rm_set and visited[v1]) + (v2 in v_rm_set and visited[v2]) == 1)
-						if (v1 in v_rm_set and visited[v1]):
-							nvid = v2
-						else:
-							nvid = v1
-					res.append(nvid)
-				assert(len(res) == 2)
-				print('\tres', res)
-				e_add.append((res[0], res[1]))
-				e_add.append((res[1], res[0]))
+	# 3. Get e to be added
+	e_add = []
+	visited = [False for _ in range(len(v_val))]
+	for vid in v_rm_set:
+		if not visited[vid]:
+			visited[vid] = True
+			assert(len(nb[vid]) == 2)
+			res = []
+			for nvid_iter in nb[vid]:
+				nvid = int(nvid_iter)
+				while nvid in v_rm_set:
+					visited[nvid] = True
+					v1, v2 = nb[nvid]
+					assert((v1 in v_rm_set and visited[v1]) + (v2 in v_rm_set and visited[v2]) == 1)
+					if (v1 in v_rm_set and visited[v1]):
+						nvid = v2
+					else:
+						nvid = v1
+				res.append(nvid)
+			assert(len(res) == 2)
+			e_add.append((res[0], res[1]))
+			e_add.append((res[1], res[0]))
 
-		# 4. Remove v and add e
-		e_idx = [(s, t) for s, t in e_idx if s not in v_rm_set and t not in v_rm_set]
-		e_idx.extend(e_add)
-		e_val = [(v_val[s], v_val[t]) for s, t in e_idx]
-		v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
-		v_val2idx = {v: k for k, v in enumerate(v_val)}
-		e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
-		print('After v_val', v_val)
-		print('After e_idx', e_idx)
+	# 4. Remove v and add e
+	e_idx = [(s, t) for s, t in e_idx if s not in v_rm_set and t not in v_rm_set]
+	e_idx.extend(e_add)
+	e_val = [(v_val[s], v_val[t]) for s, t in e_idx]
+	v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
+	v_val2idx = {v: k for k, v in enumerate(v_val)}
+	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 	###################################################
 
 	g = directed_graph()
