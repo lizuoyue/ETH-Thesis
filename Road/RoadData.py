@@ -23,13 +23,13 @@ for i in range(config.V_OUT_RES[1]):
 		vertex_pool[i][j] = Image.fromarray(vertex_pool[i][j])
 blank = Image.fromarray(blank)
 
-# city_name = sys.argv[1]
+city_name = sys.argv[1]
 
-# roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
+roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 np.random.seed(8888)
-# mini_ids = np.random.choice(len(roadJSON), 10000, replace = False)
+mini_ids = np.random.choice(len(roadJSON), 10000, replace = False)
 
 class disjoint_set(object):
 	def __init__(self, num = 0):
