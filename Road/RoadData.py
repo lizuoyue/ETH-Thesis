@@ -164,15 +164,14 @@ def getData(img_id, num_path, show = False):
 	print(e_idx)
 
 	# 2. Get v to be removed
-	nb = [set()] * len(v_val)
+	nb = [[]] * len(v_val)
 	for s, t in e_idx:
-		nb[s].add(t)
+		nb[s].append(t)
 	v_rm = []
 	print(nb)
 	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
 		if len(vnb) == 2:
-			vnb_li = list(vnb)
-			v0, v1 = v_val[vnb_li[0]], v_val[vnb_li[1]]
+			v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
 			if colinear(v, v0, v1):
 				v_rm.append(v_val2idx[v])
 	v_rm_set = set(v_rm)
