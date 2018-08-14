@@ -174,7 +174,6 @@ def getData(img_id, num_path, show = False, pcs = False):
 		print('Neighbour')
 		for i, item in enumerate(nb):
 			print(i, item)
-		for 
 		for vid, (v, vnb) in enumerate(zip(v_val, nb)):
 			if len(vnb) == 2:
 				v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
