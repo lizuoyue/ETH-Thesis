@@ -160,25 +160,22 @@ def getData(img_id, num_path, show = False, pcs = False):
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 	if not pcs:
-		print('Before:')
-		print(v_val)
-		print(e_idx)
+		print('Before v_val', v_val)
+		print('Before e_idx', e_idx)
 	else:
 		# 2. Get v to be removed
 		nb = [[] for _ in range(len(v_val))]
 		for s, t in e_idx:
 			nb[s].append(t)
 		v_rm = []
-		print('Neighbour:')
-		print(nb)
+		print('Neighbour', nb)
 		for vid, (v, vnb) in enumerate(zip(v_val, nb)):
 			if len(vnb) == 2:
 				v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
 				if colinear(v, v0, v1):
 					v_rm.append(v_val2idx[v])
 		v_rm_set = set(v_rm)
-		print('Remove:')
-		print(v_rm_set)
+		print('Remove', v_rm_set)
 
 		# 3. Get e to be added
 		e_add = []
@@ -209,9 +206,8 @@ def getData(img_id, num_path, show = False, pcs = False):
 		v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
 		v_val2idx = {v: k for k, v in enumerate(v_val)}
 		e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
-		print('After:')
-		print(v_val)
-		print(e_idx)
+		print('After v_val', v_val)
+		print('After e_idx', e_idx)
 	###################################################
 
 	g = directed_graph()
