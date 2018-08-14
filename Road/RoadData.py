@@ -164,7 +164,7 @@ def getData(img_id, num_path, show = False):
 	print(e_idx)
 
 	# 2. Get v to be removed
-	nb = [[]] * len(v_val)
+	nb = [[] for _ in range(len(v_val))]
 	for s, t in e_idx:
 		nb[s].append(t)
 	v_rm = []
@@ -179,7 +179,7 @@ def getData(img_id, num_path, show = False):
 
 	# 3. Get e to be added
 	e_add = []
-	visited = [False] * len(v_val)
+	visited = [False for _ in range(len(v_val))]
 	for vid in v_rm_set:
 		if not visited[vid]:
 			visited[vid] = True
