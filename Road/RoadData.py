@@ -175,6 +175,7 @@ def getData(img_id, num_path, show = False):
 			if colinear(v, v0, v1):
 				v_rm.append(v_val2idx[v])
 	v_rm_set = set(v_rm)
+	print(v_rm_set)
 
 	# 3. Get e to be added
 	e_add = []
