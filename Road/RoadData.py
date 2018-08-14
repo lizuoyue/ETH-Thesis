@@ -154,7 +154,7 @@ def getData(img_id, num_path, show = False):
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
 	v_val = [tuple(np.floor(np.array(v) / 599.0 * (config.AREA_SIZE[0] - 1) / downsample).astype(np.int32)) for v in road['v']]
-	e_val = [(road_v[s], road_v[t]) for s, t in road['e']]
+	e_val = [(v_val[s], v_val[t]) for s, t in road['e']]
 	v_val = list(set(v_val))
 	e_val = list(set(e_val))
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
@@ -170,7 +170,7 @@ def getData(img_id, num_path, show = False):
 	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
 		if len(vnb) == 2:
 			vnb_li = list(vnb)
-			v0, v1 = road_v[vnb_li[0]], road_v[vnb_li[1]]
+			v0, v1 = v_val[vnb_li[0]], v_val[vnb_li[1]]
 			if colinear(v, v0, v1):
 				v_rm.append(v_val2idx[v])
 	v_rm_set = set(v_rm)
