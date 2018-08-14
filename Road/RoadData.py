@@ -160,7 +160,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 	e_val = list(set(e_val))
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
-	e_idx = [(s, t) for s, t in e_val if s != t]
+	e_idx = [(s, t) for s, t in e_idx if s != t]
 
 	if not pcs:
 		print('Before v_val')
