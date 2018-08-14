@@ -138,15 +138,15 @@ def colinear(p0, p1, p2):
 
 def path_processing(g, path):
 	path_v = [g.v[idx] for idx in path]
-	return path_v
-	deg = [len(g.nb[idx]) for idx in path]
-	rep = [path_v[k] == path_v[k - 1] for k in range(len(path))]
-	lin = [colinear(path_v[k - 1], path_v[k], path_v[(k + 1) % len(path)]) for k in range(len(path))]
-	new_path_v = [item for k, item in enumerate(path_v) if (not rep[k]) and (not (deg[k] == 2 and lin[k]))]
-	if sum([y or (x == 2 and z) for x, y, z in zip(deg, rep, lin)]) > 0:
-		print(path_v)
-		print(new_path_v)
-		input()
+	# return path_v
+	# deg = [len(g.nb[idx]) for idx in path]
+	# rep = [path_v[k] == path_v[k - 1] for k in range(len(path))]
+	# lin = [colinear(path_v[k - 1], path_v[k], path_v[(k + 1) % len(path)]) for k in range(len(path))]
+	# new_path_v = [item for k, item in enumerate(path_v) if (not rep[k]) and (not (deg[k] == 2 and lin[k]))]
+	# if sum([y or (x == 2 and z) for x, y, z in zip(deg, rep, lin)]) > 0:
+	# 	print(path_v)
+	# 	print(new_path_v)
+	# 	input()
 	new_path_v = new_path_v[: max_seq_len]
 	return new_path_v
 
@@ -230,7 +230,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 		for e in g.e:
 			draw.line(g.v_org[e[0]] + g.v_org[e[1]], fill = (255, 0, 0), width = 2)
 		img.show()
-		time.sleep(1)
+		time.sleep(0.2)
 	img = np.array(img)[..., 0: 3]
 
 	# Draw boundary and vertices
@@ -240,7 +240,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 		draw.line(list(g.v[e[0]]) + list(g.v[e[1]]), fill = 255, width = 1)
 	if show:
 		boundary.resize(config.AREA_SIZE).show()
-		time.sleep(1)
+		time.sleep(0.2)
 	boundary = np.array(boundary) / 255.0
 
 	vertices = Image.new('P', (w8, h8), color = 0)
@@ -249,7 +249,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 		draw.ellipse(make_ellipse(g.v[i], pad = 0), fill = 255, outline = 255)
 	if show:
 		vertices.resize(config.AREA_SIZE).show()
-		time.sleep(1)
+		time.sleep(0.2)
 	vertices = np.array(vertices) / 255.0
 
 	###########
@@ -304,7 +304,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 				for i, item in enumerate(vvv):
 					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
 				Image.fromarray(visualize).resize(config.AREA_SIZE).show()
-				time.sleep(1)
+				time.sleep(0.2)
 			print(end)
 			print(len(path_v))
 			# input()
@@ -331,8 +331,8 @@ def getData(img_id, num_path, show = False, pcs = False):
 	# print(vertex_terminals.shape)
 	# print(ends.shape)
 	# print(seq_lens.shape)
-	if pcs:
-		input()
+	# if pcs:
+	# 	input()
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
