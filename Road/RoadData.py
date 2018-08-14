@@ -212,7 +212,6 @@ def getData(img_id, num_path, show = False, pcs = False):
 		print('After:')
 		print(v_val)
 		print(e_idx)
-		input()
 	###################################################
 
 	g = directed_graph()
@@ -335,6 +334,8 @@ def getData(img_id, num_path, show = False, pcs = False):
 	# print(vertex_terminals.shape)
 	# print(ends.shape)
 	# print(seq_lens.shape)
+	if pcs:
+		input()
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
