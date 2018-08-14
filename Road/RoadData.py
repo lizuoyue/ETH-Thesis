@@ -23,25 +23,66 @@ for i in range(config.V_OUT_RES[1]):
 		vertex_pool[i][j] = Image.fromarray(vertex_pool[i][j])
 blank = Image.fromarray(blank)
 
-city_name = sys.argv[1]
+# city_name = sys.argv[1]
 
-roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
+# roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 np.random.seed(8888)
-mini_ids = np.random.choice(len(roadJSON), 10000, replace = False)
+# mini_ids = np.random.choice(len(roadJSON), 10000, replace = False)
+
+class disjoint_set(object):
+	def __init__(self, num = 0):
+		self.parent = list(range(num))
+		self.rank = [0] * num
+		return
+
+	def make_set(self, num):
+		for _ in range(num):
+			self.parent.append(len(self.parent))
+			self.rank.append(0)
+		return
+
+	def find(self, x):
+		if self.parent[x] != x:
+			self.parent[x] = self.find(self.parent[x])
+		return self.parent[x]
+
+	def union(self, x, y):
+		xRoot = self.find(x)
+		yRoot = self.find(y)
+		if xRoot == yRoot:
+			return
+		if self.rank[xRoot] < self.rank[yRoot]:
+			self.parent[xRoot] = yRoot
+		else:
+			self.parent[yRoot] = xRoot
+			if self.rank[xRoot] == self.rank[yRoot]:
+				self.rank[xRoot] += 1
+		return
+
+	def get_set_by_id(self):
+		for i in range(len(self.parent)):
+			self.find(i)
+		d = {}
+		for i in range(len(self.parent)):
+			if self.parent[i] in d:
+				d[self.parent[i]].append(i)
+			else:
+				d[self.parent[i]] = [i]
+		return [d[k] for k in d]
 
 class directed_graph(object):
 	def __init__(self, downsample = 8):
-		self.v_org = []
 		self.v = []
+		self.v_org = []
 		self.e = []
 		self.nb = []
 		return
 
 	def add_v(self, v):
-		self.v_org.append(v)
-		self.v.append(tuple(np.floor(np.array(v) / downsample).astype(np.int32)))
+		self.v.append(v)
+		self.v_org.append((v[0] * 8 + 4, v[1] * 8 + 4))
 		self.nb.append([])
 		return
 
@@ -109,12 +150,66 @@ def path_processing(g, path):
 	return new_path_v
 
 def getData(img_id, num_path, show = False):
-	# img = scipy.misc.imread('../DataPreparation/RoadZurich/%s.png' % str(img_id).zfill(8))
+	################## Preprocessing ##################
+	# 1. Remove duplicate
 	road = roadJSON[img_id]
+	v_val = [tuple(np.floor(np.array(v) / 599.0 * (config.AREA_SIZE[0] - 1) / downsample).astype(np.int32)) for v in road['v']]
+	e_val = [(road_v[s], road_v[t]) for s, t in road['e']]
+	v_val = list(set(v_val))
+	e_val = list(set(e_val))
+	v_val2idx = {v: k for k, v in enumerate(v_val)}
+	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
+	print(v_val)
+	print(e_idx)
+
+	# 2. Get v to be removed
+	nb = [set()] * len(v_val)
+	for s, t in e_idx:
+		nb[s].add(t)
+	v_rm = []
+	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
+		if len(vnb) == 2:
+			vnb_li = list(vnb)
+			v0, v1 = road_v[vnb_li[0]], road_v[vnb_li[1]]
+			if colinear(v, v0, v1):
+				v_rm.append(v_val2idx[v])
+	v_rm_set = set(v_rm)
+
+	# 3. Get e to be added
+	e_add = []
+	visited = [False] * len(v_val)
+	for vid in v_rm:
+		if not visited[vid]:
+			visited[vid] = True
+			assert(len(nb[vid]) == 2)
+			res = []
+			for nvid in nb[vid]:
+				while nvid in v_rm:
+					visited[nvid] = True
+					v1, v2 = nb[nvid]
+					if visited[v1]:
+						nvid = v2
+					else:
+						nvid = v1
+				res.append(nvid)
+			e_add.append((res[0], res[1]))
+			e_add.append((res[1], res[0]))
+
+	# 4. Remove v and add e
+	e_idx = [(s, t) for s, t in e_idx if s not in v_rm_set and t not in v_rm_set]
+	e_idx.extend(e_add)
+	e_val = [(v_val[s], v_val[t]) for s, t in e_idx]
+	v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
+	v_val2idx = {v: k for k, v in enumerate(v_val)}
+	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
+	print(v_val)
+	print(e_idx)
+	###################################################
+
 	g = directed_graph()
-	for item in road['v']:
-		g.add_v(list(np.array(item) / 599.0 * (config.AREA_SIZE[0] - 1)))
-	for s, t in road['e']:
+	for v in v_val:
+		g.add_v(v)
+	for s, t in e_idx:
 		g.add_e(s, t)
 	g.shortest_path_all()
 
