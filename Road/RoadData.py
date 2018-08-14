@@ -159,6 +159,7 @@ def getData(img_id, num_path, show = False):
 	e_val = list(set(e_val))
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
+	print('Before:')
 	print(v_val)
 	print(e_idx)
 
@@ -202,6 +203,7 @@ def getData(img_id, num_path, show = False):
 	v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
+	print('After:')
 	print(v_val)
 	print(e_idx)
 	input()
