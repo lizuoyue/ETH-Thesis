@@ -32,14 +32,16 @@ np.random.seed(8888)
 mini_ids = np.random.choice(len(roadJSON), 10, replace = False)
 
 class directed_graph(object):
-	def __init__(self):
+	def __init__(self, downsample = 8):
+		self.v_org = []
 		self.v = []
 		self.e = []
 		self.nb = []
 		return
 
 	def add_v(self, v):
-		self.v.append(v)
+		self.v_org.append(v)
+		self.v.append(tuple(np.floor(np.array(v) / downsample).astype(np.int32)))
 		self.nb.append([])
 		return
 
@@ -88,6 +90,23 @@ class directed_graph(object):
 def make_ellipse(p, pad = 10):
 	return [(p[0] - pad, p[1] - pad), (p[0] + pad, p[1] + pad)]
 
+def colinear(p0, p1, p2):
+	x1, y1 = p1[0] - p0[0], p1[1] - p0[1]
+	x2, y2 = p2[0] - p0[0], p2[1] - p0[1]
+	return abs(x1 * y2 - x2 * y1) < 1e-6
+
+def path_processing(g, path):
+	path_v = [g.v[idx] for idx in path]
+	deg = [len(g.e[idx]) for idx in path]
+	rep = [path_v[k] == path_v[k - 1] for k in range(len(path))]
+	lin = [colinear(path_v[k - 1], path_v[k], path_v[(k + 1) % len(path)]) for k in range(len(path))]
+	if sum([y or (x == 2 and z) for x, y, z in zip(deg, rep, lin)]) > 0:
+		print(path_v)
+		input()
+	path_v = [item for k, item in enumerate(path_v) if (not rep[k]) and (not (deg[k] == 2 and lin[k]))]
+	path_v = path_v[: max_seq_len]
+	return path_v
+
 def getData(img_id, num_path, show = False):
 	# img = scipy.misc.imread('../DataPreparation/RoadZurich/%s.png' % str(img_id).zfill(8))
 	road = roadJSON[img_id]
@@ -97,11 +116,6 @@ def getData(img_id, num_path, show = False):
 	for s, t in road['e']:
 		g.add_e(s, t)
 	g.shortest_path_all()
-
-	v_downsample = np.floor(np.array(g.v) / downsample).astype(np.int32)
-	# print(road['v'])
-	# print(road['e'])
-	# print(v_downsample)
 
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
@@ -122,7 +136,7 @@ def getData(img_id, num_path, show = False):
 	boundary = Image.new('P', (w8, h8), color = 0)
 	draw = ImageDraw.Draw(boundary)
 	for e in g.e:
-		draw.line(list(v_downsample[e[0]]) + list(v_downsample[e[1]]), fill = 255, width = 1)
+		draw.line(list(g.v[e[0]]) + list(g.v[e[1]]), fill = 255, width = 1)
 	if show:
 		boundary.resize(config.AREA_SIZE).show()
 		time.sleep(1)
@@ -130,8 +144,8 @@ def getData(img_id, num_path, show = False):
 
 	vertices = Image.new('P', (w8, h8), color = 0)
 	draw = ImageDraw.Draw(vertices)
-	for i in range(v_downsample.shape[0]):
-		draw.ellipse(make_ellipse(v_downsample[i], pad = 0), fill = 255, outline = 255)
+	for i in range(len(g.v)):
+		draw.ellipse(make_ellipse(g.v[i], pad = 0), fill = 255, outline = 255)
 	if show:
 		vertices.resize(config.AREA_SIZE).show()
 		time.sleep(1)
@@ -164,10 +178,7 @@ def getData(img_id, num_path, show = False):
 				p = prev[p]
 			path.append(p)
 			path.reverse()
-		path_v = [tuple(v_downsample[idx]) for idx in path]
-		flag_v = [path_v[k] == path_v[k - 1] for k in range(len(path_v))]
-		path_v = [item for k, item in enumerate(path_v) if not flag_v[k]]
-		path_v = path_v[: max_seq_len]
+		path_v = path_processing(g, path)
 		vertex_input = [vertex_pool[r][c] for c, r in path_v]
 		if len(vertex_input) > 0:
 			vertex_output = vertex_input[1:]
