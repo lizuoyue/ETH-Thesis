@@ -138,6 +138,7 @@ def colinear(p0, p1, p2):
 
 def path_processing(g, path):
 	path_v = [g.v[idx] for idx in path]
+	return path_v
 	deg = [len(g.nb[idx]) for idx in path]
 	rep = [path_v[k] == path_v[k - 1] for k in range(len(path))]
 	lin = [colinear(path_v[k - 1], path_v[k], path_v[(k + 1) % len(path)]) for k in range(len(path))]
