@@ -343,6 +343,7 @@ def getDataBatch(batch_size, show = False):
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
+		getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show, pcs = True)
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
