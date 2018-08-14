@@ -101,11 +101,11 @@ def path_processing(g, path):
 	rep = [path_v[k] == path_v[k - 1] for k in range(len(path))]
 	lin = [colinear(path_v[k - 1], path_v[k], path_v[(k + 1) % len(path)]) for k in range(len(path))]
 	new_path_v = [item for k, item in enumerate(path_v) if (not rep[k]) and (not (deg[k] == 2 and lin[k]))]
-	new_path_v = new_path_v[: max_seq_len]
 	if sum([y or (x == 2 and z) for x, y, z in zip(deg, rep, lin)]) > 0:
 		print(path_v)
 		print(new_path_v)
 		input()
+	new_path_v = new_path_v[: max_seq_len]
 	return new_path_v
 
 def getData(img_id, num_path, show = False):
