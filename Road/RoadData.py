@@ -147,7 +147,7 @@ def path_processing(g, path):
 	# 	print(path_v)
 	# 	print(new_path_v)
 	# 	input()
-	new_path_v = new_path_v[: max_seq_len]
+	new_path_v = path_v[: max_seq_len]
 	return new_path_v
 
 def getData(img_id, num_path, show = False, pcs = False):
