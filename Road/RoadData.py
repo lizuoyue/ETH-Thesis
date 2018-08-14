@@ -189,8 +189,8 @@ def getData(img_id, num_path, show = False, pcs = False):
 				assert(len(nb[vid]) == 2)
 				res = []
 				for nvid_iter in nb[vid]:
-					assert(not visited[nvid])
 					nvid = int(nvid_iter)
+					assert(not visited[nvid])
 					while nvid in v_rm_set:
 						visited[nvid] = True
 						v1, v2 = nb[nvid]
