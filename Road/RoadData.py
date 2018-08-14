@@ -204,6 +204,7 @@ def getData(img_id, num_path, show = False):
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 	print(v_val)
 	print(e_idx)
+	input()
 	###################################################
 
 	g = directed_graph()
