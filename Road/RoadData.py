@@ -188,18 +188,11 @@ def getData(img_id, num_path, show = False, pcs = False):
 				res = []
 				for nvid_iter in nb[vid]:
 					nvid = int(nvid_iter)
-					assert(not visited[nvid])
 					while nvid in v_rm_set:
 						visited[nvid] = True
 						v1, v2 = nb[nvid]
-						assert(v1 not in v_rm_set and v2 not in v_rm_set)
-						if v1 not in v_rm_set:
-							nvid = v1
-							continue
-						if v2 not in v_rm_set:
-							nvid = v2
-							continue
-						if visited[v1]:
+						assert((v1 in v_rm_set and visited[v1]) + (v2 in v_rm_set and visited[v2]) == 1)
+						if (v1 in v_rm_set and visited[v1]):
 							nvid = v2
 						else:
 							nvid = v1
