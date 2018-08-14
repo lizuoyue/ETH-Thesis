@@ -161,7 +161,9 @@ def getData(img_id, num_path, show = False, pcs = False):
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 	if not pcs:
-		print('Before v_val', v_val)
+		print('Before v_val')
+		for i, item in enumerate(v_val):
+			print(i, item)
 		print('Before e_idx', e_idx)
 	else:
 		# 2. Get v to be removed
@@ -169,7 +171,10 @@ def getData(img_id, num_path, show = False, pcs = False):
 		for s, t in e_idx:
 			nb[s].append(t)
 		v_rm = []
-		print('Neighbour', nb)
+		print('Neighbour')
+		for i, item in enumerate(nb):
+			print(i, item)
+		for 
 		for vid, (v, vnb) in enumerate(zip(v_val, nb)):
 			if len(vnb) == 2:
 				v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
@@ -182,6 +187,7 @@ def getData(img_id, num_path, show = False, pcs = False):
 		e_add = []
 		visited = [False for _ in range(len(v_val))]
 		for vid in v_rm_set:
+			print('vid', vid)
 			if not visited[vid]:
 				visited[vid] = True
 				assert(len(nb[vid]) == 2)
