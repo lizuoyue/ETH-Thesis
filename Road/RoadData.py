@@ -181,13 +181,14 @@ def getData(img_id, num_path, show = False):
 	# 3. Get e to be added
 	e_add = []
 	visited = [False] * len(v_val)
-	for vid in v_rm:
+	for vid in v_rm_set:
 		if not visited[vid]:
 			visited[vid] = True
 			assert(len(nb[vid]) == 2)
 			res = []
 			for nvid in nb[vid]:
-				while nvid in v_rm:
+				assert(not visited[nvid])
+				while nvid in v_rm_set:
 					visited[nvid] = True
 					v1, v2 = nb[nvid]
 					if visited[v1]:
