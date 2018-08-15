@@ -121,8 +121,8 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 1 == 0:
-				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
-				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+				# img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
+				# feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
@@ -133,9 +133,10 @@ if __name__ == '__main__':
 				multi_roads = []
 				for j in range(1):#terminal.shape[0]
 					road = [terminal_gt[j, 0]]
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[j]})
+					# pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[j]})
 					for k in range(config.MAX_NUM_VERTICES):
-						road.append(pred_v_out[0, j, k])
+						# road.append(pred_v_out[0, j, k])
+						road.append(vertex_outputs[0, j, k])
 					multi_roads.append(road)
 
 				newImg = recoverMultiPath(img[0], np.array(multi_roads))
