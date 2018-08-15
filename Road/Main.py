@@ -137,6 +137,7 @@ if __name__ == '__main__':
 					for k in range(config.MAX_NUM_VERTICES):
 						# road.append(pred_v_out[0, j, k])
 						road.append(vertex_outputs[0, j, k])
+						print(vertex_outputs[0, j, k].sum())
 					multi_roads.append(road)
 
 				newImg = recoverMultiPath(img[0], np.array(multi_roads))
