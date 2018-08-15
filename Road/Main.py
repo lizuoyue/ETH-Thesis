@@ -132,10 +132,10 @@ if __name__ == '__main__':
 				# terminal = getAllTerminal(pred_vertices[0])
 				multi_roads = []
 				for j in range(terminal_gt.shape[1]):
-					road = [vertex_terminals[0, j, 0]]
+					road = [terminal_gt[0, j, 0]]
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[0, j]})
 					for k in range(config.MAX_NUM_VERTICES):
-						road.append(vertex_outputs[0, j, k])
+						road.append(pred_v_out[0, j, k])
 					multi_roads.append(road)
 
 				newImg = recoverMultiPath(img[0], np.array(multi_roads))
