@@ -267,11 +267,15 @@ def getData(img_id, num_path, show = False):
 	for i in range(num_path):
 		path = []
 		if len(g.v) > 0:
-			if i < len(g.v):
-				s = i
-			else:
-				s = random.randint(0, len(g.v) - 1)
+			# if i < len(g.v):
+			# 	s = i
+			# else:
+			# 	s = random.randint(0, len(g.v) - 1)
 			# s = s_chosen
+			if i == 0:
+				s = s_chosen
+			else:
+				s = 0
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
