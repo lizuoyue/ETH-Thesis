@@ -120,7 +120,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 0:
+			if i % 1 == 0:
 				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
@@ -129,11 +129,11 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
-				terminal = getAllTerminal(pred_vertices[0])
+				# terminal = getAllTerminal(pred_vertices[0])
 				multi_roads = []
-				for j in range(terminal.shape[0]):
-					road = [terminal[j, 0]]
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal[j]})
+				for j in range(1):#terminal.shape[0]
+					road = [terminal_gt[j, 0]]
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[j]})
 					for k in range(config.MAX_NUM_VERTICES):
 						road.append(pred_v_out[0, j, k])
 					multi_roads.append(road)

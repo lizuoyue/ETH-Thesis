@@ -28,8 +28,8 @@ city_name = sys.argv[1]
 roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
-np.random.seed(9999)
-mini_ids = np.random.choice(len(roadJSON), 30, replace = False)
+np.random.seed(6666)
+mini_ids = np.random.choice(len(roadJSON), 20, replace = False)
 
 class disjoint_set(object):
 	def __init__(self, num = 0):
