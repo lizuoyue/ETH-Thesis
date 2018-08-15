@@ -28,8 +28,8 @@ city_name = sys.argv[1]
 roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
-np.random.seed(6666)
-mini_ids = np.random.choice(len(roadJSON), 20, replace = False)
+np.random.seed(9999)
+mini_ids = np.random.choice(len(roadJSON), 30, replace = False)
 
 class disjoint_set(object):
 	def __init__(self, num = 0):
@@ -267,7 +267,11 @@ def getData(img_id, num_path, show = False):
 	for i in range(num_path):
 		path = []
 		if len(g.v) > 0:
-			s = s_chosen # random.randint(0, len(g.v) - 1)
+			# if i < len(g.v):
+			# 	s = i
+			# else:
+			# 	s = random.randint(0, len(g.v) - 1)
+			s = s_chosen
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
@@ -397,7 +401,9 @@ def recoverMultiPath(img, paths):
 			end = 1 - hmap.sum()
 			ind = np.unravel_index(np.argmax(hmap), hmap.shape)
 			if hmap[ind] >= end:
-				path.append((ind[1] * 8, ind[0] * 8))
+				path.append((ind[1] * 8 + 4, ind[0] * 8 + 4))
+			else:
+				break
 		pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
 		draw = ImageDraw.Draw(pathImg)
 		draw.line(path, fill = 1, width = 5)
