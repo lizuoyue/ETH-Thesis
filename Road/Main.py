@@ -105,7 +105,7 @@ if __name__ == '__main__':
 			train_loss.flush()
 
 			# Validation
-			if i % 1 == 0:
+			if i % 200 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
@@ -120,9 +120,9 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1 == 0:
-				# img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
-				# feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+			if i % 1000 == 0 or i % 1000 == 1:
+				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
+				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
@@ -131,9 +131,9 @@ if __name__ == '__main__':
 
 				# terminal = getAllTerminal(pred_vertices[0])
 				multi_roads = []
-				for j in range(1):#terminal.shape[0]
+				for j in range(terminal_gt.shape[1]):
 					road = [vertex_terminals[0, j, 0]]
-					# pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[j]})
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[0, j]})
 					for k in range(config.MAX_NUM_VERTICES):
 						road.append(vertex_outputs[0, j, k])
 					multi_roads.append(road)

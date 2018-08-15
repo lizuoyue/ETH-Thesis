@@ -250,12 +250,12 @@ def getData(img_id, num_path, show = False):
 	vertices = np.array(vertices) / 255.0
 
 	###########
-	ddd, s_chosen = -1e9, 0
-	for s in range(len(g.v)):
-		tmp_d = g.sp[s][0][g.sp_max_idx[s]]
-		if tmp_d > ddd:
-			s_chosen = s
-			ddd = tmp_d
+	# ddd, s_chosen = -1e9, 0
+	# for s in range(len(g.v)):
+	# 	tmp_d = g.sp[s][0][g.sp_max_idx[s]]
+	# 	if tmp_d > ddd:
+	# 		s_chosen = s
+	# 		ddd = tmp_d
 	###########
 
 	# RNN in and out
@@ -267,11 +267,11 @@ def getData(img_id, num_path, show = False):
 	for i in range(num_path):
 		path = []
 		if len(g.v) > 0:
-			# if i < len(g.v):
-			# 	s = i
-			# else:
-			# 	s = random.randint(0, len(g.v) - 1)
-			s = s_chosen
+			if i < len(g.v):
+				s = i
+			else:
+				s = random.randint(0, len(g.v) - 1)
+			# s = s_chosen
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
@@ -400,7 +400,6 @@ def recoverMultiPath(img, paths):
 		for j in range(max_seq_len + 1):
 			hmap = paths[i, j]
 			end = 1 - hmap.sum()
-			print(hmap.sum(), end)
 			ind = np.unravel_index(np.argmax(hmap), hmap.shape)
 			if hmap[ind] >= end:
 				path.append((ind[1] * 8 + 4, ind[0] * 8 + 4))
@@ -416,9 +415,6 @@ def recoverMultiPath(img, paths):
 if __name__ == '__main__':
 	for _ in range(1000):
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(10, show = False)
-		print(vertex_outputs.sum(axis = -1).sum(axis = -1) + ends)
-		print(seq_lens)
-		quit()
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
