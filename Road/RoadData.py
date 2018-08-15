@@ -296,7 +296,8 @@ def getData(img_id, num_path, show = False):
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
 		end = [0 for i in range(max_seq_len)]
-		end[len(path_v) - 1] = 1
+		if len(path_v) > 0:
+			end[len(path_v) - 1] = 1
 
 		if False:
 			color = [0] + [1, 2] * 30
@@ -415,6 +416,7 @@ if __name__ == '__main__':
 	for _ in range(1000):
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(10, show = False)
 		print(vertex_outputs.sum(axis = -1).sum(axis = -1) + ends)
+		print(seq_lens)
 		quit()
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
