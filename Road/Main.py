@@ -133,6 +133,7 @@ if __name__ == '__main__':
 				multi_roads = []
 				for j in range(1):#terminal.shape[0]
 					road = [vertex_terminals[j, 0]]
+					print(vertex_terminals[j, 0].sum())
 					# pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[j]})
 					for k in range(config.MAX_NUM_VERTICES):
 						# road.append(pred_v_out[0, j, k])

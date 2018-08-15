@@ -397,7 +397,7 @@ def recoverMultiPath(img, paths):
 	res = np.zeros((img.shape[0], img.shape[1]))
 	for i in range(paths.shape[0]):
 		path = []
-		for j in range(max_seq_len):
+		for j in range(max_seq_len + 1):
 			hmap = paths[i, j]
 			end = 1 - hmap.sum()
 			print(hmap.sum(), end)
