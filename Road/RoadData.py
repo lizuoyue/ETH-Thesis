@@ -400,9 +400,9 @@ def recoverMultiPath(img, paths):
 		for j in range(max_seq_len):
 			hmap = paths[i, j]
 			end = 1 - hmap.sum()
+			print(hmap.sum(), end)
 			ind = np.unravel_index(np.argmax(hmap), hmap.shape)
 			if hmap[ind] >= end:
-				print(hmap[ind], end)
 				path.append((ind[1] * 8 + 4, ind[0] * 8 + 4))
 			else:
 				break
