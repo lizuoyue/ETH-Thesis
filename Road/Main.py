@@ -105,7 +105,7 @@ if __name__ == '__main__':
 			train_loss.flush()
 
 			# Validation
-			if i % 200 == 0:
+			if i % 1 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
@@ -120,7 +120,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 200 == 0:
+			if i % 1 == 0:
 				# img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
 				# feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
