@@ -29,7 +29,7 @@ roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 np.random.seed(6666)
-mini_ids = np.random.choice(len(roadJSON), 20, replace = False)
+mini_ids = np.random.choice(len(roadJSON), 30, replace = False)
 
 class disjoint_set(object):
 	def __init__(self, num = 0):
@@ -126,6 +126,10 @@ class directed_graph(object):
 		for i in range(len(self.v)):
 			self.sp.append(self.spfa(i))
 		self.sp_max_idx = [np.argmax(dist) for dist, _ in self.sp]
+		self.sp_idx_t = []
+		for dist, _ in self.sp:
+			self.sp_idx_t.append([idx for idx, d in enumerate(list(dist)) if d > 0.5])
+		self.sp_idx_s = [idx for idx, item in enumerate(self.sp_idx_t) if len(item) > 0]
 		return
 
 def make_ellipse(p, pad = 10):
@@ -267,16 +271,9 @@ def getData(img_id, num_path, show = False):
 	for i in range(num_path):
 		path = []
 		if len(g.v) > 0:
-			if i < len(g.v):
-				s = i
-			else:
-				s = random.randint(0, len(g.v) - 1)
-			# s = s_chosen
-			# if i == 0:
-			# 	s = s_chosen
-			# else:
-			# 	s = 0
-			t = g.sp_max_idx[s]
+			s = int(np.random.choice(g.sp_idx_s, 1)[0])
+			t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
+			# t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
 			while p != s:
