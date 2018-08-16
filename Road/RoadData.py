@@ -250,12 +250,12 @@ def getData(img_id, num_path, show = False):
 	vertices = np.array(vertices) / 255.0
 
 	###########
-	ddd, s_chosen = -1e9, 0
-	for s in range(len(g.v)):
-		tmp_d = g.sp[s][0][g.sp_max_idx[s]]
-		if tmp_d > ddd:
-			s_chosen = s
-			ddd = tmp_d
+	# ddd, s_chosen = -1e9, 0
+	# for s in range(len(g.v)):
+	# 	tmp_d = g.sp[s][0][g.sp_max_idx[s]]
+	# 	if tmp_d > ddd:
+	# 		s_chosen = s
+	# 		ddd = tmp_d
 	###########
 
 	# RNN in and out
@@ -267,15 +267,15 @@ def getData(img_id, num_path, show = False):
 	for i in range(num_path):
 		path = []
 		if len(g.v) > 0:
-			# if i < len(g.v):
-			# 	s = i
-			# else:
-			# 	s = random.randint(0, len(g.v) - 1)
-			# s = s_chosen
-			if i == 0:
-				s = s_chosen
+			if i < len(g.v):
+				s = i
 			else:
-				s = 0
+				s = random.randint(0, len(g.v) - 1)
+			# s = s_chosen
+			# if i == 0:
+			# 	s = s_chosen
+			# else:
+			# 	s = 0
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
