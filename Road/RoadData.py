@@ -157,7 +157,6 @@ def path_processing(g, path):
 	return new_path_v
 
 def getData(img_id, num_path, show = False):
-	img_id = 78494
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
@@ -349,9 +348,7 @@ def getDataBatch(batch_size, mode, show = False):
 	res = []
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
-		print('id', mini_ids[ids[i]])
 		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
-		input()
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
