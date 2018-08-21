@@ -221,6 +221,11 @@ def getData(img_id, num_path, show = False):
 		g.add_e(s, t)
 	g.shortest_path_all()
 
+	if len(g.v) > 0 and len(g.sp_idx_s) == 0:
+		show = True
+		print(g.v)
+		print(g.e)
+
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
@@ -337,6 +342,9 @@ def getData(img_id, num_path, show = False):
 	# print(ends.shape)
 	# print(seq_lens.shape)
 
+	if show:
+		input()
+
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
 def getDataBatch(batch_size, mode, show = False):
@@ -422,7 +430,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(1000):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(30, show = True)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(30, 'train')
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
