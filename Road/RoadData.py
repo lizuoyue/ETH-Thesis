@@ -158,6 +158,7 @@ def path_processing(g, path):
 	return new_path_v
 
 def getData(img_id, num_path, show = False):
+	img_id = 78494
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
@@ -221,6 +222,8 @@ def getData(img_id, num_path, show = False):
 	for s, t in e_idx:
 		g.add_e(s, t)
 	g.shortest_path_all()
+
+	print(g.v)
 
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
