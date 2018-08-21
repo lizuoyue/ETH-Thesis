@@ -73,7 +73,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 			# for j in range(config.AREA_TRAIN_BATCH):
 			# 	plt.imsave('0-img.png', img[j])
 			# 	plt.imsave('1-b.png', boundary[j])
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
 			# Validation
 			if i % 200 == 0:
-				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
 				}
@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 1000 == 0:
-				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
+				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
@@ -129,7 +129,8 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
-				# terminal = getAllTerminal(pred_vertices[0])
+				terminal_gt = getAllTerminal(pred_vertices[0])[np.newaxis, ...]
+
 				multi_roads = []
 				for j in range(terminal_gt.shape[1]):
 					road = [terminal_gt[0, j, 0]]

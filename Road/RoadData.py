@@ -29,10 +29,9 @@ roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 np.random.seed(6666)
-# val_ids = np.random.choice(len(roadJSON), int(len(roadJSON) / 20.0), replace = False)
-# val_ids_set = set(list(val_ids))
-# train_ids = [i for i in range(len(roadJSON)) if i not in val_ids_set]
-mini_ids = np.random.choice(len(roadJSON), 30, replace = False)
+val_ids = np.random.choice(len(roadJSON), int(len(roadJSON) / 20.0), replace = False)
+val_ids_set = set(list(val_ids))
+train_ids = [i for i in range(len(roadJSON)) if i not in val_ids_set]
 
 class disjoint_set(object):
 	def __init__(self, num = 0):
@@ -223,8 +222,6 @@ def getData(img_id, num_path, show = False):
 		g.add_e(s, t)
 	g.shortest_path_all()
 
-	print(g.v)
-
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
@@ -343,7 +340,12 @@ def getData(img_id, num_path, show = False):
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
-def getDataBatch(batch_size, show = False):
+def getDataBatch(batch_size, mode, show = False):
+	assert(mode in ['train', 'val', 'valid'])
+	if mode == 'train':
+		mini_ids = train_ids
+	else:
+		mini_ids = val_ids
 	res = []
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
@@ -424,7 +426,6 @@ def recoverMultiPath(img, paths):
 if __name__ == '__main__':
 	for _ in range(1000):
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(30, show = True)
-		quit()
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
