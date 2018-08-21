@@ -213,6 +213,10 @@ def getData(img_id, num_path, show = False):
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 	###################################################
+
+	if len(e_idx) == 0:
+		v_val = []
+
 	g = directed_graph()
 	for v in v_val:
 		g.add_v(v)
