@@ -346,6 +346,7 @@ def getDataBatch(batch_size, show = False):
 	for i in range(batch_size):
 		print('id', mini_ids[ids[i]])
 		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
+		input()
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
 		for item in res:
@@ -419,7 +420,8 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(1000):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(1, show = True)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(30, show = True)
+		quit()
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
