@@ -213,7 +213,6 @@ def getData(img_id, num_path, show = False):
 	v_val2idx = {v: k for k, v in enumerate(v_val)}
 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 	###################################################
-
 	g = directed_graph()
 	for v in v_val:
 		g.add_v(v)
@@ -222,7 +221,6 @@ def getData(img_id, num_path, show = False):
 	g.shortest_path_all()
 
 	if len(g.v) > 0 and len(g.sp_idx_s) == 0:
-		show = True
 		print(g.v)
 		print(g.e)
 
@@ -277,7 +275,7 @@ def getData(img_id, num_path, show = False):
 	seq_lens = []
 	for i in range(num_path):
 		path = []
-		if len(g.v) > 0:
+		if len(g.v) > 0 and len(g.sp_idx_s) > 0:
 			s = int(np.random.choice(g.sp_idx_s, 1)[0])
 			t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
 			# t = g.sp_max_idx[s]
@@ -341,9 +339,6 @@ def getData(img_id, num_path, show = False):
 	# print(vertex_terminals.shape)
 	# print(ends.shape)
 	# print(seq_lens.shape)
-
-	if show:
-		input()
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
 
