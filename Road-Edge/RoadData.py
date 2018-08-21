@@ -29,9 +29,6 @@ roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 np.random.seed(6666)
-# val_ids = np.random.choice(len(roadJSON), int(len(roadJSON) / 20.0), replace = False)
-# val_ids_set = set(list(val_ids))
-# train_ids = [i for i in range(len(roadJSON)) if i not in val_ids_set]
 mini_ids = np.random.choice(len(roadJSON), 30, replace = False)
 
 class disjoint_set(object):
@@ -256,77 +253,29 @@ def getData(img_id, num_path, show = False):
 		time.sleep(0.1)
 	vertices = np.array(vertices) / 255.0
 
-	###########
-	# ddd, s_chosen = -1e9, 0
-	# for s in range(len(g.v)):
-	# 	tmp_d = g.sp[s][0][g.sp_max_idx[s]]
-	# 	if tmp_d > ddd:
-	# 		s_chosen = s
-	# 		ddd = tmp_d
-	###########
-
 	# RNN in and out
-	vertex_terminals = []
 	vertex_inputs = []
 	vertex_outputs = []
-	ends = []
 	seq_lens = []
 	for i in range(num_path):
-		path = []
 		if len(g.v) > 0:
-			s = int(np.random.choice(g.sp_idx_s, 1)[0])
-			t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
-			# t = g.sp_max_idx[s]
-			dist, prev = g.sp[s]
-			p = t
-			while p != s:
-				path.append(p)
-				p = prev[p]
-			path.append(p)
-			path.reverse()
-		path_v = path_processing(g, path)
-		vertex_input = [vertex_pool[r][c] for c, r in path_v]
-		if len(vertex_input) > 0:
-			vertex_output = vertex_input[1:]
-			vertex_terminal = [vertex_input[0], vertex_input[-1]]
+			s = int(np.random.choice(len(g.v), 1)[0])
+			vertex_input = [np.array(vertex_pool[g.v[s][1]][g.v[s][0]])]
+			vertex_output = np.zeros(config.V_OUT_RES, np.float32)
+			for t, _ in g.nb[s]:
+				vertex_output += np.array(vertex_pool[g.v[t][1]][g.v[t][0]], np.float32)
+				vertex_output[vertex_output > 100] = 255.0
 		else:
-			vertex_output = []
-			vertex_terminal = [blank, blank]
-		while len(vertex_input) < max_seq_len:
-			vertex_input.append(blank)
-		while len(vertex_output) < max_seq_len:
-			vertex_output.append(blank)
-		if len(vertex_input) != max_seq_len:
-			print(len(vertex_input))
-		assert(len(vertex_output) == max_seq_len)
-		end = [0 for i in range(max_seq_len)]
-		if len(path_v) > 0:
-			end[len(path_v) - 1] = 1
-
-		if False:
-			color = [0] + [1, 2] * 30
-			for vvv in [vertex_input, vertex_output, vertex_terminal]:
-				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
-				for i, item in enumerate(vvv):
-					visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
-				Image.fromarray(visualize).resize(config.AREA_SIZE).show()
-				time.sleep(0.1)
-			print(end)
-			print(len(path_v))
-			# input()
+			vertex_input = [blank]
+			vertex_output = [blank]
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
-		vertex_terminal = [np.array(item) / 255.0 for item in vertex_terminal]
 		vertex_inputs.append(vertex_input)
 		vertex_outputs.append(vertex_output)
-		vertex_terminals.append(vertex_terminal)
-		ends.append(end)
-		seq_lens.append(len(path_v))
+		seq_lens.append(1)
 	vertex_inputs = np.array(vertex_inputs)
 	vertex_outputs = np.array(vertex_outputs)
-	vertex_terminals = np.array(vertex_terminals)
-	ends = np.array(ends)
 	seq_lens = np.array(seq_lens)
 
 	# print(img.shape)
@@ -334,17 +283,14 @@ def getData(img_id, num_path, show = False):
 	# print(vertices.shape)
 	# print(vertex_inputs.shape)
 	# print(vertex_outputs.shape)
-	# print(vertex_terminals.shape)
-	# print(ends.shape)
 	# print(seq_lens.shape)
 
-	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
+	return img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens
 
 def getDataBatch(batch_size, show = False):
 	res = []
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
-		print('id', mini_ids[ids[i]])
 		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
 	res = [np.array([item[i] for item in res]) for i in range(8)]
 	if False:
@@ -388,7 +334,7 @@ def findPeaks(heatmap, sigma = 0):
 def getAllTerminal(hmap):
 	res = []
 	peaks_with_score = findPeaks(hmap)
-	# print(peaks_with_score)
+	print(peaks_with_score)
 	for i in range(len(peaks_with_score)):
 		x1, y1, _ = peaks_with_score[i]
 		for j in range(len(peaks_with_score)):
@@ -419,7 +365,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(1000):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(1, show = False)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(10, show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
