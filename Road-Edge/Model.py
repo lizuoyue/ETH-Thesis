@@ -129,6 +129,8 @@ class Model(object):
 				[config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 132]
 			)
 			rnn_input = tf.concat([feature_rep, v_in], axis = 4)
+			print(rnn_input.shape)
+			print(initial_state.shape)
 
 			outputs, state = tf.nn.dynamic_rnn(cell = self.stacked_lstm, inputs = rnn_input,
 				sequence_length = gt_seq_len, initial_state = initial_state, dtype = tf.float32
