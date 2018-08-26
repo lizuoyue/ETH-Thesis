@@ -107,7 +107,7 @@ class Model(object):
 			logits_pos = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
 			logits_neg = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
 			logits = tf.concat([logits_pos, logits_neg], axis = -1)
-			prob = tf.nn.softmax(logits)
+			prob = tf.nn.softmax(logits)[..., 0]
 		if not reuse:
 			loss = tf.losses.log_loss(gt_rnn_out, prob)
 			return prob, loss
