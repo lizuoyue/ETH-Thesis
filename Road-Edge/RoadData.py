@@ -29,7 +29,9 @@ roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
 np.random.seed(6666)
-mini_ids = np.random.choice(len(roadJSON), 30, replace = False)
+val_ids = np.random.choice(len(roadJSON), int(len(roadJSON) / 20.0), replace = False)
+val_ids_set = set(list(val_ids))
+train_ids = [i for i in range(len(roadJSON)) if i not in val_ids_set]
 
 class disjoint_set(object):
 	def __init__(self, num = 0):
@@ -288,14 +290,16 @@ def getData(img_id, num_path, show = False):
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens
 
-def getDataBatch(batch_size, show = False):
+def getDataBatch(batch_size, mode, show = False):
+	assert(mode in ['train', 'val', 'valid'])
+	if mode == 'train':
+		mini_ids = train_ids
+	else:
+		mini_ids = val_ids
 	res = []
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
-	# for i in range(6):
-	# 	for item in res:
-	# 		print(item[i].shape)
 	res = [np.array([item[i] for item in res]) for i in range(6)]
 	if False:
 		for item in res:

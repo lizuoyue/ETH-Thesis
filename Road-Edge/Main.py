@@ -71,7 +71,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+			img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 			# for j in range(config.AREA_TRAIN_BATCH):
 			# 	plt.imsave('0-img.png', img[j])
 			# 	plt.imsave('1-b.png', boundary[j])
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
 			# Validation
 			if i % 200 == 0:
-				img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+				img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ll: seq_lens
 				}
