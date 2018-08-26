@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 			# Training and get result
 			init_time = time.time()
-			_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
+			_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out) = sess.run([train, train_res], feed_dict)
 			cost_time = time.time() - init_time
 			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
 			train_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
@@ -104,12 +104,12 @@ if __name__ == '__main__':
 
 			# Validation
 			if i % 200 == 0:
-				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+				img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 				feed_dict = {
-					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
+					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ll: seq_lens
 				}
 				init_time = time.time()
-				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end = sess.run(train_res, feed_dict)
+				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out = sess.run(train_res, feed_dict)
 				cost_time = time.time() - init_time
 				valid_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
 				valid_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
