@@ -105,7 +105,7 @@ class Model(object):
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num * 2, activation = None)
-			logits = tf.reshape(logits, tf.shape(gt_rnn_out))
+			logits = tf.reshape(logits, tf.concat([tf.shape(gt_rnn_out), [2]], 0))
 			print(logits.shape)
 			prob = tf.nn.softmax(logits)[..., 0]
 			print(prob.shape)
