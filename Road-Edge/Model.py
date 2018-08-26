@@ -106,7 +106,7 @@ class Model(object):
 		with tf.variable_scope('FC', reuse = reuse):
 			logits_pos = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
 			logits_neg = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
-			logits = tf.concat([logits_pos, logits_neg], axis = -1)
+			logits = tf.concat([tf.expand_dims(logits_pos), tf.expand_dims(logits_neg)], axis = -1)
 			print(logits_pos.shape)
 			print(logits_neg.shape)
 			print(logits.shape)
