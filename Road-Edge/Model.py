@@ -111,7 +111,7 @@ class Model(object):
 		if not reuse:
 			n_pos = tf.reduce_sum(gt_rnn_out)
 			n_neg = tf.reduce_sum(1 - gt_rnn_out)
-			w = tf.where(tf.less(gt_rnn_out, 0.5), 0.5 / n_neg, 0.5 / n_pos)
+			w = gt_rnn_out * 0.5 / n_pos + (1 - gt_rnn_out) * 0.5 / n_neg
 			loss = tf.losses.log_loss(gt_rnn_out, prob, w)
 			return prob, loss
 		else:
