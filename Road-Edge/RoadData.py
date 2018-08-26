@@ -265,6 +265,7 @@ def getData(img_id, num_path, show = False):
 			for t, _ in g.nb[s]:
 				vertex_output += np.array(vertex_pool[g.v[t][1]][g.v[t][0]], np.float32)
 				vertex_output[vertex_output > 100] = 255.0
+			vertex_output = [vertex_output]
 		else:
 			vertex_input = [blank]
 			vertex_output = [blank]
@@ -292,9 +293,9 @@ def getDataBatch(batch_size, show = False):
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
-	for i in range(6):
-		for item in res:
-			print(item[i].shape)
+	# for i in range(6):
+	# 	for item in res:
+	# 		print(item[i].shape)
 	res = [np.array([item[i] for item in res]) for i in range(6)]
 	if False:
 		for item in res:
