@@ -15,7 +15,7 @@ class Model(object):
 		# RolygonRNN parameters
 		self.max_num_vertices = max_num_vertices
 		self.lstm_out_channel = lstm_out_channel
-		self.lstm_in_channel  = [136] + lstm_out_channel[: -1]
+		self.lstm_in_channel  = [133] + lstm_out_channel[: -1]
 		self.v_out_res        = v_out_res
 		self.v_out_nrow       = self.v_out_res[0]
 		self.v_out_ncol       = self.v_out_res[1]
@@ -104,19 +104,20 @@ class Model(object):
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
-			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num + 1, activation = None)
+			logits_pos = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
+			logits_neg = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
+			logits = tf.concat([logits_pos, logits_neg], axis = -1)
 		if not reuse:
+			gt_rnn_out_d = tf.concat([gt_rnn_out, 1 - gt_rnn_out], axis = -1)
 			loss = tf.reduce_sum(
-				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
-			) / tf.reduce_sum(gt_seq_len)
+				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out_d, logits = logits)
+			) / (tf.reduce_sum(gt_seq_len) + 1)
 			return logits, loss
 		else:
-			prob = tf.nn.softmax(logits)
-			val, idx = tf.nn.top_k(prob[:, 0, :], k = config.BEAM_WIDTH)
-			return tf.log(val), tf.gather(self.vertex_pool, idx, axis = 0)
+			return tf.nn.softmax(logits)
 
-	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, reuse = None):
-		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
+	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, reuse = None):
+		batch_size = tf.concat([[tf.shape(feature)[0]], [1, 1, 1]], 0)
 		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
 			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
@@ -127,82 +128,35 @@ class Model(object):
 				[1, config.TRAIN_NUM_PATH, self.max_num_vertices, 1, 1, 1]),
 				[config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 132]
 			)
-			v_in_0 = tf.tile(terminal[:, 1: 2, ...], [1, self.max_num_vertices, 1, 1, 1])
-			v_in_e = tf.tile(terminal[:, 1: 2, ...], [1, self.max_num_vertices, 1, 1, 1])
-			v_in_1 = v_in
-			v_in_2 = tf.stack([v_in[:, 0, ...]] + tf.unstack(v_in, axis = 1)[: -1], axis = 1)
-			rnn_input = tf.concat([feature_rep, v_in_0, v_in_1, v_in_2, v_in_e], axis = 4)
-			# v_in_0:   0 0 0 0 0 ... 0
-			# v_in_1:   0 1 2 3 4 ... N - 1
-			# v_in_2:   0 0 1 2 3 ... N - 2
-			# rnn_out:  1 2 3 4 5 ... N
+			rnn_input = tf.concat([feature_rep, v_in], axis = 4)
+
 			outputs, state = tf.nn.dynamic_rnn(cell = self.stacked_lstm, inputs = rnn_input,
 				sequence_length = gt_seq_len, initial_state = initial_state, dtype = tf.float32
 			)
+
 			return self.FC(outputs, gt_rnn_out, gt_seq_len)
 		else:
-			# current prob, time line, current state
-			rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]
-			rnn_time = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
-			rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
+			pass
+			return None
 
-			# beam search
-			for i in range(1, self.max_num_vertices):
-				prob, time, cell = [], [], [[[], []] for item in self.lstm_out_channel]
-				for j in range(config.BEAM_WIDTH):
-					prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, config.BEAM_WIDTH])
-					v_first = terminal[:, 1, ...] # rnn_time[j][..., 0: 1]
-					v_last_ = rnn_time[j][..., i - 1: i]
-					v__last = rnn_time[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
-					inputs = tf.concat([feature, v_first, v_last_, v__last, terminal[:, 1, ...]], 3)
-					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
-					prob_new, time_new = self.FC(rnn_output = outputs, reuse = True)
-					time_new = tf.transpose(time_new, [0, 2, 3, 1])
-					prob.append(prob_last + prob_new)
-					for k, item in enumerate(states):
-						for l in [0, 1]:
-							cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
-					for k in range(config.BEAM_WIDTH):
-						time.append(tf.concat([rnn_time[j], time_new[..., k: k + 1]], 3))
-				prob = tf.concat(prob, 1)
-				val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
-				idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, config.BEAM_WIDTH]), idx], 2)
-				time = tf.stack(time, 1)
-				ret = tf.gather_nd(time, idx)
-				for k, item in enumerate(states):
-					for l in [0, 1]:
-						cell[k][l] = tf.gather_nd(tf.concat(cell[k][l], 1), idx)
-
-				# Update every timeline
-				for j in range(config.BEAM_WIDTH):
-					rnn_prob[j] = val[..., j]
-					rnn_time[j] = ret[:, j, ...]
-					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in cell])
-			return tf.stack(rnn_time, 1)
-
-	def train(self, aa, bb, vv, ii, oo, tt, ee, ll):
+	def train(self, aa, bb, vv, ii, oo, ll):
 		#
 		img          = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
 		gt_boundary  = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
 		gt_vertices  = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
 		gt_v_in      = tf.reshape(ii, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_v_out     = tf.reshape(oo, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num])
-		gt_terminal  = tf.reshape(tt, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, 2, self.v_out_nrow, self.v_out_ncol, 1])
-		gt_end       = tf.reshape(ee, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, 1])
 		gt_seq_len   = tf.reshape(ll, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH])
-		gt_rnn_out   = tf.concat([gt_v_out, gt_end], 2)
 
 		# PolygonRNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
+		logits , loss_RNN = self.RNN(feature, gt_v_in, gt_v_out, gt_seq_len)
 
 		# 
 		pred_rnn      = tf.nn.softmax(logits)
-		pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num], [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
-		pred_v_out    = tf.concat([gt_terminal[:, 0: 1, :, :, 0], pred_v_out[:, :-1, ...]], axis = 1)
-		pred_end      = tf.reshape(pred_rnn[..., self.res_num], [-1, self.max_num_vertices])
+		pred_v_out    = tf.reshape(pred_rnn, [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
 
-		return loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end
+		return loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out
 
 	def predict_mask(self, aa):
 		img = tf.reshape(aa, [1, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])

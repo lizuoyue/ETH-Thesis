@@ -25,14 +25,12 @@ if __name__ == '__main__':
 	vv = tf.placeholder(tf.float32)
 	ii = tf.placeholder(tf.float32)
 	oo = tf.placeholder(tf.float32)
-	tt = tf.placeholder(tf.float32)
-	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
 	ff = tf.placeholder(tf.float32)
 
-	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll)
-	pred_mask_res = graph.predict_mask(aa)
-	pred_path_res = graph.predict_path(ff, tt)
+	train_res = graph.train(aa, bb, vv, ii, oo, ll)
+	# pred_mask_res = graph.predict_mask(aa)
+	# pred_path_res = graph.predict_path(ff)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
@@ -73,7 +71,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
+			img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH)
 			# for j in range(config.AREA_TRAIN_BATCH):
 			# 	plt.imsave('0-img.png', img[j])
 			# 	plt.imsave('1-b.png', boundary[j])
@@ -89,7 +87,7 @@ if __name__ == '__main__':
 			# input()
 			# continue
 			feed_dict = {
-				aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
+				aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ll: seq_lens
 			}
 
 			# Training and get result
@@ -120,26 +118,26 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 0:
-				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
-				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+			# if i % 1000 == 0:
+			# 	img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
+			# 	feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-				path = 'test_res/'
-				plt.imsave(path + '%d-0.png' % i, img[0])
-				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
-				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
+			# 	path = 'test_res/'
+			# 	plt.imsave(path + '%d-0.png' % i, img[0])
+			# 	plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
+			# 	plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
-				# terminal = getAllTerminal(pred_vertices[0])
-				multi_roads = []
-				for j in range(terminal_gt.shape[1]):
-					road = [terminal_gt[0, j, 0]]
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[0, j]})
-					for k in range(config.MAX_NUM_VERTICES):
-						road.append(pred_v_out[0, 0, k])
-					multi_roads.append(road)
+			# 	# terminal = getAllTerminal(pred_vertices[0])
+			# 	multi_roads = []
+			# 	for j in range(terminal_gt.shape[1]):
+			# 		road = [terminal_gt[0, j, 0]]
+			# 		pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[0, j]})
+			# 		for k in range(config.MAX_NUM_VERTICES):
+			# 			road.append(pred_v_out[0, 0, k])
+			# 		multi_roads.append(road)
 
-				newImg = recoverMultiPath(img[0], np.array(multi_roads))
-				plt.imsave(path + '%d-3.png' % i, newImg)
+			# 	newImg = recoverMultiPath(img[0], np.array(multi_roads))
+			# 	plt.imsave(path + '%d-3.png' % i, newImg)
 
 			# Save model
 			if i % 2000 == 0:
