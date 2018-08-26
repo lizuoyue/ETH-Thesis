@@ -104,14 +104,15 @@ class Model(object):
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
-			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num * 2, activation = None)
+			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num * 8, activation = None)
+			logits = tf.layers.dense(inputs = logits, units = self.res_num * 2, activation = None)
 			logits = tf.reshape(logits, tf.concat([tf.shape(gt_rnn_out), [2]], 0))
-			print(logits.shape)
 			prob = tf.nn.softmax(logits)[..., 0]
-			print(prob.shape)
 		if not reuse:
-			print(gt_rnn_out.shape)
-			loss = tf.losses.log_loss(gt_rnn_out, prob)
+			n_pos = tf.reduce_sum(gt_rnn_out)
+			n_neg = tf.reduce_sum(1 - gt_rnn_out)
+			w = tf.where(tf.less(gt_rnn_out, 0.5), 0.5 / n_neg, 0.5 / n_pos)
+			loss = tf.losses.log_loss(gt_rnn_out, prob, w)
 			return prob, loss
 		else:
 			return prob
