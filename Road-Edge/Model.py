@@ -107,14 +107,12 @@ class Model(object):
 			logits_pos = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
 			logits_neg = tf.layers.dense(inputs = output_reshape, units = self.res_num, activation = None)
 			logits = tf.concat([logits_pos, logits_neg], axis = -1)
+			prob = tf.nn.softmax(logits)
 		if not reuse:
-			gt_rnn_out_d = tf.concat([gt_rnn_out, 1 - gt_rnn_out], axis = -1)
-			loss = tf.reduce_mean(
-				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out_d, logits = logits)
-			)
-			return logits, loss
+			loss = tf.losses.log_loss(gt_rnn_out, prob)
+			return prob, loss
 		else:
-			return tf.nn.softmax(logits)
+			return prob
 
 	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, reuse = None):
 		batch_size = [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, 1, 1, 1]#tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
@@ -149,10 +147,9 @@ class Model(object):
 
 		# PolygonRNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		logits , loss_RNN = self.RNN(feature, gt_v_in, gt_v_out, gt_seq_len)
+		pred_rnn, loss_RNN = self.RNN(feature, gt_v_in, gt_v_out, gt_seq_len)
 
 		# 
-		pred_rnn      = tf.nn.softmax(logits)
 		pred_v_out    = tf.reshape(pred_rnn, [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
 
 		return loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out
