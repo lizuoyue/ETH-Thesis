@@ -109,15 +109,15 @@ class Model(object):
 			logits = tf.concat([logits_pos, logits_neg], axis = -1)
 		if not reuse:
 			gt_rnn_out_d = tf.concat([gt_rnn_out, 1 - gt_rnn_out], axis = -1)
-			loss = tf.reduce_sum(
+			loss = tf.reduce_mean(
 				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out_d, logits = logits)
-			) / (tf.reduce_sum(gt_seq_len) + 1)
+			)
 			return logits, loss
 		else:
 			return tf.nn.softmax(logits)
 
 	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, reuse = None):
-		batch_size = tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
+		batch_size = config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH#tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
 		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
 			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
@@ -129,11 +129,6 @@ class Model(object):
 				[config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 132]
 			)
 			rnn_input = tf.concat([feature_rep, v_in], axis = 4)
-			print(rnn_input.shape)
-			print(initial_state[0][0].shape, initial_state[0][1].shape)
-			print(initial_state[1][0].shape, initial_state[1][1].shape)
-			print(initial_state[2][0].shape, initial_state[2][1].shape)
-
 			outputs, state = tf.nn.dynamic_rnn(cell = self.stacked_lstm, inputs = rnn_input,
 				sequence_length = gt_seq_len, initial_state = initial_state, dtype = tf.float32
 			)
