@@ -292,7 +292,7 @@ def getDataBatch(batch_size, show = False):
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
-	res = [np.array([item[i] for item in res]) for i in range(8)]
+	res = [np.array([item[i] for item in res]) for i in range(6)]
 	if False:
 		for item in res:
 			np.array(item).shape
@@ -365,7 +365,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(1000):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(10, show = False)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(10, show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
