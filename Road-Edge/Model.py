@@ -109,9 +109,10 @@ class Model(object):
 			logits = tf.reshape(logits, tf.concat([tf.shape(gt_rnn_out), [2]], 0))
 			prob = tf.nn.softmax(logits)[..., 0]
 		if not reuse:
+			num = tf.reduce_sum(tf.ones(gt_rnn_out.shape))
 			n_pos = tf.reduce_sum(gt_rnn_out)
 			n_neg = tf.reduce_sum(1 - gt_rnn_out)
-			w = gt_rnn_out * 0.5 / n_pos + (1 - gt_rnn_out) * 0.5 / n_neg
+			w = gt_rnn_out * num / n_pos + (1 - gt_rnn_out) * num / n_neg
 			loss = tf.losses.log_loss(gt_rnn_out, prob, w)
 			return prob, loss
 		else:
