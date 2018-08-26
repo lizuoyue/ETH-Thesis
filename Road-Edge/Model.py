@@ -117,7 +117,7 @@ class Model(object):
 			return tf.nn.softmax(logits)
 
 	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, reuse = None):
-		batch_size = config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH#tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
+		batch_size = [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, 1, 1, 1]#tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
 		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
 			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
