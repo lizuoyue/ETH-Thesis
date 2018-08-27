@@ -342,32 +342,25 @@ def findPeaks(heatmap, sigma = 0):
 def getAllTerminal(hmap):
 	res = []
 	peaks_with_score = findPeaks(hmap)
-	print(peaks_with_score)
+	# print(peaks_with_score)
 	for i in range(len(peaks_with_score)):
 		x1, y1, _ = peaks_with_score[i]
-		for j in range(len(peaks_with_score)):
-			if j == i:
-				continue
-			x2, y2, _ = peaks_with_score[j]
-			res.append([np.array(vertex_pool[y1][x1]), np.array(vertex_pool[y2][x2])])
+		res.append(np.array(vertex_pool[y1][x1]))
 	return np.array(res)
 
-def recoverMultiPath(img, paths):
+def recoverMultiPath(img, v_in, v_out, th = 0.5):
+	assert(v_in.shape[0] == v_out.shape[0])
 	res = np.zeros((img.shape[0], img.shape[1]))
-	for i in range(paths.shape[0]):
-		path = []
-		for j in range(max_seq_len + 1):
-			hmap = paths[i, j]
-			end = 1 - hmap.sum()
-			ind = np.unravel_index(np.argmax(hmap), hmap.shape)
-			if hmap[ind] >= end:
-				path.append((ind[1] * 8 + 4, ind[0] * 8 + 4))
-			else:
-				break
-		pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
-		draw = ImageDraw.Draw(pathImg)
-		draw.line(path, fill = 1, width = 5)
-		res += np.array(pathImg, np.float32)
+	for i in range(v_in.shape[0]):
+		iii = v_in[i]
+		i_ind = np.unravel_index(np.argmax(iii), iii.shape)
+		ooo = v_out[i]
+		if ooo.max() > th:
+			o_ind = np.unravel_index(np.argmax(ooo), ooo.shape)
+			pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
+			draw = ImageDraw.Draw(pathImg)
+			draw.line([(i_ind[1] * 8 + 4, i_ind[0] * 8 + 4), (o_ind[1] * 8 + 4, o_ind[0] * 8 + 4)], fill = 1, width = 5)
+			res += np.array(pathImg, np.float32)
 	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min() + 1e-9), np.uint8)
 	return res
 

@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
-	quit()
+	# quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1])
@@ -118,26 +118,20 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			# if i % 1000 == 0:
-			# 	img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
-			# 	feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+			if i % 1000 == 0:
+				img, _, _, v_in_gt, _, _ = getDataBatch(1, 'val')
+				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-			# 	path = 'test_res/'
-			# 	plt.imsave(path + '%d-0.png' % i, img[0])
-			# 	plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
-			# 	plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
+				path = 'test_res/'
+				plt.imsave(path + '%d-0.png' % i, img[0])
+				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
+				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
-			# 	# terminal = getAllTerminal(pred_vertices[0])
-			# 	multi_roads = []
-			# 	for j in range(terminal_gt.shape[1]):
-			# 		road = [terminal_gt[0, j, 0]]
-			# 		pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[0, j]})
-			# 		for k in range(config.MAX_NUM_VERTICES):
-			# 			road.append(pred_v_out[0, 0, k])
-			# 		multi_roads.append(road)
+				v_in = getAllTerminal(pred_vertices[0])
+				pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
-			# 	newImg = recoverMultiPath(img[0], np.array(multi_roads))
-			# 	plt.imsave(path + '%d-3.png' % i, newImg)
+				newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out)
+				plt.imsave(path + '%d-3.png' % i, newImg)
 
 			# Save model
 			if i % 2000 == 0:
