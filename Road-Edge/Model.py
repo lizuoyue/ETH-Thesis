@@ -106,7 +106,7 @@ class Model(object):
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num * 8, activation = None)
 			logits = tf.layers.dense(inputs = logits, units = self.res_num * 2, activation = None)
-			logits = tf.reshape(logits, tf.concat([tf.shape(gt_rnn_out), [2]], 0))
+			logits = tf.reshape(logits, tf.concat([tf.shape(logits)[: -1], [tf.shape(logits)[-1] / 2], [2]], 0))
 			prob = tf.nn.softmax(logits)[..., 0]
 		if not reuse:
 			# num = tf.reduce_sum(tf.ones(gt_rnn_out.shape))
