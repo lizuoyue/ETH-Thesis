@@ -119,12 +119,12 @@ class Model(object):
 			return prob
 
 	def RNN(self, feature, v_in = None, gt_rnn_out = None, gt_seq_len = None, reuse = None):
-		batch_size = [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, 1, 1, 1]#tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
-		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
-			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
-			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
-		) for i in range(len(self.lstm_out_channel))])
 		if not reuse:
+			batch_size = [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, 1, 1, 1]
+			initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
+				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
+				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+			) for i in range(len(self.lstm_out_channel))])
 			feature_rep = tf.reshape(tf.tile(tf.reshape(feature,
 				[config.AREA_TRAIN_BATCH, 1, 1, self.v_out_nrow, self.v_out_ncol, 132]),
 				[1, config.TRAIN_NUM_PATH, self.max_num_vertices, 1, 1, 1]),
@@ -137,8 +137,15 @@ class Model(object):
 
 			return self.FC(outputs, gt_rnn_out, gt_seq_len)
 		else:
-			pass
-			return None
+			batch_size = tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
+			initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
+				c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
+				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+			) for i in range(len(self.lstm_out_channel))])
+			feature_rep = tf.tile(feature, batch_size)
+			rnn_input = tf.concat([feature_rep, v_in], axis = 4)
+			outputs, _ = self.stacked_lstm(rnn_input, initial_state)
+			return self.FC(outputs, reuse = True)
 
 	def train(self, aa, bb, vv, ii, oo, ll):
 		#
@@ -163,14 +170,15 @@ class Model(object):
 		feature, pred_boundary, pred_vertices = self.CNN(img, reuse = True)
 		return feature, pred_boundary, pred_vertices
 
-	def predict_path(self, ff, tt):
+	def predict_path(self, ff, ii):
 		#
 		feature  = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 132])
-		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
+		v_in = tf.reshape(ii, [-1, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
-		pred_v_out = self.RNN(feature, terminal, reuse = True)
-		pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
+		pred_v_out = self.RNN(feature, v_in, reuse = True)
+		print(pred_v_out.shape)
+		# pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
 		# print(pred_v_out.shape) # config.BEAM_WIDTH ? 6 24 24
 		return pred_v_out
 

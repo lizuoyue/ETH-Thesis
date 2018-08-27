@@ -29,12 +29,12 @@ if __name__ == '__main__':
 	ff = tf.placeholder(tf.float32)
 
 	train_res = graph.train(aa, bb, vv, ii, oo, ll)
-	# pred_mask_res = graph.predict_mask(aa)
-	# pred_path_res = graph.predict_path(ff)
+	pred_mask_res = graph.predict_mask(aa)
+	pred_path_res = graph.predict_path(ff, ii)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
-	# quit()
+	quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1])
