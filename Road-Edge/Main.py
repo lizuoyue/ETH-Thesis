@@ -128,8 +128,8 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
 				v_in, v_in_vis = getAllTerminal(pred_vertices[0])
-				print(v_in.shape)
-				print(v_in_gt.shape)
+				# print(v_in.shape)
+				# print(v_in_gt.shape)
 				plt.imsave(path + '%d-3.png' % i, v_in_vis)
 				pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
