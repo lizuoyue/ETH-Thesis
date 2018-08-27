@@ -143,7 +143,7 @@ class Model(object):
 				h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
 			) for i in range(len(self.lstm_out_channel))])
 			feature_rep = tf.tile(feature, batch_size)
-			rnn_input = tf.concat([feature_rep, v_in], axis = 4)
+			rnn_input = tf.concat([feature_rep, v_in], axis = 3)
 			outputs, _ = self.stacked_lstm(rnn_input, initial_state)
 			return self.FC(outputs, reuse = True)
 
