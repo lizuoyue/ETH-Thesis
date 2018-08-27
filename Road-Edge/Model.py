@@ -105,8 +105,11 @@ class Model(object):
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num * 8, activation = None)
-			logits = tf.layers.dense(inputs = logits, units = self.res_num * 2, activation = None)
-			logits = tf.reshape(logits, tf.concat([tf.shape(logits)[: -1], [tf.shape(logits)[-1] / 2], [2]], 0))
+			logits_pos = tf.layers.dense(inputs = logits, units = self.res_num, activation = None)
+			logits_neg = tf.layers.dense(inputs = logits, units = self.res_num, activation = None)
+			logits_pos = tf.expand_dims(logits_pos, -1)
+			logits_neg = tf.expand_dims(logits_neg, -1)
+			logits = tf.concat([logits_pos, logits_neg], -1)
 			prob = tf.nn.softmax(logits)[..., 0]
 		if not reuse:
 			# num = tf.reduce_sum(tf.ones(gt_rnn_out.shape))
