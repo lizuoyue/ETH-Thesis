@@ -360,13 +360,10 @@ def getAllTerminal(hmap):
 
 def recoverMultiPath(img, v_in, v_out, th = 0.5):
 	assert(v_in.shape[0] == v_out.shape[0])
-	print(v_in.shape)
-	print(v_out.shape)
 	res = np.zeros((img.shape[0], img.shape[1]))
 	for i in range(v_in.shape[0]):
-		iii = v_in[i]
+		iii = v_in[i, 0]
 		y1, x1 = np.unravel_index(np.argmax(iii), iii.shape)
-		print(v_out[i].shape)
 		peaks_with_score = findPeaks(v_out[i])
 		pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
 		draw = ImageDraw.Draw(pathImg)
