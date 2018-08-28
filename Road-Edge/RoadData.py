@@ -277,6 +277,7 @@ def getData(img_id, num_path, show = False):
 			time.sleep(0.1)
 			Image.fromarray(np.array(vertex_output[0], np.uint8)).resize(config.AREA_SIZE).show()
 			time.sleep(0.1)
+			input()
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
@@ -286,8 +287,6 @@ def getData(img_id, num_path, show = False):
 	vertex_inputs = np.array(vertex_inputs)
 	vertex_outputs = np.array(vertex_outputs)
 	seq_lens = np.array(seq_lens)
-
-	input()
 
 	# print(img.shape)
 	# print(boundary.shape)
