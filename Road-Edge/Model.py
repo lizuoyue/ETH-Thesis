@@ -122,7 +122,7 @@ class Model(object):
 			logits = tf.concat([logits_pos, logits_neg], -1)
 			prob = tf.nn.softmax(logits)[..., 0]
 		if not reuse:
-			loss = self.weightedLogLosstf(gt_rnn_out, prob)
+			loss = self.weightedLogLoss(gt_rnn_out, prob)
 			return prob, loss
 		else:
 			return prob
