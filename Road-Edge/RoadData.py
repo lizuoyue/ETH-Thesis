@@ -313,9 +313,9 @@ def getDataBatch(batch_size, mode, show = False):
 			np.array(item).shape
 	return res
 
-def findPeaks(heatmap, sigma = 0):
+def findPeaks(hmap, sigma = 0):
 	th = 0
-	# hmap = gaussian_filter(heatmap, sigma)
+	# hmap = gaussian_filter(hmap, sigma)
 	map_left = np.zeros(hmap.shape)
 	map_left[1:,:] = hmap[:-1,:]
 	map_right = np.zeros(hmap.shape)
