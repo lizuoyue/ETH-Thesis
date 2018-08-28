@@ -179,10 +179,9 @@ class Model(object):
 		v_in = tf.reshape(ii, [-1, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
-		pred_v_out = self.RNN(feature, v_in, reuse = True)
-		print(pred_v_out.shape)
-		# pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
-		# print(pred_v_out.shape) # config.BEAM_WIDTH ? 6 24 24
+		pred_rnn = self.RNN(feature, v_in, reuse = True)
+		pred_v_out = tf.reshape(pred_rnn, [-1, self.v_out_nrow, self.v_out_ncol])
+
 		return pred_v_out
 
 class Logger(object):

@@ -362,14 +362,14 @@ def recoverMultiPath(img, v_in, v_out, th = 0.5):
 	res = np.zeros((img.shape[0], img.shape[1]))
 	for i in range(v_in.shape[0]):
 		iii = v_in[i]
-		i_ind = np.unravel_index(np.argmax(iii), iii.shape)
-		ooo = v_out[i]
-		if ooo.max() > th:
-			o_ind = np.unravel_index(np.argmax(ooo), ooo.shape)
-			pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
-			draw = ImageDraw.Draw(pathImg)
-			draw.line([(i_ind[1] * 8 + 4, i_ind[0] * 8 + 4), (o_ind[1] * 8 + 4, o_ind[0] * 8 + 4)], fill = 1, width = 5)
-			res += np.array(pathImg, np.float32)
+		y1, x1 = np.unravel_index(np.argmax(iii), iii.shape)
+		print(v_out[i].shape)
+		peaks_with_score = findPeaks(v_out[i])
+		pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
+		draw = ImageDraw.Draw(pathImg)
+		for x2, y2, _ in peaks_with_score:
+			draw.line([(x1 * 8 + 4, y1 * 8 + 4), (x2 * 8 + 4, y2 * 8 + 4)], fill = 1, width = 5)
+		res += np.array(pathImg, np.float32)
 	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min() + 1e-9), np.uint8)
 	return res
 
