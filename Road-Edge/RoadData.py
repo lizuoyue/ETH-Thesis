@@ -372,7 +372,7 @@ def recoverMultiPath(img, v_in, v_out):
 
 	pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
 	draw = ImageDraw.Draw(pathImg)
-	for seg in segs
+	for seg in segs:
 		draw.line(seg, fill = 255, width = 5)
 	return np.array(pathImg)
 
