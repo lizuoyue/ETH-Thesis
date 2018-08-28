@@ -134,10 +134,10 @@ if __name__ == '__main__':
 				pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
 				newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out)
-				for j in range(12):
-					plt.imsave(path + '%d-4-%d-in.png' % (i, j), v_in_gt[0, j, 0])
-					plt.imsave(path + '%d-4-%d-out.png' % (i, j), pred_v_out[j])
 				plt.imsave(path + '%d-4.png' % i, newImg)
+				for j in range(12):
+					plt.imsave(path + '%d-5-%d-in.png' % (i, j), v_in_gt[0, j, 0])
+					plt.imsave(path + '%d-5-%d-out.png' % (i, j), pred_v_out[j])
 
 			# Save model
 			if i % 2000 == 0:
