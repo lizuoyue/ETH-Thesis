@@ -273,9 +273,9 @@ def getData(img_id, num_path, show = False):
 			vertex_output = [blank]
 
 		if show:
-			Image.fromarray(np.array(vertex_input[0], uint8)).resize(config.AREA_SIZE).show()
+			Image.fromarray(np.array(vertex_input[0], np.uint8)).resize(config.AREA_SIZE).show()
 			time.sleep(0.1)
-			Image.fromarray(np.array(vertex_output[0], uint8)).resize(config.AREA_SIZE).show()
+			Image.fromarray(np.array(vertex_output[0], np.uint8)).resize(config.AREA_SIZE).show()
 			time.sleep(0.1)
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
