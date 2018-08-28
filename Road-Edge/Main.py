@@ -133,7 +133,7 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-3.png' % i, v_in_vis)
 				pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
-				newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out)
+				# newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out)
 				for j in range(12):
 					plt.imsave(path + '%d-4-%d-in.png' % (i, j), v_in_gt[0, j, 0])
 					plt.imsave(path + '%d-4-%d-out.png' % (i, j), pred_v_out[j])
