@@ -313,7 +313,7 @@ def getDataBatch(batch_size, mode, show = False):
 			np.array(item).shape
 	return res
 
-def findPeaks(heatmap, sigma = 0):
+def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 	th = 0
 	# hmap = gaussian_filter(heatmap, sigma)
 	hmap = heatmap.copy()
@@ -342,7 +342,7 @@ def findPeaks(heatmap, sigma = 0):
 	summary += hmap>=map_dr+th
 	summary += hmap>=map_ul+th
 	summary += hmap>=map_ur+th
-	peaks_binary = np.logical_and.reduce((summary >= 8, hmap >= 0.5))
+	peaks_binary = np.logical_and.reduce((summary >= 8, hmap >= min_val))
 	peaks = list(zip(np.nonzero(peaks_binary)[1], np.nonzero(peaks_binary)[0])) # note reverse
 	peaks_with_score = [x + (heatmap[x[1],x[0]],) for x in peaks]
 	return peaks_with_score
@@ -350,7 +350,7 @@ def findPeaks(heatmap, sigma = 0):
 def getAllTerminal(hmap):
 	temp = np.zeros(hmap.shape, np.float32)
 	res = []
-	peaks_with_score = findPeaks(hmap)
+	peaks_with_score = findPeaks(hmap, min_val = 0.5)
 	# print(peaks_with_score)
 	for i in range(len(peaks_with_score)):
 		x1, y1, s = peaks_with_score[i]
@@ -358,15 +358,14 @@ def getAllTerminal(hmap):
 		temp[y1, x1] = s * 255.0
 	return np.array(res), np.array(temp, np.uint8)
 
-def recoverMultiPath(img, v_in, v_out, th = 0.5):
+def recoverMultiPath(img, v_in, v_out):
 	assert(v_in.shape[0] == v_out.shape[0])
 	res = np.zeros((img.shape[0], img.shape[1]))
 	for i in range(v_in.shape[0]):
 		iii = v_in[i, 0]
 		y1, x1 = np.unravel_index(np.argmax(iii), iii.shape)
 		print(x1, y1)
-		peaks_with_score = findPeaks(v_out[i])
-		print(v_out[i].max())
+		peaks_with_score = findPeaks(v_out[i], min_val = 0.2)
 		print(peaks_with_score)
 		pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
 		draw = ImageDraw.Draw(pathImg)

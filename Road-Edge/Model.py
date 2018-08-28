@@ -67,6 +67,16 @@ class Model(object):
 		weights = weights / tf.reduce_sum(weights)
 		return tf.reduce_sum(tf.multiply(tf.square(gt - pred) * 33, weights))
 
+	def weightedLogLoss(self, gt, pred):
+		num = tf.reduce_sum(tf.ones(gt.shape))
+		n_pos = tf.reduce_sum(gt)
+		n_neg = tf.reduce_sum(1 - gt)
+		n_pos = tf.maximum(tf.minimum(n_pos, num - 1), 0)
+		n_neg = tf.maximum(tf.minimum(n_neg, num - 1), 0)
+		num /= 2
+		w = gt * num / n_pos + (1 - gt) * num / n_neg
+		return tf.losses.log_loss(gt, pred, w)
+
 	def CNN(self, img, gt_boundary = None, gt_vertices = None, reuse = None):
 		"""
 			gt_boundary       : [batch_size, height, width, 1]
@@ -87,8 +97,8 @@ class Model(object):
 		vertices_prob = tf.nn.softmax(vertices)[..., 0]
 		new_combine = tf.concat([feature, boundary, vertices], 3)
 		if not reuse:
-			loss  = tf.losses.log_loss(gt_boundary, boundary_prob)#self.L2LossWeighted(gt_boundary, boundary_prob)
-			loss += tf.losses.log_loss(gt_vertices, vertices_prob)#self.L2LossWeighted(gt_vertices, vertices_prob)
+			loss  = self.weightedLogLoss(gt_boundary, boundary_prob)
+			loss += self.weightedLogLoss(gt_vertices, vertices_prob)
 			return new_combine, boundary_prob, vertices_prob, loss
 		else:
 			return new_combine, boundary_prob, vertices_prob
@@ -112,11 +122,7 @@ class Model(object):
 			logits = tf.concat([logits_pos, logits_neg], -1)
 			prob = tf.nn.softmax(logits)[..., 0]
 		if not reuse:
-			# num = tf.reduce_sum(tf.ones(gt_rnn_out.shape))
-			# n_pos = tf.reduce_sum(gt_rnn_out)
-			# n_neg = tf.reduce_sum(1 - gt_rnn_out)
-			# w = gt_rnn_out * num / n_pos + (1 - gt_rnn_out) * num / n_neg
-			loss = tf.losses.log_loss(gt_rnn_out, prob)#, w)
+			loss = self.weightedLogLosstf(gt_rnn_out, prob)
 			return prob, loss
 		else:
 			return prob
