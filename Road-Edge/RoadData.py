@@ -315,7 +315,7 @@ def getDataBatch(batch_size, mode, show = False):
 
 def findPeaks(heatmap, sigma = 0):
 	th = 0
-	hmap = gaussian_filter(heatmap, sigma)
+	# hmap = gaussian_filter(heatmap, sigma)
 	map_left = np.zeros(hmap.shape)
 	map_left[1:,:] = hmap[:-1,:]
 	map_right = np.zeros(hmap.shape)
@@ -341,7 +341,7 @@ def findPeaks(heatmap, sigma = 0):
 	summary += hmap>=map_dr+th
 	summary += hmap>=map_ul+th
 	summary += hmap>=map_ur+th
-	peaks_binary = np.logical_and.reduce((summary >= 8, hmap >= 0.7))
+	peaks_binary = np.logical_and.reduce((summary >= 8, hmap >= 0.5))
 	peaks = list(zip(np.nonzero(peaks_binary)[1], np.nonzero(peaks_binary)[0])) # note reverse
 	peaks_with_score = [x + (heatmap[x[1],x[0]],) for x in peaks]
 	return peaks_with_score

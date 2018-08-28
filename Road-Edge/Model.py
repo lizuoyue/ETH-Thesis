@@ -180,7 +180,7 @@ class Model(object):
 
 		#
 		pred_v_out = self.RNN(feature, v_in, reuse = True)
-		# print(pred_v_out.shape)
+		print(pred_v_out.shape)
 		# pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
 		# print(pred_v_out.shape) # config.BEAM_WIDTH ? 6 24 24
 		return pred_v_out

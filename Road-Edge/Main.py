@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
-	# quit()
+	quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1])
