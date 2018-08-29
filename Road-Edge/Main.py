@@ -126,9 +126,6 @@ if __name__ == '__main__':
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-					print(v_out_gt.shape)
-					print(pred_v_out.shape)
-
 					stat_b.extend(list(np.reshape(pred_boundary[vertices > 0.5], [-1])))
 					stat_v.extend(list(np.reshape(pred_vertices[vertices > 0.5], [-1])))
 
@@ -149,6 +146,13 @@ if __name__ == '__main__':
 					for k in range(12):
 						plt.imsave(path + '%d-5-%d-in.png' % (j, k), v_in_gt[0, k, 0])
 						plt.imsave(path + '%d-5-%d-out.png' % (j, k), pred_v_out[k])
+
+				plt.hist(stat_b, bins = 100)
+				plt.show()
+				plt.hist(stat_v, bins = 100)
+				plt.show()
+				plt.hist(stat_out, bins = 100)
+				plt.show()
 
 			# Save model
 			if i % 2000 == 0:
