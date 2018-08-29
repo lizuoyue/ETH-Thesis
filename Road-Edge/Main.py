@@ -119,25 +119,26 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 1000 == 0:
-				img, _, _, v_in_gt, _, _ = getDataBatch(1, 'val')
-				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+				for j in range(20):
+					img, _, _, v_in_gt, _, _ = getDataBatch(1, 'val')
+					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-				path = 'test_res/'
-				plt.imsave(path + '%d-0.png' % i, img[0])
-				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
-				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
+					path = 'test_res/'
+					plt.imsave(path + '%d-0.png' % j, img[0])
+					plt.imsave(path + '%d-1.png' % j, pred_boundary[0] * 255)
+					plt.imsave(path + '%d-2.png' % j, pred_vertices[0] * 255)
 
-				v_in, v_in_vis = getAllTerminal(pred_vertices[0])
-				# print(v_in.shape)
-				# print(v_in_gt.shape)
-				plt.imsave(path + '%d-3.png' % i, v_in_vis)
-				pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
+					v_in, v_in_vis = getAllTerminal(pred_vertices[0])
+					# print(v_in.shape)
+					# print(v_in_gt.shape)
+					plt.imsave(path + '%d-3.png' % j, v_in_vis)
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
-				newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out)
-				plt.imsave(path + '%d-4.png' % i, newImg)
-				for j in range(12):
-					plt.imsave(path + '%d-5-%d-in.png' % (i, j), v_in_gt[0, j, 0])
-					plt.imsave(path + '%d-5-%d-out.png' % (i, j), pred_v_out[j])
+					newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out)
+					plt.imsave(path + '%d-4.png' % j, newImg)
+					for k in range(12):
+						plt.imsave(path + '%d-5-%d-in.png' % (j, k), v_in_gt[0, k, 0])
+						plt.imsave(path + '%d-5-%d-out.png' % (j, k), pred_v_out[k])
 
 			# Save model
 			if i % 2000 == 0:

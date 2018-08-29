@@ -71,11 +71,10 @@ class Model(object):
 		num = tf.reduce_sum(tf.ones(gt.shape))
 		n_pos = tf.reduce_sum(gt)
 		n_neg = tf.reduce_sum(1 - gt)
-		n_pos = tf.maximum(tf.minimum(n_pos, num - 1), 0)
-		n_neg = tf.maximum(tf.minimum(n_neg, num - 1), 0)
-		num /= 2
+		n_pos = tf.maximum(tf.minimum(n_pos, num - 1), 1)
+		n_neg = tf.maximum(tf.minimum(n_neg, num - 1), 1)
 		w = gt * num / n_pos + (1 - gt) * num / n_neg
-		return tf.losses.log_loss(gt, pred, w)
+		return tf.losses.log_loss(gt, pred, w / 2)
 
 	def CNN(self, img, gt_boundary = None, gt_vertices = None, reuse = None):
 		"""
