@@ -128,8 +128,8 @@ if __name__ == '__main__':
 
 					from scipy.ndimage.filters import gaussian_filter
 
-					for sigma in [1, 2, 4, 8, 16]:
-						hmap = gaussian_filter(pred_vertices[0], sigma/10)
+					for sigma in [1, 2, 4, 8, 16, 32, 64, 128]:
+						hmap = gaussian_filter(pred_vertices[0], sigma/100)
 						plt.imsave('sigma-%d.png' % sigma, hmap)
 
 					stat_b.extend(list(np.reshape(pred_boundary[vertices > 0.5], [-1])))
