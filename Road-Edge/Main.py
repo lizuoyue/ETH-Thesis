@@ -118,11 +118,11 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 1:
-				stat_b = []
-				stat_v = []
-				stat_out = []
-				for j in range(20):
+			if i % 1000 == 0:
+				# stat_b = []
+				# stat_v = []
+				# stat_out = []
+				for j in range(10):
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
@@ -147,18 +147,16 @@ if __name__ == '__main__':
 						plt.imsave(path + '%d-5-%d-in.png' % (j, k), v_in_gt[0, k, 0])
 						plt.imsave(path + '%d-5-%d-out.png' % (j, k), pred_v_out[k])
 
-				plt.hist(stat_b, bins = 100)
-				plt.savefig('stat_b.pdf')
-				plt.hist(stat_v, bins = 100)
-				plt.savefig('stat_v.pdf')
-				plt.hist(stat_out, bins = 100)
-				plt.savefig('stat_out.pdf')
+				# plt.hist(stat_b, bins = 100)
+				# plt.savefig('stat_b.pdf')
+				# plt.hist(stat_v, bins = 100)
+				# plt.savefig('stat_v.pdf')
+				# plt.hist(stat_out, bins = 100)
+				# plt.savefig('stat_out.pdf')
 
 			# Save model
 			if i % 2000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
-
-			quit()
 
 		# End main loop
 		train_writer.close()
