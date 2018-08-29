@@ -126,12 +126,6 @@ if __name__ == '__main__':
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-					from scipy.ndimage.filters import gaussian_filter
-
-					for sigma in [1, 2, 4, 8, 16, 32, 64, 128]:
-						hmap = gaussian_filter(pred_vertices[0], sigma/100)
-						plt.imsave('sigma-%d.png' % sigma, hmap)
-
 					stat_b.extend(list(np.reshape(pred_boundary[vertices > 0.5], [-1])))
 					stat_v.extend(list(np.reshape(pred_vertices[vertices > 0.5], [-1])))
 
@@ -140,14 +134,14 @@ if __name__ == '__main__':
 					plt.imsave(path + '%d-1.png' % j, pred_boundary[0] * 255)
 					plt.imsave(path + '%d-2.png' % j, pred_vertices[0] * 255)
 
-					v_in, v_in_vis = getAllTerminal(pred_vertices[0])
+					peaks, v_in, v_in_vis = getAllTerminal(pred_vertices[0], pred_boundary[0])
 					plt.imsave(path + '%d-3.png' % j, v_in_vis)
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
 					for k in range(v_in_gt.shape[1]):
 						stat_out.extend(list(np.reshape(pred_v_out[k][v_out_gt[0, k, 0] > 0.5], [-1])))
 
-					newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out)
+					newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out, set(peaks))
 					plt.imsave(path + '%d-4.png' % j, newImg)
 					for k in range(12):
 						plt.imsave(path + '%d-5-%d-in.png' % (j, k), v_in_gt[0, k, 0])
