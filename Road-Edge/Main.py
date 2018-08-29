@@ -5,7 +5,7 @@ from Config import *
 from Model import *
 from RoadData import *
 import matplotlib
-# matplotlib.use('agg')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import glob
 
