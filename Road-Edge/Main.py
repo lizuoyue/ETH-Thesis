@@ -118,7 +118,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 0:
+			if i % 1000 == 1:
 				# stat_b = []
 				# stat_v = []
 				# stat_out = []
@@ -126,8 +126,8 @@ if __name__ == '__main__':
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-					stat_b.extend(list(np.reshape(pred_boundary[vertices > 0.5], [-1])))
-					stat_v.extend(list(np.reshape(pred_vertices[vertices > 0.5], [-1])))
+					# stat_b.extend(list(np.reshape(pred_boundary[vertices > 0.5], [-1])))
+					# stat_v.extend(list(np.reshape(pred_vertices[vertices > 0.5], [-1])))
 
 					path = 'test_res/'
 					plt.imsave(path + '%d-0.png' % j, img[0])
@@ -138,8 +138,8 @@ if __name__ == '__main__':
 					plt.imsave(path + '%d-3.png' % j, v_in_vis)
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
-					for k in range(v_in_gt.shape[1]):
-						stat_out.extend(list(np.reshape(pred_v_out[k][v_out_gt[0, k, 0] > 0.5], [-1])))
+					# for k in range(v_in_gt.shape[1]):
+					# 	stat_out.extend(list(np.reshape(pred_v_out[k][v_out_gt[0, k, 0] > 0.5], [-1])))
 
 					newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out, set(peaks))
 					plt.imsave(path + '%d-4.png' % j, newImg)
