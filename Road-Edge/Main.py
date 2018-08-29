@@ -5,7 +5,7 @@ from Config import *
 from Model import *
 from RoadData import *
 import matplotlib
-matplotlib.use('agg')
+# matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import glob
 
@@ -148,11 +148,11 @@ if __name__ == '__main__':
 						plt.imsave(path + '%d-5-%d-out.png' % (j, k), pred_v_out[k])
 
 				plt.hist(stat_b, bins = 100)
-				plt.show()
+				plt.savefig('stat_b.pdf')
 				plt.hist(stat_v, bins = 100)
-				plt.show()
+				plt.savefig('stat_v.pdf')
 				plt.hist(stat_out, bins = 100)
-				plt.show()
+				plt.savefig('stat_out.pdf')
 
 			# Save model
 			if i % 2000 == 0:
