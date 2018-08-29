@@ -350,7 +350,7 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 def getAllTerminal(hmap):
 	temp = np.zeros(hmap.shape, np.float32)
 	res = []
-	peaks_with_score = findPeaks(hmap, min_val = 0.5)
+	peaks_with_score = findPeaks(hmap, min_val = 0.7)
 	# print(peaks_with_score)
 	for i in range(len(peaks_with_score)):
 		x1, y1, s = peaks_with_score[i]
@@ -364,9 +364,7 @@ def recoverMultiPath(img, v_in, v_out):
 	for i in range(v_in.shape[0]):
 		iii = v_in[i, 0]
 		y1, x1 = np.unravel_index(np.argmax(iii), iii.shape)
-		# print(x1, y1)
-		peaks_with_score = findPeaks(v_out[i], min_val = 0.2)
-		# print(peaks_with_score)
+		peaks_with_score = findPeaks(v_out[i], min_val = 0.7)
 		for x2, y2, _ in peaks_with_score:
 			segs.append([(x1 * 8 + 4, y1 * 8 + 4), (x2 * 8 + 4, y2 * 8 + 4)])
 
