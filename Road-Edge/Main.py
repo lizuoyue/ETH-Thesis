@@ -118,7 +118,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 1:
+			if i % 1000 == 0:
 				# stat_b = []
 				# stat_v = []
 				# stat_out = []
