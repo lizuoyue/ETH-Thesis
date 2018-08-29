@@ -357,7 +357,7 @@ def getAllTerminal(hmap, hmap_b):
 			res.append(np.array(vertex_pool[y1][x1]))
 			temp[y1, x1] = s * 255.0
 			peaks.append((x1, y1))
-	return np.array(res), np.array(temp, np.uint8)
+	return peaks, np.array(res), np.array(temp, np.uint8)
 
 def recoverMultiPath(img, v_in, v_out, peaks):
 	assert(v_in.shape[0] == v_out.shape[0])
