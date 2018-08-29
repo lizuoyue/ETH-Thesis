@@ -126,6 +126,12 @@ if __name__ == '__main__':
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
+					from scipy.ndimage.filters import gaussian_filter
+
+					for sigma in [1, 2, 4, 8, 16]:
+						hmap = gaussian_filter(pred_vertices, sigma/10)
+						plt.imsave('sigma-%d.png' % sigma, hmap)
+
 					stat_b.extend(list(np.reshape(pred_boundary[vertices > 0.5], [-1])))
 					stat_v.extend(list(np.reshape(pred_vertices[vertices > 0.5], [-1])))
 
