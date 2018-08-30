@@ -352,9 +352,9 @@ def getAllTerminal(hmap, hmap_b):
 	peaks_with_score = findPeaks(hmap, min_val = 0.9)
 	for i in range(len(peaks_with_score)):
 		x, y, s = peaks_with_score[i]
-		if hmap_b[y, x] > 0.9:
-			res.append(np.array(vertex_pool[y][x]))
-			temp[y, x] = s * 255.0
+		# if hmap_b[y, x] > 0.9:
+		res.append(np.array(vertex_pool[y][x]))
+		temp[y, x] = s * 255.0
 	return peaks_with_score, np.array(res), np.array(temp, np.uint8)
 
 def recoverMultiPath(img, v_in, v_out, peaks_with_score):

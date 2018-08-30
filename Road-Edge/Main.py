@@ -140,9 +140,9 @@ if __name__ == '__main__':
 					savePNG(img[0], pred_vertices[0] * 255, path + '%d-1.png' % j)
 					savePNG(img[0], v_in_vis, path + '%d-2.png' % j)
 
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in})
 
-					newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out, set(peaks))
+					newImg = recoverMultiPath(img[0], v_in, pred_v_out, peaks)
 					savePNG(img[0], newImg, path + '%d-3.png' % j)
 					# for k in range(12):
 					# 	savePNG(img[0], v_in_gt[0, k, 0], path + '%d-5-%d-in.png' % (j, k))
