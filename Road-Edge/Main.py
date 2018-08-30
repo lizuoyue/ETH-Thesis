@@ -11,6 +11,13 @@ import glob
 
 config = Config()
 
+def savePNG(mat1, mat2, filename):
+	plt.imshow(mat1)
+	plt.imshow(mat2, interpolation = 'nearest', alpha = 0.5)
+	plt.axis('off')
+	plt.savefig(filename, bbox_inches = 'tight')
+	return
+
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
 
@@ -119,40 +126,24 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 1000 == 0:
-				# stat_b = []
-				# stat_v = []
-				# stat_out = []
 				for j in range(10):
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-					# stat_b.extend(list(np.reshape(pred_boundary[vertices > 0.5], [-1])))
-					# stat_v.extend(list(np.reshape(pred_vertices[vertices > 0.5], [-1])))
+					peaks, v_in, v_in_vis = getAllTerminal(pred_vertices[0], pred_boundary[0])
 
 					path = 'test_res/'
-					plt.imsave(path + '%d-0.png' % j, img[0])
-					plt.imsave(path + '%d-1.png' % j, pred_boundary[0] * 255)
-					plt.imsave(path + '%d-2.png' % j, pred_vertices[0] * 255)
+					savePNG(img[0], pred_boundary[0] * 255, path + '%d-0.png' % j)
+					savePNG(img[0], pred_vertices[0] * 255, path + '%d-1.png' % j)
+					savePNG(img[0], v_in_vis, path + '%d-2.png' % j)
 
-					peaks, v_in, v_in_vis = getAllTerminal(pred_vertices[0], pred_boundary[0])
-					plt.imsave(path + '%d-3.png' % j, v_in_vis)
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in_gt})
 
-					# for k in range(v_in_gt.shape[1]):
-					# 	stat_out.extend(list(np.reshape(pred_v_out[k][v_out_gt[0, k, 0] > 0.5], [-1])))
-
 					newImg = recoverMultiPath(img[0], v_in_gt[0], pred_v_out, set(peaks))
-					plt.imsave(path + '%d-4.png' % j, newImg)
-					for k in range(12):
-						plt.imsave(path + '%d-5-%d-in.png' % (j, k), v_in_gt[0, k, 0])
-						plt.imsave(path + '%d-5-%d-out.png' % (j, k), pred_v_out[k])
-
-				# plt.hist(stat_b, bins = 100)
-				# plt.savefig('stat_b.pdf')
-				# plt.hist(stat_v, bins = 100)
-				# plt.savefig('stat_v.pdf')
-				# plt.hist(stat_out, bins = 100)
-				# plt.savefig('stat_out.pdf')
+					savePNG(img[0], newImg, path + '%d-3.png' % j)
+					# for k in range(12):
+					# 	savePNG(img[0], v_in_gt[0, k, 0], path + '%d-5-%d-in.png' % (j, k))
+					# 	savePNG(img[0], pred_v_out[k], path + '%d-5-%d-out.png' % (j, k))
 
 			# Save model
 			if i % 2000 == 0:

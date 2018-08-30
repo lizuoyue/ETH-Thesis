@@ -349,27 +349,25 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 def getAllTerminal(hmap, hmap_b):
 	temp = np.zeros(hmap.shape, np.float32)
 	res = []
-	peaks = []
 	peaks_with_score = findPeaks(hmap, min_val = 0.9)
 	for i in range(len(peaks_with_score)):
-		x1, y1, s = peaks_with_score[i]
-		if hmap_b[y1, x1] > 0.9:
-			res.append(np.array(vertex_pool[y1][x1]))
-			temp[y1, x1] = s * 255.0
-			peaks.append((x1, y1))
-	return peaks, np.array(res), np.array(temp, np.uint8)
+		x, y, s = peaks_with_score[i]
+		if hmap_b[y, x] > 0.9:
+			res.append(np.array(vertex_pool[y][x]))
+			temp[y, x] = s * 255.0
+	return peaks_with_score, np.array(res), np.array(temp, np.uint8)
 
-def recoverMultiPath(img, v_in, v_out, peaks):
+def recoverMultiPath(img, v_in, v_out, peaks_with_score):
 	assert(v_in.shape[0] == v_out.shape[0])
+	peaks = set([(x, y) for x, y, _ in peaks_with_score])
 	segs = []
 	for i in range(v_in.shape[0]):
 		iii = v_in[i, 0]
 		y1, x1 = np.unravel_index(np.argmax(iii), iii.shape)
-		# peaks_with_score = findPeaks(v_out[i], min_val = 0.7)
-		# for x2, y2, _ in peaks_with_score:
-		for x2, y2 in peaks:
-			if v_out[i, y2, x2] > 0.9:
-				segs.append([(x1 * 8 + 4, y1 * 8 + 4), (x2 * 8 + 4, y2 * 8 + 4)])
+		if (x1, y1) in peaks:
+			for x2, y2 in peaks:
+				if (x2, y2) != (x1, y1) and v_out[i, y2, x2] > 0.9:
+					segs.append([(x1 * 8 + 4, y1 * 8 + 4), (x2 * 8 + 4, y2 * 8 + 4)])
 
 	pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
 	draw = ImageDraw.Draw(pathImg)
