@@ -138,15 +138,20 @@ if __name__ == '__main__':
 					path = 'test_res/'
 					savePNG(img[0], pred_boundary[0] * 255, path + '%d-0.png' % j)
 					savePNG(img[0], pred_vertices[0] * 255, path + '%d-1.png' % j)
+
+					from scipy.ndimage.filters import gaussian_filter
+
+					savePNG(img[0], gaussian_filter(pred_vertices[0] * 255, 1), path + '%d-1-sigma.png' % j)
+					
 					savePNG(img[0], v_in_vis, path + '%d-2.png' % j)
 
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in})
 
 					newImg = recoverMultiPath(img[0], v_in, pred_v_out, peaks)
 					savePNG(img[0], newImg, path + '%d-3.png' % j)
-					# for k in range(12):
-					# 	savePNG(img[0], v_in_gt[0, k, 0], path + '%d-5-%d-in.png' % (j, k))
-					# 	savePNG(img[0], pred_v_out[k], path + '%d-5-%d-out.png' % (j, k))
+					for k in range(v_in.shape[0]):
+						savePNG(img[0], v_in[k], path + '%d-4-%d-in.png' % (j, k))
+						savePNG(img[0], pred_v_out[k], path + '%d-4-%d-out.png' % (j, k))
 
 			# Save model
 			if i % 2000 == 0:
