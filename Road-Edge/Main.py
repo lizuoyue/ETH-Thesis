@@ -128,7 +128,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 1:
+			if i % 1000 == -1:
 				for j in range(30):
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
@@ -139,9 +139,8 @@ if __name__ == '__main__':
 					savePNG(img[0], pred_boundary[0] * 255, path + '%d-0.png' % j)
 					savePNG(img[0], pred_vertices[0] * 255, path + '%d-1.png' % j)
 
-					from scipy.ndimage.filters import gaussian_filter
-
-					savePNG(img[0], gaussian_filter(pred_vertices[0] * 255, 1), path + '%d-1-sigma.png' % j)
+					# from scipy.ndimage.filters import gaussian_filter
+					# savePNG(img[0], gaussian_filter(pred_vertices[0] * 255, 1), path + '%d-1-sigma.png' % j)
 					
 					savePNG(img[0], v_in_vis, path + '%d-2.png' % j)
 
@@ -156,8 +155,6 @@ if __name__ == '__main__':
 			# Save model
 			if i % 2000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
-
-			quit()
 
 		# End main loop
 		train_writer.close()
