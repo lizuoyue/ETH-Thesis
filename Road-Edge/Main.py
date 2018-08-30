@@ -142,6 +142,8 @@ if __name__ == '__main__':
 
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in})
 
+					print(v_in.shape)
+					print(pred_v_out.shape)
 					newImg = recoverMultiPath(img[0], v_in, pred_v_out, peaks)
 					savePNG(img[0], newImg, path + '%d-3.png' % j)
 					# for k in range(12):
