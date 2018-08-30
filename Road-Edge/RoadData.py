@@ -366,7 +366,7 @@ def recoverMultiPath(img, v_in, v_out, peaks_with_score):
 		y1, x1 = np.unravel_index(np.argmax(iii), iii.shape)
 		if (x1, y1) in peaks:
 			for x2, y2 in peaks:
-				if (x2, y2) != (x1, y1) and v_out[i, y2, x2] > 0.9:
+				if (x2, y2) != (x1, y1) and v_out[i, y2, x2] > 0.95:
 					segs.append([(x1 * 8 + 4, y1 * 8 + 4), (x2 * 8 + 4, y2 * 8 + 4)])
 
 	pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
