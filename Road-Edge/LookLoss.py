@@ -2,7 +2,7 @@ import os, time
 import matplotlib.pyplot as plt
 import numpy as np
 
-def mov_avg(li, n = 5000):
+def mov_avg(li, n = 10000):
 	assert(len(li) >= n)
 	s = sum(li[0: n])
 	res = [s / float(n)]
