@@ -13,4 +13,9 @@
 ### Example 2 (Failure Case)
 | Mask Boundary | Mask Vertices | Peaks | Final Result |
 |:--:|:--:|:--:|:--:|
-| ![](1-0.png) | ![](1-1.png) | ![](1-2.png) | ![](1-3.png) |
+| ![](6-0.png) | ![](6-1.png) | ![](6-2.png) | ![](6-3.png) |
+
+| RNN *Input* | RNN *Output* | RNN *Input* | RNN *Output* |
+|:--:|:--:|:--:|:--:|
+| ![](6-4-0-in.png) | ![](6-4-0-out.png) | ![](6-4-1-in.png) | ![](6-4-1-out.png) |
+| ![](6-4-2-in.png) | ![](6-4-2-out.png) | ![](6-4-3-in.png) | ![](6-4-3-out.png) |
