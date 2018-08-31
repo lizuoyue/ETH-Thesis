@@ -128,7 +128,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == -1:
+			if i % 1000 == 1:
 				for j in range(30):
 					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
@@ -155,6 +155,8 @@ if __name__ == '__main__':
 			# Save model
 			if i % 2000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
+
+			quit()
 
 		# End main loop
 		train_writer.close()
