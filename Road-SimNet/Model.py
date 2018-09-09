@@ -88,7 +88,7 @@ class Model(object):
 
 		# CNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		feature = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
+		feature = tf.concat([feature, pred_boundary, pred_vertices], axis = -1)
 		pred_sim, loss_SIM = self.SIM(feature, gt_sim_in, gt_sim_in_idx, gt_sim_out)
 		return loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim
 
