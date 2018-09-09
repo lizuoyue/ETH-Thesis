@@ -43,14 +43,14 @@ class Model(object):
 		feature = VGG19('CNN', img, reuse = reuse)
 		l1 = [FirstStageBranch('CPM_L1', feature, 2, reuse = reuse)]
 		l2 = [FirstStageBranch('CPM_L2', feature, 2, reuse = reuse)]
-		boundary_prob = [tf.nn.softmax(l1[-1])[..., 0]]
-		vertices_prob = [tf.nn.softmax(l2[-1])[..., 0]]
+		boundary_prob = [tf.nn.softmax(l1[-1])[..., 0: 1]]
+		vertices_prob = [tf.nn.softmax(l2[-1])[..., 0: 1]]
 		for i in range(2, self.num_stages + 1):
 			stage_input = tf.concat([l1[-1], l2[-1], feature], axis = -1)
 			l1.append(StageBranch('stage%d_L1' % i, stage_input, 2, reuse = reuse))
 			l2.append(StageBranch('stage%d_L2' % i, stage_input, 2, reuse = reuse))
-			boundary_prob.append(tf.nn.softmax(l1[-1])[..., 0])
-			vertices_prob.append(tf.nn.softmax(l2[-1])[..., 0])
+			boundary_prob.append(tf.nn.softmax(l1[-1])[..., 0: 1])
+			vertices_prob.append(tf.nn.softmax(l2[-1])[..., 0: 1])
 		if not reuse:
 			loss = 0
 			for item in boundary_prob:
@@ -72,7 +72,7 @@ class Model(object):
 		feature_cat = tf.concat([feature_rep, sim_in], axis = -1)
 		prob = VGG19_SIM('SIM', feature_cat, reuse = reuse)
 		if not reuse:
-			loss = self.num_stages * 2 * self.weightedLogLoss(gt_sim_out * 0, prob)
+			loss = self.num_stages * 2 * self.weightedLogLoss(gt_sim_out, prob)
 			return prob, loss
 		else:
 			return prob
@@ -80,25 +80,27 @@ class Model(object):
 	def train(self, aa, bb, vv, ii, dd, oo):
 		#
 		img           = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
-		gt_boundary   = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
-		gt_vertices   = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
+		gt_boundary   = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
+		gt_vertices   = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_sim_in     = tf.reshape(ii, [config.SIM_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 2])
 		gt_sim_in_idx = tf.reshape(dd, [config.SIM_TRAIN_BATCH])
 		gt_sim_out    = tf.reshape(oo, [config.SIM_TRAIN_BATCH])
 
 		# CNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
+		feature = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
 		pred_sim, loss_SIM = self.SIM(feature, gt_sim_in, gt_sim_in_idx, gt_sim_out)
 		return loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim
 
 	def predict_mask(self, aa):
 		img = tf.reshape(aa, [1, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
 		feature, pred_boundary, pred_vertices = self.CNN(img, reuse = True)
+		feature = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
 		return feature, pred_boundary, pred_vertices
 
 	def predict_sim(self, ff, ii):
 		#
-		feature    = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 128])
+		feature    = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 130])
 		sim_in     = tf.reshape(ii, [-1, self.v_out_nrow, self.v_out_ncol, 2])
 		sim_in_idx = tf.zeros(tf.shape(sim_in)[0: 1], tf.int32)
 		sim_prob   = self.SIM(feature, sim_in, sim_in_idx, reuse = True)
