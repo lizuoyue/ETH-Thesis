@@ -242,8 +242,7 @@ def getData(img_id, seq_id, show = False):
 	vertices = np.array(vertices) / 255.0
 
 	# SIM in and out
-	sim_in_pos = []
-	sim_in_neg = []
+	sim_in_out = []
 	for i in range(len(g.v)):
 		for j in range(i + 1, len(g.v)):
 			temp = Image.new('P', (w8, h8), color = 0)
@@ -252,45 +251,31 @@ def getData(img_id, seq_id, show = False):
 			temp = np.array(temp) / 255.0
 			val = np.mean(boundary[temp > 0.5])
 			if val > config.SIM_TRAIN_POS_TH:
-				sim_in_pos.append([
+				sim_in_out.append(([
 					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
 					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
-				])
-				sim_in_pos.append([
+				], 1))
+				sim_in_out.append(([
 					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
 					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
-				])
+				], 1))
 			else:
-				sim_in_neg.append([
+				sim_in_out.append(([
 					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
 					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
-				])
-				sim_in_neg.append([
+				], 0))
+				sim_in_out.append(([
 					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
 					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
-				])
-	if len(sim_in_pos) == 0:
-		sim_in_pos.append([np.array(blank), np.array(blank)])
-	if len(sim_in_neg) == 0:
-		sim_in_neg.append([np.array(blank), np.array(blank)])
+				], 0))
 
-	num_sim = int(config.SIM_TRAIN_BATCH / 2)
-	pos_idx = list(np.random.choice(len(sim_in_pos), num_sim, replace = True))
-	neg_idx = list(np.random.choice(len(sim_in_neg), num_sim, replace = True))
-	sim_out = [i % 2 for i in range(config.SIM_TRAIN_BATCH)]
-	np.random.shuffle(sim_out)
-	sim_in, pp, pn = [], -1, -1
-	for sim in sim_out:
-		if sim:
-			pp += 1
-			sim_in.append(sim_in_pos[pos_idx[pp]])
-		else:
-			pn += 1
-			sim_in.append(sim_in_neg[neg_idx[pn]])
-	sim_idx = seq_id * np.ones([config.SIM_TRAIN_BATCH], np.int32)
+	np.random.shuffle(sim_in_out)
+	sim_in = [item[0] for item in sim_in_out]
+	sim_out = [item[1] for item in sim_in_out]
+	sim_idx = seq_id * np.ones([len(sim_in)], np.int32)
 
 	if show:
-		for i in range(6):
+		for i in range(len(sim_in)):
 			Image.fromarray(np.array(sim_in[i][0], np.uint8) + np.array(sim_in[i][1], np.uint8)).resize(config.AREA_SIZE).show()
 			print(sim_out[i])
 			time.sleep(0.1)
@@ -318,7 +303,8 @@ def getDataBatch(batch_size, mode, show = False):
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(mini_ids[ids[i]], i, show))
-	res = [np.array([item[i] for item in res]) for i in range(6)]
+	res = [np.array([item[i] for item in res]) for i in range(3)]
+	res.extend([np.concatenate([item[i] for item in res], axis = 0) for i in range(3, 6)])
 	if True:
 		for item in res:
 			print(item.shape)
