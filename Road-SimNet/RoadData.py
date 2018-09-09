@@ -251,6 +251,7 @@ def getData(img_id, seq_id, show = False):
 			draw.line(list(g.v[i]) + list(g.v[j]), fill = 255, width = 1)
 			temp = np.array(temp) / 255.0
 			val = np.mean(boundary[temp > 0.5])
+			print(val)
 			if val > config.SIM_TRAIN_POS_TH:
 				sim_in_pos.append([
 					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
@@ -269,6 +270,11 @@ def getData(img_id, seq_id, show = False):
 					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
 					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
 				])
+	if len(sim_in_pos) == 0:
+		sim_in_pos.append([np.array(blank), np.array(blank)])
+	if len(sim_in_neg) == 0:
+		sim_in_pos.append([np.array(blank), np.array(blank)])
+
 	num_sim = int(config.SIM_TRAIN_BATCH / 2)
 	pos_idx = list(np.random.choice(len(sim_in_pos), num_sim, replace = True))
 	neg_idx = list(np.random.choice(len(sim_in_neg), num_sim, replace = True))
