@@ -21,7 +21,7 @@ class Config(object):
 
 		# Learning parameters
 		self.NUM_ITER = 2000001
-		self.LEARNING_RATE = 5e-6
+		self.LEARNING_RATE = 1e-4
 		self.V_OUT_RES = tuple(self.AREA_SIZE_8)
 		self.AREA_TRAIN_BATCH = 4
 		self.AREA_VALID_BATCH = 6

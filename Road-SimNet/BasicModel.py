@@ -44,19 +44,19 @@ def StageBranch(scope, feature, num, reuse = None):
 
 def VGG19_SIM(scope, img, reuse = None):
 	with tf.variable_scope(scope, reuse = reuse):
-		conv4_1 = tf.layers.conv2d       (inputs = img    , filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv4_1') #  32
-		conv4_2 = tf.layers.conv2d       (inputs = conv4_1, filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv4_2') #  32
-		conv4_3 = tf.layers.conv2d       (inputs = conv4_2, filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv4_3') #  32
-		conv4_4 = tf.layers.conv2d       (inputs = conv4_3, filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv4_4') #  32
+		conv4_1 = tf.layers.conv2d       (inputs = img    , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'conv4_1') #  32
+		conv4_2 = tf.layers.conv2d       (inputs = conv4_1, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'conv4_2') #  32
+		conv4_3 = tf.layers.conv2d       (inputs = conv4_2, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'conv4_3') #  32
+		conv4_4 = tf.layers.conv2d       (inputs = conv4_3, filters = 512, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'conv4_4') #  32
 		pool4   = tf.layers.max_pooling2d(inputs = conv4_4, pool_size = 2, strides = 2)																	 # 128
-		conv5_1 = tf.layers.conv2d       (inputs = pool4  , filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv3_1') #  64
-		conv5_2 = tf.layers.conv2d       (inputs = conv5_1, filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv3_2') #  64
-		conv5_3 = tf.layers.conv2d       (inputs = conv5_2, filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv3_3') #  64
-		conv5_4 = tf.layers.conv2d       (inputs = conv5_3, filters = 512, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'conv3_4') #  64
+		conv5_1 = tf.layers.conv2d       (inputs = pool4  , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'conv3_1') #  64
+		conv5_2 = tf.layers.conv2d       (inputs = conv5_1, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'conv3_2') #  64
+		conv5_3 = tf.layers.conv2d       (inputs = conv5_2, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'conv3_3') #  64
+		conv5_4 = tf.layers.conv2d       (inputs = conv5_3, filters = 128, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'conv3_4') #  64
 		pool5   = tf.layers.max_pooling2d(inputs = conv5_4, pool_size = 2, strides = 2)																	 #  32
-		fc0     = tf.reshape(pool5, [-1, 7 * 7 * 512])
-		fc1     = tf.layers.dense(inputs = fc0, units = 4096, activation = tf.nn.relu)
-		fc2     = tf.layers.dense(inputs = fc1, units =  256, activation = tf.nn.relu)
+		fc0     = tf.reshape(pool5, [-1, 7 * 7 * 128])
+		fc1     = tf.layers.dense(inputs = fc0, units = 1024, activation = tf.nn.relu)
+		fc2     = tf.layers.dense(inputs = fc1, units =   64, activation = tf.nn.relu)
 		fc3     = tf.layers.dense(inputs = fc2, units =    2, activation = None)
 		return tf.nn.softmax(fc3)[..., 0]
 
