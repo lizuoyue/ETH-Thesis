@@ -311,7 +311,7 @@ def getDataBatch(batch_size, mode, show = False):
 	choose = np.random.choice(new_res[-1].shape[0], config.SIM_TRAIN_BATCH, replace = (new_res[-1].shape[0] < config.SIM_TRAIN_BATCH))
 	for i in range(3, 6):
 		new_res[i] = new_res[i][choose]
-	if True:
+	if False:
 		for item in new_res:
 			print(item.shape)
 		input()

@@ -26,5 +26,5 @@ class Config(object):
 		self.AREA_TRAIN_BATCH = 4
 		self.AREA_VALID_BATCH = 6
 		self.AREA_TEST_BATCH = 12
-		self.SIM_TRAIN_BATCH = 32
+		self.SIM_TRAIN_BATCH = 128
 		self.SIM_TRAIN_POS_TH = 0.7
