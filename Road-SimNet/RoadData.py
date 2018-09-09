@@ -319,9 +319,10 @@ def getDataBatch(batch_size, mode, show = False):
 	for i in range(batch_size):
 		res.append(getData(mini_ids[ids[i]], i, show))
 	res = [np.array([item[i] for item in res]) for i in range(6)]
-	if False:
+	if True:
 		for item in res:
 			np.array(item).shape
+		input()
 	return res
 
 def findPeaks(heatmap, sigma = 0, min_val = 0.5):
