@@ -287,7 +287,7 @@ def getData(img_id, seq_id, show = False):
 	# print(boundary.shape)
 	# print(vertices.shape)
 	print(sim_in.shape)
-	print(sim_idx.shape)
+	print(sim_idx)
 	print(sim_out.shape)
 	# input()
 
@@ -303,13 +303,13 @@ def getDataBatch(batch_size, mode, show = False):
 	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 	for i in range(batch_size):
 		res.append(getData(mini_ids[ids[i]], i, show))
-	res = [np.array([item[i] for item in res]) for i in range(3)]
-	res.extend([np.concatenate([item[i] for item in res], axis = 0) for i in range(3, 6)])
+	new_res = [np.array([item[i] for item in res]) for i in range(3)]
+	new_res.extend([np.concatenate([item[i] for item in res], axis = 0) for i in range(3, 6)])
 	if True:
-		for item in res:
+		for item in new_res:
 			print(item.shape)
 		input()
-	return res
+	return new_res
 
 def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 	th = 0
