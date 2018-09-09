@@ -286,7 +286,7 @@ def getData(img_id, seq_id, show = False):
 
 	if show:
 		for i in range(6):
-			Image.fromarray(np.array(sim_in[i, 0], np.uint8) + np.array(sim_in[i, 1], np.uint8)).resize(config.AREA_SIZE).show()
+			Image.fromarray(np.array(sim_in[i][0], np.uint8) + np.array(sim_in[i][1], np.uint8)).resize(config.AREA_SIZE).show()
 			print(sim_out[i])
 			time.sleep(0.1)
 
