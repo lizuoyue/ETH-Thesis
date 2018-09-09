@@ -95,7 +95,7 @@ class Model(object):
 	def predict_mask(self, aa):
 		img = tf.reshape(aa, [1, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
 		feature, pred_boundary, pred_vertices = self.CNN(img, reuse = True)
-		feature = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
+		feature = tf.concat([feature, pred_boundary, pred_vertices], axis = -1)
 		return feature, pred_boundary, pred_vertices
 
 	def predict_sim(self, ff, ii):
