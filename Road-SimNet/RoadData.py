@@ -321,7 +321,7 @@ def getDataBatch(batch_size, mode, show = False):
 	res = [np.array([item[i] for item in res]) for i in range(6)]
 	if True:
 		for item in res:
-			np.array(item).shape
+			print(item.shape)
 		input()
 	return res
 
