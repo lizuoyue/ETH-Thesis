@@ -273,7 +273,7 @@ def getData(img_id, seq_id, show = False):
 	if len(sim_in_pos) == 0:
 		sim_in_pos.append([np.array(blank), np.array(blank)])
 	if len(sim_in_neg) == 0:
-		sim_in_pos.append([np.array(blank), np.array(blank)])
+		sim_in_neg.append([np.array(blank), np.array(blank)])
 
 	num_sim = int(config.SIM_TRAIN_BATCH / 2)
 	pos_idx = list(np.random.choice(len(sim_in_pos), num_sim, replace = True))
