@@ -77,7 +77,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
+			img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 			# for j in range(config.AREA_TRAIN_BATCH):
 			# 	plt.imsave('0-img.png', img[j])
 			# 	plt.imsave('1-b.png', boundary[j])
@@ -93,40 +93,40 @@ if __name__ == '__main__':
 			# input()
 			# continue
 			feed_dict = {
-				aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ll: seq_lens
+				aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
 			}
 
 			# Training and get result
 			init_time = time.time()
-			_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out) = sess.run([train, train_res], feed_dict)
+			_, (loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim) = sess.run([train, train_res], feed_dict)
 			cost_time = time.time() - init_time
 			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
-			train_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
-			train_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
+			train_writer.log_scalar('Loss SIM'  , loss_SIM  , i)
+			train_writer.log_scalar('Loss Full' , loss_CNN + loss_SIM, i)
 			
 			# Write loss to file
-			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
+			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_SIM, cost_time))
 			train_loss.flush()
 
 			# Validation
-			if i % 200 == 0:
-				img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
+			if i % 100 == 0:
+				img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
-					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ll: seq_lens
+					aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
 				}
 				init_time = time.time()
-				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out = sess.run(train_res, feed_dict)
+				loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim = sess.run(train_res, feed_dict)
 				cost_time = time.time() - init_time
 				valid_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
-				valid_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
-				valid_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
-				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
+				valid_writer.log_scalar('Loss SIM'  , loss_SIM  , i)
+				valid_writer.log_scalar('Loss Full' , loss_CNN + loss_SIM, i)
+				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_SIM, cost_time))
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 1:
+			if i % 500 == -1:
 				for j in range(30):
-					img, boundary, vertices, v_in_gt, v_out_gt, _ = getDataBatch(1, 'val')
+					img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(1, 'val')
 					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 					peaks, v_in, v_in_vis = getAllTerminal(pred_vertices[0], pred_boundary[0])
@@ -151,8 +151,6 @@ if __name__ == '__main__':
 			# Save model
 			if i % 5000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
-
-			quit()
 
 		# End main loop
 		train_writer.close()
