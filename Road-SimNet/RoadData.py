@@ -280,15 +280,16 @@ def getData(img_id, seq_id, show = False):
 			print(sim_out[i])
 			time.sleep(0.1)
 
+	print(len(sim_in))
 	sim_in = np.array(sim_in).transpose([0, 2, 3, 1]) / 255.0
 	sim_out = np.array(sim_out)
 
 	# print(img.shape)
 	# print(boundary.shape)
 	# print(vertices.shape)
-	print(sim_in.shape)
-	print(sim_idx)
-	print(sim_out.shape)
+	# print(sim_in.shape)
+	# print(sim_idx.shape)
+	# print(sim_out.shape)
 	# input()
 
 	return img, boundary, vertices, sim_in, sim_idx, sim_out
