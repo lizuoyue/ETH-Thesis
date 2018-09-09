@@ -280,8 +280,10 @@ def getData(img_id, seq_id, show = False):
 			print(sim_out[i])
 			time.sleep(0.1)
 
-	print(len(sim_in))
-	sim_in = np.array(sim_in).transpose([0, 2, 3, 1]) / 255.0
+	if len(sim_in) > 0:
+		sim_in = np.array(sim_in).transpose([0, 2, 3, 1]) / 255.0
+	else:
+		sim_in = np.zeros((0, config.V_OUT_RES[1], config.V_OUT_RES[0], 2))
 	sim_out = np.array(sim_out)
 
 	# print(img.shape)
