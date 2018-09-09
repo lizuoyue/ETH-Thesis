@@ -82,9 +82,9 @@ class Model(object):
 		img           = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
 		gt_boundary   = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
 		gt_vertices   = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
-		gt_sim_in     = tf.reshape(ii, [config.AREA_TRAIN_BATCH * config.SIM_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 2])
-		gt_sim_in_idx = tf.reshape(dd, [config.AREA_TRAIN_BATCH * config.SIM_TRAIN_BATCH])
-		gt_sim_out    = tf.reshape(oo, [config.AREA_TRAIN_BATCH * config.SIM_TRAIN_BATCH])
+		gt_sim_in     = tf.reshape(ii, [config.SIM_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 2])
+		gt_sim_in_idx = tf.reshape(dd, [config.SIM_TRAIN_BATCH])
+		gt_sim_out    = tf.reshape(oo, [config.SIM_TRAIN_BATCH])
 
 		# CNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
