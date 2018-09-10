@@ -23,7 +23,7 @@ class Model(object):
 		self.vertex_pool = np.array(self.vertex_pool)
 
 		#
-		self.num_stages = 4
+		self.num_stages = 2
 		return
 
 	def weightedLogLoss(self, gt, pred):
@@ -40,15 +40,17 @@ class Model(object):
 			gt_boundary       : [batch_size, height, width, 1]
 			gt_vertices       : [batch_size, height, width, 1]
 		"""
-		feature = VGG19('CNN', img, reuse = reuse)
-		l1 = [FirstStageBranch('CPM_L1', feature, 2, reuse = reuse)]
-		l2 = [FirstStageBranch('CPM_L2', feature, 2, reuse = reuse)]
+		vgg_result = VGG19('VGG19', img, reuse = reuse)
+		skip_feature = SkipFeature('SkipFeature', vgg_result, reuse = reuse)
+
+		l1 = [Stage('L1_Stage1', skip_feature, 2, reuse = reuse)]
+		l2 = [Stage('L2_Stage1', skip_feature, 2, reuse = reuse)]
 		boundary_prob = [tf.nn.softmax(l1[-1])[..., 0: 1]]
 		vertices_prob = [tf.nn.softmax(l2[-1])[..., 0: 1]]
 		for i in range(2, self.num_stages + 1):
-			stage_input = tf.concat([l1[-1], l2[-1], feature], axis = -1)
-			l1.append(StageBranch('stage%d_L1' % i, stage_input, 2, reuse = reuse))
-			l2.append(StageBranch('stage%d_L2' % i, stage_input, 2, reuse = reuse))
+			stage_input = tf.concat([skip_feature, l1[-1], l2[-1]], axis = -1)
+			l1.append(Stage('L1_Stage%d' % i, stage_input, 2, reuse = reuse))
+			l2.append(Stage('L1_Stage%d' % i, stage_input, 2, reuse = reuse))
 			boundary_prob.append(tf.nn.softmax(l1[-1])[..., 0: 1])
 			vertices_prob.append(tf.nn.softmax(l2[-1])[..., 0: 1])
 		if not reuse:
@@ -57,14 +59,14 @@ class Model(object):
 				loss += self.weightedLogLoss(gt_boundary, item)
 			for item in vertices_prob:
 				loss += self.weightedLogLoss(gt_vertices, item)
-			return feature, boundary_prob[-1], vertices_prob[-1], loss
+			return skip_feature, boundary_prob[-1], vertices_prob[-1], loss
 		else:
-			return feature, boundary_prob[-1], vertices_prob[-1]
+			return skip_feature, boundary_prob[-1], vertices_prob[-1]
 
 	def SIM(self, feature, sim_in, sim_in_idx, gt_sim_out = None, reuse = None):
 		""" 
 			feature    : [batch_size, height, width, num_channel]
-			sim_in     : [num_pair, height, width, 2]
+			sim_in     : [num_pair, height, width, 1]
 			sim_in_idx : [num_pair]
 			gt_sim_out : [num_pair]
 		"""
@@ -72,7 +74,7 @@ class Model(object):
 		feature_cat = tf.concat([feature_rep, sim_in], axis = -1)
 		prob = VGG19_SIM('SIM', feature_cat, reuse = reuse)
 		if not reuse:
-			loss = self.weightedLogLoss(gt_sim_out, prob)
+			loss = 2 * self.num_stages * self.weightedLogLoss(gt_sim_out, prob)
 			return prob, loss
 		else:
 			return prob
@@ -82,7 +84,7 @@ class Model(object):
 		img           = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
 		gt_boundary   = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_vertices   = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
-		gt_sim_in     = tf.reshape(ii, [config.SIM_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 2])
+		gt_sim_in     = tf.reshape(ii, [config.SIM_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_sim_in_idx = tf.reshape(dd, [config.SIM_TRAIN_BATCH])
 		gt_sim_out    = tf.reshape(oo, [config.SIM_TRAIN_BATCH])
 
@@ -101,7 +103,7 @@ class Model(object):
 	def predict_sim(self, ff, ii):
 		#
 		feature    = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 130])
-		sim_in     = tf.reshape(ii, [-1, self.v_out_nrow, self.v_out_ncol, 2])
+		sim_in     = tf.reshape(ii, [-1, self.v_out_nrow, self.v_out_ncol, 1])
 		sim_in_idx = tf.zeros(tf.shape(sim_in)[0: 1], tf.int32)
 		sim_prob   = self.SIM(feature, sim_in, sim_in_idx, reuse = True)
 		return sim_prob

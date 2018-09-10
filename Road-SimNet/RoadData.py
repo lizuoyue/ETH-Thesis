@@ -251,23 +251,9 @@ def getData(img_id, seq_id, show = False):
 			temp = np.array(temp) / 255.0
 			val = np.mean(boundary[temp > 0.5])
 			if val > config.SIM_TRAIN_POS_TH:
-				sim_in_out.append(([
-					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
-					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
-				], 1))
-				sim_in_out.append(([
-					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
-					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
-				], 1))
+				sim_in_out.append((temp, 1))
 			else:
-				sim_in_out.append(([
-					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
-					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
-				], 0))
-				sim_in_out.append(([
-					np.array(vertex_pool[g.v[j][1]][g.v[j][0]]), 
-					np.array(vertex_pool[g.v[i][1]][g.v[i][0]]), 
-				], 0))
+				sim_in_out.append((temp, 0))
 
 	np.random.shuffle(sim_in_out)
 	sim_in = [item[0] for item in sim_in_out]
@@ -276,23 +262,23 @@ def getData(img_id, seq_id, show = False):
 
 	if show:
 		for i in range(len(sim_in)):
-			Image.fromarray(np.array(sim_in[i][0], np.uint8) + np.array(sim_in[i][1], np.uint8)).resize(config.AREA_SIZE).show()
+			Image.fromarray(np.array(sim_in[i] * 255.0, np.uint8)).resize(config.AREA_SIZE).show()
 			print(sim_out[i])
 			time.sleep(0.1)
 
 	if len(sim_in) > 0:
-		sim_in = np.array(sim_in).transpose([0, 2, 3, 1]) / 255.0
+		sim_in = np.array(sim_in)[..., np.newaxis]
 	else:
-		sim_in = np.zeros((0, config.V_OUT_RES[1], config.V_OUT_RES[0], 2))
+		sim_in = np.zeros((0, config.V_OUT_RES[1], config.V_OUT_RES[0], 1))
 	sim_out = np.array(sim_out)
 
-	# print(img.shape)
-	# print(boundary.shape)
-	# print(vertices.shape)
-	# print(sim_in.shape)
-	# print(sim_idx.shape)
-	# print(sim_out.shape)
-	# input()
+	print(img.shape)
+	print(boundary.shape)
+	print(vertices.shape)
+	print(sim_in.shape)
+	print(sim_idx.shape)
+	print(sim_out.shape)
+	input()
 
 	return img, boundary, vertices, sim_in, sim_idx, sim_out
 
@@ -382,7 +368,7 @@ def recoverMultiPath(img, v_in, v_out, peaks_with_score):
 
 if __name__ == '__main__':
 	for _ in range(1000):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(10, mode = 'train', show = False)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(10, mode = 'train', show = True)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
