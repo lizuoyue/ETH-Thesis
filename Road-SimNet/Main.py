@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
 					# from scipy.ndimage.filters import gaussian_filter
 					# savePNG(img[0], gaussian_filter(pred_vertices[0] * 255, 1), path + '%d-1-sigma.png' % j)
-					
+
 					savePNG(img[0], v_in_vis, path + '%d-2.png' % j)
 
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in})
