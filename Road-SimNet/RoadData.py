@@ -308,6 +308,7 @@ def getDataBatch(batch_size, mode, show = False):
 		Image.fromarray(np.array(new_res[1][i]*255, np.uint8)).save('gt/%d-2-b.png' % i)
 		Image.fromarray(np.array(new_res[2][i]*255, np.uint8)).save('gt/%d-3-v.png' % i)
 	for j in range(new_res[3].shape[0]):
+		print(new_res[3].shape)
 		Image.fromarray(np.array(new_res[3][j]*255, np.uint8)).save('gt/s-%d-i.png' % j)
 		print(j, new_res[4][j], new_res[5][j])
 	return new_res
