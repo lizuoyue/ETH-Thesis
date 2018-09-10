@@ -370,7 +370,7 @@ def recoverMultiPath(img, v_in, v_out, peaks_with_score):
 	return np.array(pathImg)
 
 if __name__ == '__main__':
-	for _ in range(1000):
+	for _ in range(1):
 		img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(10, mode = 'train', show = True)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
