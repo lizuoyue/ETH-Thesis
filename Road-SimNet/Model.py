@@ -72,8 +72,6 @@ class Model(object):
 		feature_cat = tf.concat([feature_rep, sim_in], axis = -1)
 		prob = VGG19_SIM('SIM', feature_cat, reuse = reuse)
 		if not reuse:
-			print(gt_sim_out.shape)
-			print(prob.shape)
 			loss = self.weightedLogLoss(gt_sim_out, prob)
 			return prob, loss
 		else:
