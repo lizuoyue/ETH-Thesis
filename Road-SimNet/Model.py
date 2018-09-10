@@ -50,7 +50,7 @@ class Model(object):
 		for i in range(2, self.num_stages + 1):
 			stage_input = tf.concat([skip_feature, l1[-1], l2[-1]], axis = -1)
 			l1.append(Stage('L1_Stage%d' % i, stage_input, 2, reuse = reuse))
-			l2.append(Stage('L1_Stage%d' % i, stage_input, 2, reuse = reuse))
+			l2.append(Stage('L2_Stage%d' % i, stage_input, 2, reuse = reuse))
 			boundary_prob.append(tf.nn.softmax(l1[-1])[..., 0: 1])
 			vertices_prob.append(tf.nn.softmax(l2[-1])[..., 0: 1])
 		if not reuse:

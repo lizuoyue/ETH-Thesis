@@ -67,9 +67,9 @@ def VGG19_SIM(scope, img, reuse = None):
 		conv5_4 = tf.layers.conv2d       (inputs = conv5_3, filters = 128, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'Nconv5_4') #  14
 		pool5   = tf.layers.max_pooling2d(inputs = conv5_4, pool_size = 2, strides = 2)																	  #   7
 		fc0     = tf.reshape(pool5, [-1, 7 * 7 * 128])
-		fc1     = tf.layers.dense(inputs = fc0, units = 1024, activation = tf.nn.relu)
-		fc2     = tf.layers.dense(inputs = fc1, units =  256, activation = tf.nn.relu)
-		fc3     = tf.layers.dense(inputs = fc2, units =    2, activation = None)
+		fc1     = tf.layers.dense(inputs = fc0, units = 1024, activation = tf.nn.relu, name = 'FC1')
+		fc2     = tf.layers.dense(inputs = fc1, units =  256, activation = tf.nn.relu, name = 'FC2')
+		fc3     = tf.layers.dense(inputs = fc2, units =    2, activation = None      , name = 'FC3')
 		return tf.nn.softmax(fc3)[..., 0]
 
 
