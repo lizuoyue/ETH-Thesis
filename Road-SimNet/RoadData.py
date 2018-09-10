@@ -5,7 +5,7 @@ import time, json
 from scipy.stats import multivariate_normal
 from Config import *
 from scipy.ndimage.filters import gaussian_filter
-import scipy, socket, sys
+import scipy, socket, sys, os
 
 config = Config()
 
@@ -302,6 +302,9 @@ def getDataBatch(batch_size, mode, show = False):
 		for item in new_res:
 			print(item.shape)
 		input()
+	os.popen('gt')
+	for i in range(batch_size):
+		Image.fromarray(np.array(new_res[0][i], np.uint8)).save('./gt/%d-1-img.png' % i)
 	return new_res
 
 def findPeaks(heatmap, sigma = 0, min_val = 0.5):
