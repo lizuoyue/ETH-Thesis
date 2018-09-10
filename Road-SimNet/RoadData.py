@@ -304,7 +304,7 @@ def getDataBatch(batch_size, mode, show = False):
 		input()
 	os.popen('mkdir gt')
 	for i in range(batch_size):
-		Image.fromarray(np.array(new_res[0][i], np.uint8)).save('./gt/%d-1-img.png' % i)
+		Image.fromarray(np.array(new_res[0][i], np.uint8)).save('gt/%d-1-img.png' % i)
 	return new_res
 
 def findPeaks(heatmap, sigma = 0, min_val = 0.5):
