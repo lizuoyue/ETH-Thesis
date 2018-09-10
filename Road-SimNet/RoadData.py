@@ -302,7 +302,7 @@ def getDataBatch(batch_size, mode, show = False):
 		for item in new_res:
 			print(item.shape)
 		input()
-	os.popen('gt')
+	os.popen('mkdir gt')
 	for i in range(batch_size):
 		Image.fromarray(np.array(new_res[0][i], np.uint8)).save('./gt/%d-1-img.png' % i)
 	return new_res
