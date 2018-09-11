@@ -92,9 +92,9 @@ class Model(object):
 		# feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
 		# feature = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
 		feature = tf.concat([gt_boundary, gt_vertices], axis = -1)
-		loss_CNN = 0
-		pred_boundary = 0
-		pred_vertices = 0
+		loss_CNN = tf.zeros([1])
+		pred_boundary = tf.zeros([1])
+		pred_vertices = tf.zeros([1])
 		pred_sim, loss_SIM = self.SIM(feature, gt_sim_in, gt_sim_in_idx, gt_sim_out)
 		return loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim
 
