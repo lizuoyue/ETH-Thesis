@@ -113,9 +113,9 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 500 == 0:
-				img, boundary, vertices = getDataBatch(30, 'val')
+				img, boundary, vertices = getDataBatch(config.AREA_TEST_BATCH, 'val')
 				pred_boundary, pred_vertices = sess.run(pred_res, feed_dict = {aa: img})
-				for j in range(30):
+				for j in range(config.AREA_TEST_BATCH):
 					# peaks, v_in, v_in_vis = getAllTerminal(pred_vertices[0], pred_boundary[0])
 					path = 'test_res/'
 					savePNG(img[j], pred_boundary[j] * 255, path + '%d-0.png' % j)

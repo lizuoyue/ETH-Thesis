@@ -74,7 +74,7 @@ class Model(object):
 		return loss_CNN, pred_boundary, pred_vertices
 
 	def predict(self, aa):
-		img = tf.reshape(aa, [1, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
+		img = tf.reshape(aa, [config.AREA_TEST_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
 		pred_boundary, pred_vertices = self.CNN(img, reuse = True)
 		return pred_boundary, pred_vertices
 
