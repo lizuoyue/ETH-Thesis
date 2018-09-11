@@ -206,7 +206,7 @@ def getData(img_id, seq_id, show = False):
 	for s, t in e_idx:
 		g.add_e(s, t)
 	g.shortest_path_all()
-
+	print(img_id)
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
 	w8, h8 = img.size
 	w8 = int(w8 / float(downsample))
