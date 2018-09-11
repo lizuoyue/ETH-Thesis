@@ -106,7 +106,7 @@ if __name__ == '__main__':
 			if loss_SIM >= 0.01:
 				aaaaa = np.zeros((2, 2), np.int32)
 				for j in range(pred_sim.shape[0]):
-					aaaaa[int(pred_sim[j]), int(sim_out[j])] += 1
+					aaaaa[int(pred_sim[j] > 0.5), int(sim_out[j])] += 1
 				print(aaaaa)
 				input()
 			continue
