@@ -23,7 +23,7 @@ class Model(object):
 		self.vertex_pool = np.array(self.vertex_pool)
 
 		#
-		self.num_stages = 4
+		self.num_stages = 3
 		return
 
 	def weightedLogLoss(self, gt, pred):

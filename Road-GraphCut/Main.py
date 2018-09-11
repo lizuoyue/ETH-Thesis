@@ -112,7 +112,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 500 == 1:
+			if i % 500 == 0:
 				for j in range(30):
 					img, boundary, vertices = getDataBatch(1, 'val')
 					pred_boundary, pred_vertices = sess.run(pred_res, feed_dict = {aa: img})

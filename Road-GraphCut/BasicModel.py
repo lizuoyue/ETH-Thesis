@@ -45,13 +45,13 @@ def SkipFeature(scope, vgg_result, reuse = None):
 
 def Stage(scope, feature, num, reuse = None):
 	with tf.variable_scope(scope, reuse = reuse):
-		mconv1  = tf.layers.conv2d       (inputs = feature, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv1' )
-		mconv2  = tf.layers.conv2d       (inputs = mconv1 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv2' )
-		mconv3  = tf.layers.conv2d       (inputs = mconv2 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv3' )
-		mconv4  = tf.layers.conv2d       (inputs = mconv3 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv4' )
-		mconv5  = tf.layers.conv2d       (inputs = mconv4 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv5' )
-		mconv6  = tf.layers.conv2d       (inputs = mconv5 , filters = 512, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'Mconv6' )
-		mconv7  = tf.layers.conv2d       (inputs = mconv6 , filters = num, kernel_size = 1, padding = 'same', activation = None      , name = 'Mconv7' )
+		mconv1  = tf.layers.conv2d       (inputs = feature, filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Mconv1' )
+		mconv2  = tf.layers.conv2d       (inputs = mconv1 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Mconv2' )
+		mconv3  = tf.layers.conv2d       (inputs = mconv2 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Mconv3' )
+		mconv4  = tf.layers.conv2d       (inputs = mconv3 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Mconv4' )
+		mconv5  = tf.layers.conv2d       (inputs = mconv4 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Mconv5' )
+		mconv6  = tf.layers.conv2d       (inputs = mconv5 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Mconv6' )
+		mconv7  = tf.layers.conv2d       (inputs = mconv6 , filters = num, kernel_size = 3, padding = 'same', activation = None      , name = 'Mconv7' )
 		return mconv7
 
 
