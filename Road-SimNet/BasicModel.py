@@ -75,7 +75,7 @@ def VGG19_SIM(scope, img, reuse = None):
 		aaa = tf.reduce_sum(tf.multiply(b, e), axis = [1, 2])
 		bbb = tf.reduce_sum(e, axis = [1, 2])
 		ccc = tf.where(tf.less(bbb, 1e-3), tf.ones(bbb.shape), aaa / bbb)
-		ddd = tf.where(tf.greater(ccc, 0.7), tf.ones(ccc.shape), tf.zeros(ccc.shape))
+		ddd = tf.where(tf.greater(ccc, 0.7), tf.ones(ccc.shape) * 0.99, tf.ones(ccc.shape) * 0.01)
 		return ddd
 
 
