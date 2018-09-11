@@ -143,7 +143,6 @@ def colinear(p0, p1, p2):
 	return abs(x1 * y2 - x2 * y1) < 1e-6
 
 def getData(img_id, seq_id, show = False):
-	img_id = 1907
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
