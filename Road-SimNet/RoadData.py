@@ -209,6 +209,7 @@ def getData(img_id, seq_id, show = False):
 	g.shortest_path_all()
 
 	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8)))
+	print(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8)))
 	img = np.array(img, np.uint8)
 	img = Image.fromarray(img).resize(config.AREA_SIZE)
 
