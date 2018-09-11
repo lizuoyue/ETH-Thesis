@@ -35,8 +35,8 @@ if __name__ == '__main__':
 	ff = tf.placeholder(tf.float32)
 
 	train_res = graph.train(aa, bb, vv, ii, dd, oo)
-	pred_mask_res = graph.predict_mask(aa)
-	pred_sim_res = graph.predict_sim(ff, ii)
+	# pred_mask_res = graph.predict_mask(aa)
+	# pred_sim_res = graph.predict_sim(ff, ii)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
