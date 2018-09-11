@@ -102,8 +102,8 @@ if __name__ == '__main__':
 			loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim = sess.run(train_res, feed_dict)
 			cost_time = time.time() - init_time
 
+			print(loss_SIM)
 			if loss_SIM >= 0.01:
-				print(loss_SIM)
 				aaaaa = np.zeros((2, 2), np.int32)
 				for j in range(pred_sim.shape[0]):
 					aaaaa[int(pred_sim[j]), int(sim_out[j])] += 1
