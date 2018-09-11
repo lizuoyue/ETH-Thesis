@@ -113,15 +113,13 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 500 == 0:
+				img, boundary, vertices = getDataBatch(30, 'val')
+				pred_boundary, pred_vertices = sess.run(pred_res, feed_dict = {aa: img})
 				for j in range(30):
-					img, boundary, vertices = getDataBatch(1, 'val')
-					pred_boundary, pred_vertices = sess.run(pred_res, feed_dict = {aa: img})
-
 					# peaks, v_in, v_in_vis = getAllTerminal(pred_vertices[0], pred_boundary[0])
-
 					path = 'test_res/'
-					savePNG(img[0], pred_boundary[0] * 255, path + '%d-0.png' % j)
-					savePNG(img[0], pred_vertices[0] * 255, path + '%d-1.png' % j)
+					savePNG(img[j], pred_boundary[j] * 255, path + '%d-0.png' % j)
+					savePNG(img[j], pred_vertices[j] * 255, path + '%d-1.png' % j)
 
 					# from scipy.ndimage.filters import gaussian_filter
 					# savePNG(img[0], gaussian_filter(pred_vertices[0] * 255, 1), path + '%d-1-sigma.png' % j)
