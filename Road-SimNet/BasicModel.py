@@ -72,6 +72,6 @@ def VGG19_SIM(scope, img, reuse = None):
 		# fc3     = tf.layers.dense(inputs = fc2, units =    2, activation = None      , name = 'FC3')
 		b, v, e = img[..., -3], img[..., -2], img[..., -1]
 		e = tf.multiply(e, (1.0 - v))
-		return tf.multiply(b, e) / tf.reduce_sum(e, axis = [1, 2])
+		return tf.reduce_sum(tf.multiply(b, e), axis = [1, 2]) / tf.reduce_sum(e, axis = [1, 2])
 
 
