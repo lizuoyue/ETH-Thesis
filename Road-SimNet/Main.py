@@ -42,10 +42,10 @@ if __name__ == '__main__':
 	# 	print(v.name)
 	# quit()
 
-	# optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
-	# train = optimizer.minimize(train_res[0] + train_res[1])
-	# saver = tf.train.Saver(max_to_keep = 3)
-	# init = tf.global_variables_initializer()
+	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
+	train = optimizer.minimize(train_res[0] + train_res[1])
+	saver = tf.train.Saver(max_to_keep = 3)
+	init = tf.global_variables_initializer()
 
 	# Create new folder
 	if not os.path.exists('./Model/'):
@@ -98,18 +98,18 @@ if __name__ == '__main__':
 
 			# Training and get result
 			init_time = time.time()
-			# _, (loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim) = sess.run([train, train_res], feed_dict)
+			_, (loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim) = sess.run([train, train_res], feed_dict)
 			loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim = sess.run(train_res, feed_dict)
 			cost_time = time.time() - init_time
 
-			print(loss_SIM)
-			if loss_SIM >= 0.01:
-				aaaaa = np.zeros((2, 2), np.int32)
-				for j in range(pred_sim.shape[0]):
-					aaaaa[int(pred_sim[j] > 0.5), int(sim_out[j])] += 1
-				print(aaaaa)
-				input()
-			continue
+			# print(loss_SIM)
+			# if loss_SIM >= 0.01:
+			# 	aaaaa = np.zeros((2, 2), np.int32)
+			# 	for j in range(pred_sim.shape[0]):
+			# 		aaaaa[int(pred_sim[j] > 0.5), int(sim_out[j])] += 1
+			# 	print(aaaaa)
+			# 	input()
+			# continue
 
 			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
 			train_writer.log_scalar('Loss SIM'  , loss_SIM  , i)
@@ -118,6 +118,8 @@ if __name__ == '__main__':
 			# Write loss to file
 			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_SIM, cost_time))
 			train_loss.flush()
+
+			continue
 
 			# Validation
 			if i % 100 == 0:
