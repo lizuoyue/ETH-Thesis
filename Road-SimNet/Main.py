@@ -44,8 +44,8 @@ if __name__ == '__main__':
 
 	# optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	# train = optimizer.minimize(train_res[0] + train_res[1])
-	saver = tf.train.Saver(max_to_keep = 3)
-	init = tf.global_variables_initializer()
+	# saver = tf.train.Saver(max_to_keep = 3)
+	# init = tf.global_variables_initializer()
 
 	# Create new folder
 	if not os.path.exists('./Model/'):
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 			saver.restore(sess, model_path.replace('.meta', ''))
 			iter_obj = range(num + 1, config.NUM_ITER)
 		else:
-			sess.run(init)
+			# sess.run(init)
 			iter_obj = range(config.NUM_ITER)
 
 		# Main loop
