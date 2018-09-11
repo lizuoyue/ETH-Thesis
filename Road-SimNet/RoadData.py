@@ -278,7 +278,7 @@ def getData(img_id, seq_id, show = False):
 	# print(sim_in.shape)
 	# print(sim_idx.shape)
 	# print(sim_out.shape)
-	input()
+	# input()
 
 	return img, boundary, vertices, sim_in, sim_idx, sim_out
 
@@ -376,7 +376,7 @@ def recoverMultiPath(img, v_in, v_out, peaks_with_score):
 
 if __name__ == '__main__':
 	for _ in range(1):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(10, mode = 'train', show = True)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, seq_lens = getDataBatch(10, mode = 'train', show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
