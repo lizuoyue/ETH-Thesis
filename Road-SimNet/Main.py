@@ -102,9 +102,7 @@ if __name__ == '__main__':
 			loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim = sess.run(train_res, feed_dict)
 			cost_time = time.time() - init_time
 
-			for j in range(pred_sim.shape[0]):
-				print(pred_sim[j], sim_out[j])
-			input()
+			print(loss_SIM)
 			continue
 
 			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
