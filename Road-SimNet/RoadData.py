@@ -296,15 +296,19 @@ def getDataBatch(batch_size, mode, show = False):
 	else:
 		mini_ids = val_ids
 	res = []
-	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
-	for i in range(batch_size):
-		res.append(getData(mini_ids[ids[i]], i, show))
-	new_res = [np.array([item[i] for item in res]) for i in range(3)]
-	new_res.extend([np.concatenate([item[i] for item in res], axis = 0) for i in range(3, 6)])
-	if new_res[-1].shape[0] > 0:
-		choose = np.random.choice(new_res[-1].shape[0], config.SIM_TRAIN_BATCH, replace = (new_res[-1].shape[0] < config.SIM_TRAIN_BATCH))
-		for i in range(3, 6):
-			new_res[i] = new_res[i][choose]
+	while True:
+		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
+		for i in range(batch_size):
+			res.append(getData(mini_ids[ids[i]], i, show))
+		new_res = [np.array([item[i] for item in res]) for i in range(3)]
+		new_res.extend([np.concatenate([item[i] for item in res], axis = 0) for i in range(3, 6)])
+		if new_res[-1].shape[0] > 0:
+			choose = np.random.choice(new_res[-1].shape[0], config.SIM_TRAIN_BATCH, replace = (new_res[-1].shape[0] < config.SIM_TRAIN_BATCH))
+			for i in range(3, 6):
+				new_res[i] = new_res[i][choose]
+			break
+		else:
+			print('There is sth wrong.')
 	if False:
 		for item in new_res:
 			print(item.shape)
