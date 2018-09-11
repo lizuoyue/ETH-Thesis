@@ -278,7 +278,7 @@ def getData(img_id, seq_id, show = False):
 	# print(sim_in.shape)
 	# print(sim_idx.shape)
 	# print(sim_out.shape)
-	# input()
+	input()
 
 	return img, boundary, vertices, sim_in, sim_idx, sim_out
 
