@@ -71,7 +71,7 @@ if __name__ == '__main__':
 			saver.restore(sess, model_path.replace('.meta', ''))
 			iter_obj = range(num + 1, config.NUM_ITER)
 		else:
-			# sess.run(init)
+			sess.run(init)
 			iter_obj = range(config.NUM_ITER)
 
 		# Main loop
