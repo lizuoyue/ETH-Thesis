@@ -104,19 +104,17 @@ if __name__ == '__main__':
 
 			# print(loss_SIM)
 			# if loss_SIM >= 0.01:
-			# 	aaaaa = np.zeros((2, 2), np.int32)
-			# 	for j in range(pred_sim.shape[0]):
-			# 		aaaaa[int(pred_sim[j] > 0.5), int(sim_out[j])] += 1
-			# 	print(aaaaa)
-			# 	input()
-			# continue
+			aaaaa = np.zeros((2, 2), np.int32)
+			for j in range(pred_sim.shape[0]):
+				aaaaa[int(pred_sim[j] > 0.5), int(sim_out[j])] += 1
+			acc = (aaaaa[0, 0] + aaaaa[1, 1]) / np.sum(aaaaa)
 
 			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
 			train_writer.log_scalar('Loss SIM'  , loss_SIM  , i)
 			train_writer.log_scalar('Loss Full' , loss_CNN + loss_SIM, i)
 
 			# Write loss to file
-			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_SIM, cost_time))
+			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, acc, loss_SIM, cost_time))
 			train_loss.flush()
 
 			continue

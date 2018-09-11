@@ -74,8 +74,8 @@ def VGG19_SIM(scope, img, reuse = None):
 		fc1     = tf.layers.dense(inputs = fc0, units = 2048, activation = tf.nn.relu, name = 'FC1')
 		fc2     = tf.layers.dense(inputs = fc1, units = 2048, activation = tf.nn.relu, name = 'FC2')
 		fc3     = tf.layers.dense(inputs = fc2, units = 2048, activation = tf.nn.relu, name = 'FC3')
-		fc4     = tf.layers.dense(inputs = fc3, units =    1, activation = None      , name = 'FC4')
-		return fc4[..., 0]
+		fc4     = tf.layers.dense(inputs = fc3, units =    2, activation = None      , name = 'FC4')
+		return tf.nn.softmax(fc4)[..., 0]
 		# b, v, e = img[..., -3], img[..., -2], img[..., -1]
 		# e = tf.multiply(e, (1.0 - v))
 		# aaa = tf.reduce_sum(tf.multiply(b, e), axis = [1, 2])
