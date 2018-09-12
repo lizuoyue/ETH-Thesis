@@ -356,33 +356,36 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 	peaks_with_score = [x + (heatmap[x[1],x[0]],) for x in peaks]
 	return peaks_with_score
 
-def getAllTerminal(hmap, hmap_b):
-	temp = np.zeros(hmap.shape, np.float32)
-	res = []
-	peaks_with_score = findPeaks(hmap, min_val = 0.9)
+def getAllEdges(hmb, hmv):
+	assert(hmb.shape == hmv.shape)
+	h, w = hmb.shape[0: 2]
+	peaks_map = np.zeros(hmv.shape, np.float32)
+	peaks_with_score = findPeaks(hmv, min_val = 0.9)
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.9]
+	edges, edges_idx = [], []
 	for i in range(len(peaks_with_score)):
-		x, y, s = peaks_with_score[i]
-		# if hmap_b[y, x] > 0.9:
-		res.append(np.array(vertex_pool[y][x]))
-		temp[y, x] = s * 255.0
-	return peaks_with_score, np.array(res), np.array(temp, np.uint8)
+		x1, y1, s1 = peaks_with_score[i]
+		peaks_map[y1, x1] = s1 * 255.0
+		for j in range(i):
+			x2, y2, s2 = peaks_with_score[j]
+			temp = Image.new('P', (w, h), color = 0)
+			draw = ImageDraw.Draw(temp)
+			draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+			edges.append(np.array(temp) / 255.0)
+			edges_idx.append((i, j))
+	return np.array(edges), edges_idx, peaks_with_score, np.array(temp, np.uint8)
 
-def recoverMultiPath(img, v_in, v_out, peaks_with_score):
-	assert(v_in.shape[0] == v_out.shape[0])
-	peaks = set([(x, y) for x, y, _ in peaks_with_score])
-	segs = []
-	for i in range(v_in.shape[0]):
-		iii = v_in[i]
-		y1, x1 = np.unravel_index(np.argmax(iii), iii.shape)
-		if (x1, y1) in peaks:
-			for x2, y2 in peaks:
-				if (x2, y2) != (x1, y1) and v_out[i, y2, x2] > 0.95:
-					segs.append([(x1 * 8 + 4, y1 * 8 + 4), (x2 * 8 + 4, y2 * 8 + 4)])
-
+def recover(img, prob, edge_idx, peaks_with_score):
+	assert(prob.shape[0] == len(edge_idx))
 	pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
 	draw = ImageDraw.Draw(pathImg)
-	for seg in segs:
-		draw.line(seg, fill = 255, width = 5)
+	for k in range(prob.shape[0]):
+		if prob[k] > 0.5:
+			i, j = edge_idx[k]
+			x1, y1, s1 = peaks_with_score[i]
+			x2, y2, s2 = peaks_with_score[j]
+			li = list(np.array([x1, y1, x2, y2]) * 8 + 4)
+			draw.line(li, fill = 255, width = 5)
 	return np.array(pathImg)
 
 if __name__ == '__main__':

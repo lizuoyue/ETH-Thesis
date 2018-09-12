@@ -22,7 +22,7 @@ class Model(object):
 		self.vertex_pool.append(np.zeros(self.v_out_res, dtype = np.float32))
 		self.vertex_pool = np.array(self.vertex_pool)
 
-		self.num_stage = 2
+		self.num_stage = 3
 
 		return
 
@@ -51,10 +51,9 @@ class Model(object):
 			b_prob.append(tf.nn.softmax(bb)[..., 0: 1])
 			v_prob.append(tf.nn.softmax(vv)[..., 0: 1])
 		if not reuse:
-			loss_B = 0
+			loss_B, loss_V = 0, 0
 			for item in b_prob:
 				loss_B += self.weightedLogLoss(gt_boundary, item)
-			loss_V = 0
 			for item in v_prob:
 				loss_V += self.weightedLogLoss(gt_vertices, item)
 			return skip_feature, b_prob[-1], v_prob[-1], loss_B, loss_V
@@ -88,7 +87,8 @@ class Model(object):
 
 		# CNN part
 		_, pred_boundary, pred_vertices, loss_B, loss_V = self.CNN(img, gt_boundary, gt_vertices)
-		sim_feature = tf.concat([gt_boundary, gt_vertices], axis = -1)
+		# sim_feature = tf.concat([gt_boundary, gt_vertices], axis = -1)
+		sim_feature = tf.concat([pred_boundary, pred_vertices], axis = -1)
 		pred_sim, loss_SIM = self.SIM(sim_feature, gt_sim_in, gt_sim_in_idx, gt_sim_out)
 		return loss_B, loss_V, loss_SIM, pred_boundary, pred_vertices, pred_sim
 
@@ -98,12 +98,12 @@ class Model(object):
 		sim_feature = tf.concat([pred_boundary, pred_vertices], axis = -1)
 		return sim_feature, pred_boundary, pred_vertices
 
-	def predict_sim(self, ff, ii):
+	def predict_sim(self, ff, ii, dd):
 		#
-		feature    = tf.reshape(ff, [config.AREA_TEST_BATCH, self.v_out_nrow, self.v_out_ncol, 2])
-		sim_in     = tf.reshape(ii, [-1, self.v_out_nrow, self.v_out_ncol, 1])
-		sim_in_idx = tf.zeros(tf.shape(sim_in)[0: 1], tf.int32)
-		sim_prob   = self.SIM(feature, sim_in, sim_in_idx, reuse = True)
+		feature       = tf.reshape(ff, [config.AREA_TEST_BATCH, self.v_out_nrow, self.v_out_ncol, 2])
+		sim_in        = tf.reshape(ii, [-1, self.v_out_nrow, self.v_out_ncol, 1])
+		sim_in_idx    = tf.reshape(dd, [-1])
+		sim_prob      = self.SIM(feature, sim_in, sim_in_idx, reuse = True)
 		return sim_prob
 
 class Logger(object):

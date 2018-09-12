@@ -35,8 +35,8 @@ if __name__ == '__main__':
 	ff = tf.placeholder(tf.float32)
 
 	train_res = graph.train(aa, bb, vv, ii, dd, oo)
-	# pred_mask_res = graph.predict_mask(aa)
-	# pred_sim_res = graph.predict_sim(ff, ii)
+	pred_mask_res = graph.predict_mask(aa)
+	pred_sim_res = graph.predict_sim(ff, ii, dd)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
@@ -77,51 +77,31 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
-			# for j in range(config.AREA_TRAIN_BATCH):
-			# 	plt.imsave('0-img.png', img[j])
-			# 	plt.imsave('1-b.png', boundary[j])
-			# 	plt.imsave('2-v.png', vertices[j])
-			# 	plt.imsave('3-s.png', vertex_terminals[j, 0, 0])
-			# 	plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
-			# 	print('seq_len', seq_lens[j, 0])
-			# 	for k in range(config.MAX_NUM_VERTICES):
-			# 		plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
-			# 		plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
-			# 	print(ends[j,0])
-			# print('press enter to continue')
-			# input()
-			# print(i)
-			# assert(img.shape == (4, 224, 224, 3))
-			# assert(boundary.shape == (4, 28, 28))
-			# assert(vertices.shape == (4, 28, 28))
-			# continue
+			if i % 1 == -1:
+				img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
+				feed_dict = {aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out}
 
-			feed_dict = {
-				aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
-			}
+				# Training and get result
+				init_time = time.time()
+				_, (loss_B, loss_V, loss_SIM, pred_boundary, pred_vertices, pred_sim) = sess.run([train, train_res], feed_dict)
+				cost_time = time.time() - init_time
 
-			# Training and get result
-			init_time = time.time()
-			_, (loss_B, loss_V, loss_SIM, pred_boundary, pred_vertices, pred_sim) = sess.run([train, train_res], feed_dict)
-			cost_time = time.time() - init_time
+				acc = np.zeros((2, 2), np.int32)
+				for j in range(pred_sim.shape[0]):
+					acc[int(pred_sim[j] > 0.5), int(sim_out[j])] += 1
+				acc = (acc[0, 0] + acc[1, 1]) / np.sum(acc)
 
-			acc = np.zeros((2, 2), np.int32)
-			for j in range(pred_sim.shape[0]):
-				acc[int(pred_sim[j] > 0.5), int(sim_out[j])] += 1
-			acc = (acc[0, 0] + acc[1, 1]) / np.sum(acc)
+				train_writer.log_scalar('Loss B'   , loss_B  , i)
+				train_writer.log_scalar('Loss V'   , loss_V  , i)
+				train_writer.log_scalar('Loss SIM' , loss_SIM, i)
+				train_writer.log_scalar('Loss Full', loss_B + loss_V + loss_SIM, i)
 
-			train_writer.log_scalar('Loss B'   , loss_B  , i)
-			train_writer.log_scalar('Loss V'   , loss_V  , i)
-			train_writer.log_scalar('Loss SIM' , loss_SIM, i)
-			train_writer.log_scalar('Loss Full', loss_B + loss_V + loss_SIM, i)
-
-			# Write loss to file
-			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_B, loss_V, loss_SIM, acc, cost_time))
-			train_loss.flush()
+				# Write loss to file
+				train_loss.write('Train Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_B, loss_V, loss_SIM, acc, cost_time))
+				train_loss.flush()
 
 			# Validation
-			if i % 100 == 0:
+			if i % 100 == -1:
 				img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
@@ -142,35 +122,38 @@ if __name__ == '__main__':
 				valid_loss.write('Valid Iter %d, %.6lf, %.6lf, %.6lf, %.6lf, %.3lf\n' % (i, loss_B, loss_V, loss_SIM, acc, cost_time))
 				valid_loss.flush()
 
-			continue
-
 			# Test
-			if i % 500 == 1:
-				for j in range(30):
-					img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(1, 'val')
-					feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+			if i % 1000 == 1:
+				img, _, _, _, _, _ = getDataBatch(config.AREA_TEST_BATCH, 'val')
+				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-					# peaks, v_in, v_in_vis = getAllTerminal(pred_vertices[0], pred_boundary[0])
+				path = 'test_res/'
+				ii_feed, dd_feed = [], []
+				edges_idx_list = []
+				peaks_with_score_list = []
+				for j in range(config.AREA_TEST_BATCH):
+					savePNG(img[j], pred_boundary[j] * 255, path + '%d-0.png' % j)
+					savePNG(img[j], pred_vertices[j] * 255, path + '%d-1.png' % j)
 
-					path = 'test_res/'
-					savePNG(img[0], pred_boundary[0] * 255, path + '%d-0.png' % j)
-					savePNG(img[0], pred_vertices[0] * 255, path + '%d-1.png' % j)
+					edges, edges_idx, peaks_with_score, peaks_map = getAllEdges(pred_boundary[j], pred_vertices[j])
+					ii_feed.append(edges)
+					dd_feed.append(j * np.ones([edges.shape[0]], np.int32))
+					edges_idx_list.append(edges_idx)
+					peaks_with_score_list.append(peaks_with_score)
 
-					# from scipy.ndimage.filters import gaussian_filter
-					# savePNG(img[0], gaussian_filter(pred_vertices[0] * 255, 1), path + '%d-1-sigma.png' % j)
+					savePNG(img[j], peaks_map, path + '%d-2.png' % j)
 
-					# savePNG(img[0], v_in_vis, path + '%d-2.png' % j)
+				ii_feed = np.concatenate(ii_feed, axis = 0)
+				dd_feed = np.concatenate(dd_feed, axis = 0)
+				pred_sim_prob = sess.run(predict_sim, feed_dict = {ff: feature, ii: ii_feed, dd: dd_feed})
 
-					# pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, ii: v_in})
-
-					# newImg = recoverMultiPath(img[0], v_in, pred_v_out, peaks)
-					# savePNG(img[0], newImg, path + '%d-3.png' % j)
-					# for k in range(v_in.shape[0]):
-					# 	savePNG(img[0], v_in[k], path + '%d-4-%d-in.png' % (j, k))
-					# 	savePNG(img[0], pred_v_out[k], path + '%d-4-%d-out.png' % (j, k))
+				for j in range(config.AREA_TEST_BATCH):
+					prob = pred_sim_prob[dd_feed == j]
+					pathImg = recover(prob, edges_idx_list[j], peaks_with_score_list[j])
+					savePNG(img[j], pathImg, path + '%d-3.png' % j)
 
 			# Save model
-			if i % 5000 == 0:
+			if i % 5000 == -1:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop

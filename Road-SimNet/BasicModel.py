@@ -61,33 +61,14 @@ def Mask(scope, feature, reuse = None):
 
 def FC_SIM(scope, img, reuse = None):
 	with tf.variable_scope(scope, reuse = reuse):
-		# conv4_1 = tf.layers.conv2d       (inputs = img    , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv4_1') #  28
-		# conv4_2 = tf.layers.conv2d       (inputs = conv4_1, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv4_2') #  28
-		# conv4_3 = tf.layers.conv2d       (inputs = conv4_2, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv4_3') #  28
-		# conv4_4 = tf.layers.conv2d       (inputs = conv4_3, filters = 512, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'Nconv4_4') #  28
-		# pool4   = tf.layers.max_pooling2d(inputs = conv4_4, pool_size = 2, strides = 2)																	  #  14
-		# conv5_1 = tf.layers.conv2d       (inputs = pool4  , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv5_1') #  14
-		# conv5_2 = tf.layers.conv2d       (inputs = conv5_1, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv5_2') #  14
-		# conv5_3 = tf.layers.conv2d       (inputs = conv5_2, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv5_3') #  14
-		# conv5_4 = tf.layers.conv2d       (inputs = conv5_3, filters = 128, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'Nconv5_4') #  14
-		# pool5   = tf.layers.max_pooling2d(inputs = conv5_4, pool_size = 2, strides = 2)																	  #   7
-		# fc0     = tf.reshape(pool5, [-1, 7 * 7 * 128])
-		# fc1     = tf.layers.dense(inputs = fc0, units = 1024, activation = tf.nn.relu, name = 'FC1')
-		# fc2     = tf.layers.dense(inputs = fc1, units =  256, activation = tf.nn.relu, name = 'FC2')
-		# fc3     = tf.layers.dense(inputs = fc2, units =    2, activation = None      , name = 'FC3')
 		fc0     = tf.reshape(img, [128, 28 * 28 * 3])
 		fc1     = tf.layers.dense(inputs = fc0, units = 4096, activation = tf.nn.relu, name = 'FC1')
 		fc2     = tf.layers.dense(inputs = fc1, units = 4096, activation = tf.nn.relu, name = 'FC2')
 		fc3     = tf.layers.dense(inputs = fc2, units = 1024, activation = tf.nn.relu, name = 'FC3')
 		fc4     = tf.layers.dense(inputs = fc3, units = 1024, activation = tf.nn.relu, name = 'FC4')
-		fc5     = tf.layers.dense(inputs = fc4, units =    2, activation = None      , name = 'FC5')
-		return tf.nn.softmax(fc5)[..., 0]
-		# b, v, e = img[..., -3], img[..., -2], img[..., -1]
-		# e = tf.multiply(e, (1.0 - v))
-		# aaa = tf.reduce_sum(tf.multiply(b, e), axis = [1, 2])
-		# bbb = tf.reduce_sum(e, axis = [1, 2])
-		# ccc = tf.where(tf.less(bbb, 1e-3), tf.ones(bbb.shape), aaa / bbb)
-		# ddd = tf.where(tf.greater(ccc, 0.7), tf.ones(ccc.shape) * 0.99, tf.ones(ccc.shape) * 0.01)
-		# return ddd
+		fc5     = tf.layers.dense(inputs = fc4, units = 1024, activation = tf.nn.relu, name = 'FC5')
+		fc6     = tf.layers.dense(inputs = fc5, units =    2, activation = None      , name = 'FC6')
+		return tf.nn.softmax(fc6)[..., 0]
+
 
 
