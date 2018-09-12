@@ -61,7 +61,7 @@ def Mask(scope, feature, reuse = None):
 
 def FC_SIM(scope, img, reuse = None):
 	with tf.variable_scope(scope, reuse = reuse):
-		fc0     = tf.reshape(img, [128, 28 * 28 * 3])
+		fc0     = tf.reshape(img, [-1, 28 * 28 * 3])
 		fc1     = tf.layers.dense(inputs = fc0, units = 4096, activation = tf.nn.relu, name = 'FC1')
 		fc2     = tf.layers.dense(inputs = fc1, units = 4096, activation = tf.nn.relu, name = 'FC2')
 		fc3     = tf.layers.dense(inputs = fc2, units = 1024, activation = tf.nn.relu, name = 'FC3')
