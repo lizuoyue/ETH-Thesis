@@ -145,7 +145,7 @@ if __name__ == '__main__':
 
 				ii_feed = np.concatenate(ii_feed, axis = 0)
 				dd_feed = np.concatenate(dd_feed, axis = 0)
-				pred_sim_prob = sess.run(predict_sim, feed_dict = {ff: feature, ii: ii_feed, dd: dd_feed})
+				pred_sim_prob = sess.run(pred_sim_res, feed_dict = {ff: feature, ii: ii_feed, dd: dd_feed})
 
 				for j in range(config.AREA_TEST_BATCH):
 					prob = pred_sim_prob[dd_feed == j]
