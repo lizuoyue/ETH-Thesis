@@ -295,8 +295,8 @@ def getDataBatch(batch_size, mode, show = False):
 		mini_ids = train_ids
 	else:
 		mini_ids = val_ids
-	res = []
 	while True:
+		res = []
 		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 		for i in range(batch_size):
 			res.append(getData(mini_ids[ids[i]], i, show))
