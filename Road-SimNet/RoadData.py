@@ -360,8 +360,8 @@ def getAllEdges(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
 	peaks_map = np.zeros(hmv.shape, np.float32)
-	peaks_with_score = findPeaks(hmv, min_val = 0.9)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.9]
+	peaks_with_score = findPeaks(hmv, min_val = 0.0)
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.0]
 	edges, edges_idx = [], []
 	for i in range(len(peaks_with_score)):
 		x1, y1, s1 = peaks_with_score[i]
@@ -373,7 +373,7 @@ def getAllEdges(hmb, hmv):
 			draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 			edges.append(np.array(temp) / 255.0)
 			edges_idx.append((i, j))
-	return np.array(edges), edges_idx, peaks_with_score, np.array(temp, np.uint8)
+	return np.array(edges), edges_idx, peaks_with_score, np.array(peaks_map, np.uint8)
 
 def recover(img, prob, edge_idx, peaks_with_score):
 	assert(prob.shape[0] == len(edge_idx))
