@@ -91,9 +91,10 @@ if __name__ == '__main__':
 			# 	print(ends[j,0])
 			# print('press enter to continue')
 			# input()
-			print(img.shape)
-			print(boundary.shape)
-			print(vertices.shape)
+			print(i)
+			assert(img.shape == (4, 224, 224, 3))
+			assert(boundary.shape == (4, 28, 28))
+			assert(vertices.shape == (4, 28, 28))
 			continue
 
 			feed_dict = {
