@@ -43,18 +43,23 @@ def SkipFeature(scope, vgg_result, reuse = None):
 		feature = tf.layers.conv2d       (inputs = inter_f, filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'SconvF' ) #  28
 		return feature
 
-def Stage(scope, feature, num, reuse = None):
+def Mask(scope, feature, reuse = None):
 	with tf.variable_scope(scope, reuse = reuse):
-		mconv1  = tf.layers.conv2d       (inputs = feature, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv1' )
-		mconv2  = tf.layers.conv2d       (inputs = mconv1 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv2' )
-		mconv3  = tf.layers.conv2d       (inputs = mconv2 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv3' )
-		mconv4  = tf.layers.conv2d       (inputs = mconv3 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv4' )
-		mconv5  = tf.layers.conv2d       (inputs = mconv4 , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Mconv5' )
-		mconv6  = tf.layers.conv2d       (inputs = mconv5 , filters = 512, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'Mconv6' )
-		mconv7  = tf.layers.conv2d       (inputs = mconv6 , filters = num, kernel_size = 1, padding = 'same', activation = None      , name = 'Mconv7' )
-		return mconv7
+		bconv1  = tf.layers.conv2d       (inputs = feature, filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Bconv1' )
+		bconv2  = tf.layers.conv2d       (inputs = bconv1 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Bconv2' )
+		bconv3  = tf.layers.conv2d       (inputs = bconv2 , filters = 512, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'Bconv3' )
+		bconv4  = tf.layers.conv2d       (inputs = bconv3 , filters =   2, kernel_size = 1, padding = 'same', activation = None      , name = 'Bconv4' )
 
-def VGG19_SIM(scope, img, reuse = None):
+		combine = tf.concat([feature, bconv4], -1)
+
+		vconv1  = tf.layers.conv2d       (inputs = combine, filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Vconv1' )
+		vconv2  = tf.layers.conv2d       (inputs = vconv1 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Vconv2' )
+		vconv3  = tf.layers.conv2d       (inputs = vconv2 , filters = 512, kernel_size = 1, padding = 'same', activation = tf.nn.relu, name = 'Vconv3' )
+		vconv4  = tf.layers.conv2d       (inputs = vconv3 , filters =   2, kernel_size = 1, padding = 'same', activation = None      , name = 'Vconv4' )
+
+	return bconv4, vconv4
+
+def FC_SIM(scope, img, reuse = None):
 	with tf.variable_scope(scope, reuse = reuse):
 		# conv4_1 = tf.layers.conv2d       (inputs = img    , filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv4_1') #  28
 		# conv4_2 = tf.layers.conv2d       (inputs = conv4_1, filters = 128, kernel_size = 7, padding = 'same', activation = tf.nn.relu, name = 'Nconv4_2') #  28

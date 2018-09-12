@@ -2,7 +2,7 @@ import os, time
 import matplotlib.pyplot as plt
 import numpy as np
 
-def mov_avg(li, n = 100):
+def mov_avg(li, n = 1000):
 	assert(len(li) >= n)
 	s = sum(li[0: n])
 	res = [s / float(n)]
@@ -20,8 +20,8 @@ def process(filename):
 
 if __name__ == '__main__':
 	# os.popen('scp leonhard:~/Master-Thesis/Road-SimNet/LossValid.out ./LossTrainChicago.out')
-	# os.popen('scp cnb:/local/zoli/thesis/Road-SimNet/LossTrain.out ./LossTrainChicago.out')
-	# quit()
+	os.popen('scp cnb:/local/zoli/thesis/Road-SimNet/LossTrain.out ./LossTrainChicago.out')
+	quit()
 
 	loss_cnn, loss_rnn = process('LossTrainChicago.out')
 	l = min(len(loss_cnn), len(loss_rnn))
