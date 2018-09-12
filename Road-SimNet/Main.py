@@ -91,6 +91,10 @@ if __name__ == '__main__':
 			# 	print(ends[j,0])
 			# print('press enter to continue')
 			# input()
+			print(img.shape)
+			print(boundary.shape)
+			print(vertices.shape)
+			continue
 
 			feed_dict = {
 				aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
