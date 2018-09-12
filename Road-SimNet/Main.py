@@ -77,7 +77,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			if i % 1 == 0:
+			if i % 1 == -1:
 				img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 				feed_dict = {aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out}
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 				train_loss.flush()
 
 			# Validation
-			if i % 100 == 0:
+			if i % 100 == -1:
 				img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
@@ -123,7 +123,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == -1:
+			if i % 1000 == 0:
 				img, _, _, _, _, _ = getDataBatch(config.AREA_TEST_BATCH, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
