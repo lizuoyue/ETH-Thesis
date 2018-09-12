@@ -91,11 +91,11 @@ if __name__ == '__main__':
 			# 	print(ends[j,0])
 			# print('press enter to continue')
 			# input()
-			print(i)
-			assert(img.shape == (4, 224, 224, 3))
-			assert(boundary.shape == (4, 28, 28))
-			assert(vertices.shape == (4, 28, 28))
-			continue
+			# print(i)
+			# assert(img.shape == (4, 224, 224, 3))
+			# assert(boundary.shape == (4, 28, 28))
+			# assert(vertices.shape == (4, 28, 28))
+			# continue
 
 			feed_dict = {
 				aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
