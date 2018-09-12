@@ -67,7 +67,7 @@ def FC_SIM(scope, img, reuse = None):
 		fc3     = tf.layers.dense(inputs = fc2, units = 1024, activation = tf.nn.relu, name = 'FC3')
 		fc4     = tf.layers.dense(inputs = fc3, units = 1024, activation = tf.nn.relu, name = 'FC4')
 		# fc5     = tf.layers.dense(inputs = fc4, units = 1024, activation = tf.nn.relu, name = 'FC5')
-		fc6     = tf.layers.dense(inputs = fc5, units =    2, activation = None      , name = 'FC5')
+		fc6     = tf.layers.dense(inputs = fc4, units =    2, activation = None      , name = 'FC5')
 		return tf.nn.softmax(fc6)[..., 0]
 
 
