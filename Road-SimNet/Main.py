@@ -127,7 +127,7 @@ if __name__ == '__main__':
 					aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
 				}
 				init_time = time.time()
-				loss_CNN, loss_SIM, pred_boundary, pred_vertices, pred_sim = sess.run(train_res, feed_dict)
+				loss_B, loss_V, loss_SIM, pred_boundary, pred_vertices, pred_sim = sess.run(train_res, feed_dict)
 				cost_time = time.time() - init_time
 
 				acc = np.zeros((2, 2), np.int32)
