@@ -374,7 +374,6 @@ def getAllEdges(hmb, hmv):
 			edges.append(np.array(temp) / 255.0)
 			edges_idx.append((i, j))
 	assert(len(edges) == len(edges_idx))
-	print(len(edges), len(edges_idx))
 	return np.array(edges), edges_idx, peaks_with_score, np.array(peaks_map, np.uint8)
 
 def recover(img, prob, edge_idx, peaks_with_score):

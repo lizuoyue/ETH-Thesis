@@ -161,6 +161,10 @@ if __name__ == '__main__':
 
 					savePNG(img[j], peaks_map, path + '%d-2.png' % j)
 
+				for item1, item2 in zip(ii_feed, dd_feed):
+					print(item1.shape)
+					print(item2.shape)
+					print(item2)
 				ii_feed = np.concatenate(ii_feed, axis = 0)
 				dd_feed = np.concatenate(dd_feed, axis = 0)
 				pred_sim_prob = sess.run(pred_sim_res, feed_dict = {ff: feature, ii: ii_feed, dd: dd_feed})
