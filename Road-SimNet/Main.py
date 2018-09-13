@@ -158,23 +158,23 @@ if __name__ == '__main__':
 						dd_feed.append(j * np.ones([edges.shape[0]], np.int32))
 						edges_idx_list.append(edges_idx)
 						peaks_with_score_list.append(peaks_with_score)
+					else:
+						edges_idx_list.append(None)
+						peaks_with_score_list.append(None)
 
 					savePNG(img[j], peaks_map, path + '%d-2.png' % j)
 
-				for item1, item2 in zip(ii_feed, dd_feed):
-					print(item1.shape)
-					print(item2.shape)
-					print(item2)
 				ii_feed = np.concatenate(ii_feed, axis = 0)
 				dd_feed = np.concatenate(dd_feed, axis = 0)
 				pred_sim_prob = sess.run(pred_sim_res, feed_dict = {ff: feature, ii: ii_feed, dd: dd_feed})
 
 				for j in range(config.AREA_TEST_BATCH):
 					prob = pred_sim_prob[dd_feed == j]
-					print(prob.shape[0], len(edges_idx_list[j]))
 					if prob.shape[0] > 0:
 						pathImg = recover(img[j], prob, edges_idx_list[j], peaks_with_score_list[j])
 						savePNG(img[j], pathImg, path + '%d-3.png' % j)
+					else:
+						savePNG(img[j], np.zeros(img[j].shape[0: 2]), path + '%d-3.png' % j)
 
 			# Save model
 			if i % 5000 == 0:
