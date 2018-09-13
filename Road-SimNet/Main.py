@@ -167,8 +167,9 @@ if __name__ == '__main__':
 
 				for j in range(config.AREA_TEST_BATCH):
 					prob = pred_sim_prob[dd_feed == j]
-					pathImg = recover(img[j], prob, edges_idx_list[j], peaks_with_score_list[j])
-					savePNG(img[j], pathImg, path + '%d-3.png' % j)
+					if prob.shape[0] > 0:
+						pathImg = recover(img[j], prob, edges_idx_list[j], peaks_with_score_list[j])
+						savePNG(img[j], pathImg, path + '%d-3.png' % j)
 
 			# Save model
 			if i % 5000 == 0:
