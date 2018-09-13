@@ -376,6 +376,7 @@ def getAllEdges(hmb, hmv):
 	return np.array(edges), edges_idx, peaks_with_score, np.array(peaks_map, np.uint8)
 
 def recover(img, prob, edge_idx, peaks_with_score):
+	print(prob, edge_idx)
 	assert(prob.shape[0] == len(edge_idx))
 	pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
 	draw = ImageDraw.Draw(pathImg)
