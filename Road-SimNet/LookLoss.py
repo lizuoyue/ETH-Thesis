@@ -2,7 +2,7 @@ import os, time
 import matplotlib.pyplot as plt
 import numpy as np
 
-def mov_avg(li, n = 2000):
+def mov_avg(li, n = 1000):
 	assert(len(li) >= n)
 	s = sum(li[0: n])
 	res = [s / float(n)]
@@ -21,9 +21,8 @@ def process(filename):
 	return mov_avg(loss_b), mov_avg(loss_v), mov_avg(loss_sim), mov_avg(acc)
 
 if __name__ == '__main__':
-	# os.popen('scp leonhard:~/Master-Thesis/Road-SimNet/LossTrain.out ./LossTrainChicago.out')
-	# os.popen('scp cnb:/local/zoli/thesis/Road-SimNet/LossTrain.out ./LossTrainChicago.out')
-	# quit()
+	os.popen('scp leonhard:~/Master-Thesis/Road-SimNet/LossTrain.out ./LossTrainChicago.out')
+	time.sleep(10)
 
 	loss_b, loss_v, loss_sim, acc = process('LossTrainChicago.out')
 	l = len(loss_b)
@@ -32,6 +31,8 @@ if __name__ == '__main__':
 	plt.plot(range(l), loss_v, label = 'Vertices')
 	plt.plot(range(l), loss_sim, label = 'SIM')
 	plt.plot(range(l), acc, label = 'Acc')
+	plt.plot([0, l], [1, 1], '--')
+	plt.plot([0, l], [0.8, 0.8], '--')
 
 	plt.title('Training Loss and SIM Accuracy')
 	# plt.ylim(ymin = 0, ymax = 0.75)
