@@ -360,8 +360,8 @@ def getAllEdges(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
 	peaks_map = np.zeros(hmv.shape, np.float32)
-	peaks_with_score = findPeaks(hmv, min_val = 0.0)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.0]
+	peaks_with_score = findPeaks(hmv, min_val = config.PEAK_V_MIN_VAL)
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > config.PEAK_B_MIN_VAL]
 	edges, edges_idx = [], []
 	for i in range(len(peaks_with_score)):
 		x1, y1, s1 = peaks_with_score[i]

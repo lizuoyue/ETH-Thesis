@@ -80,8 +80,8 @@ if __name__ == '__main__':
 			num, model_path = files[-1]
 			saver.restore(sess, model_path.replace('.meta', ''))
 			iter_obj = range(num + 1, config.NUM_ITER)
-			preserve('./LossTrain.out', num)
-			preserve('./LossValid.out', num)
+			preserve('./LossTrain.out', num + 1)
+			preserve('./LossValid.out', num + 1)
 			train_loss = open('./LossTrain.out', 'a')
 			valid_loss = open('./LossValid.out', 'a')
 		else:

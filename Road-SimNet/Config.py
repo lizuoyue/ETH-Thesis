@@ -28,3 +28,5 @@ class Config(object):
 		self.AREA_TEST_BATCH = 12
 		self.SIM_TRAIN_BATCH = 128
 		self.SIM_TRAIN_POS_TH = 0.8
+		self.PEAK_B_MIN_VAL = 0.8
+		self.PEAK_V_MIN_VAL = 0.9
