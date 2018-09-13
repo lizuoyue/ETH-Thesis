@@ -139,7 +139,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i >= 50000 and i % 1000 == -1:
+			if i >= 50000 and i % 1000 == 1:
 				img, _, _, _, _, _ = getDataBatch(config.AREA_TEST_BATCH, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
