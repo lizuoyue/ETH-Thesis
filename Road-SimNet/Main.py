@@ -153,15 +153,14 @@ if __name__ == '__main__':
 					savePNG(img[j], pred_vertices[j] * 255, path + '%d-1.png' % j)
 
 					edges, edges_idx, peaks_with_score, peaks_map = getAllEdges(pred_boundary[j], pred_vertices[j])
-					ii_feed.append(edges)
-					dd_feed.append(j * np.ones([edges.shape[0]], np.int32))
-					edges_idx_list.append(edges_idx)
-					peaks_with_score_list.append(peaks_with_score)
+					if edges.shape[0] > 0:
+						ii_feed.append(edges)
+						dd_feed.append(j * np.ones([edges.shape[0]], np.int32))
+						edges_idx_list.append(edges_idx)
+						peaks_with_score_list.append(peaks_with_score)
 
 					savePNG(img[j], peaks_map, path + '%d-2.png' % j)
 
-				for item in ii_feed:
-					print(item.shape)
 				ii_feed = np.concatenate(ii_feed, axis = 0)
 				dd_feed = np.concatenate(dd_feed, axis = 0)
 				pred_sim_prob = sess.run(pred_sim_res, feed_dict = {ff: feature, ii: ii_feed, dd: dd_feed})
