@@ -26,8 +26,9 @@ def preserve(filename, num_lines):
 	lines = f.readlines()
 	f.close()
 	f = open(filename, 'w')
-	for i, line in enumerate(lines):
-		if i == num_lines:
+	for line in lines:
+		n = int(line.strip().split(',')[0].split()[-1])
+		if n >= num_lines:
 			break
 		f.write(line)
 	f.close()
@@ -159,6 +160,8 @@ if __name__ == '__main__':
 
 					savePNG(img[j], peaks_map, path + '%d-2.png' % j)
 
+				for item in ii_feed:
+					print(item.shape)
 				ii_feed = np.concatenate(ii_feed, axis = 0)
 				dd_feed = np.concatenate(dd_feed, axis = 0)
 				pred_sim_prob = sess.run(pred_sim_res, feed_dict = {ff: feature, ii: ii_feed, dd: dd_feed})
