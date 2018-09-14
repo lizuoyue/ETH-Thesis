@@ -149,8 +149,8 @@ if __name__ == '__main__':
 				edges_idx_list = []
 				peaks_with_score_list = []
 				for j in range(config.AREA_TEST_BATCH):
-					savePNG(img[j], pred_boundary[j] * 255, path + '%d-%d-0.png' % (i,j))
-					savePNG(img[j], pred_vertices[j] * 255, path + '%d-%d-1.png' % (i,j))
+					savePNG(img[j], pred_boundary[j] * 255, path + '%d-%d-0.png' % (i, j))
+					savePNG(img[j], pred_vertices[j] * 255, path + '%d-%d-1.png' % (i, j))
 
 					edges, edges_idx, peaks_with_score, peaks_map = getAllEdges(pred_boundary[j], pred_vertices[j])
 					if edges.shape[0] > 0:
@@ -162,7 +162,7 @@ if __name__ == '__main__':
 						edges_idx_list.append(None)
 						peaks_with_score_list.append(None)
 
-					savePNG(img[j], peaks_map, path + '%d-2.png' % j)
+					savePNG(img[j], peaks_map, path + '%d-%d-2.png' % (i, j))
 
 				ii_feed = np.concatenate(ii_feed, axis = 0)
 				dd_feed = np.concatenate(dd_feed, axis = 0)
@@ -172,9 +172,9 @@ if __name__ == '__main__':
 					prob = pred_sim_prob[dd_feed == j]
 					if prob.shape[0] > 0:
 						pathImg = recover(img[j], prob, edges_idx_list[j], peaks_with_score_list[j])
-						savePNG(img[j], pathImg, path + '%d-3.png' % j)
+						savePNG(img[j], pathImg, path + '%d-%d-3.png' % (i, j))
 					else:
-						savePNG(img[j], np.zeros(img[j].shape[0: 2]), path + '%d-3.png' % j)
+						savePNG(img[j], np.zeros(img[j].shape[0: 2]), path + '%d-%d-3.png' % (i, j))
 
 			# Save model
 			if i % 5000 == -1:
