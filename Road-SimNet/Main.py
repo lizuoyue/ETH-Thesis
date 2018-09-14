@@ -94,7 +94,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			if i % 1 == 0:
+			if i % 1 == -1:
 				img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 				feed_dict = {aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out}
 
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 				train_loss.flush()
 
 			# Validation
-			if i % 100 == 0:
+			if i % 100 == -1:
 				img, boundary, vertices, sim_in, sim_idx, sim_out = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: sim_in, dd: sim_idx, oo: sim_out
@@ -149,8 +149,8 @@ if __name__ == '__main__':
 				edges_idx_list = []
 				peaks_with_score_list = []
 				for j in range(config.AREA_TEST_BATCH):
-					savePNG(img[j], pred_boundary[j] * 255, path + '%d-0.png' % j)
-					savePNG(img[j], pred_vertices[j] * 255, path + '%d-1.png' % j)
+					savePNG(img[j], pred_boundary[j] * 255, path + '%d-%d-0.png' % (i,j))
+					savePNG(img[j], pred_vertices[j] * 255, path + '%d-%d-1.png' % (i,j))
 
 					edges, edges_idx, peaks_with_score, peaks_map = getAllEdges(pred_boundary[j], pred_vertices[j])
 					if edges.shape[0] > 0:
@@ -177,7 +177,7 @@ if __name__ == '__main__':
 						savePNG(img[j], np.zeros(img[j].shape[0: 2]), path + '%d-3.png' % j)
 
 			# Save model
-			if i % 5000 == 0:
+			if i % 5000 == -1:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
