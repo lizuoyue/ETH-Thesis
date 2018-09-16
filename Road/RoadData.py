@@ -370,7 +370,7 @@ def getDataBatch(batch_size, mode, show = False):
 			print('There is sth wrong.')
 	if True:
 		for item in new_res:
-			np.array(item).shape
+			print(np.array(item).shape)
 	return new_res
 
 def findPeaks(heatmap, sigma = 0):
