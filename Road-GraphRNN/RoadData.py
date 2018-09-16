@@ -298,7 +298,7 @@ def getData(img_id, seq_id, show = False):
 	seq_idx = seq_id * np.ones([len(vertex_input)], np.int32)
 	vertex_inputs = np.array(vertex_inputs)
 	vertex_outputs = np.array(vertex_outputs)
-	vertex_masks = np.array(vertex_mask)
+	vertex_masks = np.array(vertex_masks)
 	seq_lens = np.array(seq_lens)
 
 	print(img.shape)
