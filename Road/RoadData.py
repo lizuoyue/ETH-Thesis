@@ -281,8 +281,8 @@ def getData(img_id, num_path, show = False):
 		path = []
 		if len(g.v) > 0 and len(g.sp_idx_s) > 0:
 			s = int(np.random.choice(g.sp_idx_s, 1)[0])
-			t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
-			# t = g.sp_max_idx[s]
+			# t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
+			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
 			while p != s:
@@ -309,7 +309,7 @@ def getData(img_id, num_path, show = False):
 		if len(path_v) > 0:
 			end[len(path_v) - 1] = 1
 
-		if False:
+		if True:
 			color = [0] + [1, 2] * 30
 			for vvv in [vertex_input, vertex_output, vertex_terminal]:
 				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
@@ -319,7 +319,7 @@ def getData(img_id, num_path, show = False):
 				time.sleep(0.1)
 			print(end)
 			print(len(path_v))
-			# input()
+			input()
 
 		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
 		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
