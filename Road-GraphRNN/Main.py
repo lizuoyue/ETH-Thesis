@@ -90,7 +90,7 @@ if __name__ == '__main__':
 				# input()
 				# continue
 				feed_dict = {
-					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, mm: vertex_masks, ll: seq_lens, dd: path_idx
+					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, mm: vertex_masks, ll: seq_lens, dd: seq_idx
 				}
 
 				# Training and get result
@@ -109,7 +109,7 @@ if __name__ == '__main__':
 			if i % 100 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_masks, seq_lens, seq_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
-					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, mm: vertex_masks, ll: seq_lens, dd: path_idx
+					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, mm: vertex_masks, ll: seq_lens, dd: seq_idx
 				}
 				init_time = time.time()
 				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end = sess.run(train_res, feed_dict)
