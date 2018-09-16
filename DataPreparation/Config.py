@@ -34,12 +34,22 @@ class Config(object):
 				'size'  : 600,
 			},
 			'Chicago': {
-			# Each patch is around 600 pixels in both width and height with zoom level 19 # 20
+			# Each patch is around 600 pixels in both width and height with zoom level 20
 				'center': (-87.7380649, 41.9289708), # Kelvyn Park
 				'step'  : (0.00044697723283112595, -0.0003324594428459153),
 				'xrange': (-144, 144),
 				'yrange': (-144, 144),
-				'zoom'  : 19,#20
+				'zoom'  : 20,
+				'scale' : 1,
+				'size'  : 600,
+			},
+			'BigChicago': {
+			# Each patch is around 600 pixels in both width and height with zoom level 19
+				'center': (-87.7380649, 41.9289708), # Kelvyn Park
+				'step'  : (0.00044697723283112595, -0.0003324594428459153),
+				'xrange': (-144, 144),
+				'yrange': (-144, 144),
+				'zoom'  : 19,
 				'scale' : 1,
 				'size'  : 600,
 			},
