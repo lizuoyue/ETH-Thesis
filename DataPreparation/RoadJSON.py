@@ -249,6 +249,10 @@ if __name__ == '__main__':
 			Image.fromarray(img).save('Road%s/%s' % (city_name, city_name) + '_' + str(img_id).zfill(8) + '.png')
 			img_id += 1
 
+			if img_id >= 5000 and img_id % 5000 == 0:
+				with open('Road%s.json' % city_name, 'w') as outfile:
+					json.dump(res, outfile)
+
 		with open('Road%s.json' % city_name, 'w') as outfile:
 			json.dump(res, outfile)
 
