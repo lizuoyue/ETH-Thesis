@@ -261,14 +261,15 @@ def getData(img_id, seq_id, show = False):
 	vertex_outputs = []
 	vertex_masks = []
 	seq_lens = []
-	for i in range(len(g.v)):
-		perm = np.random.permutation(len(g.v))
-		path_v = [g.v[perm[j]] for j in range(len(g.v))]
+	n = min(len(g.v), max_seq_len)
+	for i in range(n):
+		perm = np.random.permutation(len(g.v))[0: n]
+		path_v = [g.v[perm[j]] for j in range(n)]
 		vertex_input = [np.array(vertex_pool[r][c], np.float32) / 255.0 for c, r in path_v]
 		vertex_mask = [np.array(blank) / 255.0]
-		for j in range(len(g.v) - 1):
+		for j in range(n - 1):
 			vertex_mask.append(np.maximum(vertex_mask[-1], vertex_input[j]))
-		vertex_output = [nb_maps[perm[j]] for j in range(len(g.v))]
+		vertex_output = [nb_maps[perm[j]] for j in range(n)]
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(np.array(blank) / 255.0)
 		while len(vertex_output) < max_seq_len:
@@ -280,6 +281,7 @@ def getData(img_id, seq_id, show = False):
 			print(len(vertex_input))
 		if len(vertex_output) != max_seq_len:
 			print(len(vertex_output))
+		assert(len(vertex_input) == max_seq_len)
 		assert(len(vertex_output) == max_seq_len)
 
 		if False:
@@ -295,7 +297,7 @@ def getData(img_id, seq_id, show = False):
 		vertex_inputs.append(vertex_input)
 		vertex_outputs.append(vertex_output)
 		vertex_masks.append(vertex_mask)
-		seq_lens.append(len(g.v))
+		seq_lens.append()
 
 	seq_idx = seq_id * np.ones([len(vertex_inputs)], np.int32)
 	vertex_inputs = np.array(vertex_inputs)
