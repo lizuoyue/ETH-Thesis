@@ -277,12 +277,11 @@ def getData(img_id, seq_id, show = False):
 	vertex_outputs = []
 	ends = []
 	seq_lens = []
-	for i in range(len(g.v)):
+	for s in range(len(g.v)):
 		path = []
 		if len(g.sp_idx_s) > 0:
 			# s = int(np.random.choice(g.sp_idx_s, 1)[0])
 			# t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
-			s = g.v[i]
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
