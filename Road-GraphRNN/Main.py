@@ -112,7 +112,7 @@ if __name__ == '__main__':
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, mm: vertex_masks, ll: seq_lens, dd: seq_idx
 				}
 				init_time = time.time()
-				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end = sess.run(train_res, feed_dict)
+				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_out = sess.run(train_res, feed_dict)
 				cost_time = time.time() - init_time
 				valid_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
 				valid_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
