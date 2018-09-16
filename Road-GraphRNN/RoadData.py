@@ -256,6 +256,7 @@ def getData(img_id, seq_id, show = False):
 			nb_map += np.array(vertex_pool[g.v[t][1]][g.v[t][0]], np.float32)
 			nb_map[nb_map <= 100] = 0.0
 			nb_map[nb_map > 100] = 1.0
+		print(nb_map.sum())
 		nb_maps.append(nb_map)
 
 	# RNN in and out
@@ -270,7 +271,6 @@ def getData(img_id, seq_id, show = False):
 		vertex_mask = [np.array(blank) / 255.0]
 		for j in range(len(g.v) - 1):
 			vertex_mask.append(np.maximum(vertex_mask[-1], vertex_input[j]))
-			print(vertex_mask[-1][vertex_mask[-1] > 0.5])
 		vertex_output = [nb_maps[perm[j]] for j in range(len(g.v))]
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(np.array(blank) / 255.0)
