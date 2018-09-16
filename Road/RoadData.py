@@ -368,9 +368,9 @@ def getDataBatch(batch_size, mode, show = False):
 		else:
 			print('There is sth wrong.')
 	if True:
-		for item in res:
+		for item in new_res:
 			np.array(item).shape
-	return res
+	return new_res
 
 def findPeaks(heatmap, sigma = 0):
 	th = 0
@@ -439,7 +439,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(10):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(4, 'train', show = True)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = getDataBatch(4, 'train', show = True)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
