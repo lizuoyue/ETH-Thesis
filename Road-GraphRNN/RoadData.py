@@ -289,7 +289,7 @@ def getData(img_id, seq_id, show = False):
 					visualize[..., color[i]] = np.array(item * 255.0, np.uint8)
 					Image.fromarray(visualize).resize(config.AREA_SIZE).show()
 					time.sleep(0.1)
-			input()
+				input()
 
 		vertex_inputs.append(vertex_input)
 		vertex_outputs.append(vertex_output)
