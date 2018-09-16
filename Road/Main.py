@@ -74,39 +74,40 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
-			# for j in range(config.AREA_TRAIN_BATCH):
-			# 	plt.imsave('0-img.png', img[j])
-			# 	plt.imsave('1-b.png', boundary[j])
-			# 	plt.imsave('2-v.png', vertices[j])
-			# 	plt.imsave('3-s.png', vertex_terminals[j, 0, 0])
-			# 	plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
-			# 	print('seq_len', seq_lens[j, 0])
-			# 	for k in range(config.MAX_NUM_VERTICES):
-			# 		plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
-			# 		plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
-			# 	print(ends[j,0])
-			# print('press enter to continue')
-			# input()
-			# continue
-			feed_dict = {
-				aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
-			}
+			if i % 1 == 0:
+				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
+				# for j in range(config.AREA_TRAIN_BATCH):
+				# 	plt.imsave('0-img.png', img[j])
+				# 	plt.imsave('1-b.png', boundary[j])
+				# 	plt.imsave('2-v.png', vertices[j])
+				# 	plt.imsave('3-s.png', vertex_terminals[j, 0, 0])
+				# 	plt.imsave('3-t.png', vertex_terminals[j, 0, 1])
+				# 	print('seq_len', seq_lens[j, 0])
+				# 	for k in range(config.MAX_NUM_VERTICES):
+				# 		plt.imsave('4-%d-vi.png'%k, vertex_inputs[j,0,k])
+				# 		plt.imsave('4-%d-vo.png'%k, vertex_outputs[j,0,k])
+				# 	print(ends[j,0])
+				# print('press enter to continue')
+				# input()
+				# continue
+				feed_dict = {
+					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
+				}
 
-			# Training and get result
-			init_time = time.time()
-			_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
-			cost_time = time.time() - init_time
-			train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
-			train_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
-			train_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
-			
-			# Write loss to file
-			train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
-			train_loss.flush()
+				# Training and get result
+				init_time = time.time()
+				_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
+				cost_time = time.time() - init_time
+				train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
+				train_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
+				train_writer.log_scalar('Loss Full' , loss_CNN + loss_RNN, i)
+				
+				# Write loss to file
+				train_loss.write('Train Iter %d, %.6lf, %.6lf, %.3lf\n' % (i, loss_CNN, loss_RNN, cost_time))
+				train_loss.flush()
 
 			# Validation
-			if i % 200 == 0:
+			if i % 100 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens
@@ -121,7 +122,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 0:
+			if i % 1000 == -1:
 				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 

@@ -368,7 +368,7 @@ def getDataBatch(batch_size, mode, show = False):
 			break
 		else:
 			print('There is sth wrong.')
-	if True:
+	if False:
 		for item in new_res:
 			print(np.array(item).shape)
 	return new_res
