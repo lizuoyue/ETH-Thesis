@@ -361,7 +361,7 @@ def getDataBatch(batch_size, mode, show = False):
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
 		new_res.extend([np.concatenate([item[i] for item in res], axis = 0) for i in range(3, 9)])
 		if new_res[-1].shape[0] > 0:
-			choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.SIM_TRAIN_BATCH))
+			choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
 			for i in range(3, 9):
 				new_res[i] = new_res[i][choose]
 			break
