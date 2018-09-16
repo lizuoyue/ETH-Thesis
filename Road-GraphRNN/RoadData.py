@@ -295,19 +295,19 @@ def getData(img_id, seq_id, show = False):
 		vertex_masks.append(vertex_mask)
 		seq_lens.append(len(g.v))
 
-	seq_idx = seq_id * np.ones([len(vertex_input)], np.int32)
+	seq_idx = seq_id * np.ones([len(vertex_inputs)], np.int32)
 	vertex_inputs = np.array(vertex_inputs)
 	vertex_outputs = np.array(vertex_outputs)
 	vertex_masks = np.array(vertex_masks)
 	seq_lens = np.array(seq_lens)
 
-	print(img.shape)
-	print(boundary.shape)
-	print(vertices.shape)
-	print(vertex_inputs.shape)
-	print(vertex_outputs.shape)
-	print(vertex_masks.shape)
-	print(seq_lens.shape)
+	# print(img.shape)
+	# print(boundary.shape)
+	# print(vertices.shape)
+	# print(vertex_inputs.shape)
+	# print(vertex_outputs.shape)
+	# print(vertex_masks.shape)
+	# print(seq_lens.shape)
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_masks, seq_lens, seq_idx
 
