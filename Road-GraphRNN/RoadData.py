@@ -326,6 +326,7 @@ def getDataBatch(batch_size, mode, show = False):
 		for i in range(3, 8):
 			new_res.append(np.concatenate([item[i] for item in res if item[i].shape[0] > 0], axis = 0))
 		if new_res[-1].shape[0] > 0:
+			print(new_res[-1].shape[0], config.TRAIN_NUM_PATH)
 			choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
 			for i in range(3, 8):
 				new_res[i] = new_res[i][choose]
