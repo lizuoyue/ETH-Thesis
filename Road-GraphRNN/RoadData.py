@@ -270,7 +270,7 @@ def getData(img_id, seq_id, show = False):
 		vertex_mask = [np.array(blank) / 255.0]
 		for j in range(len(g.v) - 1):
 			vertex_mask.append(np.maximum(vertex_mask[-1], np.array(vertex_input[j], np.float32) / 255.0))
-			print(vertex_mask[vertex_mask > 0.5])
+			print(vertex_mask[-1][vertex_mask[-1] > 0.5])
 		vertex_output = [nb_maps[perm[j]] for j in range(len(g.v))]
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(np.array(blank) / 255.0)
