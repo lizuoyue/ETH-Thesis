@@ -11,6 +11,19 @@ import glob
 
 config = Config()
 
+def preserve(filename, num_lines):
+	f = open(filename, 'r')
+	lines = f.readlines()
+	f.close()
+	f = open(filename, 'w')
+	for line in lines:
+		n = int(line.strip().split(',')[0].split()[-1])
+		if n >= num_lines:
+			break
+		f.write(line)
+	f.close()
+	return
+
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
 
@@ -66,7 +79,13 @@ if __name__ == '__main__':
 			num, model_path = files[-1]
 			saver.restore(sess, model_path.replace('.meta', ''))
 			iter_obj = range(num + 1, config.NUM_ITER)
+			preserve('./LossTrain.out', num + 1)
+			preserve('./LossValid.out', num + 1)
+			train_loss = open('./LossTrain.out', 'a')
+			valid_loss = open('./LossValid.out', 'a')
 		else:
+			train_loss = open('./LossTrain.out', 'w')
+			valid_loss = open('./LossValid.out', 'w')
 			sess.run(init)
 			iter_obj = range(config.NUM_ITER)
 
