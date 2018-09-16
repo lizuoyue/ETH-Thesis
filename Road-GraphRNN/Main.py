@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
 				# Training and get result
 				init_time = time.time()
-				_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
+				_, (loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_out) = sess.run([train, train_res], feed_dict)
 				cost_time = time.time() - init_time
 				train_writer.log_scalar('Loss CNN'  , loss_CNN  , i)
 				train_writer.log_scalar('Loss RNN'  , loss_RNN  , i)
