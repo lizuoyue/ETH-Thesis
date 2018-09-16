@@ -329,7 +329,7 @@ def getData(img_id, seq_id, show = False):
 		vertex_terminals.append(vertex_terminal)
 		ends.append(end)
 		seq_lens.append(len(path_v))
-	seq_idx = seq_id * np.ones([len(vertex_terminal)], np.int32)
+	seq_idx = seq_id * np.ones([len(vertex_terminals)], np.int32)
 	vertex_inputs = np.array(vertex_inputs)
 	vertex_outputs = np.array(vertex_outputs)
 	vertex_terminals = np.array(vertex_terminals)
@@ -439,7 +439,7 @@ def recoverMultiPath(img, paths):
 
 if __name__ == '__main__':
 	for _ in range(10):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = getDataBatch(4, 'train', show = True)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = getDataBatch(4, 'train', show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
