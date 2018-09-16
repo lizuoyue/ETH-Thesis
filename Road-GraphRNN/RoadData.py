@@ -406,7 +406,7 @@ def recoverMultiPath(img, paths):
 if __name__ == '__main__':
 	for i in range(1000):
 		print(i)
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = getDataBatch(4, 'train', show = False)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_masks, seq_lens, seq_idx = getDataBatch(4, 'train', show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
