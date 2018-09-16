@@ -254,7 +254,6 @@ def getData(img_id, seq_id, show = False):
 		nb_map = np.array(blank, np.float32)
 		for t, _ in g.nb[s]:
 			nb_map = np.maximum(nb_map, np.array(vertex_pool[g.v[t][1]][g.v[t][0]], np.float32) / 255.0)
-		print(nb_map.sum())
 		nb_maps.append(nb_map)
 
 	# RNN in and out
@@ -281,7 +280,7 @@ def getData(img_id, seq_id, show = False):
 			print(len(vertex_input))
 		assert(len(vertex_output) == max_seq_len)
 
-		if True:
+		if False:
 			color = [0, 1, 2]
 			for vvv in zip(vertex_input, vertex_output, vertex_mask):
 				for i, item in enumerate(vvv):
@@ -404,8 +403,9 @@ def recoverMultiPath(img, paths):
 	return res
 
 if __name__ == '__main__':
-	for _ in range(10):
-		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = getDataBatch(4, 'train', show = True)
+	for i in range(1000):
+		print(i)
+		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = getDataBatch(4, 'train', show = False)
 	# b = getAllTerminal(a[2][0])
 	# print(b.shape)
 	# quit()
