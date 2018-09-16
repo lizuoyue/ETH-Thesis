@@ -150,8 +150,11 @@ if __name__ == '__main__':
 	]
 	for x in range(x1, x2):
 		for y in range(y1, y2):
-			if x < -134 and y < -40:
+			if x < -134:
 				continue
+			elif x == -134:
+				if y < -40:
+					continue
 			print('Step', x, y)
 			c_lon, c_lat = cen_lon + dx * x, cen_lat + dy * y
 			dd = {
