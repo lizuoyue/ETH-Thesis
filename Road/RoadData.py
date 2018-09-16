@@ -156,7 +156,7 @@ def path_processing(g, path):
 	new_path_v = path_v[: max_seq_len]
 	return new_path_v
 
-def getData(img_id, num_path, show = False):
+def getData(img_id, seq_id, show = False):
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
@@ -277,11 +277,12 @@ def getData(img_id, num_path, show = False):
 	vertex_outputs = []
 	ends = []
 	seq_lens = []
-	for i in range(num_path):
+	for i in range(len(g.v)):
 		path = []
-		if len(g.v) > 0 and len(g.sp_idx_s) > 0:
-			s = int(np.random.choice(g.sp_idx_s, 1)[0])
+		if len(g.sp_idx_s) > 0:
+			# s = int(np.random.choice(g.sp_idx_s, 1)[0])
 			# t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
+			s = g.v[i]
 			t = g.sp_max_idx[s]
 			dist, prev = g.sp[s]
 			p = t
@@ -309,7 +310,7 @@ def getData(img_id, num_path, show = False):
 		if len(path_v) > 0:
 			end[len(path_v) - 1] = 1
 
-		if True:
+		if False:
 			color = [0] + [1, 2] * 30
 			for vvv in [vertex_input, vertex_output, vertex_terminal]:
 				visualize = np.zeros((config.V_OUT_RES[1], config.V_OUT_RES[0], 3), np.uint8)
@@ -329,6 +330,7 @@ def getData(img_id, num_path, show = False):
 		vertex_terminals.append(vertex_terminal)
 		ends.append(end)
 		seq_lens.append(len(path_v))
+	seq_idx = seq_id * np.ones([len(vertex_terminal)], np.int32)
 	vertex_inputs = np.array(vertex_inputs)
 	vertex_outputs = np.array(vertex_outputs)
 	vertex_terminals = np.array(vertex_terminals)
@@ -344,7 +346,7 @@ def getData(img_id, num_path, show = False):
 	# print(ends.shape)
 	# print(seq_lens.shape)
 
-	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens
+	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
 def getDataBatch(batch_size, mode, show = False):
 	assert(mode in ['train', 'val', 'valid'])
@@ -352,12 +354,21 @@ def getDataBatch(batch_size, mode, show = False):
 		mini_ids = train_ids
 	else:
 		mini_ids = val_ids
-	res = []
-	ids = np.random.choice(len(mini_ids), batch_size, replace = False)
-	for i in range(batch_size):
-		res.append(getData(mini_ids[ids[i]], config.TRAIN_NUM_PATH, show))
-	res = [np.array([item[i] for item in res]) for i in range(8)]
-	if False:
+	while True:
+		res = []
+		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
+		for i in range(batch_size):
+			res.append(getData(mini_ids[ids[i]], i, show))
+		new_res = [np.array([item[i] for item in res]) for i in range(3)]
+		new_res.extend([np.concatenate([item[i] for item in res], axis = 0) for i in range(3, 9)])
+		if new_res[-1].shape[0] > 0:
+			choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.SIM_TRAIN_BATCH))
+			for i in range(3, 9):
+				new_res[i] = new_res[i][choose]
+			break
+		else:
+			print('There is sth wrong.')
+	if True:
 		for item in res:
 			np.array(item).shape
 	return res

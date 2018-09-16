@@ -15,11 +15,12 @@ class Model(object):
 		# RolygonRNN parameters
 		self.max_num_vertices = max_num_vertices
 		self.lstm_out_channel = lstm_out_channel
-		self.lstm_in_channel  = [136] + lstm_out_channel[: -1]
+		self.lstm_in_channel  = [134] + lstm_out_channel[: -1]
 		self.v_out_res        = v_out_res
 		self.v_out_nrow       = self.v_out_res[0]
 		self.v_out_ncol       = self.v_out_res[1]
 		self.res_num          = self.v_out_nrow * self.v_out_ncol
+		self.num_stage        = 3
 
 		# Multi-layer LSTM and inital state
 		self.stacked_lstm     = tf.contrib.rnn.MultiRNNCell(
@@ -52,46 +53,39 @@ class Model(object):
 			kernel_shape = [3, 3]
 		)
 
-	def smoothL1Loss(self, labels, predictions):
-		diff = tf.abs(predictions - labels)
-		val = tf.where(tf.less(diff, 1), 0.5 * tf.square(diff), diff - 0.5)
-		return tf.reduce_mean(val)
-
-	def L2LossWeighted(self, gt, pred):
-		# return 3 * self.smoothL1Loss(gt, pred)
-		batch_size = tf.cast(tf.shape(gt)[0], tf.float32)
-		nt, nf = tf.reduce_sum(gt) / batch_size, tf.reduce_sum(1 - gt) / batch_size
-		nt = tf.maximum(tf.minimum(nt, 0.999999), 0.000001)
-		nf = tf.maximum(tf.minimum(nf, 0.999999), 0.000001)
-		weights = gt * 0.5 / nt + (1 - gt) * 0.5 / nf
-		weights = weights / tf.reduce_sum(weights)
-		return tf.reduce_sum(tf.multiply(tf.square(gt - pred) * 33, weights))
+	def weightedLogLoss(self, gt, pred):
+		num = tf.reduce_sum(tf.ones(tf.shape(gt)))
+		n_pos = tf.reduce_sum(gt)
+		n_neg = tf.reduce_sum(1 - gt)
+		n_pos = tf.maximum(tf.minimum(n_pos, num - 1), 1)
+		n_neg = tf.maximum(tf.minimum(n_neg, num - 1), 1)
+		w = gt * num / n_pos + (1 - gt) * num / n_neg
+		return tf.losses.log_loss(gt, pred, w / 2)
 
 	def CNN(self, img, gt_boundary = None, gt_vertices = None, reuse = None):
 		"""
 			gt_boundary       : [batch_size, height, width, 1]
 			gt_vertices       : [batch_size, height, width, 1]
-			combine           : [batch_size, height, width, 130]
-			v_first           : 
-			prob              :
 		"""
+		vgg_result = VGG19('VGG19', img, reuse = reuse)
+		skip_feature = SkipFeature('SkipFeature', vgg_result, reuse = reuse)
+		bb, vv = Mask('Mask_1', skip_feature, reuse = reuse)
+		b_prob = [tf.nn.softmax(bb)[..., 0: 1]]
+		v_prob = [tf.nn.softmax(bb)[..., 0: 1]]
+		for i in range(2, self.num_stage + 1):
+			stage_input = tf.concat([skip_feature, bb, vv], axis = -1)
+			bb, vv = Mask('Mask_%d' % i, stage_input, reuse = reuse)
+			b_prob.append(tf.nn.softmax(bb)[..., 0: 1])
+			v_prob.append(tf.nn.softmax(vv)[..., 0: 1])
 		if not reuse:
-			feature = PolygonRNNFeature(VGG16(img))
+			loss_B, loss_V = 0, 0
+			for item in b_prob:
+				loss_B += self.weightedLogLoss(gt_boundary, item)
+			for item in v_prob:
+				loss_V += self.weightedLogLoss(gt_vertices, item)
+			return skip_feature, b_prob[-1], v_prob[-1], loss_B + loss_V
 		else:
-			feature = PolygonRNNFeature(VGG16(img, True), True)
-		with tf.variable_scope('CNN', reuse = reuse):
-			boundary = tf.layers.conv2d(inputs = feature, filters = 2, kernel_size = 1, padding = 'valid', activation = None)
-			combine  = tf.concat([feature, boundary], 3)
-			vertices = tf.layers.conv2d(inputs = combine, filters = 2, kernel_size = 1, padding = 'valid', activation = None)
-		boundary_prob = tf.nn.softmax(boundary)[..., 0]
-		vertices_prob = tf.nn.softmax(vertices)[..., 0]
-		new_combine = tf.concat([feature, boundary, vertices], 3)
-		if not reuse:
-			loss  = tf.losses.log_loss(gt_boundary, boundary_prob)#self.L2LossWeighted(gt_boundary, boundary_prob)
-			loss += tf.losses.log_loss(gt_vertices, vertices_prob)#self.L2LossWeighted(gt_vertices, vertices_prob)
-			return new_combine, boundary_prob, vertices_prob, loss
-		else:
-			return new_combine, boundary_prob, vertices_prob
+			return skip_feature, b_prob[-1], v_prob[-1]
 
 	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None):
 		""" 
@@ -104,30 +98,28 @@ class Model(object):
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
-			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num + 1, activation = None)
+			logits = tf.layers.dense(inputs = output_reshape, units = 4096, activation = tf.nn.relu)
+			logits = tf.layers.dense(inputs = logits, units = 1024, activation = tf.nn.relu)
+			logits = tf.layers.dense(inputs = logits, units = self.res_num + 1, activation = None)
 		if not reuse:
-			loss = tf.reduce_sum(
-				tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
-			) / tf.reduce_sum(gt_seq_len)
+			loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
+			loss = tf.reduce_sum(loss) / tf.reduce_sum(gt_seq_len)
 			return logits, loss
 		else:
 			prob = tf.nn.softmax(logits)
 			val, idx = tf.nn.top_k(prob[:, 0, :], k = config.BEAM_WIDTH)
 			return tf.log(val), tf.gather(self.vertex_pool, idx, axis = 0)
 
-	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, reuse = None):
+	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
 		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
 			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
 		) for i in range(len(self.lstm_out_channel))])
 		if not reuse:
-			feature_rep = tf.reshape(tf.tile(tf.reshape(feature,
-				[config.AREA_TRAIN_BATCH, 1, 1, self.v_out_nrow, self.v_out_ncol, 132]),
-				[1, config.TRAIN_NUM_PATH, self.max_num_vertices, 1, 1, 1]),
-				[config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 132]
-			)
-			v_in_0 = tf.tile(terminal[:, 1: 2, ...], [1, self.max_num_vertices, 1, 1, 1])
+			feature_rep = tf.gather(feature, gt_idx)
+			feature_rep = tf.tile(tf.expand_dims(feature_rep, axis = 1), [1, self.max_num_vertices, 1, 1, 1])
+			v_in_0 = tf.tile(terminal[:, 0: 1, ...], [1, self.max_num_vertices, 1, 1, 1])
 			v_in_e = tf.tile(terminal[:, 1: 2, ...], [1, self.max_num_vertices, 1, 1, 1])
 			v_in_1 = v_in
 			v_in_2 = tf.stack([v_in[:, 0, ...]] + tf.unstack(v_in, axis = 1)[: -1], axis = 1)
@@ -180,21 +172,24 @@ class Model(object):
 					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in cell])
 			return tf.stack(rnn_time, 1)
 
-	def train(self, aa, bb, vv, ii, oo, tt, ee, ll):
+	def train(self, aa, bb, vv, ii, oo, tt, ee, ll, dd):
 		#
 		img          = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
-		gt_boundary  = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
-		gt_vertices  = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol])
-		gt_v_in      = tf.reshape(ii, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 1])
-		gt_v_out     = tf.reshape(oo, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num])
-		gt_terminal  = tf.reshape(tt, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, 2, self.v_out_nrow, self.v_out_ncol, 1])
-		gt_end       = tf.reshape(ee, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH, self.max_num_vertices, 1])
-		gt_seq_len   = tf.reshape(ll, [config.AREA_TRAIN_BATCH * config.TRAIN_NUM_PATH])
+		gt_boundary  = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
+		gt_vertices  = tf.reshape(vv, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
+
+		gt_v_in      = tf.reshape(ii, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 1])
+		gt_v_out     = tf.reshape(oo, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num])
+		gt_terminal  = tf.reshape(tt, [config.TRAIN_NUM_PATH, 2, self.v_out_nrow, self.v_out_ncol, 1])
+		gt_end       = tf.reshape(ee, [config.TRAIN_NUM_PATH, self.max_num_vertices, 1])
+		gt_seq_len   = tf.reshape(ll, [config.TRAIN_NUM_PATH])
+		gt_idx       = tf.reshape(dd, [config.TRAIN_NUM_PATH])
 		gt_rnn_out   = tf.concat([gt_v_out, gt_end], 2)
 
 		# PolygonRNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		logits , loss_RNN = self.RNN(feature, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len)
+		feature_RNN = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
+		logits , loss_RNN = self.RNN(feature_RNN, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len, gt_idx)
 
 		# 
 		pred_rnn      = tf.nn.softmax(logits)
@@ -211,7 +206,7 @@ class Model(object):
 
 	def predict_path(self, ff, tt):
 		#
-		feature  = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 132])
+		feature  = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 130])
 		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
