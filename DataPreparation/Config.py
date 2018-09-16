@@ -46,7 +46,7 @@ class Config(object):
 			'BigChicago': {
 			# Each patch is around 600 pixels in both width and height with zoom level 19
 				'center': (-87.7380649, 41.9289708), # Kelvyn Park
-				'step'  : (0.00044697723283112595, -0.0003324594428459153),
+				'step'  : (0.00067046584, -0.00049868916),
 				'xrange': (-144, 144),
 				'yrange': (-144, 144),
 				'zoom'  : 19,
