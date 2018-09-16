@@ -253,10 +253,7 @@ def getData(img_id, seq_id, show = False):
 	for s in range(len(g.v)):
 		nb_map = np.array(blank, np.float32)
 		for t, _ in g.nb[s]:
-			nb_map += np.array(vertex_pool[g.v[t][1]][g.v[t][0]], np.float32)
-			nb_map[nb_map <= 100] = 0.0
-			nb_map[nb_map > 100] = 1.0
-			print('a', end = '')
+			nb_map = np.maximum(nb_map, np.array(vertex_pool[g.v[t][1]][g.v[t][0]], np.float32) / 255.0)
 		print(nb_map.sum())
 		nb_maps.append(nb_map)
 
