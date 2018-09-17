@@ -420,7 +420,7 @@ def getAllTerminal(hmb, hmv):
 	peaks_with_score = findPeaks(hmv, min_val = 0.9)
 	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
 	allTerminal = []
-	peaks_map = np.zeros(hmv.shape, np.float32)
+	peaks_map = np.zeros([w, h], np.float32)
 	edges_map = Image.new('P', (w, h), color = 0)
 	draw = ImageDraw.Draw(edges_map)
 	for i in range(len(peaks_with_score)):

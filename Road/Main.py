@@ -11,6 +11,16 @@ import glob
 
 config = Config()
 
+def savePNG(mat1, mat2, filename):
+	if mat2.shape[0] < mat1.shape[0]:
+		import cv2
+		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST) 
+	plt.imshow(mat1)
+	plt.imshow(mat2, alpha = 0.5)
+	plt.axis('off')
+	plt.savefig(filename, bbox_inches = 'tight', pad_inches = 0)
+	return
+
 def preserve(filename, num_lines):
 	f = open(filename, 'r')
 	lines = f.readlines()
@@ -146,9 +156,9 @@ if __name__ == '__main__':
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
-				plt.imsave(path + '%d-0.png' % i, img[0])
-				plt.imsave(path + '%d-1.png' % i, pred_boundary[0, ..., 0] * 255)
-				plt.imsave(path + '%d-2.png' % i, pred_vertices[0, ..., 0] * 255)
+				savePNG(img[0], np.zeros(config.AREA_SIZE), path + '%d-0.png' % i)
+				savePNG(img[0], pred_boundary[0, ..., 0] * 255, path + '%d-1.png' % i)
+				savePNG(img[0], pred_vertices[0, ..., 0] * 255, path + '%d-2.png' % i)
 
 				map_b, map_v, all_terminal = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				print(feature.shape)
