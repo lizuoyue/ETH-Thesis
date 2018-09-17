@@ -19,14 +19,14 @@ def process(filename):
 	return mov_avg(loss_cnn), mov_avg(loss_rnn)
 
 if __name__ == '__main__':
-	# os.popen('scp leonhard:~/Master-Thesis/Road/LossTrain.out ./LossTrainChicago.out')
+	# os.popen('scp leonhard:~/Master-Thesis/Road-GraphRNN/LossTrain.out ./LossTrainChicago.out')
 	# quit()
 
 	loss_cnn, loss_rnn = process('LossTrainChicago.out')
 	l = min(len(loss_cnn), len(loss_rnn))
 
 	plt.plot(range(l), loss_cnn, label = 'CNN')
-	plt.plot(range(l), loss_rnn, label = 'RNN')
+	plt.plot(range(l), np.array(loss_rnn) * 6, label = 'RNN')
 
 	plt.title('Training Loss')
 	# plt.ylim(ymin = 0, ymax = 0.75)
