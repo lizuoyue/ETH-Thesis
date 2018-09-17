@@ -151,6 +151,10 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0, ..., 0] * 255)
 
 				map_b, map_v, all_terminal = getAllTerminal(pred_boundary[0], pred_vertices[0])
+				print(feature.shape)
+				print(map_b.shape)
+				print(map_v.shape)
+				print(len(all_terminal))
 				feature = np.concatenate([feature, map_b[..., np.newaxis], map_v[..., np.newaxis]], axis = -1)
 
 				multi_roads = []
