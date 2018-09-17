@@ -297,12 +297,8 @@ def getData(img_id, seq_id, show = False):
 		path_v = path_processing(g, path)
 		vertex_input = [vertex_pool[r][c] for c, r in path_v]
 		assert(len(vertex_input) > 0)
-		if len(vertex_input) > 1:
-			vertex_output = vertex_input[1:]
-			vertex_terminal = [vertex_input[0], vertex_input[-1]]
-		else:
-			vertex_output = []
-			vertex_terminal = [vertex_input[0], vertex_pool[g.v[t][1]][g.v[t][0]]]
+		vertex_output = vertex_input[1:]
+		vertex_terminal = [vertex_input[0], vertex_pool[g.v[t][1]][g.v[t][0]]]
 
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(blank)
