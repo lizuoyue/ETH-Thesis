@@ -145,6 +145,8 @@ if __name__ == '__main__':
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
+				print(feature.shape)
+				print(pred_boundary.shape)
 				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
 				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
