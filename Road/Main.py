@@ -151,7 +151,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 1:
+			if i % 1 == 1:
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
@@ -168,8 +168,11 @@ if __name__ == '__main__':
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
 					multi_roads.append(pred_v_out[0])
 
-				newImg = recoverMultiPath(img[0].shape[0: 2], np.array(multi_roads))
-				plt.imsave(path + '%d-3.png' % i, newImg)
+				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], np.array(multi_roads))
+				savePNG(img[0], paths, path + '%d-3.png' % i)
+				os.makedirs('./test_res/%d' % i)
+				for j, pathImg in enumerate(pathImgs):
+					savePNG(img[0], pathImg, path + '%d/%d.png' % (i, j))
 
 			# Save model
 			if i % 2000 == -1:
