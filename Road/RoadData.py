@@ -278,26 +278,32 @@ def getData(img_id, seq_id, show = False):
 	ends = []
 	seq_lens = []
 	for s in range(len(g.v)):
-		path = []
-		if len(g.sp_idx_s) > 0:
-			# s = int(np.random.choice(g.sp_idx_s, 1)[0])
-			# t = int(np.random.choice(g.sp_idx_t[s], 1)[0])
-			t = g.sp_max_idx[s]
-			dist, prev = g.sp[s]
+		if len(g.v) == 1:
+			break
+		t = int(np.random.choice(len(g.v), 1)[0])
+		while t == s:
+			t = int(np.random.choice(len(g.v), 1)[0])
+		dist, prev = g.sp[s]
+		if dist[t] > 0:
+			path = []
 			p = t
 			while p != s:
 				path.append(p)
 				p = prev[p]
 			path.append(p)
 			path.reverse()
+		else:
+			path = [s]
 		path_v = path_processing(g, path)
 		vertex_input = [vertex_pool[r][c] for c, r in path_v]
-		if len(vertex_input) > 0:
+		assert(len(vertex_input) > 0)
+		if len(vertex_input) > 1:
 			vertex_output = vertex_input[1:]
 			vertex_terminal = [vertex_input[0], vertex_input[-1]]
 		else:
 			vertex_output = []
-			vertex_terminal = [blank, blank]
+			vertex_terminal = [vertex_input[0], vertex_pool[g.v[t][1]][g.v[t][0]]]
+
 		while len(vertex_input) < max_seq_len:
 			vertex_input.append(blank)
 		while len(vertex_output) < max_seq_len:

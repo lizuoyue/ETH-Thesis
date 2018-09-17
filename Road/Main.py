@@ -163,13 +163,16 @@ if __name__ == '__main__':
 				map_b, map_v, all_terminal = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
+				savePNG(img[0], map_b, path + '%d-3.png' % i)
+				savePNG(img[0], map_v, path + '%d-4.png' % i)
+
 				multi_roads = []
 				for terminal in all_terminal:
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
 					multi_roads.append(pred_v_out[0])
 
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], np.array(multi_roads))
-				savePNG(img[0], paths, path + '%d-3.png' % i)
+				savePNG(img[0], paths, path + '%d-5.png' % i)
 				os.makedirs('./test_res/%d' % i)
 				for j, pathImg in enumerate(pathImgs):
 					savePNG(img[0], pathImg, path + '%d/%d.png' % (i, j))
