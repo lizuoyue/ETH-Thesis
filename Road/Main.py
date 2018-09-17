@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from Config import *
 from Model import *
-# from RoadData import *
+from RoadData import *
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ def preserve(filename, num_lines):
 	return
 
 if __name__ == '__main__':
-	# assert(len(sys.argv) == 2 or len(sys.argv) == 3)
+	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
 
 	# Define graph
 	graph = Model(

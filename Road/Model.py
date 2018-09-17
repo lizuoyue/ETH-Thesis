@@ -223,7 +223,6 @@ class Model(object):
 
 		#
 		pred_v_out = self.RNN(feature, terminal, reuse = True)
-		print(pred_v_out.shape)
 		return pred_v_out
 
 class Logger(object):
