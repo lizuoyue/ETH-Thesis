@@ -441,9 +441,8 @@ def getAllTerminal(hmb, hmv):
 	edges_map = np.array(edges_map, np.float32) / 255.0
 	return edges_map, peaks_map, allTerminal
 
-def recoverMultiPath(img, paths):
-	print(paths.shape)
-	res = np.zeros(img.shape[0: 2])
+def recoverMultiPath(img_size, paths):
+	res = np.zeros(img_size)
 	for i in range(paths.shape[0]):
 		path = []
 		for j in range(max_seq_len + 1):
@@ -454,7 +453,7 @@ def recoverMultiPath(img, paths):
 				path.append((ind[1] * 8 + 4, ind[0] * 8 + 4))
 			else:
 				break
-		pathImg = Image.new('P', (img.shape[1], img.shape[0]), color = 0)
+		pathImg = Image.new('P', img_size, color = 0)
 		draw = ImageDraw.Draw(pathImg)
 		draw.line(path, fill = 1, width = 5)
 		res += np.array(pathImg, np.float32)
