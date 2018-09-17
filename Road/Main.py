@@ -165,7 +165,7 @@ if __name__ == '__main__':
 				print(map_b.shape)
 				print(map_v.shape)
 				print(len(all_terminal))
-				feature = np.concatenate([feature, map_b[..., np.newaxis], map_v[..., np.newaxis]], axis = -1)
+				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
 				multi_roads = []
 				for terminal in all_terminal:
