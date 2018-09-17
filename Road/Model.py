@@ -87,7 +87,7 @@ class Model(object):
 		else:
 			return skip_feature, b_prob[-1], v_prob[-1]
 
-	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, reuse = None):
+	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, gt_vertices = None, reuse = None):
 		""" 
 			rnn_output
 			gt_rnn_out
@@ -101,6 +101,9 @@ class Model(object):
 			logits = tf.layers.dense(inputs = output_reshape, units = 4096, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = 1024, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = self.res_num + 1, activation = None)
+			gt_vertices = tf.reshape(gt_vertices, [-1, self.max_num_vertices, self.res_num])
+			gt_vertices = tf.concat([gt_vertices, tf.ones([config.TRAIN_NUM_PATH, self.max_num_vertices, 1])], axis = -1)
+			logits -= 1e10 * (1 - gt_vertices)
 		if not reuse:
 			loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
 			loss = tf.reduce_sum(loss) / tf.reduce_sum(gt_seq_len)
@@ -131,7 +134,7 @@ class Model(object):
 			outputs, state = tf.nn.dynamic_rnn(cell = self.stacked_lstm, inputs = rnn_input,
 				sequence_length = gt_seq_len, initial_state = initial_state, dtype = tf.float32
 			)
-			return self.FC(outputs, gt_rnn_out, gt_seq_len)
+			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
 			rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]

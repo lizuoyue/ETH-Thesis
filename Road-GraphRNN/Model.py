@@ -99,7 +99,7 @@ class Model(object):
 			logits_reshape = tf.reshape(logits, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 2])
 		if not reuse:
 			prob = tf.nn.softmax(logits_reshape)[..., 0: 1]
-			loss = tf.losses.log_loss(gt_rnn_out, prob, gt_v_mask)
+			loss = self.num_stage * 2 * tf.losses.log_loss(gt_rnn_out, prob, gt_v_mask)
 			return prob, loss
 		else:
 			prob = tf.nn.softmax(logits)
