@@ -94,24 +94,24 @@ class Model(object):
 			gt_seq_len
 		"""
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [-1, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1]])	
+			output_reshape = tf.reshape(rnn_output, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1]])	
 		else:
-			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(inputs = output_reshape, units = 4096, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = 1024, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = self.res_num + 1, activation = None)
-			gt_vertices = tf.reshape(gt_vertices, [-1, self.max_num_vertices, self.res_num])
+		if not reuse:
+			gt_vertices = tf.reshape(gt_vertices, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num])
 			gt_vertices = tf.concat([gt_vertices, tf.ones([config.TRAIN_NUM_PATH, self.max_num_vertices, 1])], axis = -1)
 			logits -= 1e10 * (1 - gt_vertices)
-		if not reuse:
 			loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
 			loss = tf.reduce_sum(loss) / tf.reduce_sum(gt_seq_len)
 			return logits, loss
 		else:
 			prob = tf.nn.softmax(logits)
-			val, idx = tf.nn.top_k(prob[:, 0, :], k = config.BEAM_WIDTH)
-			return tf.log(val), tf.gather(self.vertex_pool, idx, axis = 0)
+			val, idx = tf.nn.top_k(prob[0, 0, :], k = 1)
+			return tf.expand_dims(tf.gather(self.vertex_pool, idx, axis = 0), axis = 3)
 
 	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
@@ -137,43 +137,52 @@ class Model(object):
 			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
-			rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]
-			rnn_time = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
-			rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
+			# rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]
+			# rnn_time = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
+			# rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
 
-			# beam search
-			for i in range(1, self.max_num_vertices):
-				prob, time, cell = [], [], [[[], []] for item in self.lstm_out_channel]
-				for j in range(config.BEAM_WIDTH):
-					prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, config.BEAM_WIDTH])
-					v_first = terminal[:, 1, ...] # rnn_time[j][..., 0: 1]
-					v_last_ = rnn_time[j][..., i - 1: i]
-					v__last = rnn_time[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
-					inputs = tf.concat([feature, v_first, v_last_, v__last, terminal[:, 1, ...]], 3)
-					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
-					prob_new, time_new = self.FC(rnn_output = outputs, reuse = True)
-					time_new = tf.transpose(time_new, [0, 2, 3, 1])
-					prob.append(prob_last + prob_new)
-					for k, item in enumerate(states):
-						for l in [0, 1]:
-							cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
-					for k in range(config.BEAM_WIDTH):
-						time.append(tf.concat([rnn_time[j], time_new[..., k: k + 1]], 3))
-				prob = tf.concat(prob, 1)
-				val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
-				idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, config.BEAM_WIDTH]), idx], 2)
-				time = tf.stack(time, 1)
-				ret = tf.gather_nd(time, idx)
-				for k, item in enumerate(states):
-					for l in [0, 1]:
-						cell[k][l] = tf.gather_nd(tf.concat(cell[k][l], 1), idx)
+			# # beam search
+			# for i in range(1, self.max_num_vertices):
+			# 	prob, time, cell = [], [], [[[], []] for item in self.lstm_out_channel]
+			# 	for j in range(config.BEAM_WIDTH):
+			# 		prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, config.BEAM_WIDTH])
+			# 		v_first = terminal[:, 1, ...] # rnn_time[j][..., 0: 1]
+			# 		v_last_ = rnn_time[j][..., i - 1: i]
+			# 		v__last = rnn_time[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
+			# 		inputs = tf.concat([feature, v_first, v_last_, v__last, terminal[:, 1, ...]], 3)
+			# 		outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
+			# 		prob_new, time_new = self.FC(rnn_output = outputs, reuse = True)
+			# 		time_new = tf.transpose(time_new, [0, 2, 3, 1])
+			# 		prob.append(prob_last + prob_new)
+			# 		for k, item in enumerate(states):
+			# 			for l in [0, 1]:
+			# 				cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
+			# 		for k in range(config.BEAM_WIDTH):
+			# 			time.append(tf.concat([rnn_time[j], time_new[..., k: k + 1]], 3))
+			# 	prob = tf.concat(prob, 1)
+			# 	val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
+			# 	idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, config.BEAM_WIDTH]), idx], 2)
+			# 	time = tf.stack(time, 1)
+			# 	ret = tf.gather_nd(time, idx)
+			# 	for k, item in enumerate(states):
+			# 		for l in [0, 1]:
+			# 			cell[k][l] = tf.gather_nd(tf.concat(cell[k][l], 1), idx)
 
-				# Update every timeline
-				for j in range(config.BEAM_WIDTH):
-					rnn_prob[j] = val[..., j]
-					rnn_time[j] = ret[:, j, ...]
-					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in cell])
-			return tf.stack(rnn_time, 1)
+			# 	# Update every timeline
+			# 	for j in range(config.BEAM_WIDTH):
+			# 		rnn_prob[j] = val[..., j]
+			# 		rnn_time[j] = ret[:, j, ...]
+			# 		rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in cell])
+			# return tf.stack(rnn_time, 1)
+			res = [terminal[:, 0, ...]]
+			states = [initial_state]
+			for i in range(1, self.max_num_vertices + 1):
+				rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
+				rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
+				states.append(state)
+				next_v = self.FC(rnn_output = rnn_output, reuse = True)
+				res.append(next_v)
+			return tf.stack(res, 1)
 
 	def train(self, aa, bb, vv, ii, oo, tt, ee, ll, dd):
 		#
@@ -214,8 +223,7 @@ class Model(object):
 
 		#
 		pred_v_out = self.RNN(feature, terminal, reuse = True)
-		pred_v_out = tf.transpose(pred_v_out, [1, 0, 4, 2, 3])
-		# print(pred_v_out.shape) # config.BEAM_WIDTH ? 6 24 24
+		print(pred_v_out.shape)
 		return pred_v_out
 
 class Logger(object):

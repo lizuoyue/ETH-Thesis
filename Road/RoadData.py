@@ -381,7 +381,7 @@ def getDataBatch(batch_size, mode, show = False):
 			print(np.array(item).shape)
 	return new_res
 
-def findPeaks(heatmap, sigma = 0):
+def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 	th = 0
 	hmap = gaussian_filter(heatmap, sigma)
 	map_left = np.zeros(hmap.shape)
@@ -409,23 +409,37 @@ def findPeaks(heatmap, sigma = 0):
 	summary += hmap>=map_dr+th
 	summary += hmap>=map_ul+th
 	summary += hmap>=map_ur+th
-	peaks_binary = np.logical_and.reduce((summary >= 8, hmap >= 0.7))
+	peaks_binary = np.logical_and.reduce((summary >= 8, hmap >= min_val))
 	peaks = list(zip(np.nonzero(peaks_binary)[1], np.nonzero(peaks_binary)[0])) # note reverse
 	peaks_with_score = [x + (heatmap[x[1],x[0]],) for x in peaks]
 	return peaks_with_score
 
-def getAllTerminal(hmap):
-	res = []
-	peaks_with_score = findPeaks(hmap)
-	# print(peaks_with_score)
+def getAllTerminal(hmb, hmv):
+	assert(hmb.shape == hmv.shape)
+	h, w = hmb.shape[0: 2]
+	peaks_with_score = findPeaks(hmv, min_val = 0.9)
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
+	allTerminal = []
+	peaks_map = np.zeros(hmv.shape, np.float32)
+	edges_map = Image.new('P', (w, h), color = 0)
+	draw = ImageDraw.Draw(edges_map)
 	for i in range(len(peaks_with_score)):
-		x1, y1, _ = peaks_with_score[i]
+		x1, y1, s1 = peaks_with_score[i]
+		peaks_map[y1, x1] = 1
 		for j in range(len(peaks_with_score)):
 			if j == i:
 				continue
 			x2, y2, _ = peaks_with_score[j]
-			res.append([np.array(vertex_pool[y1][x1]), np.array(vertex_pool[y2][x2])])
-	return np.array(res)
+			allTerminal.append(np.array([np.array(vertex_pool[y1][x1]), np.array(vertex_pool[y2][x2])]))
+
+			temp = Image.new('P', (w, h), color = 0)
+			tmp_draw = ImageDraw.Draw(temp)
+			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+			temp = np.array(temp, np.float32) / 255.0
+			if np.mean(hmb[temp > 0.5]) > 0.7:
+				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+	edges_map = np.array(edges_map, np.float32) / 255.0
+	return edges_map, peaks_map, allTerminal
 
 def recoverMultiPath(img, paths):
 	res = np.zeros((img.shape[0], img.shape[1]))

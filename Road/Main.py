@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from Config import *
 from Model import *
-from RoadData import *
+# from RoadData import *
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ def preserve(filename, num_lines):
 	return
 
 if __name__ == '__main__':
-	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
+	# assert(len(sys.argv) == 2 or len(sys.argv) == 3)
 
 	# Define graph
 	graph = Model(
@@ -45,8 +45,8 @@ if __name__ == '__main__':
 	dd = tf.placeholder(tf.int32)
 
 	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll, dd)
-	# pred_mask_res = graph.predict_mask(aa)
-	# pred_path_res = graph.predict_path(ff, tt)
+	pred_mask_res = graph.predict_mask(aa)
+	pred_path_res = graph.predict_path(ff, tt)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			if i % 1 == 0:
+			if i % 1 == -1:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 				# for j in range(config.AREA_TRAIN_BATCH):
 				# 	plt.imsave('0-img.png', img[j])
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 				train_loss.flush()
 
 			# Validation
-			if i % 100 == 0:
+			if i % 100 == -1:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens, dd: path_idx
@@ -141,8 +141,8 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == -1:
-				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1, 'val')
+			if i % 1000 == 1:
+				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
@@ -150,21 +150,19 @@ if __name__ == '__main__':
 				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
 				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
 
-				terminal_gt = getAllTerminal(pred_vertices[0])[np.newaxis, ...]
+				map_b, map_v, all_terminal = getAllTerminal(pred_boundary[0], pred_vertices[0])
+				feature = np.concatenate([feature, map_b[..., np.newaxis], map_v[..., np.newaxis]], axis = -1)
 
 				multi_roads = []
-				for j in range(terminal_gt.shape[1]):
-					road = [terminal_gt[0, j, 0]]
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt[0, j]})
-					for k in range(config.MAX_NUM_VERTICES):
-						road.append(pred_v_out[0, 0, k])
-					multi_roads.append(road)
+				for terminal in all_terminal:
+					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
+					multi_roads.append(pred_v_out)
 
 				newImg = recoverMultiPath(img[0], np.array(multi_roads))
 				plt.imsave(path + '%d-3.png' % i, newImg)
 
 			# Save model
-			if i % 2000 == 0:
+			if i % 2000 == -1:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
