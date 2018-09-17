@@ -324,6 +324,7 @@ def getDataBatch(batch_size, mode, show = False):
 	while True:
 		res = []
 		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
+		print(ids)
 		for i in range(batch_size):
 			res.append(getData(mini_ids[ids[i]], i, show))
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
@@ -334,6 +335,7 @@ def getDataBatch(batch_size, mode, show = False):
 			else:
 				break
 		if len(new_res) != 9:
+			print('There is sth wrong.')
 			continue
 		if new_res[-1].shape[0] > 0:
 			choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
