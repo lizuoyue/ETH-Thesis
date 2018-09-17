@@ -151,7 +151,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1 == 1:
+			if i % 1 == 0:
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
