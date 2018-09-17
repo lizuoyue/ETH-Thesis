@@ -145,12 +145,10 @@ if __name__ == '__main__':
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-				print(feature.shape)
-				print(pred_boundary.shape)
 				path = 'test_res/'
 				plt.imsave(path + '%d-0.png' % i, img[0])
-				plt.imsave(path + '%d-1.png' % i, pred_boundary[0] * 255)
-				plt.imsave(path + '%d-2.png' % i, pred_vertices[0] * 255)
+				plt.imsave(path + '%d-1.png' % i, pred_boundary[0, ..., 0] * 255)
+				plt.imsave(path + '%d-2.png' % i, pred_vertices[0, ..., 0] * 255)
 
 				map_b, map_v, all_terminal = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[..., np.newaxis], map_v[..., np.newaxis]], axis = -1)
