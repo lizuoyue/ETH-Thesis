@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1])
-	saver = tf.train.Saver(max_to_keep = 1)
+	saver = tf.train.Saver(max_to_keep = 5)
 	init = tf.global_variables_initializer()
 
 	# Create new folder
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			if i % 1 == -1:
+			if i % 1 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 				# for j in range(config.AREA_TRAIN_BATCH):
 				# 	plt.imsave('0-img.png', img[j])
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 				train_loss.flush()
 
 			# Validation
-			if i % 100 == -1:
+			if i % 100 == 0:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens, dd: path_idx
@@ -151,7 +151,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 1:
+			if i % 1000 == -1:
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
@@ -178,7 +178,7 @@ if __name__ == '__main__':
 					savePNG(img[0], pathImg, path + '%d/%d.png' % (i, j))
 
 			# Save model
-			if i % 2000 == -1:
+			if i % 10000 == 0:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop
