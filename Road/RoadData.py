@@ -244,7 +244,7 @@ def getData(img_id, seq_id, rotate = 0, show = False):
 		print(g.v)
 		print(g.e)
 
-	img = img.rotate(rotate * 90)
+	img = img.rotate(-rotate * 90)
 	w8, h8 = rotateN(rotate, w8, h8, 0, 0)[0: 2]
 
 	if show:
