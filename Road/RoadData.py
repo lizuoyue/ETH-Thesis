@@ -28,7 +28,7 @@ city_name = sys.argv[1]
 roadJSON = json.load(open(file_path + '/Road%s.json' % city_name))
 downsample = 8
 
-np.random.seed(6666)
+np.random.seed(8888)
 val_ids = np.random.choice(len(roadJSON), int(len(roadJSON) / 20.0), replace = False)
 val_ids_set = set(list(val_ids))
 train_ids = [i for i in range(len(roadJSON)) if i not in val_ids_set]
@@ -156,7 +156,15 @@ def path_processing(g, path):
 	new_path_v = path_v[: max_seq_len]
 	return new_path_v
 
-def getData(img_id, seq_id, show = False):
+def rotate1(w, h, x, y):
+	return h, w, h - y - 1, x
+
+def rotateN(n, w, h, x, y):
+	for _ in range(n):
+		w, h, x, y = rotate1(w, h, x, y)
+	return w, h, x, y
+
+def getData(img_id, seq_id, rotate = 0, show = False):
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
@@ -217,9 +225,16 @@ def getData(img_id, seq_id, show = False):
 	if len(e_idx) == 0:
 		v_val = []
 
+	rotate = rotate % 4
+
+	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
+	w8, h8 = img.size
+	w8 = int(w8 / float(downsample))
+	h8 = int(h8 / float(downsample))
+
 	g = directed_graph()
 	for v in v_val:
-		g.add_v(v)
+		g.add_v(rotateN(rotate, w8, h8, v[0], v[1])[2: 4])
 	for s, t in e_idx:
 		g.add_e(s, t)
 	g.shortest_path_all()
@@ -228,10 +243,8 @@ def getData(img_id, seq_id, show = False):
 		print(g.v)
 		print(g.e)
 
-	img = Image.open(file_path + '/Road%s/%s_%s.png' % (city_name, city_name, str(img_id).zfill(8))).resize(config.AREA_SIZE)
-	w8, h8 = img.size
-	w8 = int(w8 / float(downsample))
-	h8 = int(h8 / float(downsample))
+	img = img.rotate(rotate * 90)
+	w8, h8 = rotateN(rotate, w8, h8, 0, 0)[0: 2]
 
 	if show:
 		draw = ImageDraw.Draw(img)
@@ -261,15 +274,6 @@ def getData(img_id, seq_id, show = False):
 		vertices.resize(config.AREA_SIZE).show()
 		time.sleep(0.1)
 	vertices = np.array(vertices) / 255.0
-
-	###########
-	# ddd, s_chosen = -1e9, 0
-	# for s in range(len(g.v)):
-	# 	tmp_d = g.sp[s][0][g.sp_max_idx[s]]
-	# 	if tmp_d > ddd:
-	# 		s_chosen = s
-	# 		ddd = tmp_d
-	###########
 
 	# RNN in and out
 	vertex_terminals = []
@@ -360,7 +364,7 @@ def getDataBatch(batch_size, mode, show = False):
 		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 		print(ids)
 		for i in range(batch_size):
-			res.append(getData(mini_ids[ids[i]], i, show))
+			res.append(getData(mini_ids[ids[0]], i, i, show))
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
 		for i in range(3, 9):
 			li = [item[i] for item in res if item[i].shape[0] > 0]
