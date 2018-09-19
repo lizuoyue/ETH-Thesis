@@ -165,6 +165,7 @@ def rotateN(n, w, h, x, y):
 	return w, h, x, y
 
 def getData(img_id, seq_id, rotate = 0, show = False):
+	print(img_id, seq_id, rotate)
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
