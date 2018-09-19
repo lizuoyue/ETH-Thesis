@@ -22,6 +22,7 @@ if __name__ == '__main__':
 	# os.popen('scp leonhard:~/Master-Thesis/Road/LossTrain.out ./LossTrainChicago.out')
 	# os.popen('scp leonhard:~/Master-Thesis/Road/LossValid.out ./LossValidChicago.out')
 	# time.sleep(10)
+	# quit()
 
 	n_val = 200
 	loss_cnn, loss_rnn = process('LossTrainChicago.out')
