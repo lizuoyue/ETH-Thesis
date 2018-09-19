@@ -165,7 +165,6 @@ def rotateN(n, w, h, x, y):
 	return w, h, x, y
 
 def getData(img_id, seq_id, rotate = 0, show = False):
-	print(img_id, seq_id, rotate)
 	################## Preprocessing ##################
 	# 1. Remove duplicate
 	road = roadJSON[img_id]
@@ -351,7 +350,7 @@ def getData(img_id, seq_id, rotate = 0, show = False):
 	# print(vertex_terminals.shape)
 	# print(ends.shape)
 	# print(seq_lens.shape)
-	input()
+	# input()
 
 	return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
@@ -366,7 +365,7 @@ def getDataBatch(batch_size, mode, show = False):
 		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 		print(ids)
 		for i in range(batch_size):
-			res.append(getData(mini_ids[ids[0]], i, i, show))
+			res.append(getData(mini_ids[ids[i]], i, np.random.randint(4), show))
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
 		for i in range(3, 9):
 			li = [item[i] for item in res if item[i].shape[0] > 0]
