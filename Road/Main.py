@@ -84,6 +84,7 @@ if __name__ == '__main__':
 
 		# Restore weights
 		if len(sys.argv) == 3 and sys.argv[2] == 'restore':
+			print('Restore pre-trained weights.')
 			files = glob.glob('./Model/Model-*.ckpt.meta')
 			files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
 			files.sort()
@@ -95,6 +96,7 @@ if __name__ == '__main__':
 			train_loss = open('./LossTrain.out', 'a')
 			valid_loss = open('./LossValid.out', 'a')
 		else:
+			print('Initialize weights.')
 			train_loss = open('./LossTrain.out', 'w')
 			valid_loss = open('./LossValid.out', 'w')
 			sess.run(init)

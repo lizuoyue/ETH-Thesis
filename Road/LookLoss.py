@@ -11,7 +11,7 @@ def mov_avg(li, n):
 		res.append(s / float(n))
 	return res
 
-def process(filename, n = 2000):
+def process(filename, n = 1000):
 	with open(filename) as f:
 		lines = [line.strip().split(', ') for line in f.readlines()]
 		loss_cnn = [float(line[1]) for line in lines]
@@ -19,12 +19,14 @@ def process(filename, n = 2000):
 	return mov_avg(loss_cnn, n), mov_avg(loss_rnn, n)
 
 if __name__ == '__main__':
+	# os.popen('scp leonhard:~/Master-Thesis/Road/tmp/LossTrain.out ./LossTrain1.out')
+	# os.popen('scp leonhard:~/Master-Thesis/Road/tmp/LossValid.out ./LossValid1.out')
 	# os.popen('scp leonhard:~/Master-Thesis/Road/LossTrain.out ./LossTrainChicago.out')
 	# os.popen('scp leonhard:~/Master-Thesis/Road/LossValid.out ./LossValidChicago.out')
 	# time.sleep(10)
 	# quit()
 
-	n_val = 200
+	n_val = 100
 	loss_cnn, loss_rnn = process('LossTrainChicago.out')
 	loss_cnn_val, loss_rnn_val = process('LossValidChicago.out', n_val)
 	l = len(loss_cnn)
