@@ -24,10 +24,12 @@ def savePNG(mat1, mat2, filename):
 def preserve(filename, num_lines):
 	f = open(filename, 'r')
 	lines = f.readlines()
+	print(len(lines))
 	f.close()
 	f = open(filename, 'w')
 	for line in lines:
 		n = int(line.strip().split(',')[0].split()[-1])
+		print(n, num_lines)
 		if n >= num_lines:
 			break
 		f.write(line)
