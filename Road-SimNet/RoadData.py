@@ -9,7 +9,7 @@ import scipy, socket, sys, os
 
 config = Config()
 
-if socket.gethostname() == 'cnb-d102-50':
+if socket.gethostname() == 'cab-e81-30':
 	file_path = '../DataPreparation'
 else:
 	file_path = '/cluster/scratch/zoli/road'
