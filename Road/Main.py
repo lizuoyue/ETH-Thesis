@@ -79,20 +79,35 @@ if __name__ == '__main__':
 		# Create loggers
 		train_writer = Logger('./Log/train/')
 		valid_writer = Logger('./Log/valid/')
+		choose_train = 0
+		choose_valid = 0
+		choose_test = -1
 
 		# Restore weights
-		if len(sys.argv) == 3 and sys.argv[2] == 'restore':
-			print('Restore pre-trained weights.')
-			files = glob.glob('./Model/Model-*.ckpt.meta')
-			files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
-			files.sort()
-			num, model_path = files[-1]
-			saver.restore(sess, model_path.replace('.meta', ''))
-			iter_obj = range(num + 1, config.NUM_ITER)
-			preserve('./LossTrain.out', num + 1)
-			preserve('./LossValid.out', num + 1)
-			train_loss = open('./LossTrain.out', 'a')
-			valid_loss = open('./LossValid.out', 'a')
+		if len(sys.argv) == 3
+			if sys.argv[2] == 'restore':
+				print('Restore pre-trained weights.')
+				files = glob.glob('./Model/Model-*.ckpt.meta')
+				files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
+				files.sort()
+				num, model_path = files[-1]
+				saver.restore(sess, model_path.replace('.meta', ''))
+				iter_obj = range(num + 1, config.NUM_ITER)
+				preserve('./LossTrain.out', num + 1)
+				preserve('./LossValid.out', num + 1)
+				train_loss = open('./LossTrain.out', 'a')
+				valid_loss = open('./LossValid.out', 'a')
+			elif sys.argv[2] == 'test':
+				print('Test mode. Restore pre-trained weights.')
+				files = glob.glob('./Model/Model-*.ckpt.meta')
+				files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
+				files.sort()
+				num, model_path = files[-1]
+				saver.restore(sess, model_path.replace('.meta', ''))
+				iter_obj = range(1000)
+				choose_train = -1
+				choose_valid = -1
+				choose_test = 0
 		else:
 			print('Initialize weights.')
 			train_loss = open('./LossTrain.out', 'w')
@@ -103,7 +118,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			if i % 1 == -1:
+			if i % 1 == choose_train:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
 				# for j in range(config.AREA_TRAIN_BATCH):
 				# 	plt.imsave('0-img.png', img[j])
@@ -136,7 +151,7 @@ if __name__ == '__main__':
 				train_loss.flush()
 
 			# Validation
-			if i % 100 == -1:
+			if i % 100 == choose_valid:
 				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens, dd: path_idx
@@ -151,8 +166,8 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Test
-			if i % 1000 == 0:
-				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
+			if i % 1 == choose_test:
+				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'train')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'
@@ -178,7 +193,7 @@ if __name__ == '__main__':
 					savePNG(img[0], pathImg, path + '%d/%d.png' % (i, j))
 
 			# Save model
-			if i % 10000 == -1:
+			if i % 10000 == choose_train:
 				saver.save(sess, './Model/Model-%d.ckpt' % i)
 
 		# End main loop

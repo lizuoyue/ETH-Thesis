@@ -27,8 +27,8 @@ if __name__ == '__main__':
 	# quit()
 
 	n_val = 200
-	loss_cnn, loss_rnn = process('LossValid.out')
-	loss_cnn_val, loss_rnn_val = process('LossValid.out', n_val)
+	loss_cnn, loss_rnn = process('LossValidChicago.out')
+	loss_cnn_val, loss_rnn_val = process('LossValidChicago.out', n_val)
 	l = len(loss_cnn)
 	l_val = len(loss_cnn_val)
 
