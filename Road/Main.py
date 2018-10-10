@@ -84,7 +84,7 @@ if __name__ == '__main__':
 		choose_test = -1
 
 		# Restore weights
-		if len(sys.argv) == 3
+		if len(sys.argv) == 3:
 			if sys.argv[2] == 'restore':
 				print('Restore pre-trained weights.')
 				files = glob.glob('./Model/Model-*.ckpt.meta')
