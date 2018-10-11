@@ -452,7 +452,7 @@ def getAllTerminal(hmb, hmv):
 			tmp_draw = ImageDraw.Draw(temp)
 			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 			temp = np.array(temp, np.float32) / 255.0
-			if np.mean(hmb[temp > 128]) > 0.7:
+			if np.mean(hmb[temp > 0.5]) > 0.7:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 	edges_map = np.array(edges_map, np.float32) / 255.0
 	return edges_map, peaks_map, allTerminal, indices
