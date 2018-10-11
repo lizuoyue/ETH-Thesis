@@ -193,6 +193,7 @@ class Model(object):
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
 		) for i in range(len(self.lstm_out_channel))])
 		res = [tf.expand_dims(tf.gather(self.vertex_pool, tf.ones([1], dtype = tf.int32), axis = 0), axis = 3) for idx in indices]
+		print(res[0].shape)
 		prob_res = []
 		states = [initial_state]
 		for i in range(1, len(indices)):
@@ -250,8 +251,8 @@ class Model(object):
 		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
-		prob_res = self.RNN_tmp(feature, terminal, indices)
-		return prob_res
+		pred_v_out, prob_res = self.RNN_tmp(feature, terminal, indices)
+		return pred_v_out, prob_res
 
 class Logger(object):
 	def __init__(self, log_dir):
