@@ -19,7 +19,7 @@ vertex_pool = [[] for _ in range(config.V_OUT_RES[1])]
 for i in range(config.V_OUT_RES[1]):
 	for j in range(config.V_OUT_RES[0]):
 		vertex_pool[i].append(np.copy(blank))
-		vertex_pool[i][j][i, j] = 255
+		vertex_pool[i][j][i, j] = 1.0
 		vertex_pool[i][j] = Image.fromarray(vertex_pool[i][j])
 blank = Image.fromarray(blank)
 
@@ -327,9 +327,9 @@ def getData(img_id, seq_id, rotate = 0, show = False):
 			print(len(path_v))
 			input()
 
-		vertex_input = [np.array(item) / 255.0 for item in vertex_input]
-		vertex_output = [np.array(item) / 255.0 for item in vertex_output]
-		vertex_terminal = [np.array(item) / 255.0 for item in vertex_terminal]
+		vertex_input = [np.array(item) for item in vertex_input]
+		vertex_output = [np.array(item) for item in vertex_output]
+		vertex_terminal = [np.array(item) for item in vertex_terminal]
 		vertex_inputs.append(vertex_input)
 		vertex_outputs.append(vertex_output)
 		vertex_terminals.append(vertex_terminal)
