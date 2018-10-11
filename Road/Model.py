@@ -111,7 +111,7 @@ class Model(object):
 		else:
 			prob = tf.nn.softmax(logits)
 			val, idx = tf.nn.top_k(prob[0, 0, :], k = 1)
-			return tf.expand_dims(tf.gather(self.vertex_pool, idx, axis = 0), axis = 3)
+			return tf.expand_dims(tf.gather(self.vertex_pool, idx, axis = 0), axis = 3), prob[0, 0, :]
 
 	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
@@ -175,14 +175,16 @@ class Model(object):
 			# 		rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in cell])
 			# return tf.stack(rnn_time, 1)
 			res = [terminal[:, 0, ...]]
+			prob_res = []
 			states = [initial_state]
 			for i in range(1, self.max_num_vertices + 1):
 				rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
 				rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
 				states.append(state)
-				next_v = self.FC(rnn_output = rnn_output, reuse = True)
+				next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
 				res.append(next_v)
-			return tf.stack(res, 1)
+				prob_res.append(prob)
+			return tf.stack(res, 1), tf.stack(prob_res, 0)
 
 	def train(self, aa, bb, vv, ii, oo, tt, ee, ll, dd):
 		#
@@ -222,8 +224,8 @@ class Model(object):
 		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
-		pred_v_out = self.RNN(feature, terminal, reuse = True)
-		return pred_v_out
+		pred_v_out, prob_res = self.RNN(feature, terminal, reuse = True)
+		return pred_v_out, prob_res
 
 class Logger(object):
 	def __init__(self, log_dir):
