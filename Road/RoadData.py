@@ -368,7 +368,9 @@ def getDataBatch(batch_size, mode, show = False):
 		##########
 		print(ids)
 		for i in range(batch_size):
-			res.append(getData(mini_ids[ids[i]], i, np.random.randint(4), show))
+			rot = np.random.randint(4)
+			print(rot)
+			res.append(getData(mini_ids[ids[i]], i, rot, show))
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
 		for i in range(3, 9):
 			li = [item[i] for item in res if item[i].shape[0] > 0]
