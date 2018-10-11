@@ -26,7 +26,6 @@ def savePNG(mat1, mat2, filename):
 	m2 = Image.fromarray(np.array(cmap(mat2 / mat2.max()) * 255.0, np.uint8)).convert(mode = 'RGB')
 	m2.putalpha(128)
 	m2 = np.array(m2)
-	print(m2[..., 3])
 	m2[..., 3] = np.array(mat2 * 255.0, np.uint8)
 	m2 = Image.fromarray(m2)
 	Image.alpha_composite(m1, m2).save(filename)
