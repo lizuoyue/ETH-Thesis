@@ -22,7 +22,7 @@ def savePNG(mat1, mat2, filename):
 	# plt.savefig(filename, bbox_inches = 'tight', pad_inches = 0)
 	m1 = Image.fromarray(mat1, mode = 'RGB')
 	m1.putalpha(1)
-	m2 = Image.fromarray(np.array(mat2 * 255.0, np.uint8), mode = 'RGB')
+	m2 = Image.fromarray(np.array(mat2 * 255.0, np.uint8)).convert(mode = 'RGB')
 	m2.putalpha(0.5)
 	Image.alpha_composite(m1, m2).save(filename)
 	return
