@@ -57,7 +57,8 @@ if __name__ == '__main__':
 
 	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll, dd)
 	pred_mask_res = graph.predict_mask(aa)
-	pred_path_res = graph.predict_path_tmp(ff, tt, [a[0], a[5], a[2], a[1]])
+	pred_path_res = graph.predict_path_tmp(ff, tt)
+	# pred_path_res = graph.predict_path_tmp(ff, tt, [a[0], a[5], a[2], a[1]])
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
@@ -172,9 +173,7 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 1 == choose_test:
-				img, _, _, _, _, ttttt, _, _, _ = getDataBatch(1, 'train')
-				print(ttttt.shape)
-				print(ttttt.max(), ttttt.min())
+				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'train')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res/'

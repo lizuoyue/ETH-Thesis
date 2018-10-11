@@ -14,14 +14,13 @@ if socket.gethostname() == 'cab-e81-30':
 else:
 	file_path = '/cluster/scratch/zoli/road'
 max_seq_len = config.MAX_NUM_VERTICES
-blank = np.zeros(config.V_OUT_RES, dtype = np.uint8)
+blank = np.zeros(config.V_OUT_RES, dtype = np.float32)
 vertex_pool = [[] for _ in range(config.V_OUT_RES[1])]
 for i in range(config.V_OUT_RES[1]):
 	for j in range(config.V_OUT_RES[0]):
 		vertex_pool[i].append(np.copy(blank))
 		vertex_pool[i][j][i, j] = 1.0
 		vertex_pool[i][j] = Image.fromarray(vertex_pool[i][j])
-blank = Image.fromarray(blank)
 
 city_name = sys.argv[1]
 
@@ -364,12 +363,15 @@ def getDataBatch(batch_size, mode, show = False):
 		res = []
 		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
 		##########
-		ids = [35548]
+		# ids = [35548]
 		##########
 		print(ids)
 		for i in range(batch_size):
 			rot = np.random.randint(4)
-			rot = 3
+			print(rot)
+			##########
+			# rot = 3
+			##########
 			res.append(getData(mini_ids[ids[i]], i, rot, show))
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
 		for i in range(3, 9):
