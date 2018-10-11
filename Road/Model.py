@@ -193,6 +193,7 @@ class Model(object):
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
 		) for i in range(len(self.lstm_out_channel))])
 		res = [tf.expand_dims(tf.gather(self.vertex_pool, tf.ones([1], dtype = tf.int32) * idx, axis = 0), axis = 3) for idx in indices]
+		res[0] = terminal[:, 0, ...]
 		prob_res = []
 		states = [initial_state]
 		for i in range(1, len(indices)):
