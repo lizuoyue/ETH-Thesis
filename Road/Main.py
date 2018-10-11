@@ -190,7 +190,9 @@ if __name__ == '__main__':
 				prob_res_li = []
 				for terminal in [all_terminal[0]]:
 					pred_v_out, prob_res = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
+					print(pred_v_out.shape)
 					multi_roads.append(pred_v_out[0])
+					print(prob_res.shape)
 					prob_res_li.append(prob_res)
 
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
