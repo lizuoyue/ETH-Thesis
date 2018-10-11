@@ -88,8 +88,8 @@ if __name__ == '__main__':
 	if not os.path.exists('./Model%s/' % city_name):
 		os.makedirs('./Model%s/' % city_name)
 
-	if not os.path.exists('./test_res/'):
-		os.makedirs('./test_res/')
+	if not os.path.exists('./test_res%s/' % city_name):
+		os.makedirs('./test_res%s/' % city_name)
 
 	# Launch graph
 	with tf.Session() as sess:
@@ -188,7 +188,7 @@ if __name__ == '__main__':
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'train')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
-				path = 'test_res/'
+				path = 'test_res%s/' % city_name
 				savePNG(img[0], np.zeros(config.AREA_SIZE), path + '%d-0.png' % i)
 				savePNG(img[0], pred_boundary[0, ..., 0] * 255, path + '%d-1.png' % i)
 				savePNG(img[0], pred_vertices[0, ..., 0] * 255, path + '%d-2.png' % i)
@@ -209,7 +209,7 @@ if __name__ == '__main__':
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
 				savePNG(img[0], paths, path + '%d-5.png' % i)
-				os.makedirs('./test_res/%d' % i)
+				os.makedirs('./test_res%s/%d' % (city_name, i))
 				for j, pathImg in enumerate(pathImgs):
 					savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((i,) + indices[j]))
 					np.save(path + '%d/%d-%d.npy' % ((i,) + indices[j]), prob_res_li[j])
