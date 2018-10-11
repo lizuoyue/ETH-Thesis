@@ -8,17 +8,23 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import glob
+import cv2
+from PIL import Image
 
 config = Config()
 
 def savePNG(mat1, mat2, filename):
 	if mat2.shape[0] < mat1.shape[0]:
-		import cv2
-		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST) 
-	plt.imshow(mat1)
-	plt.imshow(mat2, alpha = 0.5)
-	plt.axis('off')
-	plt.savefig(filename, bbox_inches = 'tight', pad_inches = 0)
+		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST)
+	# plt.imshow(mat1)
+	# plt.imshow(mat2, alpha = 0.5)
+	# plt.axis('off')
+	# plt.savefig(filename, bbox_inches = 'tight', pad_inches = 0)
+	print(mat1.min(), mat1.max(), mat1.dtype)
+	print(mat2.min(), mat2.max(), mat2.dtype)
+	m1 = Image.fromarray(mat1)
+	m2 = Image.fromarray(mat2)
+	alpha_composite(m1, m2).save(filename)
 	return
 
 def preserve(filename, num_lines):
@@ -173,6 +179,8 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 1 == choose_test:
+				if i < 13:
+					continue
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'train')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
