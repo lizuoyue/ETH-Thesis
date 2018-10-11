@@ -193,7 +193,9 @@ if __name__ == '__main__':
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], np.array(multi_roads))
 				savePNG(img[0], paths, path + '%d-5.png' % i)
 				os.makedirs('./test_res/%d' % i)
+				print(indices)
 				for j, pathImg in enumerate(pathImgs):
+					print((i,) + indices[j])
 					savePNG(img[0], pathImg, path + '%d/%d-%d.png' % (i,) + indices[j])
 
 			# Save model
