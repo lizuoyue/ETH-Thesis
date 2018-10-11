@@ -17,16 +17,17 @@ config = Config()
 def savePNG(mat1, mat2, filename):
 	if mat2.shape[0] < mat1.shape[0]:
 		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST)
+	mat2 /= (mat2.max() + 1e-12)
 	# plt.imshow(mat1)
 	# plt.imshow(mat2, alpha = 0.5)
 	# plt.axis('off')
 	# plt.savefig(filename, bbox_inches = 'tight', pad_inches = 0)
 	m1 = Image.fromarray(mat1, mode = 'RGB')
 	m1.putalpha(255)
-	m2 = Image.fromarray(np.array(cmap(mat2 / mat2.max()) * 255.0, np.uint8)).convert(mode = 'RGB')
+	m2 = Image.fromarray(np.array(cmap() * 255.0, np.uint8)).convert(mode = 'RGB')
 	m2.putalpha(255)
 	m2 = np.array(m2)
-	m2[..., 3] = np.array(mat2 / mat2.max() * 255.0, np.uint8)
+	m2[..., 3] = np.array(mat2 * 255.0, np.uint8)
 	m2 = Image.fromarray(m2)
 	Image.alpha_composite(m1, m2).save(filename)
 	return
@@ -207,7 +208,6 @@ if __name__ == '__main__':
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
 				savePNG(img[0], paths, path + '%d-5.png' % i)
-				continue
 				os.makedirs('./test_res/%d' % i)
 				for j, pathImg in enumerate(pathImgs):
 					savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((i,) + indices[j]))
