@@ -369,7 +369,7 @@ def getDataBatch(batch_size, mode, show = False):
 		print(ids)
 		for i in range(batch_size):
 			rot = np.random.randint(4)
-			print(rot)
+			rot = 3
 			res.append(getData(mini_ids[ids[i]], i, rot, show))
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
 		for i in range(3, 9):
@@ -432,6 +432,7 @@ def getAllTerminal(hmb, hmv):
 	peaks_with_score = findPeaks(hmv, min_val = 0.9)
 	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.9]
 	allTerminal = []
+	indices = []
 	peaks_map = np.zeros([w, h], np.float32)
 	edges_map = Image.new('P', (w, h), color = 0)
 	draw = ImageDraw.Draw(edges_map)
@@ -443,6 +444,7 @@ def getAllTerminal(hmb, hmv):
 				continue
 			x2, y2, _ = peaks_with_score[j]
 			allTerminal.append(np.array([np.array(vertex_pool[y1][x1]), np.array(vertex_pool[y2][x2])]))
+			indices.append((i, j))
 
 			temp = Image.new('P', (w, h), color = 0)
 			tmp_draw = ImageDraw.Draw(temp)
@@ -451,7 +453,7 @@ def getAllTerminal(hmb, hmv):
 			if np.mean(hmb[temp > 0.5]) > 0.7:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 	edges_map = np.array(edges_map, np.float32) / 255.0
-	return edges_map, peaks_map, allTerminal
+	return edges_map, peaks_map, allTerminal, indices
 
 def recoverMultiPath(img_size, paths):
 	pathImgs = []

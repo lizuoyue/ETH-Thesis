@@ -107,7 +107,7 @@ if __name__ == '__main__':
 				files.sort()
 				num, model_path = files[-1]
 				saver.restore(sess, model_path.replace('.meta', ''))
-				iter_obj = range(10)
+				iter_obj = range(1)
 				choose_train = -1
 				choose_valid = -1
 				choose_test = 0
@@ -179,7 +179,7 @@ if __name__ == '__main__':
 				savePNG(img[0], pred_boundary[0, ..., 0] * 255, path + '%d-1.png' % i)
 				savePNG(img[0], pred_vertices[0, ..., 0] * 255, path + '%d-2.png' % i)
 
-				map_b, map_v, all_terminal = getAllTerminal(pred_boundary[0], pred_vertices[0])
+				map_b, map_v, all_terminal, indices = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
 				savePNG(img[0], map_b, path + '%d-3.png' % i)
@@ -194,7 +194,7 @@ if __name__ == '__main__':
 				savePNG(img[0], paths, path + '%d-5.png' % i)
 				os.makedirs('./test_res/%d' % i)
 				for j, pathImg in enumerate(pathImgs):
-					savePNG(img[0], pathImg, path + '%d/%d.png' % (i, j))
+					savePNG(img[0], pathImg, path + '%d/%d-%d.png' % (i,) + indices[j])
 
 			# Save model
 			if i % 10000 == choose_train:
