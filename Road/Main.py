@@ -23,7 +23,7 @@ def savePNG(mat1, mat2, filename):
 	# plt.savefig(filename, bbox_inches = 'tight', pad_inches = 0)
 	m1 = Image.fromarray(mat1, mode = 'RGB')
 	m1.putalpha(255)
-	m2 = Image.fromarray(np.array(cmap(mat2) * 255.0, np.uint8)).convert(mode = 'RGB')
+	m2 = Image.fromarray(np.array(cmap(mat2 / mat2.max()) * 255.0, np.uint8)).convert(mode = 'RGB')
 	m2.putalpha(128)
 	m2 = np.array(m2)
 	m2[..., 3] = np.array(mat2 * 255.0, np.uint8)
