@@ -121,7 +121,7 @@ if __name__ == '__main__':
 				files.sort()
 				num, model_path = files[-1]
 				saver.restore(sess, model_path.replace('.meta', ''))
-				iter_obj = range(30)
+				iter_obj = range(300)
 				choose_train = -1
 				choose_valid = -1
 				choose_test = 0
