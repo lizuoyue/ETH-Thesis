@@ -67,9 +67,11 @@ if __name__ == '__main__':
 	saver = tf.train.Saver(max_to_keep = 5)
 	init = tf.global_variables_initializer()
 
+	city_name = sys.argv[1]
+
 	# Create new folder
-	if not os.path.exists('./Model/'):
-		os.makedirs('./Model/')
+	if not os.path.exists('./Model%s/' % city_name):
+		os.makedirs('./Model%s/' % city_name)
 
 	if not os.path.exists('./test_res/'):
 		os.makedirs('./test_res/')
@@ -87,8 +89,8 @@ if __name__ == '__main__':
 		if len(sys.argv) == 3:
 			if sys.argv[2] == 'restore':
 				print('Restore pre-trained weights.')
-				files = glob.glob('./Model/Model-*.ckpt.meta')
-				files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
+				files = glob.glob('./Model%s/Model-*.ckpt.meta' % city_name)
+				files = [(int(file.replace('./Model%s/Model-' % city_name, '').replace('.ckpt.meta', '')), file) for file in files]
 				files.sort()
 				num, model_path = files[-1]
 				saver.restore(sess, model_path.replace('.meta', ''))
@@ -99,8 +101,8 @@ if __name__ == '__main__':
 				valid_loss = open('./LossValid.out', 'a')
 			elif sys.argv[2] == 'test':
 				print('Test mode. Restore pre-trained weights.')
-				files = glob.glob('./Model/Model-*.ckpt.meta')
-				files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
+				files = glob.glob('./Model%s/Model-*.ckpt.meta' % city_name)
+				files = [(int(file.replace('./Model%s/Model-' % city_name, '').replace('.ckpt.meta', '')), file) for file in files]
 				files.sort()
 				num, model_path = files[-1]
 				saver.restore(sess, model_path.replace('.meta', ''))
@@ -194,7 +196,7 @@ if __name__ == '__main__':
 
 			# Save model
 			if i % 10000 == choose_train:
-				saver.save(sess, './Model/Model-%d.ckpt' % i)
+				saver.save(sess, './Model%s/Model-%d.ckpt' % (city_name, i))
 
 		# End main loop
 		train_writer.close()

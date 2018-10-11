@@ -27,13 +27,13 @@ if __name__ == '__main__':
 	# quit()
 
 	n_val = 200
-	loss_cnn, loss_rnn = process('LossValidChicago.out')
+	loss_cnn, loss_rnn = process('LossTrainChicago.out')
 	loss_cnn_val, loss_rnn_val = process('LossValidChicago.out', n_val)
 	l = len(loss_cnn)
 	l_val = len(loss_cnn_val)
 
-	# plt.plot(range(l), loss_cnn, label = 'CNN')
-	# plt.plot(range(l), loss_rnn, label = 'RNN')
+	plt.plot(range(l), loss_cnn, label = 'CNN')
+	plt.plot(range(l), loss_rnn, label = 'RNN')
 	plt.plot((np.array(range(l_val)) + n_val) * 100, loss_cnn_val, label = 'CNN Val')
 	plt.plot((np.array(range(l_val)) + n_val) * 100, loss_rnn_val, label = 'RNN Val')
 
