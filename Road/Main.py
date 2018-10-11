@@ -36,6 +36,7 @@ def preserve(filename, num_lines):
 
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
+	a = [3, 23, 696, 699, 700, 703, 780, 784]
 
 	# Define graph
 	graph = Model(
@@ -56,7 +57,7 @@ if __name__ == '__main__':
 
 	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll, dd)
 	pred_mask_res = graph.predict_mask(aa)
-	pred_path_res = graph.predict_path(ff, tt)
+	pred_path_res = graph.predict_path_tmp(ff, tt, [a[0], a[5], a[2], a[1]])
 
 	# for v in tf.global_variables():
 	# 	print(v.name)

@@ -186,6 +186,23 @@ class Model(object):
 				prob_res.append(prob)
 			return tf.stack(res, 1), tf.stack(prob_res, 0)
 
+	def RNN_tmp(self, feature, terminal, indices):
+		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
+		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
+			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
+			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+		) for i in range(len(self.lstm_out_channel))])
+		res = [tf.expand_dims(tf.gather(self.vertex_pool, tf.ones([1], dtype = tf.int32), axis = 0), axis = 3) for idx in indices]
+		prob_res = []
+		states = [initial_state]
+		for i in range(1, len(indices)):
+			rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
+			rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
+			states.append(state)
+			_, prob = self.FC(rnn_output = rnn_output, reuse = True)
+			prob_res.append(prob)
+		return tf.stack(prob_res, 0)
+
 	def train(self, aa, bb, vv, ii, oo, tt, ee, ll, dd):
 		#
 		img          = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
@@ -226,6 +243,15 @@ class Model(object):
 		#
 		pred_v_out, prob_res = self.RNN(feature, terminal, reuse = True)
 		return pred_v_out, prob_res
+
+	def predict_path_tmp(self, ff, tt, indices):
+		#
+		feature  = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 130])
+		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
+
+		#
+		prob_res = self.RNN_tmp(feature, terminal, indices)
+		return prob_res
 
 class Logger(object):
 	def __init__(self, log_dir):
