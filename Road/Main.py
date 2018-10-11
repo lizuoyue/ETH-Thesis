@@ -193,7 +193,7 @@ if __name__ == '__main__':
 					multi_roads.append(pred_v_out[0])
 					prob_res_li.append(prob_res)
 
-				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], np.array(multi_roads))
+				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
 				savePNG(img[0], paths, path + '%d-5.png' % i)
 				os.makedirs('./test_res/%d' % i)
 				for j, pathImg in enumerate(pathImgs):

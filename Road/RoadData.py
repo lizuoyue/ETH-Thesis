@@ -458,10 +458,10 @@ def getAllTerminal(hmb, hmv):
 def recoverMultiPath(img_size, paths):
 	pathImgs = []
 	res = np.zeros(img_size)
-	for i in range(paths.shape[0]):
+	for i in range(len(paths)):
 		path = []
-		for j in range(max_seq_len + 1):
-			hmap = paths[i, j]
+		for j in range(paths[i].shape[0]):
+			hmap = paths[i][j]
 			end = 1 - hmap.sum()
 			ind = np.unravel_index(np.argmax(hmap), hmap.shape)
 			if hmap[ind] >= end:
