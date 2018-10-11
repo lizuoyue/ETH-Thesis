@@ -363,6 +363,9 @@ def getDataBatch(batch_size, mode, show = False):
 	while True:
 		res = []
 		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
+		##########
+		ids = [35548]
+		##########
 		print(ids)
 		for i in range(batch_size):
 			res.append(getData(mini_ids[ids[i]], i, np.random.randint(4), show))

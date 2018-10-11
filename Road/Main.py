@@ -68,6 +68,7 @@ if __name__ == '__main__':
 	init = tf.global_variables_initializer()
 
 	city_name = sys.argv[1]
+	mode = 'non-test'
 
 	# Create new folder
 	if not os.path.exists('./Model%s/' % city_name):
@@ -110,6 +111,7 @@ if __name__ == '__main__':
 				choose_train = -1
 				choose_valid = -1
 				choose_test = 0
+				mode = 'test'
 		else:
 			print('Initialize weights.')
 			train_loss = open('./LossTrain.out', 'w')
@@ -198,9 +200,10 @@ if __name__ == '__main__':
 			if i % 10000 == choose_train:
 				saver.save(sess, './Model%s/Model-%d.ckpt' % (city_name, i))
 
-		# End main loop
-		train_writer.close()
-		valid_writer.close()
-		train_loss.close()
-		valid_loss.close()
+		if mode != 'test':
+			# End main loop
+			train_writer.close()
+			valid_writer.close()
+			train_loss.close()
+			valid_loss.close()
 
