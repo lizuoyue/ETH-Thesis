@@ -431,8 +431,8 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 def getAllTerminal(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
-	peaks_with_score = findPeaks(hmv, min_val = 0.95)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.95]
+	peaks_with_score = findPeaks(hmv, min_val = 0.9)
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.9]
 	allTerminal = []
 	indices = []
 	peaks_map = np.zeros([w, h], np.float32)
