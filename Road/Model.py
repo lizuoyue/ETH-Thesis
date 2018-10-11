@@ -193,7 +193,7 @@ class Model(object):
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
 		) for i in range(len(self.lstm_out_channel))])
 		res = [tf.expand_dims(tf.gather(self.vertex_pool, tf.ones([1], dtype = tf.int32) * idx, axis = 0), axis = 3) for idx in indices]
-		res[0] = terminal[:, 0, ...]
+		# res[0] = terminal[:, 0, ...]
 		prob_res = []
 		states = [initial_state]
 		for i in range(1, len(indices)):
@@ -202,7 +202,7 @@ class Model(object):
 			states.append(state)
 			_, prob = self.FC(rnn_output = rnn_output, reuse = True)
 			prob_res.append(prob)
-		return tf.stack(res, 1), tf.stack(prob_res, 0)
+		return tf.stack(res, 1), tf.stack(prob_res, 0), terminal[:, 0, ...], res[0]
 
 	def train(self, aa, bb, vv, ii, oo, tt, ee, ll, dd):
 		#
@@ -251,8 +251,8 @@ class Model(object):
 		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
-		pred_v_out, prob_res = self.RNN_tmp(feature, terminal, indices)
-		return pred_v_out, prob_res
+		pred_v_out, prob_res, a, b = self.RNN_tmp(feature, terminal, indices)
+		return pred_v_out, prob_res, a, b
 
 class Logger(object):
 	def __init__(self, log_dir):
