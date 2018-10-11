@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import glob
 import cv2
 from PIL import Image
+cmap = matplotlib.cm.get_cmap('viridis')
 
 config = Config()
 
@@ -22,11 +23,10 @@ def savePNG(mat1, mat2, filename):
 	# plt.savefig(filename, bbox_inches = 'tight', pad_inches = 0)
 	m1 = Image.fromarray(mat1, mode = 'RGB')
 	m1.putalpha(255)
-	m2 = Image.fromarray(np.array(mat2 * 255.0, np.uint8)).convert(mode = 'RGB')
+	m2 = Image.fromarray(np.array(cmap(mat2) * 255.0, np.uint8)).convert(mode = 'RGB')
 	m2.putalpha(128)
 	m2 = np.array(m2)
-	m2[..., 1: 3] = 0
-	m2[..., 3] = m2[..., 0]
+	m2[..., 3] = np.array(mat2 * 255.0, np.uint8)
 	m2 = Image.fromarray(m2).convert(mode = 'RGBA')
 	Image.alpha_composite(m1, m2).save(filename)
 	return
