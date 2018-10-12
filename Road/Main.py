@@ -121,7 +121,7 @@ if __name__ == '__main__':
 				files.sort()
 				num, model_path = files[-1]
 				saver.restore(sess, model_path.replace('.meta', ''))
-				iter_obj = range(300)
+				iter_obj = range(100)
 				choose_train = -1
 				choose_valid = -1
 				choose_test = 0
@@ -185,7 +185,7 @@ if __name__ == '__main__':
 
 			# Test
 			if i % 1 == choose_test:
-				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'train')
+				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res%s/' % city_name
