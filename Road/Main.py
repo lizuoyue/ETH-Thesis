@@ -48,7 +48,7 @@ def preserve(filename, num_lines):
 
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
-	a = [3, 23, 696, 699, 700, 703, 780, 784]
+	a = [11, 20, 84, 95, 291, 300, 552, 559, 560, 563]
 
 	# Define graph
 	graph = Model(
@@ -69,8 +69,8 @@ if __name__ == '__main__':
 
 	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll, dd)
 	pred_mask_res = graph.predict_mask(aa)
-	pred_path_res = graph.predict_path(ff, tt)
-	# pred_path_res = graph.predict_path_tmp(ff, tt, [a[0], a[5], a[2], a[1]])
+	# pred_path_res = graph.predict_path(ff, tt)
+	pred_path_res = graph.predict_path_tmp(ff, tt, [a[0], a[3], a[2]])
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
@@ -186,6 +186,8 @@ if __name__ == '__main__':
 			# Test
 			if i % 1 == choose_test:
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
+				if i < 45 or i > 45:
+					continue
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res%s/' % city_name
@@ -201,7 +203,7 @@ if __name__ == '__main__':
 
 				multi_roads = []
 				prob_res_li = []
-				for terminal in all_terminal:
+				for terminal in [all_terminal[1]]:
 					pred_v_out, prob_res = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
 					multi_roads.append(pred_v_out[0])
 					prob_res_li.append(prob_res)
