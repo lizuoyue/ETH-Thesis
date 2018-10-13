@@ -190,6 +190,7 @@ class Model(object):
 					v_in_0 = terminal[:, 0, ...]
 					v_in_e = terminal[:, 1, ...]
 					n = last_tmln.shape[-1]
+					print(n)
 					v_in_1 = last_tmln[..., n - 1: n]
 					v_in_2 = last_tmln[..., max(n - 2, 0): max(n - 2, 0) + 1]
 					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
