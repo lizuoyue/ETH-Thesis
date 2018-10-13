@@ -110,7 +110,7 @@ class Model(object):
 			return logits, loss
 		else:
 			prob = tf.nn.softmax(logits)
-			val, idx = tf.nn.top_k(prob[0, 0, :], k = 1)
+			val, idx = tf.nn.top_k(prob[0, 0, :], k = config.BEAM_WIDTH)
 			return tf.log(val), tf.expand_dims(tf.gather(self.vertex_pool, idx, axis = 0), axis = 3), prob[0, 0, :]
 
 	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
