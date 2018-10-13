@@ -143,7 +143,7 @@ class Model(object):
 
 			# # beam search
 			for i in range(1, self.max_num_vertices + 1):
-				prob, time, cell = [], [], [[[], []] for item in self.lstm_out_channel]
+				prob, time, stat, cell = [], [], [], [[[], []] for item in self.lstm_out_channel]
 				for j in range(config.BEAM_WIDTH):
 					prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, config.BEAM_WIDTH])
 					v_in_0 = terminal[:, 0, ...]
@@ -153,17 +153,19 @@ class Model(object):
 					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new, _ = self.FC(rnn_output = outputs, reuse = True)
-					print(prob_new.shape)
-					print(time_new.shape)
-					quit()
-					time_new = tf.transpose(time_new, [0, 2, 3, 1])
+					# time_new = tf.transpose(time_new, [0, 2, 3, 1])
 					prob.append(prob_last + prob_new)
-			# 		for k, item in enumerate(states):
-			# 			for l in [0, 1]:
-			# 				cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
-			# 		for k in range(config.BEAM_WIDTH):
-			# 			time.append(tf.concat([rnn_time[j], time_new[..., k: k + 1]], 3))
-			# 	prob = tf.concat(prob, 1)
+					stat.extend([states for _ in range(config.BEAM_WIDTH)])
+					# for k, item in enumerate(states):
+					# 	for l in [0, 1]:
+					# 		cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
+					for k in range(config.BEAM_WIDTH):
+						time.append(tf.concat([rnn_time[j], time_new[k: k + 1]], 3))
+				prob = tf.concat(prob, 1)
+				print(prob.shape)
+				print(len(time))
+				print(len(stat))
+				quit()
 			# 	val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
 			# 	idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, config.BEAM_WIDTH]), idx], 2)
 			# 	time = tf.stack(time, 1)
