@@ -151,6 +151,7 @@ class Model(object):
 					v_in_1 = rnn_tmln[j][..., i - 1: i]
 					v_in_2 = rnn_tmln[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
 					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
+					print(inputs.shape)
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new, _ = self.FC(rnn_output = outputs, reuse = True)
 					# time_new = tf.transpose(time_new, [0, 2, 3, 1])
@@ -158,42 +159,40 @@ class Model(object):
 					### deal with each state
 					for k, item in enumerate(states):
 						for l in range(2):
-							stat[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
+							stat[k][l].append(tf.tile(tf.expand_dims(item[l], 0), [config.BEAM_WIDTH, 1, 1, 1, 1]))
 					########################
 					for k in range(config.BEAM_WIDTH):
 						tmln.append(tf.concat([rnn_tmln[j], time_new[k: k + 1]], 3))
 				prob = tf.concat(prob, 1)
-				print(prob.shape)
-				print(len(tmln), tmln[0].shape)
-				print(len(stat))
-				quit()
-				val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
-			# 	idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, config.BEAM_WIDTH]), idx], 2)
-			# 	tmln = tf.stack(tmln, 1)
-			# 	ret = tf.gather_nd(tmln, idx)
-			# 	for k, item in enumerate(states):
-			# 		for l in [0, 1]:
-			# 			stat[k][l] = tf.gather_nd(tf.concat(stat[k][l], 1), idx)
+				val, idx = tf.nn.top_k(prob[0], k = config.BEAM_WIDTH)
+				# idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, config.BEAM_WIDTH]), idx], 2)
+				tmln = tf.stack(tmln, 0)
+				tmln = tf.gather(tmln, idx)
+				### deal with each state
+				for k, item in enumerate(states):
+					for l in range(2):
+						stat[k][l] = tf.gather(tf.concat(stat[k][l], 0), idx)
+				########################
+				# Update every timeline
+				for j in range(config.BEAM_WIDTH):
+					rnn_prob[j] = val[j]
+					rnn_tmln[j] = tmln[j]
+					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][j], h = item[1][j]) for item in stat])
 
-			# 	# Update every timeline
-			# 	for j in range(config.BEAM_WIDTH):
-			# 		rnn_prob[j] = val[..., j]
-			# 		rnn_time[j] = ret[:, j, ...]
-			# 		rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in stat])
-			# return tf.stack(rnn_time, 1)
+			return tf.stack(rnn_tmln, 0), None
 
 			### No Beam Search ###
-			res = [terminal[:, 0, ...]]
-			prob_res = []
-			states = [initial_state]
-			for i in range(1, self.max_num_vertices + 1):
-				rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
-				rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
-				states.append(state)
-				next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
-				res.append(next_v)
-				prob_res.append(prob)
-			return tf.stack(res, 1), tf.stack(prob_res, 0)
+			# res = [terminal[:, 0, ...]]
+			# prob_res = []
+			# states = [initial_state]
+			# for i in range(1, self.max_num_vertices + 1):
+			# 	rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
+			# 	rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
+			# 	states.append(state)
+			# 	next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
+			# 	res.append(next_v)
+			# 	prob_res.append(prob)
+			# return tf.stack(res, 1), tf.stack(prob_res, 0)
 
 	def RNN_tmp(self, feature, terminal, indices):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
