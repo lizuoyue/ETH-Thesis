@@ -145,6 +145,7 @@ class Model(object):
 			for i in range(1, self.max_num_vertices + 1):
 				prob, tmln, stat = [], [], [[[], []] for item in self.lstm_out_channel]
 				for j in range(config.BEAM_WIDTH):
+					print(rnn_prob[j].shape)
 					prob_last = tf.tile(rnn_prob[j], [config.BEAM_WIDTH])
 					v_in_0 = terminal[:, 0, ...]
 					v_in_e = terminal[:, 1, ...]
