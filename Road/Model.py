@@ -174,17 +174,19 @@ class Model(object):
 			# 		rnn_time[j] = ret[:, j, ...]
 			# 		rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][:, j], h = item[1][:, j]) for item in cell])
 			# return tf.stack(rnn_time, 1)
-			res = [terminal[:, 0, ...]]
-			prob_res = []
-			states = [initial_state]
-			for i in range(1, self.max_num_vertices + 1):
-				rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
-				rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
-				states.append(state)
-				next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
-				res.append(next_v)
-				prob_res.append(prob)
-			return tf.stack(res, 1), tf.stack(prob_res, 0)
+
+			### No Beam Search ###
+			# res = [terminal[:, 0, ...]]
+			# prob_res = []
+			# states = [initial_state]
+			# for i in range(1, self.max_num_vertices + 1):
+			# 	rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
+			# 	rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
+			# 	states.append(state)
+			# 	next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
+			# 	res.append(next_v)
+			# 	prob_res.append(prob)
+			# return tf.stack(res, 1), tf.stack(prob_res, 0)
 
 	def RNN_tmp(self, feature, terminal, indices):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
@@ -195,7 +197,7 @@ class Model(object):
 		res = [tf.expand_dims(tf.gather(self.vertex_pool, tf.ones([1], dtype = tf.int32) * idx, axis = 0), axis = 3) for idx in indices]
 		prob_res = []
 		states = [initial_state]
-		for i in range(1, len(indices)):
+		for i in range(1, len(indices) + 1):
 			rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
 			rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
 			states.append(state)
