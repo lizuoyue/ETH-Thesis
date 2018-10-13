@@ -176,17 +176,17 @@ class Model(object):
 			# return tf.stack(rnn_time, 1)
 
 			### No Beam Search ###
-			# res = [terminal[:, 0, ...]]
-			# prob_res = []
-			# states = [initial_state]
-			# for i in range(1, self.max_num_vertices + 1):
-			# 	rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
-			# 	rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
-			# 	states.append(state)
-			# 	next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
-			# 	res.append(next_v)
-			# 	prob_res.append(prob)
-			# return tf.stack(res, 1), tf.stack(prob_res, 0)
+			res = [terminal[:, 0, ...]]
+			prob_res = []
+			states = [initial_state]
+			for i in range(1, self.max_num_vertices + 1):
+				rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
+				rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
+				states.append(state)
+				next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
+				res.append(next_v)
+				prob_res.append(prob)
+			return tf.stack(res, 1), tf.stack(prob_res, 0)
 
 	def RNN_tmp(self, feature, terminal, indices):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
