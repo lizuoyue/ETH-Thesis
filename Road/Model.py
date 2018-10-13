@@ -137,9 +137,9 @@ class Model(object):
 			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
-			# rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]
-			# rnn_time = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
-			# rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
+			rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]
+			rnn_time = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
+			rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
 
 			# # beam search
 			# for i in range(1, self.max_num_vertices):
