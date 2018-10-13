@@ -139,6 +139,7 @@ class Model(object):
 			# current prob, time line, current state
 			rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]
 			rnn_tmln = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
+			print(rnn_tmln[0].shape)
 			rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
 
 			# beam search
@@ -174,8 +175,9 @@ class Model(object):
 				########################
 				# Update every timeline
 				for j in range(config.BEAM_WIDTH):
-					rnn_prob[j] = val[j]
+					rnn_prob[j] = val[j: j + 1]
 					rnn_tmln[j] = tmln[j]
+					print(tmln[j].shape)
 					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][j], h = item[1][j]) for item in stat])
 
 			return tf.stack(rnn_tmln, 0), None
