@@ -153,8 +153,6 @@ class Model(object):
 					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new, _ = self.FC(rnn_output = outputs, reuse = True)
-					print(prob_last.shape)
-					print(prob_new.shape)
 					prob.append(prob_last + prob_new)
 					### deal with each state
 					for k, item in enumerate(states):
@@ -163,8 +161,8 @@ class Model(object):
 					########################
 					for k in range(config.BEAM_WIDTH):
 						tmln.append(tf.concat([rnn_tmln[j], time_new[k: k + 1]], 3))
-				prob = tf.concat(prob, 1)
-				val, idx = tf.nn.top_k(prob[0], k = config.BEAM_WIDTH)
+				prob = tf.concat(prob, 0)
+				val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
 				# idx = tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(prob)[0]), 1), [1, config.BEAM_WIDTH]), idx], 2)
 				tmln = tf.stack(tmln, 0)
 				tmln = tf.gather(tmln, idx)
