@@ -143,7 +143,7 @@ class Model(object):
 
 			# beam search
 			for i in range(1, self.max_num_vertices + 1):
-				prob, tmln, stat = [], [], [], [[[], []] for item in self.lstm_out_channel]
+				prob, tmln, stat = [], [], [[[], []] for item in self.lstm_out_channel]
 				for j in range(config.BEAM_WIDTH):
 					prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, config.BEAM_WIDTH])
 					v_in_0 = terminal[:, 0, ...]
