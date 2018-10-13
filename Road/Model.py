@@ -157,8 +157,8 @@ class Model(object):
 					prob.append(prob_last + prob_new)
 					### deal with each state
 					for k, item in enumerate(states):
-						print(item.shape)
 						for l in range(1):
+							print(item[l].shape)
 							stat[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
 					########################
 					for k in range(config.BEAM_WIDTH):
