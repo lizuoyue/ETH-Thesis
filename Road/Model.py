@@ -157,16 +157,14 @@ class Model(object):
 					prob.append(prob_last + prob_new)
 					### deal with each state
 					for k, item in enumerate(states):
-						for l in range(1):
-							print(item[l].shape)
+						for l in range(2):
 							stat[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
 					########################
 					for k in range(config.BEAM_WIDTH):
 						tmln.append(tf.concat([rnn_tmln[j], time_new[k: k + 1]], 3))
-					quit()
 				prob = tf.concat(prob, 1)
 				print(prob.shape)
-				print(len(tmln))
+				print(len(tmln), tmln[0].shape)
 				print(len(stat))
 				quit()
 				val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
