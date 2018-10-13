@@ -177,7 +177,7 @@ class Model(object):
 					rnn_tmln[j] = tmln[j]
 					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][j], h = item[1][j]) for item in stat])
 
-			return tf.stack(rnn_tmln, 0)
+			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1])
 
 			### No Beam Search ###
 			# res = [terminal[:, 0, ...]]

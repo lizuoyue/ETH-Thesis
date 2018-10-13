@@ -202,7 +202,7 @@ if __name__ == '__main__':
 				savePNG(img[0], map_v, path + '%d-4.png' % i)
 
 				multi_roads = []
-				prob_res_li = []
+				# prob_res_li = []
 				for terminal in all_terminal:
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
 					print(pred_v_out.shape)
