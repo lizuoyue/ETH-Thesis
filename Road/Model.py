@@ -145,16 +145,16 @@ class Model(object):
 			for i in range(1, self.max_num_vertices + 1):
 				prob, tmln, stat = [], [], [[[], []] for item in self.lstm_out_channel]
 				for j in range(config.BEAM_WIDTH):
-					prob_last = tf.tile(tf.expand_dims(rnn_prob[j], 1), [1, config.BEAM_WIDTH])
+					prob_last = tf.tile(rnn_prob[j], [config.BEAM_WIDTH])
 					v_in_0 = terminal[:, 0, ...]
 					v_in_e = terminal[:, 1, ...]
 					v_in_1 = rnn_tmln[j][..., i - 1: i]
 					v_in_2 = rnn_tmln[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
 					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
-					print(inputs.shape)
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new, _ = self.FC(rnn_output = outputs, reuse = True)
-					# time_new = tf.transpose(time_new, [0, 2, 3, 1])
+					print(prob_last.shape)
+					print(prob_new.shape)
 					prob.append(prob_last + prob_new)
 					### deal with each state
 					for k, item in enumerate(states):
