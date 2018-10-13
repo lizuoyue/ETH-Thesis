@@ -160,7 +160,7 @@ class Model(object):
 					# 	for l in [0, 1]:
 					# 		cell[k][l].append(tf.tile(tf.expand_dims(item[l], 1), [1, config.BEAM_WIDTH, 1, 1, 1]))
 					for k in range(config.BEAM_WIDTH):
-						time.append(tf.concat([rnn_time[j], time_new[k: k + 1]], 3))
+						time.append(tf.concat([rnn_tmln[j], time_new[k: k + 1]], 3))
 				prob = tf.concat(prob, 1)
 				print(prob.shape)
 				print(len(time))
