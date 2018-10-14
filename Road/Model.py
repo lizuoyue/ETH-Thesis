@@ -166,9 +166,9 @@ class Model(object):
 						for l in range(2):
 							stat[k][l].append(tf.tile(tf.expand_dims(item[l], 0), [config.BEAM_WIDTH_2, 1, 1, 1, 1]))
 					########################
-					for k in range(config.BEAM_WIDTH):
+					for k in range(config.BEAM_WIDTH_2):
 						tmln.append(tf.concat([rnn_tmln[j], time_new[k: k + 1]], 3))
-					for k in range(config.BEAM_WIDTH):
+					for k in range(config.BEAM_WIDTH_2):
 						hmap.append(tf.concat([rnn_hmap[j], tf.expand_dims(prob_hmap, 1)], 1))
 				prob = tf.concat(prob, 0)
 				val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
