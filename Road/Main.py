@@ -17,8 +17,8 @@ config = Config()
 def savePNG(mat1, mat2, filename):
 	if mat2.shape[0] < mat1.shape[0]:
 		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST)
-	# if mat2.max() > 0:
-	# 	mat2 = mat2 / mat2.max()
+	if mat2.max() > 0:
+		mat2 = mat2 / mat2.max()
 	# plt.imshow(mat1)
 	# plt.imshow(mat2, alpha = 0.5)
 	# plt.axis('off')
@@ -203,12 +203,12 @@ if __name__ == '__main__':
 
 				multi_roads = []
 				prob_res_li = []
-				for terminal in [all_terminal[8]]:
+				for terminal in all_terminal:
 					pred_v_out, prob_res = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
-					multi_roads = pred_v_out
-					prob_res_li = prob_res
-					# multi_roads.append(pred_v_out[0])
-					# prob_res_li.append(prob_res[0])
+					# multi_roads = pred_v_out
+					# prob_res_li = prob_res
+					multi_roads.append(pred_v_out[0])
+					prob_res_li.append(prob_res[0])
 
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
