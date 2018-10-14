@@ -142,6 +142,14 @@ class Model(object):
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
+			outputs, state = tf.nn.dynamic_rnn(
+				cell = self.stacked_lstm_fw,
+				initial_state = initial_state_fw,
+				inputs = rnn_input,
+				sequence_length = gt_seq_len,
+				dtype = tf.float32
+			)
+			print(outputs.shape)
 			outputs, state = tf.nn.bidirectional_dynamic_rnn(
 				cell_fw = self.stacked_lstm_fw,
 				cell_bw = self.stacked_lstm_bw,
@@ -151,6 +159,8 @@ class Model(object):
 				sequence_length = gt_seq_len,
 				dtype = tf.float32
 			)
+			print(outputs.shape)
+			quit()
 			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
