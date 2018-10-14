@@ -186,24 +186,23 @@ class Model(object):
 			# beam search
 			for i in range(1 + 5):
 				last_prob, last_tmln, last_stat = rnn_prob.pop(0), rnn_tmln.pop(0), rnn_stat.pop(0)
+				v_in_0 = terminal[:, 0, ...]
+				v_in_e = terminal[:, 1, ...]
+				n = last_tmln.get_shape().as_list()[-1]
+				v_in_1 = last_tmln[..., max(n - 1, 0): max(n - 1, 0) + 1]
+				v_in_2 = last_tmln[..., max(n - 2, 0): max(n - 2, 0) + 1]
+				inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
+				outputs, states = self.stacked_lstm(inputs = inputs, state = last_stat)
+				prob_new, tmln_new, _ = self.FC(rnn_output = outputs, reuse = True)
+				### update prob
 				for j in range(config.BEAM_WIDTH):
-					v_in_0 = terminal[:, 0, ...]
-					v_in_e = terminal[:, 1, ...]
-					n = last_tmln.get_shape().as_list()[-1]
-					v_in_1 = last_tmln[..., max(n - 1, 0): max(n - 1, 0) + 1]
-					v_in_2 = last_tmln[..., max(n - 2, 0): max(n - 2, 0) + 1]
-					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
-					outputs, states = self.stacked_lstm(inputs = inputs, state = last_stat)
-					prob_new, tmln_new, _ = self.FC(rnn_output = outputs, reuse = True)
-					### update prob
-					for k in range(config.BEAM_WIDTH):
-						rnn_prob.append(last_prob + prob_new[k: k + 1])
-					### update tmln
-					for k in range(config.BEAM_WIDTH):
-						rnn_tmln.append(tf.concat([last_tmln, tmln_new[k: k + 1]], 3))
-					### update stat
-					for k in range(config.BEAM_WIDTH):
-						rnn_stat.append(states)
+					rnn_prob.append(last_prob + prob_new[j: j + 1])
+				### update tmln
+				for j in range(config.BEAM_WIDTH):
+					rnn_tmln.append(tf.concat([last_tmln, tmln_new[j: j + 1]], 3))
+				### update stat
+				for j in range(config.BEAM_WIDTH):
+					rnn_stat.append(states)
 			
 			print(len(rnn_prob))
 			print(len(rnn_tmln))
