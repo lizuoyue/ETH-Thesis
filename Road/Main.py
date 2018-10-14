@@ -17,8 +17,8 @@ config = Config()
 def savePNG(mat1, mat2, filename):
 	if mat2.shape[0] < mat1.shape[0]:
 		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST)
-	if mat2.max() > 0:
-		mat2 = mat2 / mat2.max()
+	# if mat2.max() > 0:
+	# 	mat2 = mat2 / mat2.max()
 	# plt.imshow(mat1)
 	# plt.imshow(mat2, alpha = 0.5)
 	# plt.axis('off')
