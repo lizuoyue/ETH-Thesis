@@ -137,7 +137,7 @@ class Model(object):
 			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
-			rnn_prob = [tf.zeros([1])] + [tf.ones([1]) * -1000 for _ in range(config.BEAM_WIDTH - 1)]
+			rnn_prob = [tf.zeros([1])] + [tf.ones([1]) * -99999999 for _ in range(config.BEAM_WIDTH - 1)]
 			rnn_tmln = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
 			rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
 			rnn_hmap = [tf.zeros([785, 1]) for _ in range(config.BEAM_WIDTH)]
