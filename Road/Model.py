@@ -145,8 +145,8 @@ class Model(object):
 			outputs, state = tf.nn.bidirectional_dynamic_rnn(
 				cell_fw = self.stacked_lstm_fw,
 				cell_bw = self.stacked_lstm_bw,
-				initial_state_fw = lstm_init_state_fw,
-				initial_state_bw = lstm_init_state_bw,
+				initial_state_fw = initial_state_fw,
+				initial_state_bw = initial_state_bw,
 				inputs = rnn_input,
 				sequence_length = gt_seq_len,
 				dtype = tf.float32
