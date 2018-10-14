@@ -159,7 +159,7 @@ class Model(object):
 				sequence_length = gt_seq_len,
 				dtype = tf.float32
 			)
-			print(outputs.shape)
+			print(outputs[0].shape, outputs[1].shape)
 			quit()
 			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
