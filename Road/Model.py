@@ -140,10 +140,10 @@ class Model(object):
 			rnn_prob = [tf.zeros([1]) for _ in range(config.BEAM_WIDTH)]
 			rnn_tmln = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
 			rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
-			rnn_hmap = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
+			rnn_hmap = [tf.zeros([785, 1]) for _ in range(config.BEAM_WIDTH)]
 
 			# beam search
-			for i in range(1, self.max_num_vertices + 1):
+			for i in range(1, 3):#self.max_num_vertices + 1):
 				prob, tmln, stat, hmap = [], [], [[[], []] for item in self.lstm_out_channel], []
 				for j in range(config.BEAM_WIDTH):
 					prob_last = tf.tile(rnn_prob[j], [config.BEAM_WIDTH])
@@ -154,8 +154,6 @@ class Model(object):
 					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new, prob_hmap = self.FC(rnn_output = outputs, reuse = True)
-					print(terminal[:, 0, ...].shape, prob_hmap.shape)
-					quit()
 					prob.append(prob_last + prob_new)
 					### deal with each state
 					for k, item in enumerate(states):
@@ -164,10 +162,12 @@ class Model(object):
 					########################
 					for k in range(config.BEAM_WIDTH):
 						tmln.append(tf.concat([rnn_tmln[j], time_new[k: k + 1]], 3))
+					for k in range(config.BEAM_WIDTH):
+						hmap.append(tf.concat([rnn_hmap[j], tf.expand_dims(prob_hmap, 1)], 1))
 				prob = tf.concat(prob, 0)
 				val, idx = tf.nn.top_k(prob, k = config.BEAM_WIDTH)
-				tmln = tf.stack(tmln, 0)
-				tmln = tf.gather(tmln, idx)
+				tmln = tf.gather(tf.stack(tmln, 0), idx)
+				hmap = tf.gather(tf.stack(hmap, 0), idx)
 				### deal with each state
 				for k, item in enumerate(states):
 					for l in range(2):
@@ -178,7 +178,10 @@ class Model(object):
 					rnn_prob[j] = val[j: j + 1]
 					rnn_tmln[j] = tmln[j]
 					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][j], h = item[1][j]) for item in stat])
+					rnn_hmap[j] = hmap[j]
 
+			print(tf.stack(rnn_hmap, 0).shape)
+			quit()
 			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1])
 
 			### Full Search ###
