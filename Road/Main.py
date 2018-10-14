@@ -201,12 +201,12 @@ if __name__ == '__main__':
 				savePNG(img[0], map_b, path + '%d-3.png' % i)
 				savePNG(img[0], map_v, path + '%d-4.png' % i)
 
-				multi_roads = []
+				# multi_roads = []
 				# prob_res_li = []
 				for terminal in [all_terminal[1]]:
 					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
-					print(pred_v_out.shape)
-					multi_roads.append(pred_v_out[0])
+					multi_roads = pred_v_out
+					# multi_roads.append(pred_v_out[0])
 					# prob_res_li.append(prob_res)
 
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
