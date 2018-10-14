@@ -204,8 +204,9 @@ if __name__ == '__main__':
 				# multi_roads = []
 				# prob_res_li = []
 				for terminal in [all_terminal[1]]:
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
+					pred_v_out, prob_res = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
 					multi_roads = pred_v_out
+					prob_res_li = prob_res
 					# multi_roads.append(pred_v_out[0])
 					# prob_res_li.append(prob_res)
 
@@ -215,7 +216,7 @@ if __name__ == '__main__':
 				os.makedirs('./test_res%s/%d' % (city_name, i))
 				for j, pathImg in enumerate(pathImgs):
 					savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((i,) + indices[j]))
-					# np.save(path + '%d/%d-%d.npy' % ((i,) + indices[j]), prob_res_li[j])
+					np.save(path + '%d/%d-%d.npy' % ((i,) + indices[j]), prob_res_li[j])
 
 			# Save model
 			if i % 10000 == choose_train:

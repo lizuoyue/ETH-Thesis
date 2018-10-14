@@ -180,9 +180,7 @@ class Model(object):
 					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][j], h = item[1][j]) for item in stat])
 					rnn_hmap[j] = hmap[j]
 
-			print(tf.stack(rnn_hmap, 0).shape)
-			quit()
-			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1])
+			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1]), tf.stack(rnn_hmap, 0)
 
 			### Full Search ###
 			# # current prob, time line, current state
@@ -281,8 +279,8 @@ class Model(object):
 		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
-		pred_v_out = self.RNN(feature, terminal, reuse = True)
-		return pred_v_out
+		pred_v_out, prob_res = self.RNN(feature, terminal, reuse = True)
+		return pred_v_out, prob_res
 
 	def predict_path_tmp(self, ff, tt, indices):
 		#
