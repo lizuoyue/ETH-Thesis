@@ -203,7 +203,7 @@ if __name__ == '__main__':
 
 				multi_roads = []
 				prob_res_li = []
-				for terminal in [all_terminal[1]]:
+				for terminal in all_terminal:
 					pred_v_out, prob_res = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
 					# multi_roads = pred_v_out
 					# prob_res_li = prob_res
