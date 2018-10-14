@@ -63,7 +63,7 @@ if __name__ == '__main__':
 	oo = tf.placeholder(tf.float32)
 	tt = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
-	ll = tf.placeholder(tf.float32)
+	ll = tf.placeholder(tf.int32)
 	ff = tf.placeholder(tf.float32)
 	dd = tf.placeholder(tf.int32)
 
