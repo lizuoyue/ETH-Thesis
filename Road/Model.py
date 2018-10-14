@@ -206,8 +206,8 @@ class Model(object):
 					rnn_stat.append(states)
 
 			tmp = tf.stack(rnn_tmln, 0)
-			print(tmp.shape)
-			quit()
+			# print(tmp.shape)
+			# quit()
 
 			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1])
 
