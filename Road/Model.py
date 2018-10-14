@@ -122,9 +122,13 @@ class Model(object):
 
 	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
-		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
-			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
-			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
+		initial_state_fw = tuple([tf.contrib.rnn.LSTMStateTuple(
+			c = tf.tile(self.lstm_init_state_fw[i][0: 1], batch_size),
+			h = tf.tile(self.lstm_init_state_fw[i][1: 2], batch_size)
+		) for i in range(len(self.lstm_out_channel))])
+		initial_state_bw = tuple([tf.contrib.rnn.LSTMStateTuple(
+			c = tf.tile(self.lstm_init_state_bw[i][0: 1], batch_size),
+			h = tf.tile(self.lstm_init_state_bw[i][1: 2], batch_size)
 		) for i in range(len(self.lstm_out_channel))])
 		if not reuse:
 			feature_rep = tf.gather(feature, gt_idx)
@@ -141,8 +145,8 @@ class Model(object):
 			outputs, state = tf.nn.bidirectional_dynamic_rnn(
 				cell_fw = self.stacked_lstm_fw,
 				cell_bw = self.stacked_lstm_bw,
-				initial_state_fw = self.lstm_init_state_fw,
-				initial_state_bw = self.lstm_init_state_bw,
+				initial_state_fw = lstm_init_state_fw,
+				initial_state_bw = lstm_init_state_bw,
 				inputs = rnn_input,
 				sequence_length = gt_seq_len,
 				dtype = tf.float32
