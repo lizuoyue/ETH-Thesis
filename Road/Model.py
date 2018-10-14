@@ -152,8 +152,13 @@ class Model(object):
 					v_in_1 = rnn_tmln[j][..., i - 1: i]
 					v_in_2 = rnn_tmln[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
 					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
+					print(v_in_1.shape)
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new, prob_hmap = self.FC(rnn_output = outputs, reuse = True)
+					print(prob_new.shape)
+					print(time_new.shape)
+					print(prob_hmap.shape)
+					quit()
 					prob.append(prob_last + prob_new)
 					### deal with each state
 					for k, item in enumerate(states):
