@@ -180,7 +180,7 @@ class Model(object):
 					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][j], h = item[1][j]) for item in stat])
 					rnn_hmap[j] = hmap[j]
 
-			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1]), tf.stack(rnn_hmap, 0)
+			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1]), tf.transpose(tf.stack(rnn_hmap, 0), [0, 2, 1])
 
 			### Full Search ###
 			# # current prob, time line, current state
