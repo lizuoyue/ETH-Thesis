@@ -164,7 +164,7 @@ class Model(object):
 					### deal with each state
 					for k, item in enumerate(states):
 						for l in range(2):
-							stat[k][l].append(tf.tile(tf.expand_dims(item[l], 0), [config.BEAM_WIDTH, 1, 1, 1, 1]))
+							stat[k][l].append(tf.tile(tf.expand_dims(item[l], 0), [config.BEAM_WIDTH_2, 1, 1, 1, 1]))
 					########################
 					for k in range(config.BEAM_WIDTH):
 						tmln.append(tf.concat([rnn_tmln[j], time_new[k: k + 1]], 3))
