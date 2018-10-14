@@ -203,12 +203,12 @@ if __name__ == '__main__':
 
 				multi_roads = []
 				prob_res_li = []
-				for terminal in [all_terminal[38]]: #all_terminal: #
+				for terminal in all_terminal: #[all_terminal[38]]: #
 					pred_v_out, prob_res = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal})
-					multi_roads = pred_v_out
-					prob_res_li = prob_res
-					# multi_roads.append(pred_v_out[0])
-					# prob_res_li.append(prob_res[0])
+					# multi_roads = pred_v_out
+					# prob_res_li = prob_res
+					multi_roads.append(pred_v_out[0])
+					prob_res_li.append(prob_res[0])
 
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0

@@ -312,8 +312,7 @@ def getData(img_id, seq_id, rotate = 0, show = False):
 		assert(len(vertex_output) == max_seq_len)
 		end = [0 for i in range(max_seq_len)]
 		if len(path_v) > 0:
-			for i in range(len(path_v) - 1, len(end)):
-				end[i] = 1
+			end[len(path_v) - 1] = 1
 
 		if False:
 			color = [0] + [1, 2] * 30
@@ -334,7 +333,7 @@ def getData(img_id, seq_id, rotate = 0, show = False):
 		vertex_outputs.append(vertex_output)
 		vertex_terminals.append(vertex_terminal)
 		ends.append(end)
-		seq_lens.append(len(path_v) + 1)
+		seq_lens.append(len(path_v))
 	seq_idx = seq_id * np.ones([len(vertex_terminals)], np.int32)
 	vertex_inputs = np.array(vertex_inputs)
 	vertex_outputs = np.array(vertex_outputs)
@@ -363,8 +362,16 @@ def getDataBatch(batch_size, mode, show = False):
 	while True:
 		res = []
 		ids = np.random.choice(len(mini_ids), batch_size, replace = False)
+		##########
+		# ids = [35548]
+		##########
+		print(ids)
 		for i in range(batch_size):
 			rot = np.random.randint(4)
+			print(rot)
+			##########
+			# rot = 3
+			##########
 			res.append(getData(mini_ids[ids[i]], i, rot, show))
 		new_res = [np.array([item[i] for item in res]) for i in range(3)]
 		for i in range(3, 9):

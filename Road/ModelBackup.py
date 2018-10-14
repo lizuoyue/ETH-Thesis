@@ -23,18 +23,11 @@ class Model(object):
 		self.num_stage        = 3
 
 		# Multi-layer LSTM and inital state
-		self.stacked_lstm_fw  = tf.contrib.rnn.MultiRNNCell(
+		self.stacked_lstm     = tf.contrib.rnn.MultiRNNCell(
 			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
 		)
-		self.stacked_lstm_bw  = tf.contrib.rnn.MultiRNNCell(
-			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
-		)
-		self.lstm_init_state_fw = [
-			tf.get_variable('ConvLSTM_Cell_%d_State_FW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
-			for i, c_out in enumerate(lstm_out_channel)
-		]
-		self.lstm_init_state_bw = [
-			tf.get_variable('ConvLSTM_Cell_%d_State_BW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
+		self.lstm_init_state  = [
+			tf.get_variable('ConvLSTM_Cell_%d_State' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
 			for i, c_out in enumerate(lstm_out_channel)
 		]
 
@@ -138,14 +131,8 @@ class Model(object):
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
-			outputs, state = tf.nn.bidirectional_dynamic_rnn(
-				cell_fw = self.stacked_lstm_fw,
-				cell_bw = self.stacked_lstm_bw,
-				initial_state_fw = self.lstm_init_state_fw,
-				initial_state_bw = self.lstm_init_state_bw,
-				inputs = rnn_input,
-				sequence_length = gt_seq_len,
-				dtype = tf.float32
+			outputs, state = tf.nn.dynamic_rnn(cell = self.stacked_lstm, inputs = rnn_input,
+				sequence_length = gt_seq_len, initial_state = initial_state, dtype = tf.float32
 			)
 			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
@@ -207,7 +194,7 @@ class Model(object):
 			# rnn_tmln = [terminal[:, 0, ...]]
 			# rnn_stat = [initial_state]
 
-			# # BFS
+			# # bfs
 			# for i in range(1 + 5):
 			# 	last_prob, last_tmln, last_stat = rnn_prob.pop(0), rnn_tmln.pop(0), rnn_stat.pop(0)
 			# 	v_in_0 = terminal[:, 0, ...]
