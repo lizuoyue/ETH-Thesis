@@ -178,6 +178,7 @@ class Model(object):
 
 			# return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1])
 
+			# Full Search
 			# current prob, time line, current state
 			rnn_prob = [tf.zeros([1])]
 			rnn_tmln = [terminal[:, 0, ...]]
@@ -203,10 +204,9 @@ class Model(object):
 				### update stat
 				for j in range(config.BEAM_WIDTH):
 					rnn_stat.append(states)
-			
-			print(len(rnn_prob))
-			print(len(rnn_tmln))
-			print(len(rnn_stat))
+
+			tmp = tf.stack(rnn_tmln, 0)
+			print(tmp.shape)
 			quit()
 
 			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1])
