@@ -113,7 +113,7 @@ class Model(object):
 			# gt_vertices = tf.concat([gt_vertices, tf.ones([config.TRAIN_NUM_PATH, self.max_num_vertices, 1])], axis = -1)
 			# logits -= 1e10 * (1 - gt_vertices)
 			loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
-			loss = tf.reduce_sum(loss) / tf.reduce_sum(gt_seq_len)
+			loss = tf.reduce_sum(loss) / tf.to_float(tf.reduce_sum(gt_seq_len))
 			return logits, loss
 		else:
 			prob = tf.nn.softmax(logits)
