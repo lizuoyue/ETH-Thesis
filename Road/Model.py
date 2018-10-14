@@ -101,9 +101,9 @@ class Model(object):
 			gt_seq_len
 		"""
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1]])	
+			output_reshape = tf.reshape(rnn_output, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1] * 2])	
 		else:
-			output_reshape = tf.reshape(rnn_output, [1, 1, self.res_num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [1, 1, self.res_num * self.lstm_out_channel[-1] * 2])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(inputs = output_reshape, units = 4096, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = 1024, activation = tf.nn.relu)
@@ -142,14 +142,6 @@ class Model(object):
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
-			outputs, state = tf.nn.dynamic_rnn(
-				cell = self.stacked_lstm_fw,
-				initial_state = initial_state_fw,
-				inputs = rnn_input,
-				sequence_length = gt_seq_len,
-				dtype = tf.float32
-			)
-			print(outputs.shape)
 			outputs, state = tf.nn.bidirectional_dynamic_rnn(
 				cell_fw = self.stacked_lstm_fw,
 				cell_bw = self.stacked_lstm_bw,
@@ -159,8 +151,7 @@ class Model(object):
 				sequence_length = gt_seq_len,
 				dtype = tf.float32
 			)
-			print(outputs[0].shape, outputs[1].shape)
-			quit()
+			outputs = tf.concat([outputs[0], outputs[1]], -1)
 			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
