@@ -9,6 +9,7 @@ class Config(object):
 
 		#
 		self.BEAM_WIDTH = 10
+		self.BEAM_WIDTH_2 = int(self.BEAM_WIDTH / 2)
 		self.BLUR = 0.75
 
 		self.TABLEAU20 = [
