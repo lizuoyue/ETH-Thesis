@@ -303,14 +303,14 @@ def getData(img_id, seq_id, rotate = 0, show = False):
 		vertex_output = vertex_input[1:]
 		vertex_terminal = [vertex_input[0], vertex_pool[g.v[t][1]][g.v[t][0]]]
 
-		while len(vertex_input) < max_seq_len:
+		while len(vertex_input) < max_seq_len + 1:
 			vertex_input.append(blank)
-		while len(vertex_output) < max_seq_len:
+		while len(vertex_output) < max_seq_len + 1:
 			vertex_output.append(blank)
 		if len(vertex_input) != max_seq_len:
 			print(len(vertex_input))
-		assert(len(vertex_output) == max_seq_len)
-		end = [0 for i in range(max_seq_len)]
+		assert(len(vertex_output) == (max_seq_len + 1))
+		end = [0 for i in range(max_seq_len + 1)]
 		if len(path_v) > 0:
 			for i in range(len(path_v) - 1, len(end)):
 				end[i] = 1
