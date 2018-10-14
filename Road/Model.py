@@ -156,8 +156,8 @@ class Model(object):
 					prob_new, time_new, prob_hmap = self.FC(rnn_output = outputs, reuse = True)
 					# Force to predice <eos> if input is <eos>
 					cd = tf.reduce_sum(v_in_1)
-					prob_new  = tf.cond(cd < 0.5, lambda: tf.zeros([config.BEAM_WIDTH]), lambda: prob_new)
-					time_new  = tf.cond(cd < 0.5, lambda: tf.concat([v_in_1 for _ in range(config.BEAM_WIDTH)], 0), lambda: time_new)
+					prob_new  = tf.cond(cd < 0.5, lambda: tf.zeros([config.BEAM_WIDTH_2]), lambda: prob_new)
+					time_new  = tf.cond(cd < 0.5, lambda: tf.concat([v_in_1 for _ in range(config.BEAM_WIDTH_2)], 0), lambda: time_new)
 					prob_hmap = tf.cond(cd < 0.5, lambda: tf.concat([tf.zeros(784), tf.ones(1)], 0), lambda: prob_hmap)
 					###
 					prob.append(prob_last + prob_new)
