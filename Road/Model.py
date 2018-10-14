@@ -143,7 +143,7 @@ class Model(object):
 			rnn_hmap = [tf.zeros([785, 1]) for _ in range(config.BEAM_WIDTH)]
 
 			# beam search
-			for i in range(1, 5):#range(1, self.max_num_vertices + 1):
+			for i in range(1, 4):#range(1, self.max_num_vertices + 1):
 				prob, tmln, stat, hmap = [], [], [[[], []] for item in self.lstm_out_channel], []
 				for j in range(config.BEAM_WIDTH):
 					prob_last = tf.tile(rnn_prob[j], [config.BEAM_WIDTH])
