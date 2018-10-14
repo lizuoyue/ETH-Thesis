@@ -8,7 +8,7 @@ class Config(object):
 		self.AREA_SIZE_16   = [int(item / 16) for item in self.AREA_SIZE]
 
 		#
-		self.BEAM_WIDTH = 8
+		self.BEAM_WIDTH = 5
 		self.BLUR = 0.75
 
 		self.TABLEAU20 = [
