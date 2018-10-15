@@ -27,7 +27,7 @@ if __name__ == '__main__':
 	# time.sleep(10)
 	# quit()
 
-	n_val = 100
+	n_val = 10
 	loss_cnn, loss_rnn = process('LossTrainChicago.out')
 	loss_cnn_val, loss_rnn_val = process('LossValidChicago.out', n_val)
 	l = len(loss_cnn)
