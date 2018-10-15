@@ -1,9 +1,9 @@
 class Config(object):
 	def __init__(self):
-		# 
+		# Tile size of Google Map
 		self.TILE_SIZE = 256
 
-		# Coordinates from OpenStreetMap
+		# Coordinates for OpenStreetMap
 		self.CITY_COO = {
 			'Zurich': {
 			# Each patch is around 4096 pixels in both width and height with zoom level 18
@@ -21,7 +21,7 @@ class Config(object):
 			},
 		}
 
-		# Images from Google Static Maps API
+		# Images for Google Static Maps API
 		self.CITY_IMAGE = {
 			'Zurich': {
 			# Each patch is around 600 pixels in both width and height with zoom level 19
@@ -43,15 +43,19 @@ class Config(object):
 				'scale' : 1,
 				'size'  : 600,
 			},
-			'BigChicago': {
-			# Each patch is around 600 pixels in both width and height with zoom level 19
-				'center': (-87.7380649, 41.9289708), # Kelvyn Park
-				'step'  : (0.00044697723283112595, -0.0003324594428459153),
-				'xrange': (-144, 144),
-				'yrange': (-144, 144),
-				'zoom'  : 19,
-				'scale' : 1,
-				'size'  : 600,
-			},
 		}
+
+if __name__ == '__main__':
+	config = Config()
+	city_info = config.CITY_COO['Chicago']
+	lon, lat = city_info['center']
+	dx, dy = city_info['step']
+	x1, x2 = city_info['xrange']
+	y1, y2 = city_info['yrange']
+	print('left :', lon + dx * x1)
+	print('up   :', lat + dy * y1)
+	print('right:', lon + dx * x2)
+	print('down :', lat + dy * y2)
+	print(lon, lat)
+	print((lon + dx * x1 + lon + dx * x2) / 2, (lat + dy * y1 + lat + dy * y2) / 2)
 

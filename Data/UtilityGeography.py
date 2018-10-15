@@ -49,6 +49,18 @@ class BoundingBox(object):
 
 
 if __name__ == '__main__':
+	print((37.4032-37.3374)/0.002557952871640623)
+	print((-122.1141+121.9436)/0.0032186508178710938)
+
+	quit()
+	c_lon, c_lat = (-122.1141-121.9436)/2, (37.4032+37.3374)/2
+	for i in range(-10, 10):
+		for j in range(-10, 10):
+			bbox = BoundingBox(c_lon + i * 0.0001, c_lat + j * 0.0001, 1200, 1200, 18, 2)
+			l, u = bbox.relativePixelToLonLat(0, 0)
+			r, d = bbox.relativePixelToLonLat(1200, 1200)
+			print(r - l, u - d)
+	quit()
 	zoom = 18
 	patch_size = 2048
 	city_info = config.CITY_BUILDING['Chicago']
