@@ -101,9 +101,9 @@ class Model(object):
 			gt_seq_len
 		"""
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1] * 2])	
+			output_reshape = tf.reshape(rnn_output, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1]])	
 		else:
-			output_reshape = tf.reshape(rnn_output, [1, 1, self.res_num * self.lstm_out_channel[-1] * 2])
+			output_reshape = tf.reshape(rnn_output, [1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(inputs = output_reshape, units = 4096, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = 1024, activation = tf.nn.relu)
@@ -151,8 +151,8 @@ class Model(object):
 				sequence_length = gt_seq_len,
 				dtype = tf.float32
 			)
-			outputs = tf.concat([outputs[0], outputs[1]], -1)
-			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
+			# outputs = tf.concat([outputs[0], outputs[1]], -1)
+			return self.FC(outputs[0] + outputs[1], gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
 			rnn_prob = [tf.zeros([1])] + [tf.ones([1]) * -99999999 for _ in range(config.BEAM_WIDTH - 1)]
