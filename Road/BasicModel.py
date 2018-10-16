@@ -59,6 +59,99 @@ def Mask(scope, feature, reuse = None):
 
 	return bconv4, vconv4
 
+def BottleneckV1(scope, img, out_ch, down, dilation, reuse = None):
+	"""
+		img   : tensor with shape [batch_size, height, width, num_channels]
+		out_ch: number of output channels
+		down  : bool
+	"""
+	assert(out_ch % 4 == 0)
+	out_ch_4 = int(out_ch / 4)
+	shortcut = (img.get_shape().as_list()[-1] != out_ch)
+	stride = 1 + 1 * down
+	with tf.variable_scope(scope, reuse = reuse):
+		if shortcut:
+			sc = tf.layers.conv2d(inputs = img   , filters = out_ch  , kernel_size = 1, padding = 'same', use_bias = False, strides = stride)
+			sc = tf.layers.batch_normalization(sc)
+		else:
+			sc = img
+		conv_1 = tf.layers.conv2d(inputs = img   , filters = out_ch_4, kernel_size = 1, padding = 'same', use_bias = False, strides = 1)
+		conv_1 = tf.nn.relu(tf.layers.batch_normalization(conv_1))
+		conv_2 = tf.layers.conv2d(inputs = conv_1, filters = out_ch_4, kernel_size = 3, padding = 'same', use_bias = False, strides = stride, dilation_rate = dilation)
+		conv_2 = tf.nn.relu(tf.layers.batch_normalization(conv_2))
+		conv_3 = tf.layers.conv2d(inputs = conv_2, filters = out_ch  , kernel_size = 1, padding = 'same', use_bias = False, strides = 1)
+		conv_3 = tf.layers.batch_normalization(conv_3)
+	return tf.nn.relu(conv_3 + sc)
+
+def ResNetV1(scope, img, li_nb, reuse = None):
+	"""
+		img: tensor with shape [batch_size, height, width, num_channels]
+		li_nb: list of numbers of bottlenecks for each of the 4 blocks
+	"""
+	assert(type(li_nb) == list and len(li_nb) == 4)	
+	with tf.variable_scope(scope, reuse = reuse):
+		with tf.variable_scope('Conv1_1', reuse = reuse):
+			conv1 = tf.layers.conv2d(inputs = img, filters =  64, kernel_size = 7, strides = 2, padding = 'same', use_bias = False)
+			conv1 = tf.nn.relu(tf.layers.batch_normalization(conv1))		
+		conv2 = tf.layers.max_pooling2d(inputs = conv1, pool_size = 3, strides = 2, padding = 'same')
+		for i in range(li_nb[0]):
+			conv2 = BottleneckV1('Conv2_%d' % (i + 1), conv2, 256 , False, 1, reuse) 
+		conv3 = conv2
+		for i in range(li_nb[1]):
+			conv3 = BottleneckV1('Conv3_%d' % (i + 1), conv3, 512 , i == 0, 1, reuse)
+		conv4 = conv3
+		for i in range(li_nb[2]):
+			conv4 = BottleneckV1('Conv4_%d' % (i + 1), conv4, 1024, False, 2, reuse)
+		conv5 = conv4
+		for i in range(li_nb[3]):
+			conv5 = BottleneckV1('Conv5_%d' % (i + 1), conv5, 2048, False, 4, reuse)
+	return conv1, conv2, conv3, conv4, conv5
+
+def ResNetV1_50(scope, img, reuse = None):
+	return ResNetV1(scope, img, [3, 4,  6, 3], reuse)
+
+def ResNetV1_101(scope, img, reuse = None):
+	return ResNetV1(scope, img, [3, 4, 23, 3], reuse)
+
+def ResNetV1_152(scope, img, reuse = None):
+	return ResNetV1(scope, img, [3, 8, 36, 3], reuse)
+
+def SkipFeatureResNet(scope, resnet_result, reuse = None):
+	def step(scope, img, out_ch, upsample, reuse = None):
+		with tf.variable_scope(scope, reuse = reuse):
+			out = tf.layers.conv2d(inputs = img, filters = out_ch, kernel_size = 3, padding = 'same', use_bias = False, strides = 1)
+			out = tf.nn.relu(tf.layers.batch_normalization(out))
+			if upsample > 1:
+				out = tf.image.resize_images(images = out, size = [out.shape[1] * upsample, out.shape[2] * upsample])
+		return out
+
+	conv1, conv2, conv3, conv4, conv5 = resnet_result
+	with tf.variable_scope(scope, reuse = reuse):
+		f1 = step('F1', conv1, 64, 1, reuse)
+		f2 = step('F2', conv2, 64, 2, reuse)
+		f3 = step('F3', conv3, 64, 4, reuse)
+		f4 = step('F4', conv4, 64, 4, reuse)
+		f5 = step('F5', conv5, 64, 4, reuse)
+		conv_f = tf.concat([f1, f2, f3, f4, f5], axis = 3)
+		conv_f = tf.layers.conv2d(inputs = conv_f, filters = 128, kernel_size = 3, padding = 'same', use_bias = False, strides = 2)
+		conv_f = tf.layers.batch_normalization(conv_f)
+		conv_f = tf.layers.conv2d(inputs = conv_f, filters = 128, kernel_size = 3, padding = 'same', use_bias = False, strides = 2)
+		conv_f = tf.layers.batch_normalization(conv_f)
+		conv_f = tf.layers.conv2d(inputs = conv_f, filters = 128, kernel_size = 3, padding = 'same', use_bias = False)
+		conv_f = tf.layers.batch_normalization(conv_f)
+		return conv_f
+
+if __name__ == '__main__':
+	img = tf.placeholder(tf.float32, [4, 224, 224, 3])
+	resnet_res = ResNetV1_50('ResNetV1_50', img)
+	resnet_res1 = ResNetV1_50('ResNetV1_50', img, True)
+	skipFeat = SkipFeatureResNet('SkipFeatureResNet', resnet_res)
+	skipFeat1 = SkipFeatureResNet('SkipFeatureResNet', resnet_res1, True)
+	print(skipFeat.shape)
+	# for v in tf.global_variables():
+	# 	print(v.name)
+
+
 
 
 

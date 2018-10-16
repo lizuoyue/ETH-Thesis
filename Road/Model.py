@@ -23,18 +23,25 @@ class Model(object):
 		self.num_stage        = 3
 
 		# Multi-layer LSTM and inital state
-		self.stacked_lstm_fw  = tf.contrib.rnn.MultiRNNCell(
+		# self.stacked_lstm_fw  = tf.contrib.rnn.MultiRNNCell(
+		# 	[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
+		# )
+		# self.stacked_lstm_bw  = tf.contrib.rnn.MultiRNNCell(
+		# 	[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
+		# )
+		# self.lstm_init_state_fw = [
+		# 	tf.get_variable('ConvLSTM_Cell_%d_State_FW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
+		# 	for i, c_out in enumerate(lstm_out_channel)
+		# ]
+		# self.lstm_init_state_bw = [
+		# 	tf.get_variable('ConvLSTM_Cell_%d_State_BW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
+		# 	for i, c_out in enumerate(lstm_out_channel)
+		# ]
+		self.stacked_lstm  = tf.contrib.rnn.MultiRNNCell(
 			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
 		)
-		self.stacked_lstm_bw  = tf.contrib.rnn.MultiRNNCell(
-			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
-		)
-		self.lstm_init_state_fw = [
-			tf.get_variable('ConvLSTM_Cell_%d_State_FW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
-			for i, c_out in enumerate(lstm_out_channel)
-		]
-		self.lstm_init_state_bw = [
-			tf.get_variable('ConvLSTM_Cell_%d_State_BW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
+		self.lstm_init_state = [
+			tf.get_variable('ConvLSTM_Cell_%d_State' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
 			for i, c_out in enumerate(lstm_out_channel)
 		]
 
@@ -74,8 +81,10 @@ class Model(object):
 			gt_boundary       : [batch_size, height, width, 1]
 			gt_vertices       : [batch_size, height, width, 1]
 		"""
-		vgg_result = VGG19('VGG19', img, reuse = reuse)
-		skip_feature = SkipFeature('SkipFeature', vgg_result, reuse = reuse)
+		resnet_result = ResNetV1_50('ResNetV1_50', img, reuse)
+		skip_feature = SkipFeatureResNet('SkipFeatureResNet', resnet_result, reuse)
+		# vgg_result = VGG19('VGG19', img, reuse = reuse)
+		# skip_feature = SkipFeature('SkipFeature', vgg_result, reuse = reuse)
 		bb, vv = Mask('Mask_1', skip_feature, reuse = reuse)
 		b_prob = [tf.nn.softmax(bb)[..., 0: 1]]
 		v_prob = [tf.nn.softmax(bb)[..., 0: 1]]
@@ -122,13 +131,17 @@ class Model(object):
 
 	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
-		initial_state_fw = tuple([tf.contrib.rnn.LSTMStateTuple(
-			c = tf.tile(self.lstm_init_state_fw[i][0: 1], batch_size),
-			h = tf.tile(self.lstm_init_state_fw[i][1: 2], batch_size)
-		) for i in range(len(self.lstm_out_channel))])
-		initial_state_bw = tuple([tf.contrib.rnn.LSTMStateTuple(
-			c = tf.tile(self.lstm_init_state_bw[i][0: 1], batch_size),
-			h = tf.tile(self.lstm_init_state_bw[i][1: 2], batch_size)
+		# initial_state_fw = tuple([tf.contrib.rnn.LSTMStateTuple(
+		# 	c = tf.tile(self.lstm_init_state_fw[i][0: 1], batch_size),
+		# 	h = tf.tile(self.lstm_init_state_fw[i][1: 2], batch_size)
+		# ) for i in range(len(self.lstm_out_channel))])
+		# initial_state_bw = tuple([tf.contrib.rnn.LSTMStateTuple(
+		# 	c = tf.tile(self.lstm_init_state_bw[i][0: 1], batch_size),
+		# 	h = tf.tile(self.lstm_init_state_bw[i][1: 2], batch_size)
+		# ) for i in range(len(self.lstm_out_channel))])
+		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
+			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
+			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
 		) for i in range(len(self.lstm_out_channel))])
 		if not reuse:
 			feature_rep = tf.gather(feature, gt_idx)
@@ -142,17 +155,23 @@ class Model(object):
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
-			outputs, state = tf.nn.bidirectional_dynamic_rnn(
-				cell_fw = self.stacked_lstm_fw,
-				cell_bw = self.stacked_lstm_bw,
-				initial_state_fw = initial_state_fw,
-				initial_state_bw = initial_state_bw,
+			# outputs, state = tf.nn.bidirectional_dynamic_rnn(
+			# 	cell_fw = self.stacked_lstm_fw,
+			# 	cell_bw = self.stacked_lstm_bw,
+			# 	initial_state_fw = initial_state_fw,
+			# 	initial_state_bw = initial_state_bw,
+			# 	inputs = rnn_input,
+			# 	sequence_length = gt_seq_len,
+			# 	dtype = tf.float32
+			# )
+			outputs, state = tf.nn.dynamic_rnn(
+				cell = self.stacked_lstm,
+				initial_state = initial_state,
 				inputs = rnn_input,
 				sequence_length = gt_seq_len,
 				dtype = tf.float32
 			)
-			# outputs = tf.concat([outputs[0], outputs[1]], -1)
-			return self.FC(outputs[0] + outputs[1], gt_rnn_out, gt_seq_len, feature_rep[..., -1])
+			return self.FC(outputs, gt_rnn_out, gt_seq_len, feature_rep[..., -1])
 		else:
 			# current prob, time line, current state
 			rnn_prob = [tf.zeros([1])] + [tf.ones([1]) * -99999999 for _ in range(config.BEAM_WIDTH - 1)]
