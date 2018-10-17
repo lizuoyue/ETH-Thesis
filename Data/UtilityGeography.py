@@ -55,65 +55,6 @@ class BoundingBox(object):
 		return math.floor(px - self.c_px + self.c_rpx), math.floor(py - self.c_py + self.c_rpy)
 
 	def relativePixelToLonLat(self, x, y):
-		x = math.floor(self.c_px + x - self.c_rpx)
-		y = math.floor(self.c_py + y - self.c_rpy)
+		x = self.c_px + x - self.c_rpx
+		y = self.c_py + y - self.c_rpy
 		return pixelToLonLat(x, y, self.z)
-
-
-if __name__ == '__main__':
-	c_lon, c_lat = -122.04153, 37.36129
-	bbox = BoundingBox(c_lon, c_lat, 1200, 1200, 18, 2)
-	print(bbox.tc_lon, bbox.tc_lat)
-	r, d = bbox.relativePixelToLonLat(1200, 1200)
-	print(r, d)
-
-	import io, requests
-	from PIL import Image
-	import numpy as np
-	imgs = []
-	for c_lon, c_lat in [(bbox.tc_lon, bbox.tc_lat), (r, d)]:
-		while True:
-			try:
-				img_data = requests.get(
-					'https://maps.googleapis.com/maps/api/staticmap?' 					+ \
-					'maptype=%s&' 			% 'satellite' 								+ \
-					'center=%.7lf,%.7lf&' 	% (c_lat, c_lon) 							+ \
-					'zoom=%d&' 				% 18 										+ \
-					'size=%dx%d&' 			% (640, 640) 								+ \
-					'scale=%d&' 			% 2 										+ \
-					'format=%s&' 			% 'png32' 									+ \
-					'key=%s' 				% 'AIzaSyCyAEx-G-TOsUEq6me1nOpNhsA7OoROQWw'   \
-				).content
-				break
-			except:
-				print('Try again to get the image.')
-		pad, img_size = 40, 1200
-		img = Image.open(io.BytesIO(img_data))
-		img = np.array(img)[pad: img_size + pad, pad: img_size + pad, ...]
-		imgs.append(img)
-	Image.fromarray(imgs[0][600:, 600:, ...]).show()
-	Image.fromarray(imgs[1][:600, :600, ...]).show()
-
-	quit()
-	zoom = 18
-	patch_size = 2048
-	city_info = config.CITY_BUILDING['Chicago']
-	lon, lat = city_info['center']
-	dx, dy = city_info['step']
-	x_1, x_2 = city_info['xrange']
-	y_1, y_2 = city_info['yrange']
-	if False:
-		px1, py1 = lonLatToPixel(lon, lat, zoom)
-		lon_n, lat_n = pixelToLonLat(px1 + patch_size, py1 + patch_size, zoom)
-		print(lon_n - lon, lat_n - lat)
-	else:
-		for x in range(x_1, x_2):
-			for y in range(y_1, y_2):
-				if True:
-					print('%lf,%lf' % (lat + dy * y, lon + dx * x))
-				else:
-					px1, py1 = lonLatToPixel(lon + dx * x, lat + dy * y, zoom)
-					px2, py2 = lonLatToPixel(lon + dx * x + dx, lat + dy * y + dy, zoom)
-					print(x, y, px2 - px1, py2 - py1)
-
-
