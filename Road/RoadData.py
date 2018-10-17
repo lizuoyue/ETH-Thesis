@@ -290,7 +290,7 @@ def getData(img_id, seq_id, rotate = 0, show = False):
 			path.reverse()
 		else:
 			path = [s]
-		path_v = path_processing(g, path)
+		path_v = path_rm_colinear(g, path)
 		vertex_input = [vertex_pool[r][c] for c, r in path_v]
 		assert(len(vertex_input) > 0)
 		vertex_output = vertex_input[1:]
