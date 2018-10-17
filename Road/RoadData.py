@@ -141,19 +141,12 @@ def colinear(p0, p1, p2):
 	x2, y2 = p2[0] - p0[0], p2[1] - p0[1]
 	return abs(x1 * y2 - x2 * y1) < 1e-6
 
-def path_processing(g, path):
-	path_v = [g.v[idx] for idx in path]
-	# return path_v
-	# deg = [len(g.nb[idx]) for idx in path]
-	# rep = [path_v[k] == path_v[k - 1] for k in range(len(path))]
-	# lin = [colinear(path_v[k - 1], path_v[k], path_v[(k + 1) % len(path)]) for k in range(len(path))]
-	# new_path_v = [item for k, item in enumerate(path_v) if (not rep[k]) and (not (deg[k] == 2 and lin[k]))]
-	# if sum([y or (x == 2 and z) for x, y, z in zip(deg, rep, lin)]) > 0:
-	# 	print(path_v)
-	# 	print(new_path_v)
-	# 	input()
-	new_path_v = path_v[: max_seq_len]
-	return new_path_v
+def path_rm_colinear(g, path):
+	pv = [g.v[idx] for idx in path]
+	# flag = [True] + [colinear(p[i-1], p[i], p[i+1]) for i in range(1, len(path_v) - 1)] + [True]
+	# assert(len(flag) == len(pv))
+	# pv = [p for p, f in zip(pv, flag) if f]
+	return pv[: max_seq_len]
 
 def rotate1(w, h, x, y):
 	return h, w, h - y - 1, x

@@ -27,16 +27,17 @@ if __name__ == '__main__':
 	# time.sleep(10)
 	# quit()
 
-	n_val = 10
-	loss_cnn, loss_rnn = process('LossTrainChicago.out')
+	n = 2000
+	n_val = int(n / 100)
+	loss_cnn, loss_rnn = process('LossTrainChicago.out', n)
 	loss_cnn_val, loss_rnn_val = process('LossValidChicago.out', n_val)
 	l = len(loss_cnn)
 	l_val = len(loss_cnn_val)
 
-	plt.plot(range(l), loss_cnn, label = 'CNN')
-	plt.plot(range(l), loss_rnn, label = 'RNN')
 	plt.plot((np.array(range(l_val)) + n_val) * 100, loss_cnn_val, label = 'CNN Val')
 	plt.plot((np.array(range(l_val)) + n_val) * 100, loss_rnn_val, label = 'RNN Val')
+	plt.plot(range(l), loss_cnn, label = 'CNN')
+	plt.plot(range(l), loss_rnn, label = 'RNN')
 
 	plt.title('Training Loss')
 	# plt.ylim(ymin = 0, ymax = 1.5)
