@@ -1,4 +1,4 @@
-import math, sys, time, os, io, requests, json
+import math, sys, time, os, io, requests, json, glob
 import numpy as np
 from PIL import Image, ImageDraw
 from UtilityGeography import BoundingBox
@@ -137,17 +137,92 @@ class BuildingPool(object):
 if __name__ == '__main__':
 	# assert(len(sys.argv) == 2)
 	config = Config()
-	city_name = 'Chicago'#sys.argv[1]
-	city_info = config.CITY_IMAGE[city_name]
+	city_name = 'Sunnyvale'#sys.argv[1]
+	city_info = config.CITY_INFO[city_name]
+	dx, dy = city_info['b_step']
+	bw, bh = city_info['b_size']
+	x1, x2 = city_info['b_x_range']
+	y1, y2 = city_info['b_y_range']
 
-	keys = [line.strip() for line in open('GoogleMapsAPIsKeys.txt').readlines()]
-	os.popen('mkdir Building%s' % city_name)
+	path = '%sBuilding' % city_name
+	if not os.path.exists(path):
+		os.popen('mkdir %s' % path)
+	else:
+		os.popen('rm -rf ./%s/*' % path)
 
 	p = BuildingPool()
-	d = np.load('BuildingList%s.npy' % city_name).item()
+	d = np.load('%sBuildingList.npy' % city_name).item()
 	for bid in d:
 		p.addBuilding(bid, d[bid])
 	p.sortB()
+
+	map_info = np.load('%sMapInfo.npy' % city_name).item()
+	map_list = [int(item.split('/')[-1].replace('.png', '')) for item in glob.glob('./%s/*' % city_name)]
+	map_list.sort()
+	for mid in map_list:
+		# info = map_info[mid]
+		# img = np.array(Image.open('./%s/%s.png' % (city_name, str(mid).zfill(6))))
+		# c_lat, c_lon = info['center']
+		# w, h = info['size']
+		# z, s = info['zoom'], info['scale']
+		# box = BoundingBox(c_lon, c_lat, (w - config.PAD * 2) * s, (h - config.PAD * 2) * s, z, s)
+		# seq = 0
+		# for x in range(x1, x2):
+		# 	for y in range(y1, y2):
+		# 		l, u = box.c_rpx + x * dx, box.c_rpy + y * dy
+		# 		r, d = l + bw, u + bh
+		# 		Image.fromarray(img[u: d, l: r, ...]).save(
+		# 			'./%sBuilding/%s%s.png' % (city_name, str(mid).zfill(6), str(seq).zfill(2))
+		# 		)
+		# 		minLon, maxLat = box.relativePixelToLonLat(l, u)
+		# 		maxLon, minLat = box.relativePixelToLonLat(r, d)
+		# 		tmp_clon = (minLon + maxLon) / 2
+		# 		tmp_clat = (minLat + maxLat) / 2
+		# 		tmp_box = BoundingBox(tmp_clon, tmp_clat, bw, bh, z, s)
+
+		# 		bids = p.findB(minLon, maxLon, minLat, maxLat)
+		# 		print(seq, minLon, maxLon, minLat, maxLat)
+		# 		ann_img = Image.new('P', (bw, bh), color = 0)
+		# 		draw = ImageDraw.Draw(ann_img)
+		# 		for bid in bids:
+		# 			b_poly = [tmp_box.lonLatToRelativePixel(x, y) for x, y in p.b[bid]]
+		# 			b_poly = clip_in_img(b_poly, w = bw, h = bh)
+		# 			draw.polygon(b_poly, outline = 255)
+		# 		ann_img.save('./%sBuilding/%s%sA.png' % (city_name, str(mid).zfill(6), str(seq).zfill(2)))
+		# 		seq += 1
+		info = map_info[mid]
+		img = np.array(Image.open('./%s/%s.png' % (city_name, str(mid).zfill(6))))
+		c_lat, c_lon = info['center']
+		w, h = info['size']
+		z, s = info['zoom'], info['scale']
+		box = BoundingBox(c_lon, c_lat, (w - config.PAD * 2) * s, (h - config.PAD * 2) * s, z, s)
+		seq = 0
+
+		minLon, maxLat = box.relativePixelToLonLat(0, 0)
+		maxLon, minLat = box.relativePixelToLonLat(1200, 1200)
+		# tmp_clon = (minLon + maxLon) / 2
+		# tmp_clat = (minLat + maxLat) / 2
+		# tmp_box = BoundingBox(tmp_clon, tmp_clat, bw, bh, z, s)
+
+		bids = p.findB(minLon, maxLon, minLat, maxLat)
+		print(seq, minLon, maxLon, minLat, maxLat)
+		ann_img = Image.new('P', (1200, 1200), color = 0)
+		draw = ImageDraw.Draw(ann_img)
+		for bid in bids:
+			b_poly = [box.lonLatToRelativePixel(x, y) for x, y in p.b[bid]]
+			if bid == 381485195:
+				print(p.b[bid])
+				print(b_poly)
+			# print(b_poly)
+			# b_poly = clip_in_img(b_poly, w = bw, h = bh)
+			draw.polygon(b_poly, outline = 255)
+		ann_img.save('./%s%sA.png' % (city_name, str(mid).zfill(6)))
+		seq += 1
+		quit()
+
+
+
+
 
 	cen_lon, cen_lat = city_info['center']
 	dx, dy = city_info['step']
@@ -185,16 +260,7 @@ if __name__ == '__main__':
 			box = BoundingBox(c_lon, c_lat, img_size, img_size, z, s)
 			minLon, maxLat = box.relativePixelToLonLat(0, 0)
 			maxLon, minLat = box.relativePixelToLonLat(img_size, img_size)
-			bids = p.findB(minLon, maxLon, minLat, maxLat)
-
-			img = Image.new('P', (img_size, img_size), color = 0)
-			draw = ImageDraw.Draw(img)
-			for bid in bids:
-				b_poly = [box.lonLatToRelativePixel(x, y) for x, y in p.b[bid]]
-				b_poly = clip_in_img(b_poly, w = img_size, h = img_size)
-				draw.polygon(b_poly, outline = 255)
-			img.show()
-			quit()
+			
 
 			# minLon, maxLat = box.relativePixelToLonLat(-img_size, -img_size)
 			# maxLon, minLat = box.relativePixelToLonLat(2 * img_size, 2 * img_size)

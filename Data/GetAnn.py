@@ -6,9 +6,7 @@ import os, sys, time, requests, math, traceback
 config = Config.Config()
 
 class Constructor(object):
-	def __init__(self, bnv_range, city_name):
-		assert(bnv_range[0] >= 3)
-		assert(bnv_range[0] <= bnv_range[1])
+	def __init__(self, city_name):
 		self.file_b = '%sBuildingList.npy' % city_name
 		self.file_r = '%sRoadList.npy' % city_name
 		self.road, self.building = {}, {}
@@ -16,7 +14,6 @@ class Constructor(object):
 			self.loadBuildingList()
 		if os.path.exists(self.file_r):
 			self.loadRoadList()
-		self.bnv_range = bnv_range
 		self.city_name = city_name
 		return
 
@@ -127,13 +124,12 @@ class Constructor(object):
 								d[k] = v
 					if 'building' in d:
 						node_list = node_list[: -1]
-						if len(node_list) >= self.bnv_range[0] and len(node_list) <= self.bnv_range[1]:
-							bid = int(item.attrib.get('id'))
-							if bid in self.building:
-								assert(len(self.building[bid]) == len(node_list))
-							else:
-								if bid not in hole:
-									self.building[bid] = node_list
+						bid = int(item.attrib.get('id'))
+						if bid in self.building:
+							assert(len(self.building[bid]) == len(node_list))
+						else:
+							if bid not in hole:
+								self.building[bid] = node_list
 		return
 
 	def addRoad(self, osm):
@@ -196,5 +192,5 @@ class Constructor(object):
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
-	objCons = Constructor(config.BNV_RANGE, city_name)
+	objCons = Constructor(city_name)
 	objCons.batchAdd(config.CITY_INFO[city_name])

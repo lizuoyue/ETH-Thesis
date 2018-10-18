@@ -5,7 +5,6 @@ class Config(object):
 		self.PAD = 20
 		self.OSM_LON_STEP = 0.024
 		self.OSM_LAT_STEP = 0.016
-		self.BNV_RANGE = (4, 20)
 		#####################
 		self.CITY_INFO = {
 			'Sunnyvale': {
@@ -35,6 +34,10 @@ class Config(object):
 				],
 				'map_zoom': 18,
 				'map_scale': 2,
-				'map_size': (600, 600) # (Width 1~600, Height 1~600)
+				'map_size': (600, 600), # (Width 1~600, Height 1~600)
+				'b_size': (300, 300),
+				'b_step': (150, 150),
+				'b_x_range': (-2, 2),
+				'b_y_range': (-2, 2),
 			}
 		}

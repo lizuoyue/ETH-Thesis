@@ -1,2 +1,4 @@
 # How to download dataset
-* GetMap.py
+1. GetMap.py
+2. GetAnn.py
+3. GetBuilding.py / GetRoad.py
