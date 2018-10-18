@@ -186,8 +186,9 @@ if __name__ == '__main__':
 			# Test
 			if i % 1 == choose_test:
 				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
-				if i < 45 or i > 45:
-					continue
+				# if i < 45 or i > 45:
+				# 	continue
+				print(i)
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
 
 				path = 'test_res%s/' % city_name
