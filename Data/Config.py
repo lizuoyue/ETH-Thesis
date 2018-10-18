@@ -3,6 +3,9 @@ class Config(object):
 		### DO NOT MODIFY ###
 		self.TILE_SIZE = 256
 		self.PAD = 20
+		self.OSM_LON_STEP = 0.024
+		self.OSM_LAT_STEP = 0.016
+		self.BNV_RANGE = (4, 20)
 		#####################
 		self.CITY_INFO = {
 			'Sunnyvale': {
@@ -33,6 +36,5 @@ class Config(object):
 				'map_zoom': 18,
 				'map_scale': 2,
 				'map_size': (600, 600) # (Width 1~600, Height 1~600)
-
 			}
 		}
