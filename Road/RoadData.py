@@ -426,11 +426,12 @@ def getAllTerminal(hmb, hmv):
 	for i in range(len(peaks_with_score)):
 		x1, y1, s1 = peaks_with_score[i]
 		peaks_map[y1, x1] = 1
-		for j in range(len(peaks_with_score)):
-			if j == i:
-				continue
+		for j in range(i + 1, len(peaks_with_score)):
 			x2, y2, _ = peaks_with_score[j]
-			allTerminal.append(np.array([np.array(vertex_pool[y1][x1]), np.array(vertex_pool[y2][x2])]))
+			allTerminal.append((
+				np.array([np.array(vertex_pool[y1][x1]), np.array(vertex_pool[y2][x2])]),
+				np.array([np.array(vertex_pool[y2][x2]), np.array(vertex_pool[y1][x1])])
+			))
 			indices.append((i, j))
 
 			temp = Image.new('P', (w, h), color = 0)

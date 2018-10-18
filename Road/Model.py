@@ -180,7 +180,7 @@ class Model(object):
 			rnn_hmap = [tf.zeros([785, 1]) for _ in range(config.BEAM_WIDTH)]
 
 			# beam search
-			for i in range(1, 5):#self.max_num_vertices + 1):
+			for i in range(1, self.max_num_vertices + 1):
 				prob, tmln, stat, hmap = [], [], [[[], []] for item in self.lstm_out_channel], []
 				for j in range(config.BEAM_WIDTH):
 					prob_last = tf.tile(rnn_prob[j], [config.BEAM_WIDTH_2])
@@ -223,7 +223,7 @@ class Model(object):
 					rnn_stat[j] = tuple([tf.contrib.rnn.LSTMStateTuple(c = item[0][j], h = item[1][j]) for item in stat])
 					rnn_hmap[j] = hmap[j]
 
-			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1]), tf.transpose(tf.stack(rnn_hmap, 0), [0, 2, 1])
+			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1]), tf.transpose(tf.stack(rnn_hmap, 0), [0, 2, 1]), rnn_prob
 
 			### Full Search ###
 			# # current prob, time line, current state
@@ -322,8 +322,8 @@ class Model(object):
 		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
 
 		#
-		pred_v_out, prob_res = self.RNN(feature, terminal, reuse = True)
-		return pred_v_out, prob_res
+		pred_v_out, prob_res, rnn_prob = self.RNN(feature, terminal, reuse = True)
+		return pred_v_out, prob_res, rnn_prob
 
 	def predict_path_tmp(self, ff, tt, indices):
 		#
