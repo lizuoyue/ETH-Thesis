@@ -8,6 +8,7 @@ class Config(object):
 		#####################
 		self.CITY_INFO = {
 			'Sunnyvale': {
+				'city_name': 'Sunnyvale',
 				'map_area': [ # (Lat, Lon)
 					(37.3465, -121.9413),
 					(37.3547, -121.9461),
@@ -39,5 +40,6 @@ class Config(object):
 				'b_step': (150, 150),
 				'b_x_range': (-2, 2),
 				'b_y_range': (-2, 2),
+				'val_test': lambda lon, lat: 0 if lon >= -122.1142 else (1 if lat >= 37.3967 else 2)# 0,1,2 - train,val,test
 			}
 		}

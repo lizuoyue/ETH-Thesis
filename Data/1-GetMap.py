@@ -56,12 +56,10 @@ def DownloadMap(city_name, city_info):
 			if img_valid[y, x] > 128:
 				coo_list.append((lat, lon))
 				draw.rectangle([x - 1, y - 1, x + 1, y + 1], fill = 255, outline = 255)
-		img.save('Temp%s.png' % city_name)
+		img.save('%sTemp.png' % city_name)
 
 	if not os.path.exists(city_name):
-		os.popen('mkdir %s' % city_name)
-	else:
-		os.popen('rm -rf ./%s/*' % city_name)
+		os.popen('mkdir %sMap' % city_name)
 
 	pad = config.PAD * s
 	d = {}
@@ -86,7 +84,7 @@ def DownloadMap(city_name, city_info):
 		d[seq] = {'center': (c_lat, c_lon), 'zoom': z, 'size': (wg + config.PAD * 2, hg + config.PAD * 2), 'scale': s}
 		img = Image.open(io.BytesIO(img_data))
 		img = np.array(img)[pad: h + pad, pad: w + pad, ...]
-		Image.fromarray(img).save('%s/%s.png' % (city_name, str(seq).zfill(6)))
+		Image.fromarray(img).save('%sMap/%s.png' % (city_name, str(seq).zfill(6)))
 		print(seq, len(coo_list))
 		np.save('%sMapInfo.npy' % city_name, d)
 	return

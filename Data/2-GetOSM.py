@@ -10,10 +10,10 @@ class Constructor(object):
 		self.file_b = '%sBuildingList.npy' % city_name
 		self.file_r = '%sRoadList.npy' % city_name
 		self.road, self.building = {}, {}
-		if os.path.exists(self.file_b):
-			self.loadBuildingList()
-		if os.path.exists(self.file_r):
-			self.loadRoadList()
+		# if os.path.exists(self.file_b):
+		# 	self.loadBuildingList()
+		# if os.path.exists(self.file_r):
+		# 	self.loadRoadList()
 		self.city_name = city_name
 		return
 
@@ -61,9 +61,7 @@ class Constructor(object):
 			if bid in self.building:
 				assert(len(self.building[bid]) == len(d[bid]))
 			else:
-				building = d[bid]
-				if len(building) >= self.num_vertices_range[0] and len(building) <= self.num_vertices_range[1]:
-					self.building[bid] = building
+				self.building[bid] = d[bid]
 		self.printBuildingList()
 		return
 
@@ -90,7 +88,8 @@ class Constructor(object):
 
 	def addBuilding(self, osm):
 		node = {}
-		hole = {}
+		hole = set()
+		maybe = set()
 		for item in osm:
 			if item.tag == 'node':
 				id_str = item.attrib.get('id')
@@ -100,12 +99,22 @@ class Constructor(object):
 					node[int(id_str)] = (float(lon), float(lat))
 				continue
 			if item.tag == 'relation':
+				d = {}
+				for sub_item in item:
+					if sub_item.tag == 'tag':
+						k = sub_item.attrib.get('k')
+						v = sub_item.attrib.get('v')
+						if k and v:
+							d[k] = v
 				for sub_item in item:
 					if sub_item.tag == 'member':
 						ref = sub_item.attrib.get('ref')
 						role = sub_item.attrib.get('role')
 						if ref and role == 'inner':
-							hole[int(ref)] = None
+							hole.add(int(ref))
+						if 'building' in d and d['building'] != 'no':
+							if ref and role == 'outer':
+								maybe.add(int(ref))
 		for item in osm:
 			if item.tag == 'way':
 				if item.attrib.get('visible') == 'true':
@@ -122,9 +131,9 @@ class Constructor(object):
 							v = sub_item.attrib.get('v')
 							if k and v:
 								d[k] = v
-					if 'building' in d:
+					bid = int(item.attrib.get('id'))
+					if ('building' in d and d['building'] != 'no') or (bid in maybe):
 						node_list = node_list[: -1]
-						bid = int(item.attrib.get('id'))
 						if bid in self.building:
 							assert(len(self.building[bid]) == len(node_list))
 						else:
@@ -165,7 +174,7 @@ class Constructor(object):
 							self.road[rid] = node_list
 		return
 
-	def batchAdd(self, city_info):
+	def batchAdd(self, city_name, city_info):
 		city_poly = city_info['map_area']
 		poly = np.array(city_poly)
 		minlat, maxlat = poly[:, 0].min(), poly[:, 0].max()
@@ -176,12 +185,19 @@ class Constructor(object):
 		for x in range(nx):
 			for y in range(ny):
 				print('Step', x, nx, y, ny)
-				osm = self.getOSM(
-					left  = minlon + dx * x,
-					up    = maxlat - dy * y,
-					right = minlon + dx * x + dx,
-					down  = maxlat - dy * y - dy,
-				)
+				filename = './%sOSM/%d_%d.osm' % (city_name, x, y)
+				if os.path.exists(filename):
+					osm = ET.parse(filename).getroot()
+				else:
+					osm = self.getOSM(
+						left  = minlon + dx * x,
+						up    = maxlat - dy * y,
+						right = minlon + dx * x + dx,
+						down  = maxlat - dy * y - dy,
+					)
+					osm_str = ET.tostring(osm, pretty_print = True)
+					with open(filename, 'wb') as f:
+						f.write(osm_str)
 				self.addBuilding(osm)
 				self.addRoad(osm)
 				self.printBuildingList()
@@ -193,4 +209,6 @@ if __name__ == '__main__':
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
 	objCons = Constructor(city_name)
-	objCons.batchAdd(config.CITY_INFO[city_name])
+	if not os.path.exists(city_name + 'OSM'):
+		os.popen('mkdir %sOSM' % city_name)
+	objCons.batchAdd(city_name, config.CITY_INFO[city_name])

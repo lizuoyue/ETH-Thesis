@@ -50,9 +50,12 @@ class BoundingBox(object):
 		self.c_px, self.c_py = lonLatToPixel(c_lon, c_lat, self.z)
 		self.tc_lon, self.tc_lat = self.relativePixelToLonLat(self.c_rpx, self.c_rpy)
 
-	def lonLatToRelativePixel(self, lon, lat):
+	def lonLatToRelativePixel(self, lon, lat, int_res = True):
 		px, py = lonLatToPixel(lon, lat, self.z, 'float')
-		return math.floor(px - self.c_px + self.c_rpx), math.floor(py - self.c_py + self.c_rpy)
+		if int_res:
+			return math.floor(px - self.c_px + self.c_rpx), math.floor(py - self.c_py + self.c_rpy)
+		else:
+			return px - self.c_px + self.c_rpx, py - self.c_py + self.c_rpy
 
 	def relativePixelToLonLat(self, x, y):
 		x = self.c_px + x - self.c_rpx
