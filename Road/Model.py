@@ -81,10 +81,10 @@ class Model(object):
 			gt_boundary       : [batch_size, height, width, 1]
 			gt_vertices       : [batch_size, height, width, 1]
 		"""
-		# resnet_result = ResNetV1_50('ResNetV1_50', img, reuse)
-		# skip_feature = SkipFeatureResNet('SkipFeatureResNet', resnet_result, reuse)
-		vgg_result = VGG19('VGG19', img, reuse = reuse)
-		skip_feature = SkipFeature('SkipFeature', vgg_result, reuse = reuse)
+		resnet_result = ResNetV1_50('ResNetV1_50', img, reuse)
+		skip_feature = SkipFeatureResNet('SkipFeatureResNet', resnet_result, reuse)
+		# vgg_result = VGG19('VGG19', img, reuse = reuse)
+		# skip_feature = SkipFeature('SkipFeature', vgg_result, reuse = reuse)
 		bb, vv = Mask('Mask_1', skip_feature, reuse = reuse)
 		b_prob = [tf.nn.softmax(bb)[..., 0: 1]]
 		v_prob = [tf.nn.softmax(bb)[..., 0: 1]]
