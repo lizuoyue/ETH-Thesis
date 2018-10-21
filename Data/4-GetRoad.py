@@ -150,7 +150,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	map_box = BoundingBox(c_lon, c_lat, (w - config.PAD * 2) * s, (h - config.PAD * 2) * s, z, s)
 	for x in range(x1, x2):
 		for y in range(y1, y2):
-			l, u = map_box.c_rpx + x * dx, map_box.c_rpy + y * dy
+			l, u = map_box.c_rpx + x * dx - int(bw / 2), map_box.c_rpy + y * dy - int(bh / 2)
 			r, d = l + bw, u + bh
 			print(l, u, r, d)
 			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sRoad/%s.png' % (city_name, str(patch_seq).zfill(6)))
@@ -295,6 +295,7 @@ if __name__ == '__main__':
 		result[idx]['annotations'].extend(roads)
 		if mid >= 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
+		quit()
 	saveJSON(result, city_name)
 
 
