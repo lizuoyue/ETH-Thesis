@@ -138,6 +138,12 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	w, h = info['size']
 	z, s = info['zoom'], info['scale']
 	idx = city_info['val_test'](c_lon, c_lat)
+	bsegs = [
+		(( 0,  0), ( 0, bh)),
+		(( 0, bh), (bw, bh)),
+		((bw, bh), (bw,  0)),
+		((bw,  0), ( 0,  0)),
+	]
 
 	patches, roads = [], []
 	map_img = np.array(Image.open('./%sMap/%s.png' % (city_name, str(mid).zfill(6))))
