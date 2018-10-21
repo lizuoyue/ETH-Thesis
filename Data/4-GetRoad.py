@@ -28,7 +28,7 @@ def get_crossing(s1, s2):
 		[xb - xa, -(xd - xc)],
 		[yb - ya, -(yd - yc)]
 	])
-	delta = np.linalroad_pool.det(a)
+	delta = np.linag.det(a)
 	if np.fabs(delta) < 1e-6:
 		return None
 	c = np.matrix([
