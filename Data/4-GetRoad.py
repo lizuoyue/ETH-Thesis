@@ -141,7 +141,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 
 	patches, roads = [], []
 	map_img = np.array(Image.open('./%sMap/%s.png' % (city_name, str(mid).zfill(6))))
-	map_box = BoundingBox(c_lon, c_lat, (w - confiroad_pool.PAD * 2) * s, (h - confiroad_pool.PAD * 2) * s, z, s)
+	map_box = BoundingBox(c_lon, c_lat, (w - config.PAD * 2) * s, (h - config.PAD * 2) * s, z, s)
 	for x in range(x1, x2):
 		for y in range(y1, y2):
 			l, u = map_box.c_rpx + x * dx, map_box.c_rpy + y * dy
