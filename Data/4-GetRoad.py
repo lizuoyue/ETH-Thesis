@@ -179,8 +179,8 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 				grand_vids.remove(vid)
 				lon, lat = road_pool.v[vid]
 				xx1, yy1 = tmp_box.lonLatToRelativePixel(lon, lat)
-				assert(0 <= xx1 and xx1 < 600)
-				assert(0 <= yy1 and yy1 < 600)
+				assert(0 <= xx1 and xx1 < bw)
+				assert(0 <= yy1 and yy1 < bh)
 				tmp_id[vid] = len(road['segmentation']['v'])
 				road['segmentation']['v'].append((xx1, yy1))
 				for evid in road_pool.e[vid]:
@@ -195,8 +195,8 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 							assert(crs_res[0] == crs_res[1])
 						if crs_res:
 							xx2, yy2 = crs_res[0]
-							assert(0 <= xx2 and xx2 < 600)
-							assert(0 <= yy2 and yy2 < 600)
+							assert(0 <= xx2 and xx2 < bw)
+							assert(0 <= yy2 and yy2 < bh)
 							tmp_id[evid] = len(road['segmentation']['v'])
 							road['segmentation']['v'].append(crs_res[0])
 							road['segmentation']['e'].append((tmp_id[evid], tmp_id[vid]))
