@@ -140,16 +140,16 @@ def ResNetV1(scope, img, li_nb, reuse = None):
 			conv1 = tf.nn.relu(tf.layers.batch_normalization(conv1))		
 		conv2 = tf.layers.max_pooling2d(inputs = conv1, pool_size = 3, strides = 2, padding = 'same')
 		for i in range(li_nb[0]):
-			conv2 = BottleneckV1('Conv2_%d' % (i + 1), conv2, 256 , False, 1, reuse) 
+			conv2 = BottleneckV1('Conv2_%d' % (i + 1), conv2, 128, False , 1, reuse) 
 		conv3 = conv2
 		for i in range(li_nb[1]):
-			conv3 = BottleneckV1('Conv3_%d' % (i + 1), conv3, 512 , i == 0, 1, reuse)
+			conv3 = BottleneckV1('Conv3_%d' % (i + 1), conv3, 256, i == 0, 1, reuse)
 		conv4 = conv3
 		for i in range(li_nb[2]):
-			conv4 = BottleneckV1('Conv4_%d' % (i + 1), conv4, 1024, i == 0, 1, reuse)
+			conv4 = BottleneckV1('Conv4_%d' % (i + 1), conv4, 512, i == 0, 1, reuse)
 		conv5 = conv4
 		for i in range(li_nb[3]):
-			conv5 = BottleneckV1('Conv5_%d' % (i + 1), conv5, 2048, i == 0, 1, reuse)
+			conv5 = BottleneckV1('Conv5_%d' % (i + 1), conv5, 512, i == 0, 1, reuse)
 	return conv1, conv2, conv3, conv4, conv5
 
 def ResNetV1_50(scope, img, reuse = None):

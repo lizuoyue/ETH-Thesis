@@ -68,7 +68,7 @@ class HybridModel(object):
 		"""
 		# vgg16_res = VGG16(img, reuse)
 		# p3, p4, p5, p6 = PyramidAnchorFeature(vgg16_res, reuse)
-		resnet_res = ResNetV1_101('ResNetV1_101', img, reuse)
+		resnet_res = ResNetV1_50('ResNetV1_50', img, reuse)
 		p3, p4, p5, p6 = PyramidAnchorFeatureResNet('PyramidAnchorFeatureResNet', resnet_res, reuse)
 
 		p3_logit, p3_delta = SingleLayerFPN(p3, len(config.ANCHOR_RATIO), reuse)
