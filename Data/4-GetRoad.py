@@ -139,10 +139,10 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	z, s = info['zoom'], info['scale']
 	idx = city_info['val_test'](c_lon, c_lat)
 	bsegs = [
-		(( 0,  0), ( 0, bh)),
-		(( 0, bh), (bw, bh)),
-		((bw, bh), (bw,  0)),
-		((bw,  0), ( 0,  0)),
+		(( 0,  0), ( 0, bh - 1)),
+		(( 0, bh - 1), (bw - 1, bh - 1)),
+		((bw - 1, bh - 1), (bw - 1,  0)),
+		((bw - 1,  0), ( 0,  0)),
 	]
 
 	patches, roads = [], []
