@@ -149,7 +149,7 @@ def ResNetV1(scope, img, li_nb, reuse = None):
 			conv4 = BottleneckV1('Conv4_%d' % (i + 1), conv4, 512, i == 0, 1, reuse)
 		conv5 = conv4
 		for i in range(li_nb[3]):
-			conv5 = BottleneckV1('Conv5_%d' % (i + 1), conv5, 512, i == 0, 1, reuse)
+			conv5 = BottleneckV1('Conv5_%d' % (i + 1), conv5, 1024, i == 0, 1, reuse)
 	return conv1, conv2, conv3, conv4, conv5
 
 def ResNetV1_50(scope, img, reuse = None):
