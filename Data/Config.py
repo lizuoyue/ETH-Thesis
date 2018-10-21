@@ -3,8 +3,8 @@ class Config(object):
 		### DO NOT MODIFY ###
 		self.TILE_SIZE = 256
 		self.PAD = 20
-		self.OSM_LON_STEP = 0.024
-		self.OSM_LAT_STEP = 0.016
+		self.OSM_LON_STEP = 0.02
+		self.OSM_LAT_STEP = 0.01
 		#####################
 		self.CITY_INFO = {
 			'Sunnyvale': {
