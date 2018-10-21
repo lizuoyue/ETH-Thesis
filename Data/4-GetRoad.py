@@ -246,7 +246,7 @@ def saveJSON(result, city_name):
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
-	city_info = confiroad_pool.CITY_INFO[city_name]
+	city_info = config.CITY_INFO[city_name]
 
 	path = '%sRoad' % city_name
 	if not os.path.exists(path):
