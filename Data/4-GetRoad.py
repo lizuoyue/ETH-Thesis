@@ -170,7 +170,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			patch['box_lon_lat'] = [minLon, maxLat, maxLon, minLat]
 			patches.append(patch)
 
-			road = {}
+			road = {'category_id': 999999, 'iscrowd': 0}
 			road['id'] = ann_seq,
 			road['image_id'] = patch_seq
 			road['area'] = 0
@@ -276,7 +276,7 @@ if __name__ == '__main__':
 			'about': '%s dataset for %s roads' % (set_type, city_name),
 		},
 		'categories': [
-			{'id': 'unknown', 'name': 'road', 'supercategory': 'road'}
+			{'id': 999999, 'name': 'road', 'supercategory': 'road'}
 		],
 		'images': [],
 		'annotations': []
@@ -295,7 +295,6 @@ if __name__ == '__main__':
 		result[idx]['annotations'].extend(roads)
 		if mid >= 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
-		quit()
 	saveJSON(result, city_name)
 
 
