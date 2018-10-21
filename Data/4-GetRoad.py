@@ -28,7 +28,7 @@ def get_crossing(s1, s2):
 		[xb - xa, -(xd - xc)],
 		[yb - ya, -(yd - yc)]
 	])
-	delta = np.linag.det(a)
+	delta = np.linalg.det(a)
 	if np.fabs(delta) < 1e-6:
 		return None
 	c = np.matrix([
@@ -39,8 +39,8 @@ def get_crossing(s1, s2):
 		[xb - xa, xc - xa],
 		[yb - ya, yc - ya]
 	])
-	lamb = np.linag.det(c) / delta
-	miu = np.linag.det(d) / delta
+	lamb = np.linalg.det(c) / delta
+	miu = np.linalg.det(d) / delta
 	if lamb <= 1 and lamb >= 0 and miu >= 0 and miu <= 1:
 		x = xc + miu * (xd - xc)
 		y = yc + miu * (yd - yc)
