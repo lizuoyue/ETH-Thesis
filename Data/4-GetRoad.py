@@ -152,7 +152,6 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 		for y in range(y1, y2):
 			l, u = map_box.c_rpx + x * dx - int(bw / 2), map_box.c_rpy + y * dy - int(bh / 2)
 			r, d = l + bw, u + bh
-			print(l, u, r, d)
 			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sRoad/%s.png' % (city_name, str(patch_seq).zfill(6)))
 			minLon, maxLat = map_box.relativePixelToLonLat(l, u)
 			maxLon, minLat = map_box.relativePixelToLonLat(r, d)
