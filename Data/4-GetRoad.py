@@ -39,8 +39,8 @@ def get_crossing(s1, s2):
 		[xb - xa, xc - xa],
 		[yb - ya, yc - ya]
 	])
-	lamb = np.linalroad_pool.det(c) / delta
-	miu = np.linalroad_pool.det(d) / delta
+	lamb = np.linag.det(c) / delta
+	miu = np.linag.det(d) / delta
 	if lamb <= 1 and lamb >= 0 and miu >= 0 and miu <= 1:
 		x = xc + miu * (xd - xc)
 		y = yc + miu * (yd - yc)
