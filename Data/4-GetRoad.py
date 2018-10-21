@@ -171,8 +171,8 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			road['segmentation'] = {'v': [], 'e': []}
 
 			vids = road_pool.findV(minLon, maxLon, minLat, maxLat)
-			minLon, maxLat = tmp_box.relativePixelToLonLat(l - bw, u + bh)
-			maxLon, minLat = tmp_box.relativePixelToLonLat(r + bw, d - bh)
+			minLon, maxLat = tmp_box.relativePixelToLonLat(l - bw, u - bh)
+			maxLon, minLat = tmp_box.relativePixelToLonLat(r + bw, d + bh)
 			grand_vids = road_pool.findV(minLon, maxLon, minLat, maxLat)
 			tmp_id = {}
 			for vid in vids:
