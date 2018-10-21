@@ -152,7 +152,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 		for y in range(y1, y2):
 			l, u = map_box.c_rpx + x * dx, map_box.c_rpy + y * dy
 			r, d = l + bw, u + bh
-			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sBuilding/%s.png' % (city_name, str(patch_seq).zfill(6)))
+			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sRoad/%s.png' % (city_name, str(patch_seq).zfill(6)))
 			minLon, maxLat = map_box.relativePixelToLonLat(l, u)
 			maxLon, minLat = map_box.relativePixelToLonLat(r, d)
 			tmp_clon, tmp_clat = (minLon + maxLon) / 2, (minLat + maxLat) / 2
@@ -245,7 +245,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 
 def saveJSON(result, city_name):
 	for sub_res, set_type in zip(result, ['Train', 'Val', 'Test']):
-		with open('%sBuilding%s.json' % (city_name, set_type), 'w') as outfile:
+		with open('%sRoad%s.json' % (city_name, set_type), 'w') as outfile:
 			json.dump(sub_res, outfile, cls = NumpyEncoder)
 	return
 
@@ -289,9 +289,9 @@ if __name__ == '__main__':
 		print('Map ID:', mid)
 		patch_seq = sum([len(item['images']) for item in result])
 		ann_seq = sum([len(item['annotations']) for item in result])
-		idx, patches, buildings = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
+		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
-		result[idx]['annotations'].extend(buildings)
+		result[idx]['annotations'].extend(roads)
 		if mid >= 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
