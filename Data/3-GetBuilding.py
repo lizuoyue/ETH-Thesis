@@ -260,7 +260,6 @@ if __name__ == '__main__':
 		idx, patches, buildings = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(buildings)
-		quit()
 		if mid >= 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
