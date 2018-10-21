@@ -321,10 +321,10 @@ class HybridModel(object):
 		#
 		crop_info = tf.reshape(pp, [-1, 5])
 		_, conv2, conv3, conv4, conv5 = resnet_res
-		conv2 = tf.reshape(conv2, [-1, config.AREA_SIZE_4 [0], config.AREA_SIZE_4 [1], 256])
-		conv3 = tf.reshape(conv3, [-1, config.AREA_SIZE_8 [0], config.AREA_SIZE_8 [1], 512])
-		conv4 = tf.reshape(conv4, [-1, config.AREA_SIZE_16[0], config.AREA_SIZE_16[1], 1024])
-		conv5 = tf.reshape(conv5, [-1, config.AREA_SIZE_32[0], config.AREA_SIZE_32[1], 2048])
+		conv2 = tf.reshape(conv2, [-1, config.AREA_SIZE_4 [0], config.AREA_SIZE_4 [1], 128])
+		conv3 = tf.reshape(conv3, [-1, config.AREA_SIZE_8 [0], config.AREA_SIZE_8 [1], 256])
+		conv4 = tf.reshape(conv4, [-1, config.AREA_SIZE_16[0], config.AREA_SIZE_16[1], 512])
+		conv5 = tf.reshape(conv5, [-1, config.AREA_SIZE_32[0], config.AREA_SIZE_32[1], 1024])
 		resnet_res = (None, conv2, conv3, conv4, conv5)
 
 		#
