@@ -45,5 +45,27 @@ class Config(object):
 				'r_x_range': (-2, 2),
 				'r_y_range': (-2, 2),
 				'val_test': lambda lon, lat: 0 if lon >= -122.1142 else (1 if lat >= 37.3967 else 2) # 0,1,2 - train,val,test
+			},
+			'Chicago': {
+				'city_name': 'Chicago',
+				'map_area': [ # (Lat, Lon)
+					(41.9800, -87.7300),
+					(41.7500, -87.7300),
+					(41.7500, -87.5600),
+					(41.8000, -87.6600),
+					(41.9800, -87.6600)
+				],
+				'map_zoom': 18,
+				'map_scale': 2,
+				'map_size': (600, 600), # (Width 1~600, Height 1~600)
+				'b_size': (300, 300),
+				'b_step': (150, 150),
+				'b_x_range': (-2, 2),
+				'b_y_range': (-2, 2),
+				'r_size': (600, 600),
+				'r_step': (150, 150),
+				'r_x_range': (-2, 2),
+				'r_y_range': (-2, 2),
+				'val_test': lambda lon, lat: 0 if lon >= -122.1142 else (1 if lat >= 37.3967 else 2) # 0,1,2 - train,val,test
 			}
 		}
