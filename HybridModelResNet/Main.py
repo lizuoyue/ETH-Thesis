@@ -8,6 +8,19 @@ from UtilityBoxAnchor import *
 
 config = Config()
 
+def preserve(filename, num_lines):
+	f = open(filename, 'r')
+	lines = f.readlines()
+	f.close()
+	f = open(filename, 'w')
+	for line in lines:
+		n = int(line.strip().split(',')[0].split()[-1])
+		if n >= num_lines:
+			break
+		f.write(line)
+	f.close()
+	return
+
 if __name__ == '__main__':
 	assert(len(sys.argv) == 1 or len(sys.argv) == 2)
 
@@ -60,21 +73,27 @@ if __name__ == '__main__':
 	# Launch graph
 	with tf.Session() as sess:
 		# Create loggers
-		train_loss = open('./LossTrain.out', 'w')
-		valid_loss = open('./LossValid.out', 'w')
 		train_writer = Logger('./Log/train/')
 		valid_writer = Logger('./Log/valid/')
 
 		# Restore weights
 		if len(sys.argv) == 2 and sys.argv[1] == 'restore':
+			print('Restore pre-trained weights.')
 			files = glob.glob('./Model/Model-*.ckpt.meta')
 			files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
+			files.sort()
 			num, model_path = files[-1]
 			saver.restore(sess, model_path.replace('.meta', ''))
 			iter_obj = range(num + 1, config.NUM_ITER)
+			preserve('./LossTrain.out', num + 1)
+			preserve('./LossValid.out', num + 1)
+			train_loss = open('./LossTrain.out', 'a')
+			valid_loss = open('./LossValid.out', 'a')
 		else:
 			sess.run(init)
 			iter_obj = range(config.NUM_ITER)
+			train_loss = open('./LossTrain.out', 'w')
+			valid_loss = open('./LossValid.out', 'w')
 
 		# Main loop
 		for i in iter_obj:
