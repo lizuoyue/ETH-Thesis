@@ -119,6 +119,7 @@ class RoadPool(object):
 		minLatIdx = self._findV_GQ('lat', minLat)
 		maxLatIdx = self._findV_LQ('lat', maxLat)
 		assert(minLonIdx <= maxLonIdx)
+		print(self.minVal['lat'], self.maxVal['lat'])
 		print(minLat, maxLat)
 		print(minLatIdx, maxLatIdx)
 		assert(minLatIdx <= maxLatIdx)
