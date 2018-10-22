@@ -84,7 +84,7 @@ class RoadPool(object):
 		if th <= self.minVal[coo_type]:
 			return 0
 		if th > self.maxVal[coo_type]:
-			return -1
+			return len(li)
 		l, r = 0, len(li) - 1
 		while l < r:
 			mid = int(math.floor((l + r) / 2))
@@ -119,7 +119,6 @@ class RoadPool(object):
 		minLatIdx = self._findV_GQ('lat', minLat)
 		maxLatIdx = self._findV_LQ('lat', maxLat)
 		assert(minLonIdx <= maxLonIdx)
-		print(minLatIdx, maxLatIdx)
 		assert(minLatIdx <= maxLatIdx)
 		if minLonIdx == -1 or maxLonIdx == -1 or minLatIdx == -1 or maxLatIdx == -1:
 			return set([])
