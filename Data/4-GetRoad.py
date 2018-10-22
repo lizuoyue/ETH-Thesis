@@ -119,6 +119,7 @@ class RoadPool(object):
 		minLatIdx = self._findV_GQ('lat', minLat)
 		maxLatIdx = self._findV_LQ('lat', maxLat)
 		assert(minLonIdx <= maxLonIdx)
+		print(minLatIdx, maxLatIdx)
 		assert(minLatIdx <= maxLatIdx)
 		if minLonIdx == -1 or maxLonIdx == -1 or minLatIdx == -1 or maxLatIdx == -1:
 			return set([])
@@ -286,6 +287,8 @@ if __name__ == '__main__':
 	map_list.sort()
 
 	for mid in map_list:
+		if mid < 174:
+			continue
 		print('Map ID:', mid)
 		patch_seq = sum([len(item['images']) for item in result])
 		ann_seq = sum([len(item['annotations']) for item in result])
