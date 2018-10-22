@@ -93,10 +93,13 @@ class BuildingPool(object):
 		return
 
 	def sortB(self):
+		self.bidSet = set(self.bbox.keys())
 		self.bSorted = {}
+		self.bSortedID = {}
 		for i, opt in enumerate(self.opt):
 			self.bSorted[opt] = [(item[i], bid) for bid, item in self.bbox.items()]
 			self.bSorted[opt].sort()
+			self.bSortedID[opt] = [item[1] for item in self.bSorted[opt]]
 		self.minVal = {opt: self.bSorted[opt][ 0][0] for opt in self.opt}
 		self.maxVal = {opt: self.bSorted[opt][-1][0] for opt in self.opt}
 		return
@@ -144,13 +147,13 @@ class BuildingPool(object):
 		minLonIdx = self._findB_L('r', minLon)
 		maxLatIdx = self._findB_G('d', maxLat)
 
-		maxLonSet = set([bid for _, bid in self.bSorted['l'][maxLonIdx:]])
-		minLatSet = set([bid for _, bid in self.bSorted['u'][:minLatIdx + 1]])
-		minLonSet = set([bid for _, bid in self.bSorted['r'][:minLonIdx + 1]])
-		maxLatSet = set([bid for _, bid in self.bSorted['d'][maxLatIdx:]])
-		to_remove = set().union(maxLonSet).union(minLatSet).union(minLonSet).union(maxLatSet)
+		res = self.bidSet \
+			.difference(self.bSortedID['l'][maxLonIdx:]) \
+			.difference(self.bSortedID['u'][:minLatIdx + 1]) \
+			.difference(self.bSortedID['r'][:minLonIdx + 1]) \
+			.difference(self.bSortedID['d'][maxLatIdx:]) \
 
-		return set([bid for bid in self.bbox if bid not in to_remove])
+		return res
 
 def cropMap(building_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	city_name = city_info['city_name']
@@ -172,7 +175,9 @@ def cropMap(building_pool, map_info, mid, city_info, patch_seq, ann_seq):
 		for y in range(y1, y2):
 			l, u = map_box.c_rpx + x * dx - int(bw / 2), map_box.c_rpy + y * dy - int(bh / 2)
 			r, d = l + bw, u + bh
-			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sBuilding/%s.png' % (city_name, str(patch_seq).zfill(6)))
+			patch_file = './%sPatch/%s.png' % (city_name, str(patch_seq).zfill(6))
+			if not os.path.exists(patch_file):
+				Image.fromarray(map_img[u: d, l: r, ...]).save(patch_file)
 			minLon, maxLat = map_box.relativePixelToLonLat(l, u)
 			maxLon, minLat = map_box.relativePixelToLonLat(r, d)
 			tmp_clon, tmp_clat = (minLon + maxLon) / 2, (minLat + maxLat) / 2
@@ -211,7 +216,7 @@ def cropMap(building_pool, map_info, mid, city_info, patch_seq, ann_seq):
 						buildings.append(building)
 						ann_seq += 1
 
-			ann_img.save('./%sBuilding/%sAnn.png' % (city_name, str(patch_seq).zfill(6)))
+			ann_img.save('./%sPatch/%sBuilding.png' % (city_name, str(patch_seq).zfill(6)))
 			patch_seq += 1
 
 	return idx, patches, buildings
@@ -227,7 +232,7 @@ if __name__ == '__main__':
 	city_name = sys.argv[1]
 	city_info = config.CITY_INFO[city_name]
 
-	path = '%sBuilding' % city_name
+	path = '%sPatch' % city_name
 	if not os.path.exists(path):
 		os.popen('mkdir %s' % path)
 

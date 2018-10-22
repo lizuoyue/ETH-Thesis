@@ -19,39 +19,68 @@ class NumpyEncoder(json.JSONEncoder):
 			return obj.tolist()
 		return json.JSONEncoder.default(self, obj)
 
-def get_crossing(s1, s2):
-	xa, ya = s1[0][0], s1[0][1]
-	xb, yb = s1[1][0], s1[1][1]
-	xc, yc = s2[0][0], s2[0][1]
-	xd, yd = s2[1][0], s2[1][1]
-	a = np.matrix([
-		[xb - xa, -(xd - xc)],
-		[yb - ya, -(yd - yc)]
-	])
-	delta = np.linalg.det(a)
-	if np.fabs(delta) < 1e-6:
-		return None
-	c = np.matrix([
-		[xc - xa, -(xd - xc)],
-		[yc - ya, -(yd - yc)]
-	])
-	d = np.matrix([
-		[xb - xa, xc - xa],
-		[yb - ya, yc - ya]
-	])
-	lamb = np.linalg.det(c) / delta
-	miu = np.linalg.det(d) / delta
-	if lamb <= 1 and lamb >= 0 and miu >= 0 and miu <= 1:
-		x = xc + miu * (xd - xc)
-		y = yc + miu * (yd - yc)
-		return (x, y)
-	else:
-		return None
+def area(polygon):
+	s = 0.0
+	for i in range(len(polygon)):
+		x1, y1 = polygon[i - 1]
+		x2, y2 = polygon[i]
+		s += (x1 * y2 - x2 * y1)
+	s /= 2.0
+	return s
+
+def clip(subjectPolygon, clipPolygon):
+	# both polygons should be clockwise/anti-clockwise
+	def inside(p):
+		return (cp2[0]-cp1[0])*(p[1]-cp1[1]) > (cp2[1]-cp1[1])*(p[0]-cp1[0])
+ 
+	def computeIntersection():
+		dc = [ cp1[0] - cp2[0], cp1[1] - cp2[1] ]
+		dp = [ s[0] - e[0], s[1] - e[1] ]
+		n1 = cp1[0] * cp2[1] - cp1[1] * cp2[0]
+		n2 = s[0] * e[1] - s[1] * e[0] 
+		n3 = 1.0 / (dc[0] * dp[1] - dc[1] * dp[0])
+		return [(n1*dp[0] - n2*dc[0]) * n3, (n1*dp[1] - n2*dc[1]) * n3]
+
+	if area(subjectPolygon) < 0:
+		subjectPolygon.reverse()
+	if area(clipPolygon) < 0:
+		clipPolygon.reverse()
+ 
+	outputList = subjectPolygon
+	cp1 = clipPolygon[-1]
+ 
+	for clipVertex in clipPolygon:
+		cp2 = clipVertex
+		inputList = outputList
+		outputList = []
+		if len(inputList) == 0:
+			return []
+		s = inputList[-1] 
+		for subjectVertex in inputList:
+			e = subjectVertex
+			if inside(e):
+				if not inside(s):
+					outputList.append(computeIntersection())
+				outputList.append(e)
+			elif inside(s):
+				outputList.append(computeIntersection())
+			s = e
+		cp1 = cp2
+	return outputList
+
+def clip_in_img(subjectPolygon, w, h):
+	clipPolygon = [(0, 0), (0, h - 1), (w - 1, h - 1), (w - 1, 0)]
+	subjectPolygon = [[x, -y] for x, y in subjectPolygon]
+	clipPolygon = [[x, -y] for x, y in clipPolygon]
+	res = clip(subjectPolygon, clipPolygon)
+	return [(round(x), round(-y)) for x, y in res]
 
 class RoadPool(object):
 	def __init__(self):
 		self.v = {}
-		self.e = {}
+		self.e = []
+		self.bbox = []
+		self.opt = ['l', 'u', 'r', 'd']
 
 	def addV(self, vid, info):
 		if vid in self.v:
@@ -61,29 +90,37 @@ class RoadPool(object):
 		return
 
 	def addE(self, vid1, vid2):
-		if vid1 in self.e:
-			self.e[vid1].add(vid2)
-		else:
-			self.e[vid1] = set([vid2])
+		lon1, lat1 = self.v[vid1]
+		lon2, lat2 = self.v[vid2]
+		self.e.append((vid1, vid2))
+		self.bbox.append([
+			min(lon1, lon2),
+			max(lat1, lat2),
+			max(lon1, lon2),
+			min(lat1, lat2)
+		])
 		return
 
 	def sortV(self):
-		self.vSorted = {}
-		self.vSorted['lon'] = [(lon, vid) for vid, (lon, _) in self.v.items()]
-		self.vSorted['lon'].sort()
-		self.vSorted['lat'] = [(lat, vid) for vid, (_, lat) in self.v.items()]
-		self.vSorted['lat'].sort()
-		self.minVal = {'lon': self.vSorted['lon'][ 0][0], 'lat': self.vSorted['lat'][ 0][0]}
-		self.maxVal = {'lon': self.vSorted['lon'][-1][0], 'lat': self.vSorted['lat'][-1][0]}
+		assert(len(self.e) == len(self.bbox))
+		self.bidSet = set([i for i in range(len(self.e))])
+		self.bSorted = {}
+		self.bSortedID = {}
+		for i, opt in enumerate(self.opt):
+			self.bSorted[opt] = [(item[i], bid) for bid, item in enumerate(self.bbox)]
+			self.bSorted[opt].sort()
+			self.bSortedID[opt] = [item[1] for item in self.bSorted[opt]]
+		self.minVal = {opt: self.bSorted[opt][ 0][0] for opt in self.opt}
+		self.maxVal = {opt: self.bSorted[opt][-1][0] for opt in self.opt}
 		return
 
-	def _findV_GQ(self, coo_type, th):
-		# return index in self.vSorted
-		# find the one with min idx whose val >= th
-		li = self.vSorted[coo_type]
-		if th <= self.minVal[coo_type]:
+	def _findB_G(self, opt, th):
+		# return index in self.bSorted
+		# find the first one (with min idx) whose val > th
+		li = self.bSorted[opt]
+		if th < self.minVal[opt]:
 			return 0
-		if th > self.maxVal[coo_type]:
+		if th >= self.maxVal[opt]:
 			return len(li)
 		l, r = 0, len(li) - 1
 		while l < r:
@@ -94,13 +131,13 @@ class RoadPool(object):
 				l = mid + 1
 		return l
 
-	def _findV_LQ(self, coo_type, th):
-		# return index in self.vSorted
-		# find the one with max idx whose val <= th
-		li = self.vSorted[coo_type]
-		if th < self.minVal[coo_type]:
+	def _findB_L(self, opt, th):
+		# return index in self.bSorted
+		# find the last one (with max idx) whose val < th
+		li = self.bSorted[opt]
+		if th <= self.minVal[opt]:
 			return -1
-		if th >= self.maxVal[coo_type]:
+		if th > self.maxVal[opt]:
 			return len(li) - 1
 		l, r = 0, len(li) - 1
 		while l < r:
@@ -114,20 +151,19 @@ class RoadPool(object):
 	def findV(self, minLon, maxLon, minLat, maxLat):
 		assert(minLon <= maxLon)
 		assert(minLat <= maxLat)
-		minLonIdx = self._findV_GQ('lon', minLon)
-		maxLonIdx = self._findV_LQ('lon', maxLon)
-		minLatIdx = self._findV_GQ('lat', minLat)
-		maxLatIdx = self._findV_LQ('lat', maxLat)
-		assert(minLonIdx <= maxLonIdx)
-		print(self.minVal['lat'], self.maxVal['lat'])
-		print(minLat, maxLat)
-		print(minLatIdx, maxLatIdx)
-		assert(minLatIdx <= maxLatIdx)
-		if minLonIdx == -1 or maxLonIdx == -1 or minLatIdx == -1 or maxLatIdx == -1:
-			return set([])
-		set1 = set([vid for _, vid in self.vSorted['lon'][minLonIdx: maxLonIdx + 1]])
-		set2 = set([vid for _, vid in self.vSorted['lat'][minLatIdx: maxLatIdx + 1]])
-		return set1.intersection(set2)
+
+		maxLonIdx = self._findB_G('l', maxLon)
+		minLatIdx = self._findB_L('u', minLat)
+		minLonIdx = self._findB_L('r', minLon)
+		maxLatIdx = self._findB_G('d', maxLat)
+
+		res = self.bidSet \
+			.difference(self.bSortedID['l'][maxLonIdx:]) \
+			.difference(self.bSortedID['u'][:minLatIdx + 1]) \
+			.difference(self.bSortedID['r'][:minLonIdx + 1]) \
+			.difference(self.bSortedID['d'][maxLatIdx:]) \
+
+		return res
 
 def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	city_name = city_info['city_name']
@@ -141,12 +177,6 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	w, h = info['size']
 	z, s = info['zoom'], info['scale']
 	idx = city_info['val_test'](c_lon, c_lat)
-	bsegs = [
-		(( 0,  0), ( 0, bh - 1)),
-		(( 0, bh - 1), (bw - 1, bh - 1)),
-		((bw - 1, bh - 1), (bw - 1,  0)),
-		((bw - 1,  0), ( 0,  0)),
-	]
 
 	patches, roads = [], []
 	map_img = np.array(Image.open('./%sMap/%s.png' % (city_name, str(mid).zfill(6))))
@@ -155,7 +185,9 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 		for y in range(y1, y2):
 			l, u = map_box.c_rpx + x * dx - int(bw / 2), map_box.c_rpy + y * dy - int(bh / 2)
 			r, d = l + bw, u + bh
-			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sRoad/%s.png' % (city_name, str(patch_seq).zfill(6)))
+			patch_file = './%sPatch/%s.png' % (city_name, str(patch_seq).zfill(6))
+			if not os.path.exists(patch_file):
+				Image.fromarray(map_img[u: d, l: r, ...]).save(patch_file)
 			minLon, maxLat = map_box.relativePixelToLonLat(l, u)
 			maxLon, minLat = map_box.relativePixelToLonLat(r, d)
 			tmp_clon, tmp_clat = (minLon + maxLon) / 2, (minLat + maxLat) / 2
@@ -177,69 +209,46 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			road['image_id'] = patch_seq
 			road['area'] = 0
 			road['bbox'] = [0, 0, 0, 0]
-			road['segmentation'] = {'v': [], 'e': []}
 
-			vids = road_pool.findV(minLon, maxLon, minLat, maxLat)
-			minLon, maxLat = tmp_box.relativePixelToLonLat(l - bw, u - bh)
-			maxLon, minLat = tmp_box.relativePixelToLonLat(r + bw, d + bh)
-			grand_vids = road_pool.findV(minLon, maxLon, minLat, maxLat)
-			tmp_id = {}
-			for vid in vids:
-				grand_vids.remove(vid)
-				lon, lat = road_pool.v[vid]
-				xx1, yy1 = tmp_box.lonLatToRelativePixel(lon, lat)
-				assert(0 <= xx1 and xx1 < bw)
-				assert(0 <= yy1 and yy1 < bh)
-				tmp_id[vid] = len(road['segmentation']['v'])
-				road['segmentation']['v'].append((xx1, yy1))
-				for evid in road_pool.e[vid]:
-					if evid not in vids:
-						lon, lat = road_pool.v[evid]
-						xx2, yy2 = tmp_box.lonLatToRelativePixel(lon, lat)
-						crs_res = [get_crossing(((xx1, yy1), (xx2, yy2)), bseg) for bseg in bsegs]
-						crs_res = [(int(round(item[0])), int(round(item[1]))) for item in crs_res if item is not None]
-						crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
-						assert(len(crs_res) <= 2)
-						if len(crs_res) == 2:
-							assert(crs_res[0] == crs_res[1])
-						if crs_res:
-							xx2, yy2 = crs_res[0]
-							assert(0 <= xx2 and xx2 < bw)
-							assert(0 <= yy2 and yy2 < bh)
-							tmp_id[evid] = len(road['segmentation']['v'])
-							road['segmentation']['v'].append(crs_res[0])
-							road['segmentation']['e'].append((tmp_id[evid], tmp_id[vid]))
-			for vid in vids:
-				for evid in road_pool.e[vid]:
-					if vid in tmp_id and evid in tmp_id:
-						road['segmentation']['e'].append((tmp_id[vid], tmp_id[evid]))
+			eSet = set()
+			bids = road_pool.findV(minLon, maxLon, minLat, maxLat)
+			for bid in bids:
+				vid1, vid2 = road_pool.e[bid]
+				lon1, lat1 = road_pool.v[vid1]
+				lon2, lat2 = road_pool.v[vid2]
+				xx1, yy1 = tmp_box.lonLatToRelativePixel(lon1, lat1)
+				xx2, yy2 = tmp_box.lonLatToRelativePixel(lon2, lat2)
+				flag1 = 0 <= xx1 and xx1 < bw
+				flag2 = 0 <= yy1 and yy1 < bh
+				flag3 = 0 <= xx2 and xx2 < bw
+				flag4 = 0 <= yy2 and yy2 < bh
+				seg = [(xx1, yy1), (xx2, yy2)]
+				if flag1 and flag2 and flag3 and flag4:
+					res = seg
+				else:
+					res = clip_in_img(seg, bw, bh)
+				flag = [res[i] == res[i - 1] for i in range(len(res))]
+				res = [item for item, f in zip(res, flag) if not f]
+				if len(res) == 2:
+					res.sort()
+					eSet.add(tuple(res))
+				elif len(res) == 1:
+					res.append((xx2, yy2))
+					res.sort()
+					eSet.add(tuple(res))
+				else:
+					assert(len(res) == 0)
 
-			for vid in grand_vids:
-				lon, lat = road_pool.v[vid]
-				xx1, yy1 = tmp_box.lonLatToRelativePixel(lon, lat)
-				for evid in road_pool.e[vid]:
-					lon, lat = road_pool.v[evid]
-					xx2, yy2 = tmp_box.lonLatToRelativePixel(lon, lat)
-					crs_res = [get_crossing(((xx1, yy1), (xx2, yy2)), bseg) for bseg in bsegs]
-					crs_res = [(int(round(item[0])), int(round(item[1]))) for item in crs_res if item is not None]
-					crs_res = [item for item in crs_res if item != (xx1, yy1) and item != (xx2, yy2)]
-					crs_res = list(set(crs_res))
-					assert(len(crs_res) <= 2)
-					if len(crs_res) == 2:
-						id1 = len(road['segmentation']['v'])
-						road['segmentation']['v'].append(crs_res[0])
-						id2 = len(road['segmentation']['v'])
-						road['segmentation']['v'].append(crs_res[1])
-						road['segmentation']['e'].extend([(id1, id2), (id2, id1)])
+			road['segmentation'] = list(eSet)
 			roads.append(road)
 
 			ann_img = Image.new('P', (bw, bh), color = 255)
 			draw = ImageDraw.Draw(ann_img)
-			for xx, yy in road['segmentation']['v']:
-				draw.rectangle([xx-5,yy-5,xx+5,yy+5], fill = 0)
-			for id1, id2 in road['segmentation']['e']:
-				draw.line(road['segmentation']['v'][id1] + road['segmentation']['v'][id2], fill = 0, width = 5)
-			ann_img.save('./%sRoad/%sAnn.png' % (city_name, str(patch_seq).zfill(6)))
+			for v1, v2 in road['segmentation']:
+				for xx, yy in [v1, v2]:
+					draw.rectangle([xx-5,yy-5,xx+5,yy+5], fill = 0)
+				draw.line(list(v1) + list(v2), fill = 0, width = 5)
+			ann_img.save('./%sPatch/%sRoad.png' % (city_name, str(patch_seq).zfill(6)))
 
 			patch_seq += 1
 			ann_seq += 1
@@ -253,11 +262,11 @@ def saveJSON(result, city_name):
 	return
 
 if __name__ == '__main__':
-	# assert(len(sys.argv) == 2)
-	city_name = 'Chicago'#sys.argv[1]
+	assert(len(sys.argv) == 2)
+	city_name = sys.argv[1]
 	city_info = config.CITY_INFO[city_name]
 
-	path = '%sRoad' % city_name
+	path = '%sPatch' % city_name
 	if not os.path.exists(path):
 		os.popen('mkdir %s' % path)
 
