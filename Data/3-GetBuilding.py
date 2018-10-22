@@ -99,8 +99,6 @@ class BuildingPool(object):
 			self.bSorted[opt].sort()
 		self.minVal = {opt: self.bSorted[opt][ 0][0] for opt in self.opt}
 		self.maxVal = {opt: self.bSorted[opt][-1][0] for opt in self.opt}
-		print(self.minVal)
-		print(self.maxVal)
 		return
 
 	def _findB_G(self, opt, th):
@@ -145,8 +143,6 @@ class BuildingPool(object):
 		minLatIdx = self._findB_L('u', minLat)
 		minLonIdx = self._findB_L('r', minLon)
 		maxLatIdx = self._findB_G('d', maxLat)
-		print(minLonIdx, maxLonIdx, minLatIdx, maxLatIdx)
-		quit()
 
 		maxLonSet = set([bid for _, bid in self.bSorted['l'][maxLonIdx:]])
 		minLatSet = set([bid for _, bid in self.bSorted['u'][:minLatIdx + 1]])
