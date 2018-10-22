@@ -211,7 +211,7 @@ def cropMap(building_pool, map_info, mid, city_info, patch_seq, ann_seq):
 						buildings.append(building)
 						ann_seq += 1
 
-			# ann_img.save('./%sBuilding/%sAnn.png' % (city_name, str(patch_seq).zfill(6)))
+			ann_img.save('./%sBuilding/%sAnn.png' % (city_name, str(patch_seq).zfill(6)))
 			patch_seq += 1
 
 	return idx, patches, buildings
