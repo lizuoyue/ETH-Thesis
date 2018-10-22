@@ -227,8 +227,8 @@ def saveJSON(result, city_name):
 	return
 
 if __name__ == '__main__':
-	#assert(len(sys.argv) == 2)
-	city_name = 'Chicago' # sys.argv[1]
+	assert(len(sys.argv) == 2)
+	city_name = sys.argv[1]
 	city_info = config.CITY_INFO[city_name]
 
 	path = '%sBuilding' % city_name
