@@ -172,7 +172,7 @@ def cropMap(building_pool, map_info, mid, city_info, patch_seq, ann_seq):
 		for y in range(y1, y2):
 			l, u = map_box.c_rpx + x * dx - int(bw / 2), map_box.c_rpy + y * dy - int(bh / 2)
 			r, d = l + bw, u + bh
-			# Image.fromarray(map_img[u: d, l: r, ...]).save('./%sBuilding/%s.png' % (city_name, str(patch_seq).zfill(6)))
+			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sBuilding/%s.png' % (city_name, str(patch_seq).zfill(6)))
 			minLon, maxLat = map_box.relativePixelToLonLat(l, u)
 			maxLon, minLat = map_box.relativePixelToLonLat(r, d)
 			tmp_clon, tmp_clat = (minLon + maxLon) / 2, (minLat + maxLat) / 2
