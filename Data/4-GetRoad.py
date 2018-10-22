@@ -253,8 +253,8 @@ def saveJSON(result, city_name):
 	return
 
 if __name__ == '__main__':
-	assert(len(sys.argv) == 2)
-	city_name = sys.argv[1]
+	# assert(len(sys.argv) == 2)
+	city_name = 'Chicago'#sys.argv[1]
 	city_info = config.CITY_INFO[city_name]
 
 	path = '%sRoad' % city_name
@@ -266,8 +266,8 @@ if __name__ == '__main__':
 	for rid in d:
 		for lon, lat, nid in d[rid]:
 			p.addV(nid, (lon, lat))
-		for i in range(len(d[rid]) - 1):
-			nid1, nid2 = d[rid][i][2], d[rid][i + 1][2]
+		for i in range(1, len(d[rid])):
+			nid1, nid2 = d[rid][i - 1][2], d[rid][i][2]
 			p.addE(nid1, nid2)
 			p.addE(nid2, nid1)
 	p.sortV()
@@ -289,8 +289,6 @@ if __name__ == '__main__':
 	map_list.sort()
 
 	for mid in map_list:
-		if mid < 174:
-			continue
 		print('Map ID:', mid)
 		patch_seq = sum([len(item['images']) for item in result])
 		ann_seq = sum([len(item['annotations']) for item in result])

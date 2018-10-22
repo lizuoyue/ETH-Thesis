@@ -10,10 +10,10 @@ class Constructor(object):
 		self.file_b = '%sBuildingList.npy' % city_name
 		self.file_r = '%sRoadList.npy' % city_name
 		self.road, self.building = {}, {}
-		# if os.path.exists(self.file_b):
-		# 	self.loadBuildingList()
-		# if os.path.exists(self.file_r):
-		# 	self.loadRoadList()
+		if os.path.exists(self.file_b):
+			self.loadBuildingList()
+		if os.path.exists(self.file_r):
+			self.loadRoadList()
 		self.city_name = city_name
 		return
 
@@ -181,7 +181,7 @@ class Constructor(object):
 		minlon, maxlon = poly[:, 1].min(), poly[:, 1].max()
 		dx, dy = config.OSM_LON_STEP, config.OSM_LAT_STEP
 		nx = math.ceil((maxlon - minlon) / dx)
-		ny = math.ceil((maxlon - minlon) / dy)
+		ny = math.ceil((maxlat - minlat) / dy)
 		for x in range(nx):
 			for y in range(ny):
 				print('Step', x, nx, y, ny)

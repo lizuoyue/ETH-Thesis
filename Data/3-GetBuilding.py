@@ -99,6 +99,8 @@ class BuildingPool(object):
 			self.bSorted[opt].sort()
 		self.minVal = {opt: self.bSorted[opt][ 0][0] for opt in self.opt}
 		self.maxVal = {opt: self.bSorted[opt][-1][0] for opt in self.opt}
+		print(self.minVal)
+		print(self.maxVal)
 		return
 
 	def _findB_G(self, opt, th):
@@ -143,6 +145,8 @@ class BuildingPool(object):
 		minLatIdx = self._findB_L('u', minLat)
 		minLonIdx = self._findB_L('r', minLon)
 		maxLatIdx = self._findB_G('d', maxLat)
+		print(minLonIdx, maxLonIdx, minLatIdx, maxLatIdx)
+		quit()
 
 		maxLonSet = set([bid for _, bid in self.bSorted['l'][maxLonIdx:]])
 		minLatSet = set([bid for _, bid in self.bSorted['u'][:minLatIdx + 1]])
@@ -172,7 +176,7 @@ def cropMap(building_pool, map_info, mid, city_info, patch_seq, ann_seq):
 		for y in range(y1, y2):
 			l, u = map_box.c_rpx + x * dx - int(bw / 2), map_box.c_rpy + y * dy - int(bh / 2)
 			r, d = l + bw, u + bh
-			Image.fromarray(map_img[u: d, l: r, ...]).save('./%sBuilding/%s.png' % (city_name, str(patch_seq).zfill(6)))
+			# Image.fromarray(map_img[u: d, l: r, ...]).save('./%sBuilding/%s.png' % (city_name, str(patch_seq).zfill(6)))
 			minLon, maxLat = map_box.relativePixelToLonLat(l, u)
 			maxLon, minLat = map_box.relativePixelToLonLat(r, d)
 			tmp_clon, tmp_clat = (minLon + maxLon) / 2, (minLat + maxLat) / 2
@@ -211,7 +215,7 @@ def cropMap(building_pool, map_info, mid, city_info, patch_seq, ann_seq):
 						buildings.append(building)
 						ann_seq += 1
 
-			ann_img.save('./%sBuilding/%sAnn.png' % (city_name, str(patch_seq).zfill(6)))
+			# ann_img.save('./%sBuilding/%sAnn.png' % (city_name, str(patch_seq).zfill(6)))
 			patch_seq += 1
 
 	return idx, patches, buildings
@@ -223,8 +227,8 @@ def saveJSON(result, city_name):
 	return
 
 if __name__ == '__main__':
-	assert(len(sys.argv) == 2)
-	city_name = sys.argv[1]
+	#assert(len(sys.argv) == 2)
+	city_name = 'Chicago' # sys.argv[1]
 	city_info = config.CITY_INFO[city_name]
 
 	path = '%sBuilding' % city_name
