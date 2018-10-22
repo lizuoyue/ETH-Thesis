@@ -44,7 +44,7 @@ class Config(object):
 				'r_step': (150, 150),
 				'r_x_range': (-2, 2),
 				'r_y_range': (-2, 2),
-				'val_test': lambda lon, lat: 0 if lon >= -122.1142 else (1 if lat >= 37.3967 else 2) # 0,1,2 - train,val,test
+				'val_test': lambda lon, lat: 0 if lon >= -122.1000 else (1 if lat <= 37.3920 else 2) # 0,1,2 - train,val,test
 			},
 			'Chicago': {
 				'city_name': 'Chicago',
@@ -66,6 +66,6 @@ class Config(object):
 				'r_step': (150, 150),
 				'r_x_range': (-2, 2),
 				'r_y_range': (-2, 2),
-				'val_test': lambda lon, lat: 0 if lat >= 41.7800 else (1 if lon <= -87.6600 else 2) # 0,1,2 - train,val,test
+				'val_test': lambda lon, lat: 0 if lat >= 41.7680 else (1 if lon <= -87.6480 else 2) # 0,1,2 - train,val,test
 			}
 		}

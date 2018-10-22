@@ -49,14 +49,17 @@ def DownloadMap(city_name, city_info):
 	draw.polygon(polygon, fill = 0, outline = 255)
 
 	coo_list = []
+	train_val_test = [0, 0, 0]
 	for lon in lon_list:
 		for lat in lat_list:
 			x = math.floor((lon - minlon) / (maxlon - minlon) * w_img)
 			y = h_img - math.floor((lat - minlat) / (maxlat - minlat) * h_img)
 			if img_valid[y, x] > 128:
 				coo_list.append((lat, lon))
+				train_val_test[city_info['val_test'](lon, lat)] += 1
 				draw.rectangle([x - 1, y - 1, x + 1, y + 1], fill = 255, outline = 255)
 		img.save('%sTemp.png' % city_name)
+	print('Train/Val/Test Num:', train_val_test)
 
 	if not os.path.exists(city_name):
 		os.popen('mkdir %sMap' % city_name)
