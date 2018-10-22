@@ -53,7 +53,7 @@ if __name__ == '__main__':
 	# quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
-	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
+	train = optimizer.minimize(2.000*train_res[0] + 0.667*train_res[1] + 0.441*train_res[2] + 0.345*2*train_res[3])
 	saver = tf.train.Saver(max_to_keep = 1)
 	init = tf.global_variables_initializer()
 
