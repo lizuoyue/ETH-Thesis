@@ -20,8 +20,8 @@ def process(filename, n = 1000):
 	return mov_avg(loss_cnn, n), mov_avg(loss_rnn, n)
 
 if __name__ == '__main__':
-	# os.popen('scp leonhard:~/Master-Thesis/Road/LossTrain.out ./LossTrainChicago.out')
-	# os.popen('scp leonhard:~/Master-Thesis/Road/LossValid.out ./LossValidChicago.out')
+	os.popen('scp leonhard:~/Master-Thesis/Road/LossTrain.out ./LossTrainChicago.out')
+	os.popen('scp leonhard:~/Master-Thesis/Road/LossValid.out ./LossValidChicago.out')
 	# os.popen('scp cab:/local/zoli/thesis/Road/ModelChicago/LossTrain.out ./LossTrainChicago.out')
 	# os.popen('scp cab:/local/zoli/thesis/Road/ModelChicago/LossValid.out ./LossValidChicago.out')
 	# time.sleep(10)
