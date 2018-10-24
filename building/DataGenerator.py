@@ -120,10 +120,13 @@ class DataGenerator(object):
 		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
 
 	def removeColinear(self, polygon):
-		flag = []
+		flag = [polygon[i-1] == polygon[i] for i in range(len(polygon))]
+		polygon = [v for i, v in enumerate(polygon) if flag[i]]
+		print(polygon)
 		for i in range(len(polygon)):
 			temp_poly = [polygon[i - 1], polygon[i], polygon[(i + 1) % len(polygon)]]
 			flag.append(self.area(temp_poly) > 1e-6)
+		print(flag)
 		return [v for i, v in enumerate(polygon) if flag[i]]
 
 	def getSingleBuilding(self, mode, ann_id, rotate = True):
@@ -175,6 +178,7 @@ class DataGenerator(object):
 		print(polygon_s)
 		polygon_s = self.removeColinear(polygon_s)
 		print(polygon_s)
+		print('======')
 
 		# Draw boundary and vertices
 		boundary = Image.new('P', self.v_out_res, color = 0)
