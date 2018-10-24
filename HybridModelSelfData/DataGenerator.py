@@ -43,13 +43,13 @@ class DataGenerator(object):
 		self.v_out_res = v_out_res
 		self.max_num_vertices = max_num_vertices
 
-		self.TRAIN_ANNOTATIONS_PATH = '~/data/%s/%sBuildingTrain.json' % (city_name, city_name)
-		self.VAL_ANNOTATIONS_PATH = '~/data/%s/%sBuildingVal.json' % (city_name, city_name)
-		self.TEST_ANNOTATIONS_PATH = '~/data/%s/%sBuildingTest.json' % (city_name, city_name)
+		self.TRAIN_ANNOTATIONS_PATH = '/local/home/data/%s/%sBuildingTrain.json' % (city_name, city_name)
+		self.VAL_ANNOTATIONS_PATH = '/local/home/data/%s/%sBuildingVal.json' % (city_name, city_name)
+		self.TEST_ANNOTATIONS_PATH = '/local/home/data/%s/%sBuildingTest.json' % (city_name, city_name)
 
-		self.TRAIN_IMAGES_DIRECTORY = '~/data/%s/%sPatch' % (city_name, city_name)
-		self.VAL_IMAGES_DIRECTORY = '~/data/%s/%sPatch' % (city_name, city_name)
-		self.TEST_IMAGES_DIRECTORY = '~/data/%s/%sPatch' % (city_name, city_name)
+		self.TRAIN_IMAGES_DIRECTORY = '/local/home/data/%s/%sPatch' % (city_name, city_name)
+		self.VAL_IMAGES_DIRECTORY = '/local/home/data/%s/%sPatch' % (city_name, city_name)
+		self.TEST_IMAGES_DIRECTORY = '/local/home/data/%s/%sPatch' % (city_name, city_name)
 
 		if mode == 'test':
 			self.coco_test = COCO(self.TEST_ANNOTATIONS_PATH)
