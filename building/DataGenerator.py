@@ -167,11 +167,13 @@ class DataGenerator(object):
 		img_patch = Image.fromarray(img_patch).resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
 		img_patch = np.array(img_patch, np.float32)[..., 0: 3]
 		polygon_s = []
+		print(polygon)
 		for x, y in polygon:
 			a, b = int(math.floor(x * x_rate)), int(math.floor(y * y_rate))
 			if not polygon_s or self.distL1((a, b), polygon_s[-1]) > 0:
 				polygon_s.append((a, b))
 		polygon_s = self.removeColinear(polygon_s)
+		print(polygon_s)
 
 		# Draw boundary and vertices
 		boundary = Image.new('P', self.v_out_res, color = 0)
