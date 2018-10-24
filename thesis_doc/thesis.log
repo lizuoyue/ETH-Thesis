@@ -1,0 +1,3191 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.4)  19 APR 2018 11:04
+entering extended mode
+ \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**thesis.tex
+(./thesis.tex
+LaTeX2e <2017-04-15>
+Babel <3.12> and hyphenation patterns for 84 language(s) loaded.
+(/usr/local/texlive/2017/texmf-dist/tex/latex/memoir/memoir.cls
+Document Class: memoir 2016/05/16 v3.7f configurable book, report, article docu
+ment class
+\onelineskip=\skip41
+\lxvchars=\skip42
+\xlvchars=\skip43
+\@memcnta=\count79
+\c@@memmarkcntra=\count80
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/ifetex/ifetex.sty
+Package: ifetex 2011/12/15 v1.2 ifetex
+
+(/usr/local/texlive/2017/texmf-dist/tex/plain/ifetex/ifetex.tex))
+(/usr/local/texlive/2017/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+\stockheight=\skip44
+\stockwidth=\skip45
+\trimtop=\skip46
+\trimedge=\skip47
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/memoir/mem11.clo
+File: mem11.clo 2008/01/30 v0.3 memoir class 11pt size option
+)
+\binding=\skip48
+\spinemargin=\skip49
+\foremargin=\skip50
+\uppermargin=\skip51
+\lowermargin=\skip52
+\headdrop=\skip53
+\normalrulethickness=\skip54
+\mem@maxheadheight=\skip55
+\mem@maxfootheight=\skip56
+\headwidth=\skip57
+\c@storedpagenumber=\count81
+\memPD=\dimen102
+\m@mabparskip=\skip58
+\thanksmarkwidth=\skip59
+\thanksmarksep=\skip60
+\droptitle=\skip61
+\c@book=\count82
+\c@part=\count83
+\c@chapter=\count84
+\c@section=\count85
+\c@subsection=\count86
+\c@subsubsection=\count87
+\c@paragraph=\count88
+\c@subparagraph=\count89
+\beforechapskip=\skip62
+\midchapskip=\skip63
+\afterchapskip=\skip64
+\chapindent=\skip65
+\bottomsectionskip=\skip66
+\secindent=\skip67
+\beforesecskip=\skip68
+\aftersecskip=\skip69
+\subsecindent=\skip70
+\beforesubsecskip=\skip71
+\aftersubsecskip=\skip72
+\subsubsecindent=\skip73
+\beforesubsubsecskip=\skip74
+\aftersubsubsecskip=\skip75
+\paraindent=\skip76
+\beforeparaskip=\skip77
+\afterparaskip=\skip78
+\subparaindent=\skip79
+\beforesubparaskip=\skip80
+\aftersubparaskip=\skip81
+\pfbreakskip=\skip82
+\c@@ppsavesec=\count90
+\c@@ppsaveapp=\count91
+\ragrparindent=\dimen103
+\everylistparindent=\dimen104
+\parsepi=\skip83
+\topsepi=\skip84
+\itemsepi=\skip85
+\parsepii=\skip86
+\topsepii=\skip87
+\topsepiii=\skip88
+\itemsepii=\skip89
+\itemsepiii=\skip90
+\partopsepii=\skip91
+\partopsepiii=\skip92
+\m@msavetopsep=\skip93
+\m@msavepartopsep=\skip94
+\@enLab=\toks14
+\abstitleskip=\skip95
+\absleftindent=\skip96
+\abs@leftindent=\dimen105
+\absrightindent=\skip97
+\absparindent=\skip98
+\absparsep=\skip99
+\c@vslineno=\count92
+\c@poemline=\count93
+\c@modulo@vs=\count94
+\c@memfvsline=\count95
+\vleftskip=\skip100
+\vrightskip=\skip101
+\stanzaskip=\skip102
+\versewidth=\skip103
+\vgap=\skip104
+\vindent=\skip105
+\vleftmargin=\dimen106
+\c@verse=\count96
+\c@chrsinstr=\count97
+\beforepoemtitleskip=\skip106
+\afterpoemtitleskip=\skip107
+\c@poem=\count98
+\beforePoemTitleskip=\skip108
+\midPoemTitleskip=\skip109
+\afterPoemTitleskip=\skip110
+\col@sep=\dimen107
+\extrarowheight=\dimen108
+\NC@list=\toks15
+\extratabsurround=\skip111
+\backup@length=\skip112
+\TX@col@width=\dimen109
+\TX@old@table=\dimen110
+\TX@old@col=\dimen111
+\TX@target=\dimen112
+\TX@delta=\dimen113
+\TX@cols=\count99
+\TX@ftn=\toks16
+\heavyrulewidth=\dimen114
+\lightrulewidth=\dimen115
+\cmidrulewidth=\dimen116
+\belowrulesep=\dimen117
+\belowbottomsep=\dimen118
+\aboverulesep=\dimen119
+\abovetopsep=\dimen120
+\cmidrulesep=\dimen121
+\cmidrulekern=\dimen122
+\defaultaddspace=\dimen123
+\@cmidla=\count100
+\@cmidlb=\count101
+\@aboverulesep=\dimen124
+\@belowrulesep=\dimen125
+\@thisruleclass=\count102
+\@lastruleclass=\count103
+\@thisrulewidth=\dimen126
+\ctableftskip=\skip113
+\ctabrightskip=\skip114
+\abovecolumnspenalty=\count104
+\@linestogo=\count105
+\@cellstogo=\count106
+\@cellsincolumn=\count107
+\crtok=\toks17
+\@mincolumnwidth=\dimen127
+\c@newflo@tctr=\count108
+\mem@margin@floatbox=\box26
+\@contcwidth=\skip115
+\@contindw=\skip116
+\abovecaptionskip=\skip117
+\belowcaptionskip=\skip118
+\subfloattopskip=\skip119
+\subfloatcapskip=\skip120
+\subfloatcaptopadj=\skip121
+\subfloatbottomskip=\skip122
+\subfloatlabelskip=\skip123
+\subfloatcapmargin=\dimen128
+\c@@contsubnum=\count109
+\m@mscap@capbox=\box27
+\m@mscap@fbox=\box28
+\sidecapsep=\dimen129
+\sidecapwidth=\dimen130
+\m@m@tempdima=\dimen131
+\m@mscapraise=\dimen132
+\sidecapraise=\dimen133
+\m@mscapmainwidth=\dimen134
+\m@mscaplkern=\dimen135
+\beforeepigraphskip=\skip124
+\afterepigraphskip=\skip125
+\epigraphwidth=\skip126
+\epigraphrule=\skip127
+LaTeX Info: Redefining \em on input line 7551.
+LaTeX Info: Redefining \emph on input line 7559.
+\tocentryskip=\skip128
+\tocbaseline=\skip129
+\cftparskip=\skip130
+\cftbeforebookskip=\skip131
+\cftbookindent=\dimen136
+\cftbooknumwidth=\dimen137
+\cftbeforepartskip=\skip132
+\cftpartindent=\skip133
+\cftpartnumwidth=\skip134
+\cftbeforechapterskip=\skip135
+\cftchapterindent=\skip136
+\cftchapternumwidth=\skip137
+\cftbeforesectionskip=\skip138
+\cftsectionindent=\skip139
+\cftsectionnumwidth=\skip140
+\cftbeforesubsectionskip=\skip141
+\cftsubsectionindent=\skip142
+\cftsubsectionnumwidth=\skip143
+\cftbeforesubsubsectionskip=\skip144
+\cftsubsubsectionindent=\skip145
+\cftsubsubsectionnumwidth=\skip146
+\cftbeforeparagraphskip=\skip147
+\cftparagraphindent=\skip148
+\cftparagraphnumwidth=\skip149
+\cftbeforesubparagraphskip=\skip150
+\cftsubparagraphindent=\skip151
+\cftsubparagraphnumwidth=\skip152
+\prechapterprecisshift=\dimen138
+\c@maxsecnumdepth=\count110
+\bibindent=\dimen139
+\bibitemsep=\skip153
+\indexcolsep=\skip154
+\indexrule=\skip155
+\indexmarkstyle=\toks18
+\@indexbox=\insert199
+\glossarycolsep=\dimen140
+\glossaryrule=\dimen141
+\sideparvshift=\skip156
+\sideins=\insert198
+\sidebartopsep=\skip157
+\sidebarhsep=\skip158
+\sidebarvsep=\skip159
+\sidebarwidth=\skip160
+\footmarkwidth=\skip161
+\footmarksep=\skip162
+\footparindent=\skip163
+\footinsdim=\skip164
+\footinsv@r=\insert197
+\@mpfootinsv@r=\insert196
+\m@m@k=\count111
+\m@m@h=\dimen142
+\m@mipn@skip=\skip165
+\sidefootins=\insert195
+\sidefootadjust=\skip166
+\sidefootheight=\skip167
+\sidefoothsep=\skip168
+\sidefootvsep=\skip169
+\sidefootwidth=\skip170
+\m@mdownsf=\skip171
+\c@sidefootnote=\count112
+\sidefootmarkwidth=\skip172
+\sidefootmarksep=\skip173
+\sidefootparindent=\skip174
+\c@pagenote=\count113
+\c@pagenoteshadow=\count114
+\mem@pn@lastkern=\skip175
+\every@verbatim=\toks19
+\afterevery@verbatim=\toks20
+\verbatim@line=\toks21
+\tab@position=\count115
+\verbatim@in@stream=\read1
+\verbatimindent=\skip176
+\verbatim@out=\write3
+\bvboxsep=\skip177
+\c@memfbvline=\count116
+\c@bvlinectr=\count117
+\bvnumlength=\skip178
+\fb@frw=\dimen143
+\fb@frh=\dimen144
+\FrameRule=\dimen145
+\FrameSep=\dimen146
+\c@cp@cntr=\count118
+LaTeX Info: Redefining \: on input line 12068.
+LaTeX Info: Redefining \! on input line 12070.
+\c@ism@mctr=\count119
+\c@xsm@mctr=\count120
+\c@csm@mctr=\count121
+\c@ksm@mctr=\count122
+\c@xksm@mctr=\count123
+\c@cksm@mctr=\count124
+\c@msm@mctr=\count125
+\c@xmsm@mctr=\count126
+\c@cmsm@mctr=\count127
+\c@bsm@mctr=\count128
+\c@workm@mctr=\count129
+\c@sheetsequence=\count130
+\c@lastsheet=\count131
+\c@lastpage=\count132
+\c@figure=\count133
+\c@lofdepth=\count134
+\cftbeforefigureskip=\skip179
+\cftfigureindent=\skip180
+\cftfigurenumwidth=\skip181
+\c@table=\count135
+\c@lotdepth=\count136
+\cftbeforetableskip=\skip182
+\cfttableindent=\skip183
+\cfttablenumwidth=\skip184
+Package abstract [2008/07/23] emulated by memoir.
+Package appendix [2008/07/23] emulated by memoir.
+Package array [2008/09/09] emulated by memoir.
+Package booktabs [2016/05/16] emulated by memoir.
+Package ccaption [2008/07/23] emulated by memoir.
+Package changepage [2008/07/23] emulated by memoir.
+Package chngcntr [2008/07/23] emulated by memoir.
+Package chngpage [2008/07/23] emulated by memoir.
+Package crop emulated by memoir.
+Package dcolumn [2008/07/23] emulated by memoir.
+Package delarray [2008/07/23] emulated by memoir.
+Package enumerate [2008/07/23] emulated by memoir.
+Package epigraph [2008/07/23] emulated by memoir.
+Package ifmtarg [2008/07/23] emulated by memoir.
+Package index [2008/07/23] emulated by memoir.
+Package makeidx [2008/07/23] emulated by memoir.
+Package moreverb [2008/07/23] emulated by memoir.
+Package mparhack [2008/07/23] emulated by memoir.
+Package needspace [2008/07/23] emulated by memoir.
+Package newfile [2008/07/23] emulated by memoir.
+Package nextpage [2008/07/23] emulated by memoir.
+Package pagenote [2008/07/23] emulated by memoir.
+Package parskip [2008/07/23] emulated by memoir.
+Package patchcmd [2008/07/23] emulated by memoir.
+Package setspace [2008/07/23] emulated by memoir.
+Package shortvrb [2008/07/23] emulated by memoir.
+Package showidx [2008/07/23] emulated by memoir.
+Package tabularx [2008/07/23] emulated by memoir.
+Package titleref [2008/07/23] emulated by memoir.
+Package titling [2008/07/23] emulated by memoir.
+Package tocbibind [2008/07/23] emulated by memoir.
+Package tocloft [2008/07/23] emulated by memoir.
+Package tocvsec2 [2008/07/23] emulated by memoir.
+Package verbatim [2008/07/23] emulated by memoir.
+Package verse [2008/07/23] emulated by memoir.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/memoir/mempatch.sty
+Package: mempatch 2009/07/24 v6.0f Patches for memoir class v1.6180339
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2017/04/05 v2.0i Standard LaTeX package
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ot1enc.def
+File: ot1enc.def 2017/04/05 v2.0i Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding OT1 on input line 48.
+))
+(/usr/local/texlive/2017/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2017/06/29 3.12 The Babel package
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/babel/switch.def
+File: switch.def 2017/06/29 3.12 Babel switching mechanism
+)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/babel-english/english.ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/babel/babel.def
+File: babel.def 2017/06/29 3.12 Babel common definitions
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/babel/switch.def
+File: switch.def 2017/06/29 3.12 Babel switching mechanism
+)
+\babel@savecnt=\count137
+\U@D=\dimen147
+)
+\l@canadian = a dialect from \language\l@american 
+\l@australian = a dialect from \language\l@british 
+\l@newzealand = a dialect from \language\l@british 
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2015/03/17 v1.2c Input encoding file
+\inpenc@prehook=\toks22
+\inpenc@posthook=\toks23
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def
+File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
+Now handling font encoding OML ...
+... no UTF-8 mapping file for font encoding OML
+Now handling font encoding T1 ...
+... processing UTF-8 mapping file for font encoding T1
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.dfu
+File: t1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
+   defining Unicode char U+00A1 (decimal 161)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00AB (decimal 171)
+   defining Unicode char U+00AD (decimal 173)
+   defining Unicode char U+00BB (decimal 187)
+   defining Unicode char U+00BF (decimal 191)
+   defining Unicode char U+00C0 (decimal 192)
+   defining Unicode char U+00C1 (decimal 193)
+   defining Unicode char U+00C2 (decimal 194)
+   defining Unicode char U+00C3 (decimal 195)
+   defining Unicode char U+00C4 (decimal 196)
+   defining Unicode char U+00C5 (decimal 197)
+   defining Unicode char U+00C6 (decimal 198)
+   defining Unicode char U+00C7 (decimal 199)
+   defining Unicode char U+00C8 (decimal 200)
+   defining Unicode char U+00C9 (decimal 201)
+   defining Unicode char U+00CA (decimal 202)
+   defining Unicode char U+00CB (decimal 203)
+   defining Unicode char U+00CC (decimal 204)
+   defining Unicode char U+00CD (decimal 205)
+   defining Unicode char U+00CE (decimal 206)
+   defining Unicode char U+00CF (decimal 207)
+   defining Unicode char U+00D0 (decimal 208)
+   defining Unicode char U+00D1 (decimal 209)
+   defining Unicode char U+00D2 (decimal 210)
+   defining Unicode char U+00D3 (decimal 211)
+   defining Unicode char U+00D4 (decimal 212)
+   defining Unicode char U+00D5 (decimal 213)
+   defining Unicode char U+00D6 (decimal 214)
+   defining Unicode char U+00D8 (decimal 216)
+   defining Unicode char U+00D9 (decimal 217)
+   defining Unicode char U+00DA (decimal 218)
+   defining Unicode char U+00DB (decimal 219)
+   defining Unicode char U+00DC (decimal 220)
+   defining Unicode char U+00DD (decimal 221)
+   defining Unicode char U+00DE (decimal 222)
+   defining Unicode char U+00DF (decimal 223)
+   defining Unicode char U+00E0 (decimal 224)
+   defining Unicode char U+00E1 (decimal 225)
+   defining Unicode char U+00E2 (decimal 226)
+   defining Unicode char U+00E3 (decimal 227)
+   defining Unicode char U+00E4 (decimal 228)
+   defining Unicode char U+00E5 (decimal 229)
+   defining Unicode char U+00E6 (decimal 230)
+   defining Unicode char U+00E7 (decimal 231)
+   defining Unicode char U+00E8 (decimal 232)
+   defining Unicode char U+00E9 (decimal 233)
+   defining Unicode char U+00EA (decimal 234)
+   defining Unicode char U+00EB (decimal 235)
+   defining Unicode char U+00EC (decimal 236)
+   defining Unicode char U+00ED (decimal 237)
+   defining Unicode char U+00EE (decimal 238)
+   defining Unicode char U+00EF (decimal 239)
+   defining Unicode char U+00F0 (decimal 240)
+   defining Unicode char U+00F1 (decimal 241)
+   defining Unicode char U+00F2 (decimal 242)
+   defining Unicode char U+00F3 (decimal 243)
+   defining Unicode char U+00F4 (decimal 244)
+   defining Unicode char U+00F5 (decimal 245)
+   defining Unicode char U+00F6 (decimal 246)
+   defining Unicode char U+00F8 (decimal 248)
+   defining Unicode char U+00F9 (decimal 249)
+   defining Unicode char U+00FA (decimal 250)
+   defining Unicode char U+00FB (decimal 251)
+   defining Unicode char U+00FC (decimal 252)
+   defining Unicode char U+00FD (decimal 253)
+   defining Unicode char U+00FE (decimal 254)
+   defining Unicode char U+00FF (decimal 255)
+   defining Unicode char U+0100 (decimal 256)
+   defining Unicode char U+0101 (decimal 257)
+   defining Unicode char U+0102 (decimal 258)
+   defining Unicode char U+0103 (decimal 259)
+   defining Unicode char U+0104 (decimal 260)
+   defining Unicode char U+0105 (decimal 261)
+   defining Unicode char U+0106 (decimal 262)
+   defining Unicode char U+0107 (decimal 263)
+   defining Unicode char U+0108 (decimal 264)
+   defining Unicode char U+0109 (decimal 265)
+   defining Unicode char U+010A (decimal 266)
+   defining Unicode char U+010B (decimal 267)
+   defining Unicode char U+010C (decimal 268)
+   defining Unicode char U+010D (decimal 269)
+   defining Unicode char U+010E (decimal 270)
+   defining Unicode char U+010F (decimal 271)
+   defining Unicode char U+0110 (decimal 272)
+   defining Unicode char U+0111 (decimal 273)
+   defining Unicode char U+0112 (decimal 274)
+   defining Unicode char U+0113 (decimal 275)
+   defining Unicode char U+0114 (decimal 276)
+   defining Unicode char U+0115 (decimal 277)
+   defining Unicode char U+0116 (decimal 278)
+   defining Unicode char U+0117 (decimal 279)
+   defining Unicode char U+0118 (decimal 280)
+   defining Unicode char U+0119 (decimal 281)
+   defining Unicode char U+011A (decimal 282)
+   defining Unicode char U+011B (decimal 283)
+   defining Unicode char U+011C (decimal 284)
+   defining Unicode char U+011D (decimal 285)
+   defining Unicode char U+011E (decimal 286)
+   defining Unicode char U+011F (decimal 287)
+   defining Unicode char U+0120 (decimal 288)
+   defining Unicode char U+0121 (decimal 289)
+   defining Unicode char U+0122 (decimal 290)
+   defining Unicode char U+0123 (decimal 291)
+   defining Unicode char U+0124 (decimal 292)
+   defining Unicode char U+0125 (decimal 293)
+   defining Unicode char U+0128 (decimal 296)
+   defining Unicode char U+0129 (decimal 297)
+   defining Unicode char U+012A (decimal 298)
+   defining Unicode char U+012B (decimal 299)
+   defining Unicode char U+012C (decimal 300)
+   defining Unicode char U+012D (decimal 301)
+   defining Unicode char U+012E (decimal 302)
+   defining Unicode char U+012F (decimal 303)
+   defining Unicode char U+0130 (decimal 304)
+   defining Unicode char U+0131 (decimal 305)
+   defining Unicode char U+0132 (decimal 306)
+   defining Unicode char U+0133 (decimal 307)
+   defining Unicode char U+0134 (decimal 308)
+   defining Unicode char U+0135 (decimal 309)
+   defining Unicode char U+0136 (decimal 310)
+   defining Unicode char U+0137 (decimal 311)
+   defining Unicode char U+0139 (decimal 313)
+   defining Unicode char U+013A (decimal 314)
+   defining Unicode char U+013B (decimal 315)
+   defining Unicode char U+013C (decimal 316)
+   defining Unicode char U+013D (decimal 317)
+   defining Unicode char U+013E (decimal 318)
+   defining Unicode char U+0141 (decimal 321)
+   defining Unicode char U+0142 (decimal 322)
+   defining Unicode char U+0143 (decimal 323)
+   defining Unicode char U+0144 (decimal 324)
+   defining Unicode char U+0145 (decimal 325)
+   defining Unicode char U+0146 (decimal 326)
+   defining Unicode char U+0147 (decimal 327)
+   defining Unicode char U+0148 (decimal 328)
+   defining Unicode char U+014A (decimal 330)
+   defining Unicode char U+014B (decimal 331)
+   defining Unicode char U+014C (decimal 332)
+   defining Unicode char U+014D (decimal 333)
+   defining Unicode char U+014E (decimal 334)
+   defining Unicode char U+014F (decimal 335)
+   defining Unicode char U+0150 (decimal 336)
+   defining Unicode char U+0151 (decimal 337)
+   defining Unicode char U+0152 (decimal 338)
+   defining Unicode char U+0153 (decimal 339)
+   defining Unicode char U+0154 (decimal 340)
+   defining Unicode char U+0155 (decimal 341)
+   defining Unicode char U+0156 (decimal 342)
+   defining Unicode char U+0157 (decimal 343)
+   defining Unicode char U+0158 (decimal 344)
+   defining Unicode char U+0159 (decimal 345)
+   defining Unicode char U+015A (decimal 346)
+   defining Unicode char U+015B (decimal 347)
+   defining Unicode char U+015C (decimal 348)
+   defining Unicode char U+015D (decimal 349)
+   defining Unicode char U+015E (decimal 350)
+   defining Unicode char U+015F (decimal 351)
+   defining Unicode char U+0160 (decimal 352)
+   defining Unicode char U+0161 (decimal 353)
+   defining Unicode char U+0162 (decimal 354)
+   defining Unicode char U+0163 (decimal 355)
+   defining Unicode char U+0164 (decimal 356)
+   defining Unicode char U+0165 (decimal 357)
+   defining Unicode char U+0168 (decimal 360)
+   defining Unicode char U+0169 (decimal 361)
+   defining Unicode char U+016A (decimal 362)
+   defining Unicode char U+016B (decimal 363)
+   defining Unicode char U+016C (decimal 364)
+   defining Unicode char U+016D (decimal 365)
+   defining Unicode char U+016E (decimal 366)
+   defining Unicode char U+016F (decimal 367)
+   defining Unicode char U+0170 (decimal 368)
+   defining Unicode char U+0171 (decimal 369)
+   defining Unicode char U+0172 (decimal 370)
+   defining Unicode char U+0173 (decimal 371)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
+   defining Unicode char U+0178 (decimal 376)
+   defining Unicode char U+0179 (decimal 377)
+   defining Unicode char U+017A (decimal 378)
+   defining Unicode char U+017B (decimal 379)
+   defining Unicode char U+017C (decimal 380)
+   defining Unicode char U+017D (decimal 381)
+   defining Unicode char U+017E (decimal 382)
+   defining Unicode char U+01CD (decimal 461)
+   defining Unicode char U+01CE (decimal 462)
+   defining Unicode char U+01CF (decimal 463)
+   defining Unicode char U+01D0 (decimal 464)
+   defining Unicode char U+01D1 (decimal 465)
+   defining Unicode char U+01D2 (decimal 466)
+   defining Unicode char U+01D3 (decimal 467)
+   defining Unicode char U+01D4 (decimal 468)
+   defining Unicode char U+01E2 (decimal 482)
+   defining Unicode char U+01E3 (decimal 483)
+   defining Unicode char U+01E6 (decimal 486)
+   defining Unicode char U+01E7 (decimal 487)
+   defining Unicode char U+01E8 (decimal 488)
+   defining Unicode char U+01E9 (decimal 489)
+   defining Unicode char U+01EA (decimal 490)
+   defining Unicode char U+01EB (decimal 491)
+   defining Unicode char U+01F0 (decimal 496)
+   defining Unicode char U+01F4 (decimal 500)
+   defining Unicode char U+01F5 (decimal 501)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
+   defining Unicode char U+0232 (decimal 562)
+   defining Unicode char U+0233 (decimal 563)
+   defining Unicode char U+1E02 (decimal 7682)
+   defining Unicode char U+1E03 (decimal 7683)
+   defining Unicode char U+200C (decimal 8204)
+   defining Unicode char U+2010 (decimal 8208)
+   defining Unicode char U+2011 (decimal 8209)
+   defining Unicode char U+2012 (decimal 8210)
+   defining Unicode char U+2013 (decimal 8211)
+   defining Unicode char U+2014 (decimal 8212)
+   defining Unicode char U+2015 (decimal 8213)
+   defining Unicode char U+2018 (decimal 8216)
+   defining Unicode char U+2019 (decimal 8217)
+   defining Unicode char U+201A (decimal 8218)
+   defining Unicode char U+201C (decimal 8220)
+   defining Unicode char U+201D (decimal 8221)
+   defining Unicode char U+201E (decimal 8222)
+   defining Unicode char U+2030 (decimal 8240)
+   defining Unicode char U+2031 (decimal 8241)
+   defining Unicode char U+2039 (decimal 8249)
+   defining Unicode char U+203A (decimal 8250)
+   defining Unicode char U+2423 (decimal 9251)
+   defining Unicode char U+1E20 (decimal 7712)
+   defining Unicode char U+1E21 (decimal 7713)
+)
+Now handling font encoding OT1 ...
+... processing UTF-8 mapping file for font encoding OT1
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ot1enc.dfu
+File: ot1enc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
+   defining Unicode char U+00A1 (decimal 161)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00AD (decimal 173)
+   defining Unicode char U+00B8 (decimal 184)
+   defining Unicode char U+00BF (decimal 191)
+   defining Unicode char U+00C5 (decimal 197)
+   defining Unicode char U+00C6 (decimal 198)
+   defining Unicode char U+00D8 (decimal 216)
+   defining Unicode char U+00DF (decimal 223)
+   defining Unicode char U+00E6 (decimal 230)
+   defining Unicode char U+00EC (decimal 236)
+   defining Unicode char U+00ED (decimal 237)
+   defining Unicode char U+00EE (decimal 238)
+   defining Unicode char U+00EF (decimal 239)
+   defining Unicode char U+00F8 (decimal 248)
+   defining Unicode char U+0131 (decimal 305)
+   defining Unicode char U+0141 (decimal 321)
+   defining Unicode char U+0142 (decimal 322)
+   defining Unicode char U+0152 (decimal 338)
+   defining Unicode char U+0153 (decimal 339)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
+   defining Unicode char U+2013 (decimal 8211)
+   defining Unicode char U+2014 (decimal 8212)
+   defining Unicode char U+2018 (decimal 8216)
+   defining Unicode char U+2019 (decimal 8217)
+   defining Unicode char U+201C (decimal 8220)
+   defining Unicode char U+201D (decimal 8221)
+)
+Now handling font encoding OMS ...
+... processing UTF-8 mapping file for font encoding OMS
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/omsenc.dfu
+File: omsenc.dfu 2017/01/28 v1.1t UTF-8 support for inputenc
+   defining Unicode char U+00A7 (decimal 167)
+   defining Unicode char U+00B6 (decimal 182)
+   defining Unicode char U+00B7 (decimal 183)
+   defining Unicode char U+2020 (decimal 8224)
+   defining Unicode char U+2021 (decimal 8225)
+   defining Unicode char U+2022 (decimal 8226)
+)
+Now handling font encoding OMX ...
+... no UTF-8 mapping file for font encoding OMX
+Now handling font encoding U ...
+... no UTF-8 mapping file for font encoding U
+   defining Unicode char U+00A9 (decimal 169)
+   defining Unicode char U+00AA (decimal 170)
+   defining Unicode char U+00AE (decimal 174)
+   defining Unicode char U+00BA (decimal 186)
+   defining Unicode char U+02C6 (decimal 710)
+   defining Unicode char U+02DC (decimal 732)
+   defining Unicode char U+200C (decimal 8204)
+   defining Unicode char U+2026 (decimal 8230)
+   defining Unicode char U+2122 (decimal 8482)
+   defining Unicode char U+2423 (decimal 9251)
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/mathpazo.sty
+Package: mathpazo 2005/04/12 PSNFSS-v9.2a Palatino w/ Pazo Math (D.Puga, WaS) 
+\symupright=\mathgroup4
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2016/11/05 v2.16a AMS math features
+\@mathmargin=\skip185
+
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2017/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01 AMS text
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks24
+\ex@=\dimen148
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen149
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count138
+LaTeX Info: Redefining \frac on input line 213.
+\uproot@=\count139
+\leftroot@=\count140
+LaTeX Info: Redefining \overline on input line 375.
+\classnum@=\count141
+\DOTSCASE@=\count142
+LaTeX Info: Redefining \ldots on input line 472.
+LaTeX Info: Redefining \dots on input line 475.
+LaTeX Info: Redefining \cdots on input line 596.
+\Mathstrutbox@=\box29
+\strutbox@=\box30
+\big@size=\dimen150
+LaTeX Font Info:    Redeclaring font encoding OML on input line 712.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 713.
+\macc@depth=\count143
+\c@MaxMatrixCols=\count144
+\dotsspace@=\muskip10
+\c@parentequation=\count145
+\dspbrk@lvl=\count146
+\tag@help=\toks25
+\row@=\count147
+\column@=\count148
+\maxfields@=\count149
+\andhelp@=\toks26
+\eqnshift@=\dimen151
+\alignsep@=\dimen152
+\tagshift@=\dimen153
+\tagwidth@=\dimen154
+\totwidth@=\dimen155
+\lineht@=\dimen156
+\@envbody=\toks27
+\multlinegap=\skip186
+\multlinetaggap=\skip187
+\mathdisplay@stack=\toks28
+LaTeX Info: Redefining \[ on input line 2817.
+LaTeX Info: Redefining \] on input line 2818.
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup5
+\symAMSb=\mathgroup6
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/jknapltx/mathrsfs.sty
+Package: mathrsfs 1996/01/01 Math RSFS package v1.0 (jk)
+\symrsfs=\mathgroup7
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/ntheorem/ntheorem.sty
+Style `ntheorem', Version 1.33 <2011/08/15>
+Package: ntheorem 2011/08/15 1.33
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\theorem@style=\toks29
+\theorem@@style=\toks30
+\theorembodyfont=\toks31
+\theoremnumbering=\toks32
+\theorempreskipamount=\skip188
+\theorempostskipamount=\skip189
+\theoremframepreskipamount=\skip190
+\theoremframepostskipamount=\skip191
+\theoreminframepreskipamount=\skip192
+\theoreminframepostskipamount=\skip193
+\theorem@preskip=\toks33
+\theorem@postskip=\toks34
+\theorem@framepreskip=\toks35
+\theorem@framepostskip=\toks36
+\theorem@inframepreskip=\toks37
+\theorem@inframepostskip=\toks38
+\theoremindent=\dimen157
+\theorem@indent=\dimen158
+\theoremrightindent=\dimen159
+\theorem@rightindent=\dimen160
+\theoremheaderfont=\toks39
+\theoremseparator=\toks40
+\theoremprework=\toks41
+\theorempostwork=\toks42
+\theoremsymbol=\toks43
+\qedsymbol=\toks44
+\theoremkeyword=\toks45
+\qedsymbol=\toks46
+\thm@topsep=\skip194
+\thm@topsepadd=\skip256
+Package ntheorem Info: Option `thmmarks' loaded on input line 1175.
+\c@endNonectr=\count150
+\c@currNonectr=\count151
+\mysavskip=\skip257
+Package ntheorem Info: option `amsmath' handling for `thmmarks' loaded on input
+ line 1175.
+\thm@amstmpdepth=\dimen161
+\tagwidth=\dimen162
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks47
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2017/06/24 v1.0g Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen163
+\Gin@req@width=\dimen164
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/soul/soul.sty
+Package: soul 2003/11/17 v2.4 letterspacing/underlining (mf)
+\SOUL@word=\toks48
+\SOUL@lasttoken=\toks49
+\SOUL@cmds=\toks50
+\SOUL@buffer=\toks51
+\SOUL@token=\toks52
+\SOUL@spaceskip=\skip258
+\SOUL@ttwidth=\dimen165
+\SOUL@uldp=\dimen166
+\SOUL@ulht=\dimen167
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/pdfpages/pdfpages.sty
+Package: pdfpages 2017/06/14 v0.5i Insert pages of external PDF documents (AM)
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count152
+\calc@Bcount=\count153
+\calc@Adimen=\dimen168
+\calc@Bdimen=\dimen169
+\calc@Askip=\skip259
+\calc@Bskip=\skip260
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count154
+\calc@Cskip=\skip261
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/eso-pic/eso-pic.sty
+Package: eso-pic 2015/07/21 v2.0g eso-pic (RN)
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/atbegshi.sty
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+))
+\AM@pagewidth=\dimen170
+\AM@pageheight=\dimen171
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/pdfpages/pppdftex.def
+File: pppdftex.def 2017/06/14 v0.5i Pdfpages driver for pdfTeX (AM)
+)
+\AM@pagebox=\box31
+\AM@global@opts=\toks53
+\AM@toc@title=\toks54
+\c@AM@survey=\count155
+\AM@templatesizebox=\box32
+)
+(./extrapackages.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/varioref.sty
+Package: varioref 2016/02/16 v1.5c package for extended references (FMi)
+\c@vrcnt=\count156
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/datetime/datetime.sty
+Package: datetime 2015/03/20 v2.60 Date Time Package
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2017/01/02 v2.4 e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count157
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/fmtcount/fmtcount.sty
+Package: fmtcount 2016/01/12 v3.02
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks55
+\XKV@tempa@toks=\toks56
+)
+\XKV@depth=\count158
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/fmtcount/fcprefix.sty
+Package: fcprefix 2012/09/28
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/fmtcount/fcnumparser.sty
+Package: fcnumparser 2017/06/15
+\fc@digit@counter=\count159
+))
+\c@padzeroesN=\count160
+\fc@tmpcatcode=\count161
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/fmtcount/fc-english.def
+File: fc-english.def 2016/01/12
+)
+\@DT@modctr=\count162
+\@ordinalctr=\count163
+\@orgargctr=\count164
+\@strctr=\count165
+\@tmpstrctr=\count166
+\@DT@loopN=\count167
+\@DT@X=\count168
+
+
+Package fmtcount Warning: \ordinal already defined use \FCordinal instead. on i
+nput line 517.
+
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/datetime/datetime-defaults.sty
+Package: datetime-defaults 2013/09/10
+)
+\@day=\count169
+\@month=\count170
+\@year=\count171
+\c@HOUR=\count172
+\c@HOURXII=\count173
+\c@MINUTE=\count174
+\c@TOHOUR=\count175
+\c@TOMINUTE=\count176
+\c@SECOND=\count177
+\currenthour=\count178
+\currentminute=\count179
+\currentsecond=\count180
+Package datetime Info: No datetime.cfg file found, using default settings on in
+put line 308.
+\@dtctr=\count181
+\dayofyear=\count182
+\dayofweek=\count183
+LaTeX Info: Redefining \today on input line 736.
+\dt@a=\toks57
+\dt@b=\toks58
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/mathtools/mathtools.sty
+Package: mathtools 2017/05/24 v1.19 mathematical typesetting tools
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/mathtools/mhsetup.sty
+Package: mhsetup 2017/03/31 v1.3 programming setup (MH)
+)
+LaTeX Info: Thecontrolsequence`\('isalreadyrobust on input line 129.
+LaTeX Info: Thecontrolsequence`\)'isalreadyrobust on input line 129.
+LaTeX Info: Thecontrolsequence`\['isalreadyrobust on input line 129.
+LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
+\g_MT_multlinerow_int=\count184
+\l_MT_multwidth_dim=\dimen172
+\origjot=\skip262
+\l_MT_shortvdotswithinadjustabove_dim=\dimen173
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen174
+\l_MT_above_intertext_sep=\dimen175
+\l_MT_below_intertext_sep=\dimen176
+\l_MT_above_shortintertext_sep=\dimen177
+\l_MT_below_shortintertext_sep=\dimen178
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/esvect/esvect.sty
+Package: esvect 
+\symesvector=\mathgroup8
+LaTeX Font Info:    Redeclaring math symbol \fldr on input line 38.
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count185
+\lst@gtempboxa=\box33
+\lst@token=\toks59
+\lst@length=\count186
+\lst@currlwidth=\dimen179
+\lst@column=\count187
+\lst@pos=\count188
+\lst@lostspace=\dimen180
+\lst@width=\dimen181
+\lst@newlines=\count189
+\lst@lineno=\count190
+\lst@maxwidth=\dimen182
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
+\c@lstnumber=\count191
+\lst@skipnumbers=\count192
+\lst@framebox=\box34
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2015/06/04 1.6 listings configuration
+))
+Package: listings 2015/06/04 1.6 (Carsten Heinz)
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/pdfcprot/pdfcprot.sty
+Package: pdfcprot 2002/02/27 v1.5 character protruding using pdflatex (cs)
+\c@CPROT@family=\count193
+\c@CPROT@family@temp=\count194
+\c@CPROT@series=\count266
+\c@CPROT@series@temp=\count267
+\c@CPROT@shape=\count268
+\c@CPROT@shape@temp=\count269
+\c@CPROT@size=\count270
+\c@CPROT@size@temp=\count271
+\c@CPROT@temp@chars=\count272
+Package pdfcprot Info: You've requested char protruding for TS1 encoding
+(pdfcprot)             but TS1 encoding doesn't seem to be loaded.
+(pdfcprot)             Maybe you forgot a '\usepackage{textcomp}'. on input lin
+e 805.
+Package pdfcprot Info: You've requested char protruding for TS1 encoding
+(pdfcprot)             but TS1 encoding doesn't seem to be loaded.
+(pdfcprot)             Maybe you forgot a '\usepackage{textcomp}'. on input lin
+e 805.
+Package pdfcprot Info: You've requested char protruding for TS1 encoding
+(pdfcprot)             but TS1 encoding doesn't seem to be loaded.
+(pdfcprot)             Maybe you forgot a '\usepackage{textcomp}'. on input lin
+e 805.
+)
+\c@subfigure=\count273
+\cftbeforesubfigureskip=\skip263
+\cftsubfigureindent=\skip264
+\cftsubfigurenumwidth=\skip265
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2016/11/25 v2.2 Span multiple rows of a table
+\multirow@colwidth=\skip266
+\multirow@cntb=\count274
+\multirow@dima=\skip267
+\bigstrutjot=\dimen183
+)
+(./layoutsetup.tex (./ETHlogo.sty
+Package: ETHlogo 2000/11/06 0.1 ETH Logo command
+)
+
+******************************************************
+Stock height and width: 845.04684pt by 597.50787pt
+Top and edge trims: 0pt and 0pt
+Page height and width: 845.04684pt by 597.50787pt
+Text height and width: 595.80026pt by 369pt
+Spine and edge margins: 91.26999pt and 137.23788pt
+Upper and lower margins: 126.74379pt and 122.50279pt
+Headheight and headsep: 13.6pt and 19.8738pt
+Footskip: 27.46295pt
+Columnsep and columnseprule: 10pt and 0pt
+Marginparsep and marginparwidth: 7pt and 123.23788pt
+Sidecapsep and sidecapwidth: 7pt and 101pt
+Sidebarhsep and sidebarwidth: 7pt and 101pt
+Sidebarvsep and sidebartopsep: 13.6pt and 0pt
+Sidebarheight: 594.32022pt
+Sidefoothsep and sidefootwidth: 7pt and 101pt
+Sidefootvsep and sidefootheight: 13.6pt and 594.32022pt
+******************************************************
+
+) (./theoremsetup.tex
+\c@currtheoremctr=\count275
+\c@endtheoremctr=\count276
+\c@theorem=\count277
+\c@currexamplectr=\count278
+\c@endexamplectr=\count279
+\c@currremarkctr=\count280
+\c@endremarkctr=\count281
+\c@currcorollaryctr=\count282
+\c@endcorollaryctr=\count283
+\c@currdefinitionctr=\count284
+\c@enddefinitionctr=\count285
+\c@currlemmactr=\count286
+\c@endlemmactr=\count287
+\c@currpropositionctr=\count288
+\c@endpropositionctr=\count289
+\c@currproofctr=\count290
+\c@endproofctr=\count291
+)
+\c@proof=\count292
+ (./macrosetup.tex)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2017/03/14 v6.85a Hypertext links for LaTeX
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
+
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
+Package: hobsub-generic 2016/05/16 v1.14 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2016/05/16 v1.14 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package hobsub Info: Skipping package `ifluatex' (already loaded).
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+Package: intcalc 2016/05/16 v1.2 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+Package: pdftexcmds 2017/03/19 v0.25 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2016/05/16 v1.14 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2016/05/16 v1.4 Expandable calculations on big integers (HO
+)
+Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
+Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
+Package: xcolor-patch 2016/05/16 xcolor patch
+Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
+Package hobsub Info: Skipping package `atbegshi' (already loaded).
+Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
+Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/auxhook.sty
+Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+)
+\@linkdim=\dimen184
+\Hy@linkcounter=\count293
+\Hy@pagecounter=\count294
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2017/03/14 v6.85a Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+\Hy@SavedSpaceFactor=\count295
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/latexconfig/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 4374.
+Package hyperref Info: Hyper figures OFF on input line 4498.
+Package hyperref Info: Link nesting OFF on input line 4503.
+Package hyperref Info: Hyper index ON on input line 4506.
+Package hyperref Info: Plain pages OFF on input line 4513.
+Package hyperref Info: Backreferencing OFF on input line 4518.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4751.
+\c@Hy@tempcnt=\count296
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip11
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5104.
+\XeTeXLinkMargin=\dimen185
+\Fld@menulength=\count297
+\Field@Width=\dimen186
+\Fld@charsize=\dimen187
+Package hyperref Info: Hyper figures OFF on input line 6358.
+Package hyperref Info: Link nesting OFF on input line 6363.
+Package hyperref Info: Hyper index ON on input line 6366.
+Package hyperref Info: backreferencing OFF on input line 6373.
+Package hyperref Info: Link coloring ON on input line 6376.
+Package hyperref Info: Link coloring with OCG OFF on input line 6383.
+Package hyperref Info: PDF/A mode OFF on input line 6388.
+LaTeX Info: Redefining \ref on input line 6428.
+LaTeX Info: Redefining \pageref on input line 6432.
+\Hy@abspage=\count298
+\c@Item=\count299
+\c@Hfootnote=\count300
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/memoir/memhfixc.sty
+Package: memhfixc 2013/05/30 v1.17 nameref/hyperref package fixes for memoir cl
+ass
+\c@memhycontfloat=\count301
+\c@Hpagenote=\count302
+)
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2017/03/14 v6.85a Hyperref driver for pdfTeX
+\Fld@listcount=\count303
+\c@bookmark@seq@number=\count304
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip268
+)
+
+LaTeX Warning: Unused global option(s):
+    [titlepage].
+
+(./thesis.aux)
+\openout1 = `thesis.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 86.
+LaTeX Font Info:    ... okay on input line 86.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 86.
+ (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ot1ppl.fd
+File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
+)
+(/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count305
+\scratchdimen=\dimen188
+\scratchbox=\box35
+\nofMPsegments=\count306
+\nofMParguments=\count307
+\everyMPshowfont=\toks60
+\MPscratchCnt=\count308
+\MPscratchDim=\dimen189
+\MPnumerator=\count309
+\makeMPintoPDFobject=\count310
+\everyMPtoPDFconversion=\toks61
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+\AtBeginShipoutBox=\box36
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/pdflscape.sty
+Package: pdflscape 2016/05/14 v0.11 Display of landscape pages in PDF (HO)
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/lscape.sty
+Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
+)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+)
+\c@lstlisting=\count311
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 86.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 86.
+Package pdfcprot Info: I didn't find pplbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/pdfcprot/pplmnOT1.cpa)
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find pplbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 86.
+Package pdfcprot Info: I didn't find pplbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 86.
+Package pdfcprot Info: I didn't find pplbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssbxnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: File pplmnOT1.cpa{} for the adjustment of
+(pdfcprot)             the char protruding used. It seems to be _fit_
+(pdfcprot)             to the font you requested. on input line 86.
+Package pdfcprot Info: File pplmnOT1.cpa{} for the adjustment of
+(pdfcprot)             the char protruding used. It seems to be _fit_
+(pdfcprot)             to the font you requested. on input line 86.
+Package pdfcprot Info: File pplmnOT1.cpa{} for the adjustment of
+(pdfcprot)             the char protruding used. It seems to be _fit_
+(pdfcprot)             to the font you requested. on input line 86.
+Package pdfcprot Info: File pplmnOT1.cpa{} for the adjustment of
+(pdfcprot)             the char protruding used. It seems to be _fit_
+(pdfcprot)             to the font you requested. on input line 86.
+Package pdfcprot Info: I didn't find pplmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find pplmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find pplmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find pplmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmnOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <9> not available
+(Font)              Font shape `OT1/cmss/m/sl' tried instead on input line 86.
+
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <12> not available
+(Font)              Font shape `OT1/cmss/m/sl' tried instead on input line 86.
+
+Package pdfcprot Info: I didn't find cmssmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <10.95> not available
+(Font)              Font shape `OT1/cmss/m/sl' tried instead on input line 86.
+
+Package pdfcprot Info: I didn't find cmssmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+
+LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <10> not available
+(Font)              Font shape `OT1/cmss/m/sl' tried instead on input line 86.
+
+Package pdfcprot Info: I didn't find cmssmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmitOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmslOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmslOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmslOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package pdfcprot Info: I didn't find cmssmslOT1.cpa.
+(pdfcprot)              As a fallback I will try pplmnOT1.cpa. on input line 86
+.
+Package pdfcprot Info: File pplmnOT1.cpa{} used for the adjustment
+(pdfcprot)             of the char protruding. It seems that it isn't the one
+(pdfcprot)             you intended to use. on input line 86.
+Package hyperref Info: Link coloring ON on input line 86.
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count312
+LaTeX Info: Redefining \Ref on input line 515.
+)
+Redoing nameref's sectioning
+Redoing nameref's label
+LaTeX Info: Redefining \nameref on input line 86.
+LaTeX Info: Redefining \ref on input line 86.
+LaTeX Info: Redefining \pageref on input line 86.
+LaTeX Info: Redefining \nameref on input line 86.
+(./thesis.out) (./thesis.out)
+\@outlinefile=\write4
+\openout4 = `thesis.out'.
+
+LaTeX Info: Redefining \Ref on input line 86.
+<ETHlogo.pdf, id=292, pagebox=cropbox, 179.67125pt x 45.16875pt>
+File: ETHlogo.pdf Graphic file (type pdf)
+<use ETHlogo.pdf>
+Package pdftex.def Info: ETHlogo.pdf  used on input line 96. on input line 96.
+Package pdftex.def Info: Requested size: 179.67079pt x 45.16862pt on input line
+ 96.
+ [1
+
+
+{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./ETHlo
+go.pdf>] [2
+
+] (./0-abs.tex
+Overfull \hbox (0.56654pt too wide) in paragraph at lines 3--4
+[]\OT1/ppl/m/n/10 Deep learn-ing meth-ods have re-cently demon-strated re-mark-
+able achieve-
+ []
+
+pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.15 \newpage
+              [1])pdfTeX warning (ext4): destination with the same identifier (
+name{page.ii}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.103 \cleartorecto
+                    [2] (./thesis.toc
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 3.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/omlzplm.fd
+File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
+)
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 3.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/omszplm.fd
+File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
+)
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 3.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/omxzplm.fd
+File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
+)
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 3.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ot1zplm.fd
+File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
+)
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 11.40997pt on input line 3.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 8.33606pt on input line 3.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 6.25204pt on input line 3.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 11.40997pt on input line 3.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 8.33606pt on input line 3.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 6.25204pt on input line 3.
+LaTeX Font Info:    Try loading font information for U+rsfs on input line 3.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/jknapltx/ursfs.fd
+File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
+)
+LaTeX Font Info:    Try loading font information for U+esvect on input line 3.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/esvect/uesvect.fd
+File: uesvect.fd 
+) [3
+
+] [4])
+[5] [6
+
+] (./1-intro.tex
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 4.
+ [1
+
+] (./fig/1-00.tex
+<fig/1-00-0.png, id=418, 602.25pt x 602.25pt>
+File: fig/1-00-0.png Graphic file (type png)
+<use fig/1-00-0.png>
+Package pdftex.def Info: fig/1-00-0.png  used on input line 5. on input line 5.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.04657pt on input lin
+e 5.
+<fig/1-00-1.png, id=420, 602.25pt x 602.25pt>
+File: fig/1-00-1.png Graphic file (type png)
+<use fig/1-00-1.png>
+Package pdftex.def Info: fig/1-00-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.04657pt on input lin
+e 8.
+) (./fig/1-02.tex
+<fig/1-02-0.png, id=424, 21.06314pt x 13.10596pt>
+File: fig/1-02-0.png Graphic file (type png)
+<use fig/1-02-0.png>
+Package pdftex.def Info: fig/1-02-0.png  used on input line 5. on input line 5.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 68.88242pt on input line
+ 5.
+<fig/1-02-1.png, id=425, 21.06314pt x 13.10596pt>
+File: fig/1-02-1.png Graphic file (type png)
+<use fig/1-02-1.png>
+Package pdftex.def Info: fig/1-02-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 68.88242pt on input line
+ 8.
+<fig/1-02-2.png, id=426, 21.06314pt x 13.10596pt>
+File: fig/1-02-2.png Graphic file (type png)
+<use fig/1-02-2.png>
+Package pdftex.def Info: fig/1-02-2.png  used on input line 11. on input line 1
+1.
+Package pdftex.def Info: Requested size: 110.70113pt x 68.88242pt on input line
+ 11.
+ [2 <./fig/1-00-0.png> <./fig/1-00-1.png>]) (./fig/1-01.texpdfTeX warning (ext4
+): destination with the same identifier (name{subfigure.1}) has been already us
+ed, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [original aerial image\label{fig:arbfrseg}]{
+<fig/1-01-0.png, id=442, 341.1144pt x 341.1144pt>
+File: fig/1-01-0.png Graphic file (type png)
+<use fig/1-01-0.png>
+Package pdftex.def Info: fig/1-01-0.png  used on input line 5. on input line 5.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.6995pt on input line
+ 5.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.6 	\subbottom
+               [semantic segmentation\label{fig:arsemseg}]{
+<fig/1-01-1.pdf, id=443, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/1-01-1.pdf Graphic file (type pdf)
+<use fig/1-01-1.pdf>
+Package pdftex.def Info: fig/1-01-1.pdf  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.69954pt on input lin
+e 8.
+<fig/1-01-2.pdf, id=444, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/1-01-2.pdf Graphic file (type pdf)
+<use fig/1-01-2.pdf>
+Package pdftex.def Info: fig/1-01-2.pdf  used on input line 11. on input line 1
+1.
+Package pdftex.def Info: Requested size: 110.70113pt x 110.69954pt on input lin
+e 11.
+)
+Overfull \hbox (4.1721pt too wide) in paragraph at lines 31--32
+\OT1/ppl/m/n/10.95 histogram-based method [[]], compression-based meth-ods [[]]
+, region-growing
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [3pdfTeX warning (ext4): destination with the same identifier (name{subfigure.
+1}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.32 
+     pdfTeX warning (ext4): destination with the same identifier (name{subfigur
+e.2}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.32 
+     pdfTeX warning (ext4): destination with the same identifier (name{subfigur
+e.3}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.32 
+      <./fig/1-02-0.png> <./fig/1-02-1.png> <./fig/1-02-2.png> <./fig/1-01-0.pn
+g> <./fig/1-01-1.pdf> <./fig/1-01-2.pdf>] [4] (./fig/1-03.texpdfTeX warning (ex
+t4): destination with the same identifier (name{subfigure.1}) has been already 
+used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [aerial image as input\label{fig:defgeoseg1}]{
+<fig/1-03-0.png, id=500, 341.1144pt x 342.078pt>
+File: fig/1-03-0.png Graphic file (type png)
+<use fig/1-03-0.png>
+Package pdftex.def Info: fig/1-03-0.png  used on input line 5. on input line 5.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.51833pt on input lin
+e 5.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.6 	\subbottom
+               [expected polygons as output\label{fig:defgeoseg2}]{
+<fig/1-03-1.pdf, id=501, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/1-03-1.pdf Graphic file (type pdf)
+<use fig/1-03-1.pdf>
+Package pdftex.def Info: fig/1-03-1.pdf  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.04932pt on input lin
+e 8.
+) [5 <./fig/1-03-0.png> <./fig/1-03-1.pdf>]
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 67.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/omsppl.fd
+File: omsppl.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 67.
+ [6])
+(./2-related.tex [7] [8
+
+] (./fig/2-04.tex
+<fig/2-04.pdf, id=559, pagebox=cropbox, 652.37024pt x 338.57326pt>
+File: fig/2-04.pdf Graphic file (type pdf)
+<use fig/2-04.pdf>
+Package pdftex.def Info: fig/2-04.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 221.40225pt x 114.90672pt on input lin
+e 3.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [9] (./fig/2-05.tex
+<fig/2-05.pdf, id=570, pagebox=cropbox, 608.63286pt x 343.54079pt>
+File: fig/2-05.pdf Graphic file (type pdf)
+<use fig/2-05.pdf>
+Package pdftex.def Info: fig/2-05.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 221.40225pt x 124.96935pt on input lin
+e 3.
+)
+Overfull \hbox (4.09192pt too wide) in paragraph at lines 18--19
+[]\OT1/cmss/bx/n/10.95 Upsampling[] \OT1/ppl/m/n/10.95 In-network up-sam-pling 
+lay-ers en-able pixel-wise pre-dic-tion and
+ []
+
+[10 <./fig/2-04.pdf> <./fig/2-05.pdf
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/2-05.pdf): PDF inclusi
+on: multiple pdfs with page group included in a single page
+>] (./fig/2-06.tex
+<fig/2-06.pdf, id=645, pagebox=cropbox, 2810.68625pt x 637.80655pt>
+File: fig/2-06.pdf Graphic file (type pdf)
+<use fig/2-06.pdf>
+Package pdftex.def Info: fig/2-06.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 75.3559pt on input line 
+3.
+) (./fig/2-00.texpdfTeX warning (ext4): destination with the same identifier (n
+ame{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [\label{fig:mspascal1}]{
+<fig/2-00-0.pdf, id=651, pagebox=cropbox, 117.46313pt x 117.46284pt>
+File: fig/2-00-0.pdf Graphic file (type pdf)
+<use fig/2-00-0.pdf>
+Package pdftex.def Info: fig/2-00-0.pdf  used on input line 5. on input line 5.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02817pt on input line 
+5.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.6 	\subbottom
+               [\label{fig:mspascal2}]{
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/2-00-1.pdf): PDF inclu
+sion: found PDF version <1.6>, but at most version <1.5> allowed
+<fig/2-00-1.pdf, id=652, pagebox=cropbox, 117.46284pt x 117.46284pt>
+File: fig/2-00-1.pdf Graphic file (type pdf)
+<use fig/2-00-1.pdf>
+Package pdftex.def Info: fig/2-00-1.pdf  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02817pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [\label{fig:mspascal3}]{
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/2-00-2.pdf): PDF inclu
+sion: found PDF version <1.6>, but at most version <1.5> allowed
+<fig/2-00-2.pdf, id=653, pagebox=cropbox, 117.46284pt x 117.46385pt>
+File: fig/2-00-2.pdf Graphic file (type pdf)
+<use fig/2-00-2.pdf>
+Package pdftex.def Info: fig/2-00-2.pdf  used on input line 11. on input line 1
+1.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02888pt on input line 
+11.
+
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/2-00-3.pdf): PDF inclu
+sion: found PDF version <1.6>, but at most version <1.5> allowed
+<fig/2-00-3.pdf, id=654, pagebox=cropbox, 117.46284pt x 117.46284pt>
+File: fig/2-00-3.pdf Graphic file (type pdf)
+<use fig/2-00-3.pdf>
+Package pdftex.def Info: fig/2-00-3.pdf  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02817pt on input line 
+14.
+) [11 <./fig/2-06.pdf> <./fig/2-00-0.pdf> <./fig/2-00-1.pdf> <./fig/2-00-2.pdf>
+ <./fig/2-00-3.pdf>] [12] (./fig/2-02.tex
+<fig/2-02.pdf, id=745, pagebox=cropbox, 441.43318pt x 164.69028pt>
+File: fig/2-02.pdf Graphic file (type pdf)
+<use fig/2-02.pdf>
+Package pdftex.def Info: fig/2-02.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 123.90437pt on input lin
+e 3.
+) (./fig/2-03.tex
+<fig/2-03.pdf, id=748, pagebox=cropbox, 444.8379pt x 196.77415pt>
+File: fig/2-03.pdf Graphic file (type pdf)
+<use fig/2-03.pdf>
+Package pdftex.def Info: fig/2-03.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 276.75pt x 122.42506pt on input line 3
+.
+) [13 <./fig/2-02.pdf> <./fig/2-03.pdf
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/2-03.pdf): PDF inclusi
+on: multiple pdfs with page group included in a single page
+>] (./fig/2-07.tex
+<fig/2-07.png, id=810, 892.2936pt x 179.2296pt>
+File: fig/2-07.png Graphic file (type png)
+<use fig/2-07.png>
+Package pdftex.def Info: fig/2-07.png  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 66.70497pt on input line
+ 3.
+) [14 <./fig/2-07.png>] (./fig/2-08.texpdfTeX warning (ext4): destination with 
+the same identifier (name{subfigure.1}) has been already used, duplicate ignore
+d
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [\label{fig:graphbasedres1}]
+<fig/2-08-0.png, id=832, 216.3282pt x 216.3282pt>
+File: fig/2-08-0.png Graphic file (type png)
+<use fig/2-08-0.png>
+Package pdftex.def Info: fig/2-08-0.png  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.70221pt on input lin
+e 4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [\label{fig:graphbasedres2}]
+<fig/2-08-1.png, id=833, 404.2302pt x 404.2302pt>
+File: fig/2-08-1.png Graphic file (type png)
+<use fig/2-08-1.png>
+Package pdftex.def Info: fig/2-08-1.png  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.69795pt on input lin
+e 6.
+)
+Overfull \hbox (4.19261pt too wide) in paragraph at lines 76--77
+\OT1/ppl/m/n/10.95 sized poly-gons that fail to cap-ture thin ge-o-met-ric stru
+c-tures and over-partition
+ []
+
+[15 <./fig/2-08-0.png> <./fig/2-08-1.png>] (./fig/2-09.texpdfTeX warning (ext4)
+: destination with the same identifier (name{subfigure.1}) has been already use
+d, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [original image\label{fig:kippires1}]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/2-09-0.pdf): PDF inclu
+sion: found PDF version <1.6>, but at most version <1.5> allowed
+<fig/2-09-0.pdf, id=859, pagebox=cropbox, 113.81522pt x 113.81522pt>
+File: fig/2-09-0.pdf Graphic file (type pdf)
+<use fig/2-09-0.pdf>
+Package pdftex.def Info: fig/2-09-0.pdf  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.70279pt on input lin
+e 4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [KIPPI result\label{fig:kippires2}]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/2-09-1.pdf): PDF inclu
+sion: found PDF version <1.6>, but at most version <1.5> allowed
+<fig/2-09-1.pdf, id=860, pagebox=cropbox, 113.81822pt x 113.81721pt>
+File: fig/2-09-1.pdf Graphic file (type pdf)
+<use fig/2-09-1.pdf>
+Package pdftex.def Info: fig/2-09-1.pdf  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.70474pt on input lin
+e 6.
+) (./fig/2-10.tex
+<fig/2-10.png, id=864, 134.4222pt x 88.1694pt>
+File: fig/2-10.png Graphic file (type png)
+<use fig/2-10.png>
+Package pdftex.def Info: fig/2-10.png  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 166.04887pt x 108.92531pt on input lin
+e 3.
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [16 <./fig/2-09-0.pdf> <./fig/2-09-1.pdf> <./fig/2-10.png>] (./fig/2-11.texpdf
+TeX warning (ext4): destination with the same identifier (name{subfigure.1}) ha
+s been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [\label{fig:rotbbox1}]
+<fig/2-11-0.pdf, id=6096, pagebox=cropbox, 216.89532pt x 191.26859pt>
+File: fig/2-11-0.pdf Graphic file (type pdf)
+<use fig/2-11-0.pdf>
+Package pdftex.def Info: fig/2-11-0.pdf  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 146.43088pt on input lin
+e 4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [\label{fig:rotbbox2}]
+<fig/2-11-1.pdf, id=6097, pagebox=cropbox, 216.8923pt x 192.06454pt>
+File: fig/2-11-1.pdf Graphic file (type pdf)
+<use fig/2-11-1.pdf>
+Package pdftex.def Info: fig/2-11-1.pdf  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 147.04025pt on input lin
+e 6.
+) [17 <./fig/2-11-0.pdf> <./fig/2-11-1.pdf>] (./fig/2-01.texpdfTeX warning (ext
+4): destination with the same identifier (name{subfigure.1}) has been already u
+sed, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [an example building\label{fig:egorgimg}]{
+<fig/2-01-0.png, id=6126, 224.84pt x 224.84pt>
+File: fig/2-01-0.png Graphic file (type png)
+<use fig/2-01-0.png>
+Package pdftex.def Info: fig/2-01-0.png  used on input line 5. on input line 5.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.7009pt on input line
+ 5.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.6 	\subbottom
+               [per-pixel mask\label{fig:egpxlmsk}]{
+<fig/2-01-1.png, id=6127, 224.84pt x 224.84pt>
+File: fig/2-01-1.png Graphic file (type png)
+<use fig/2-01-1.png>
+Package pdftex.def Info: fig/2-01-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.7009pt on input line
+ 8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [polygon representation\label{fig:egpoly}]{
+<fig/2-01-2.pdf, id=6128, pagebox=cropbox, 224.84pt x 224.84pt>
+File: fig/2-01-2.pdf Graphic file (type pdf)
+<use fig/2-01-2.pdf>
+Package pdftex.def Info: fig/2-01-2.pdf  used on input line 11. on input line 1
+1.
+Package pdftex.def Info: Requested size: 110.70113pt x 110.7009pt on input line
+ 11.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 125--125
+[]|\OT1/ppl/b/n/10.95 Classifica-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--125
+[]|\OT1/ppl/b/n/10.95 End-to-
+ []
+
+
+Underfull \vbox (badness 2368) has occurred while \output is active []
+
+ [18 <./fig/2-01-0.png> <./fig/2-01-1.png> <./fig/2-01-2.pdf>]
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 9.37807pt on input line 127.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 7.29405pt on input line 127.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 5.21004pt on input line 127.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 9.37807pt on input line 127.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 7.29405pt on input line 127.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 5.21004pt on input line 127.
+) (./3-model.tex [19]
+[20
+
+] (./fig/3-00.tex
+<fig/3-00.pdf, id=6198, pagebox=cropbox, 938.50626pt x 171.64125pt>
+File: fig/3-00.pdf Graphic file (type pdf)
+<use fig/3-00.pdf>
+Package pdftex.def Info: fig/3-00.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 60.73532pt on input line
+ 3.
+)
+Underfull \vbox (badness 5726) has occurred while \output is active []
+
+ [21 <./fig/3-00.pdf>] (./fig/3-01.tex
+<fig/3-01.pdf, id=6230, pagebox=cropbox, 1503.6175pt x 792.9625pt>
+File: fig/3-01.pdf Graphic file (type pdf)
+<use fig/3-01.pdf>
+Package pdftex.def Info: fig/3-01.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 175.12987pt on input lin
+e 3.
+) [22 <./fig/3-01.pdf>] (./fig/3-02.tex
+<fig/3-02.pdf, id=6252, pagebox=cropbox, 1503.6175pt x 792.9625pt>
+File: fig/3-02.pdf Graphic file (type pdf)
+<use fig/3-02.pdf>
+Package pdftex.def Info: fig/3-02.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 175.12987pt on input lin
+e 3.
+)
+(./fig/3-03.tex
+<fig/3-03.pdf, id=6255, pagebox=cropbox, 939.51pt x 343.2825pt>
+File: fig/3-03.pdf Graphic file (type pdf)
+<use fig/3-03.pdf>
+Package pdftex.def Info: fig/3-03.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 121.3397pt on input line
+ 3.
+) [23 <./fig/3-02.pdf> <./fig/3-03.pdf>] [24] (./fig/3-04.tex
+<fig/3-04.pdf, id=6323, pagebox=cropbox, 518.93875pt x 277.035pt>
+File: fig/3-04.pdf Graphic file (type pdf)
+<use fig/3-04.pdf>
+Package pdftex.def Info: fig/3-04.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 276.75pt x 147.74937pt on input line 3
+.
+)
+Overfull \hbox (2.24448pt too wide) detected at line 62
+[][] [] \OT1/zplm/m/n/10.95 = [] \OMS/zplm/m/n/10.95 ^^C \OML/zplm/m/it/10.95 h
+[] \OT1/zplm/m/n/10.95 + [] \OMS/zplm/m/n/10.95 ^^C \OML/zplm/m/it/10.95 x[] \O
+T1/zplm/m/n/10.95 + [] = \OML/zplm/m/it/10.95 W[] \OMS/zplm/m/n/10.95 ^^C \OML/
+zplm/m/it/10.95 h[] \OT1/zplm/m/n/10.95 + \OML/zplm/m/it/10.95 W[] \OMS/zplm/m/
+n/10.95 ^^C \OML/zplm/m/it/10.95 x[] \OT1/zplm/m/n/10.95 + \OML/zplm/m/it/10.95
+ b\OT1/ppl/m/n/10.95 ,
+ []
+
+[25 <./fig/3-04.pdf>] (./fig/3-05.tex
+<fig/3-05.pdf, id=6370, pagebox=cropbox, 906.38625pt x 752.8125pt>
+File: fig/3-05.pdf Graphic file (type pdf)
+<use fig/3-05.pdf>
+Package pdftex.def Info: fig/3-05.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 275.82533pt on input lin
+e 3.
+) [26 <./fig/3-05.pdf>]
+LaTeX Font Info:    Try loading font information for U+fplmbb on input line 93.
+
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ufplmbb.fd
+File: ufplmbb.fd 2003/10/30 Fontinst v1.914 font definitions for U/fplmbb.
+) [27] [28]
+(./fig/3-06.tex
+<fig/3-06.pdf, id=6454, pagebox=cropbox, 938.50626pt x 172.645pt>
+File: fig/3-06.pdf Graphic file (type pdf)
+<use fig/3-06.pdf>
+Package pdftex.def Info: fig/3-06.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 61.0905pt on input line 
+3.
+) (./fig/3-07.texpdfTeX warning (ext4): destination with the same identifier (n
+ame{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [positive\label{fig:posanchor}]
+<fig/3-07-0.pdf, id=6457, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/3-07-0.pdf Graphic file (type pdf)
+<use fig/3-07-0.pdf>
+Package pdftex.def Info: fig/3-07-0.pdf  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02727pt on input line 
+4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [natural\label{fig:natanchor1}]
+<fig/3-07-1.pdf, id=6458, pagebox=cropbox, 341.275pt x 342.27875pt>
+File: fig/3-07-1.pdf Graphic file (type pdf)
+<use fig/3-07-1.pdf>
+Package pdftex.def Info: fig/3-07-1.pdf  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.27145pt on input line 
+6.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.7 	\subbottom
+               [natural\label{fig:natanchor2}]
+<fig/3-07-2.pdf, id=6459, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/3-07-2.pdf Graphic file (type pdf)
+<use fig/3-07-2.pdf>
+Package pdftex.def Info: fig/3-07-2.pdf  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02727pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.4})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [negative\label{fig:neganchor}]
+<fig/3-07-3.pdf, id=6460, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/3-07-3.pdf Graphic file (type pdf)
+<use fig/3-07-3.pdf>
+Package pdftex.def Info: fig/3-07-3.pdf  used on input line 10. on input line 1
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02727pt on input line 
+10.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [29 <./fig/3-06.pdf>] (./fig/3-08.texpdfTeX warning (ext4): destination with 
+the same identifier (name{subfigure.1}) has been already used, duplicate ignore
+d
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [$\text{IoU}=0$]
+<fig/3-08-0.pdf, id=6498, pagebox=cropbox, 170.6375pt x 170.6375pt>
+File: fig/3-08-0.pdf Graphic file (type pdf)
+<use fig/3-08-0.pdf>
+Package pdftex.def Info: fig/3-08-0.pdf  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02725pt on input line 
+4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [$\text{IoU}=0.3$]
+<fig/3-08-1.pdf, id=6499, pagebox=cropbox, 170.6375pt x 170.6375pt>
+File: fig/3-08-1.pdf Graphic file (type pdf)
+<use fig/3-08-1.pdf>
+Package pdftex.def Info: fig/3-08-1.pdf  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02725pt on input line 
+6.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.7 	\subbottom
+               [$\text{IoU}=0.7$]
+<fig/3-08-2.pdf, id=6500, pagebox=cropbox, 170.6375pt x 170.6375pt>
+File: fig/3-08-2.pdf Graphic file (type pdf)
+<use fig/3-08-2.pdf>
+Package pdftex.def Info: fig/3-08-2.pdf  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02725pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.4})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [$\text{IoU}=1$]
+<fig/3-08-3.pdf, id=6501, pagebox=cropbox, 170.6375pt x 170.6375pt>
+File: fig/3-08-3.pdf Graphic file (type pdf)
+<use fig/3-08-3.pdf>
+Package pdftex.def Info: fig/3-08-3.pdf  used on input line 10. on input line 1
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02725pt on input line 
+10.
+) [30 <./fig/3-07-0.pdf> <./fig/3-07-1.pdf> <./fig/3-07-2.pdf> <./fig/3-07-3.pd
+f> <./fig/3-08-0.pdf> <./fig/3-08-1.pdf> <./fig/3-08-2.pdf> <./fig/3-08-3.pdf>]
+ [31] (./fig/3-09.tex
+<fig/3-09.pdf, id=6603, pagebox=cropbox, 941.5175pt x 182.6825pt>
+File: fig/3-09.pdf Graphic file (type pdf)
+<use fig/3-09.pdf>
+Package pdftex.def Info: fig/3-09.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 64.43599pt on input line
+ 3.
+) (./fig/3-10.tex
+<fig/3-10.pdf, id=6604, pagebox=cropbox, 829.0975pt x 512.91624pt>
+File: fig/3-10.pdf Graphic file (type pdf)
+<use fig/3-10.pdf>
+Package pdftex.def Info: fig/3-10.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 221.40225pt x 136.96307pt on input lin
+e 3.
+)
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[32 <./fig/3-09.pdf>] (./fig/3-11.tex
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/3-11.pdf): PDF inclusi
+on: found PDF version <1.6>, but at most version <1.5> allowed
+<fig/3-11.pdf, id=6648, pagebox=cropbox, 258.1043pt x 153.0538pt>
+File: fig/3-11.pdf Graphic file (type pdf)
+<use fig/3-11.pdf>
+Package pdftex.def Info: fig/3-11.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 221.40225pt x 131.29439pt on input lin
+e 3.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [33 <./fig/3-10.pdf>] (./fig/3-12.tex
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/3-12.pdf): PDF inclusi
+on: found PDF version <1.6>, but at most version <1.5> allowed
+<fig/3-12.pdf, id=6676, pagebox=cropbox, 181.1839pt x 157.77144pt>
+File: fig/3-12.pdf Graphic file (type pdf)
+<use fig/3-12.pdf>
+Package pdftex.def Info: fig/3-12.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 221.40225pt x 192.80342pt on input lin
+e 3.
+) [34 <./fig/3-11.pdf> <./fig/3-12.pdf>] (./fig/3-13.tex
+<fig/3-13.pdf, id=6763, pagebox=cropbox, 681.54625pt x 484.81125pt>
+File: fig/3-13.pdf Graphic file (type pdf)
+<use fig/3-13.pdf>
+Package pdftex.def Info: fig/3-13.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 221.40225pt x 157.49521pt on input lin
+e 3.
+) [35 <./fig/3-13.pdf>] (./fig/3-14.tex
+<fig/3-14.pdf, id=6794, pagebox=cropbox, 1500.60625pt x 970.62625pt>
+File: fig/3-14.pdf Graphic file (type pdf)
+<use fig/3-14.pdf>
+Package pdftex.def Info: fig/3-14.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 214.79733pt on input lin
+e 3.
+) (./fig/3-15.tex
+<fig/3-15.pdf, id=6799, pagebox=cropbox, 941.5175pt x 515.9275pt>
+File: fig/3-15.pdf Graphic file (type pdf)
+<use fig/3-15.pdf>
+Package pdftex.def Info: fig/3-15.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 181.9786pt on input line
+ 3.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [36 <./fig/3-14.pdf>] (./fig/3-16.tex
+<fig/3-16.pdf, id=6820, pagebox=cropbox, 941.5175pt x 515.9275pt>
+File: fig/3-16.pdf Graphic file (type pdf)
+<use fig/3-16.pdf>
+Package pdftex.def Info: fig/3-16.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 181.9786pt on input line
+ 3.
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [37 <./fig/3-15.pdf> <./fig/3-16.pdf>] (./fig/3-18.tex
+<fig/3-18.pdf, id=6888, pagebox=cropbox, 82.55844pt x 102.63344pt>
+File: fig/3-18.pdf Graphic file (type pdf)
+<use fig/3-18.pdf>
+Package pdftex.def Info: fig/3-18.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 129.15225pt x 160.57886pt on input lin
+e 3.
+)
+Underfull \vbox (badness 1742) has occurred while \output is active []
+
+ [38 <./fig/3-18.pdf>] (./fig/3-17.tex
+<fig/3-17.pdf, id=6904, pagebox=cropbox, 941.5175pt x 515.9275pt>
+File: fig/3-17.pdf Graphic file (type pdf)
+<use fig/3-17.pdf>
+Package pdftex.def Info: fig/3-17.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 181.9786pt on input line
+ 3.
+) [39 <./fig/3-17.pdf>] (./fig/3-19.tex
+<fig/3-19.pdf, id=6945, pagebox=cropbox, 806.01125pt x 588.1975pt>
+File: fig/3-19.pdf Graphic file (type pdf)
+<use fig/3-19.pdf>
+Package pdftex.def Info: fig/3-19.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 242.34726pt on input lin
+e 3.
+))
+(./4-exp.tex [40 <./fig/3-19.pdf>] [41
+
+] (./fig/4-00.texpdfTeX warning (ext4): destination with the same identifier (n
+ame{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [satellite image\label{fig:egsatellite}]
+<fig/4-00-0.png, id=6991, 602.25pt x 602.25pt>
+File: fig/4-00-0.png Graphic file (type png)
+<use fig/4-00-0.png>
+Package pdftex.def Info: fig/4-00-0.png  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.69771pt on input lin
+e 4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [roadmap image\label{fig:egroadmap}]
+<fig/4-00-1.png, id=6992, 602.25pt x 602.25pt>
+File: fig/4-00-1.png Graphic file (type png)
+<use fig/4-00-1.png>
+Package pdftex.def Info: fig/4-00-1.png  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.69771pt on input lin
+e 6.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.7 	\subbottom
+               [hybrid image\label{fig:eghybrid}]
+<fig/4-00-2.png, id=6993, 602.25pt x 602.25pt>
+File: fig/4-00-2.png Graphic file (type png)
+<use fig/4-00-2.png>
+Package pdftex.def Info: fig/4-00-2.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 110.70113pt x 110.69771pt on input lin
+e 8.
+) [42 <./fig/4-00-0.png> <./fig/4-00-1.png> <./fig/4-00-2.png>] (./fig/4-01.tex
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.1})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [example area\label{fig:egarea}]
+<fig/4-01-0.png, id=7012, 602.25pt x 602.25pt>
+File: fig/4-01-0.png Graphic file (type png)
+<use fig/4-01-0.png>
+Package pdftex.def Info: fig/4-01-0.png  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.04657pt on input lin
+e 4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [example area with bounding boxes\label{fig:egareabox}]
+<fig/4-01-1.png, id=7013, 602.25pt x 602.25pt>
+File: fig/4-01-1.png Graphic file (type png)
+<use fig/4-01-1.png>
+Package pdftex.def Info: fig/4-01-1.png  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.04657pt on input lin
+e 6.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [43] (./fig/4-02.texpdfTeX warning (ext4): destination with the same identifi
+er (name{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [example buildings\label{fig:egbui0}]{
+<fig/4-02-0.png, id=7026, 224.84pt x 224.84pt>
+File: fig/4-02-0.png Graphic file (type png)
+<use fig/4-02-0.png>
+Package pdftex.def Info: fig/4-02-0.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+<fig/4-02-1.png, id=7027, 224.84pt x 224.84pt>
+File: fig/4-02-1.png Graphic file (type png)
+<use fig/4-02-1.png>
+Package pdftex.def Info: fig/4-02-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+<fig/4-02-2.png, id=7028, 224.84pt x 224.84pt>
+File: fig/4-02-2.png Graphic file (type png)
+<use fig/4-02-2.png>
+Package pdftex.def Info: fig/4-02-2.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+<fig/4-02-3.png, id=7029, 224.84pt x 224.84pt>
+File: fig/4-02-3.png Graphic file (type png)
+<use fig/4-02-3.png>
+Package pdftex.def Info: fig/4-02-3.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [example buildings with polygon outlines\label{fig:egbui1}]{
+<fig/4-02-4.png, id=7030, 224.84pt x 224.84pt>
+File: fig/4-02-4.png Graphic file (type png)
+<use fig/4-02-4.png>
+Package pdftex.def Info: fig/4-02-4.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+<fig/4-02-5.png, id=7031, 224.84pt x 224.84pt>
+File: fig/4-02-5.png Graphic file (type png)
+<use fig/4-02-5.png>
+Package pdftex.def Info: fig/4-02-5.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+<fig/4-02-6.png, id=7032, 224.84pt x 224.84pt>
+File: fig/4-02-6.png Graphic file (type png)
+<use fig/4-02-6.png>
+Package pdftex.def Info: fig/4-02-6.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+<fig/4-02-7.png, id=7033, 224.84pt x 224.84pt>
+File: fig/4-02-7.png Graphic file (type png)
+<use fig/4-02-7.png>
+Package pdftex.def Info: fig/4-02-7.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+)
+[44 <./fig/4-01-0.png> <./fig/4-01-1.png> <./fig/4-02-0.png> <./fig/4-02-1.png>
+ <./fig/4-02-2.png> <./fig/4-02-3.png> <./fig/4-02-4.png> <./fig/4-02-5.png> <.
+/fig/4-02-6.png> <./fig/4-02-7.png>] (./fig/4-03.texpdfTeX warning (ext4): dest
+ination with the same identifier (name{subfigure.1}) has been already used, dup
+licate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [general shift\label{fig:egshi0}]{
+<fig/4-03-0.png, id=7049, 224.84pt x 224.84pt>
+File: fig/4-03-0.png Graphic file (type png)
+<use fig/4-03-0.png>
+Package pdftex.def Info: fig/4-03-0.png  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+6.
+<fig/4-03-1.png, id=7050, 224.84pt x 224.84pt>
+File: fig/4-03-1.png Graphic file (type png)
+<use fig/4-03-1.png>
+Package pdftex.def Info: fig/4-03-1.png  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+6.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.7 	\subbottom
+               [polygon size and shape\label{fig:egshi1}]{
+<fig/4-03-2.png, id=7051, 224.84pt x 224.84pt>
+File: fig/4-03-2.png Graphic file (type png)
+<use fig/4-03-2.png>
+Package pdftex.def Info: fig/4-03-2.png  used on input line 10. on input line 1
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+10.
+<fig/4-03-3.png, id=7052, 224.84pt x 224.84pt>
+File: fig/4-03-3.png Graphic file (type png)
+<use fig/4-03-3.png>
+Package pdftex.def Info: fig/4-03-3.png  used on input line 10. on input line 1
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+10.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.11 	\subbottom
+                [angle issue\label{fig:egshi2}]{
+<fig/4-03-4.png, id=7053, 224.84pt x 224.84pt>
+File: fig/4-03-4.png Graphic file (type png)
+<use fig/4-03-4.png>
+Package pdftex.def Info: fig/4-03-4.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+<fig/4-03-5.png, id=7054, 224.84pt x 224.84pt>
+File: fig/4-03-5.png Graphic file (type png)
+<use fig/4-03-5.png>
+Package pdftex.def Info: fig/4-03-5.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.4})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.15 	\subbottom
+                [adjacent buildings\label{fig:egshi3}]{
+<fig/4-03-6.png, id=7055, 224.84pt x 224.84pt>
+File: fig/4-03-6.png Graphic file (type png)
+<use fig/4-03-6.png>
+Package pdftex.def Info: fig/4-03-6.png  used on input line 18. on input line 1
+8.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+18.
+<fig/4-03-7.png, id=7056, 224.84pt x 224.84pt>
+File: fig/4-03-7.png Graphic file (type png)
+<use fig/4-03-7.png>
+Package pdftex.def Info: fig/4-03-7.png  used on input line 18. on input line 1
+8.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+18.
+) [45 <./fig/4-03-0.png> <./fig/4-03-1.png> <./fig/4-03-2.png> <./fig/4-03-3.pn
+g> <./fig/4-03-4.png> <./fig/4-03-5.png> <./fig/4-03-6.png> <./fig/4-03-7.png>]
+ (./fig/4-04.texpdfTeX warning (ext4): destination with the same identifier (na
+me{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [before adjustment\label{fig:egbfradj}]{
+<fig/4-04-0.png, id=7074, 224.84pt x 224.84pt>
+File: fig/4-04-0.png Graphic file (type png)
+<use fig/4-04-0.png>
+Package pdftex.def Info: fig/4-04-0.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+<fig/4-04-1.png, id=7075, 224.84pt x 224.84pt>
+File: fig/4-04-1.png Graphic file (type png)
+<use fig/4-04-1.png>
+Package pdftex.def Info: fig/4-04-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+<fig/4-04-2.png, id=7076, 224.84pt x 224.84pt>
+File: fig/4-04-2.png Graphic file (type png)
+<use fig/4-04-2.png>
+Package pdftex.def Info: fig/4-04-2.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+<fig/4-04-3.png, id=7077, 224.84pt x 224.84pt>
+File: fig/4-04-3.png Graphic file (type png)
+<use fig/4-04-3.png>
+Package pdftex.def Info: fig/4-04-3.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [after adjustment\label{fig:egaftadj}]{
+<fig/4-04-4.png, id=7078, 224.84pt x 224.84pt>
+File: fig/4-04-4.png Graphic file (type png)
+<use fig/4-04-4.png>
+Package pdftex.def Info: fig/4-04-4.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+<fig/4-04-5.png, id=7079, 224.84pt x 224.84pt>
+File: fig/4-04-5.png Graphic file (type png)
+<use fig/4-04-5.png>
+Package pdftex.def Info: fig/4-04-5.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+<fig/4-04-6.png, id=7080, 224.84pt x 224.84pt>
+File: fig/4-04-6.png Graphic file (type png)
+<use fig/4-04-6.png>
+Package pdftex.def Info: fig/4-04-6.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+<fig/4-04-7.png, id=7081, 224.84pt x 224.84pt>
+File: fig/4-04-7.png Graphic file (type png)
+<use fig/4-04-7.png>
+Package pdftex.def Info: fig/4-04-7.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02824pt on input line 
+14.
+)
+Overfull \hbox (2.47444pt too wide) in paragraph at lines 75--76
+[]\OT1/ppl/m/n/10.95 Based on these con-clu-sions, we pro-pose a brute force sh
+ift ad-just-ment method.
+ []
+
+[46 <./fig/4-04-0.png> <./fig/4-04-1.png> <./fig/4-04-2.png> <./fig/4-04-3.png>
+ <./fig/4-04-4.png> <./fig/4-04-5.png> <./fig/4-04-6.png> <./fig/4-04-7.png>]
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[47] [48] (./fig/4-05.texpdfTeX warning (ext4): destination with the same ident
+ifier (name{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [before NMS\label{fig:bfrnms}]
+<fig/4-05-0.pdf, id=7122, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/4-05-0.pdf Graphic file (type pdf)
+<use fig/4-05-0.pdf>
+Package pdftex.def Info: fig/4-05-0.pdf  used on input line 4. on input line 4.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.04932pt on input lin
+e 4.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.5 	\subbottom
+               [after NMS\label{fig:aftnms}]
+<fig/4-05-1.pdf, id=7123, pagebox=cropbox, 341.275pt x 341.275pt>
+File: fig/4-05-1.pdf Graphic file (type pdf)
+<use fig/4-05-1.pdf>
+Package pdftex.def Info: fig/4-05-1.pdf  used on input line 6. on input line 6.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 166.04932pt on input lin
+e 6.
+) [49 <./fig/4-05-0.pdf> <./fig/4-05-1.pdf>] (./fig/4-06.tex
+<fig/4-06.pdf, id=7161, pagebox=cropbox, 680.94714pt x 407.67934pt>
+File: fig/4-06.pdf Graphic file (type pdf)
+<use fig/4-06.pdf>
+Package pdftex.def Info: fig/4-06.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 198.82529pt on input lin
+e 3.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) (./fig/4-07.tex
+<fig/4-07.pdf, id=7162, pagebox=cropbox, 680.94714pt x 407.67934pt>
+File: fig/4-07.pdf Graphic file (type pdf)
+<use fig/4-07.pdf>
+Package pdftex.def Info: fig/4-07.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 198.82529pt on input lin
+e 3.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [50]
+Underfull \vbox (badness 1132) has occurred while \output is active []
+
+ [51 <./fig/4-06.pdf> <./fig/4-07.pdf
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/4-07.pdf): PDF inclusi
+on: multiple pdfs with page group included in a single page
+>] [52] [53]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [54]
+(./fig/4-11.texpdfTeX warning (ext4): destination with the same identifier (nam
+e{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [Zurich, with beam search\label{fig:withbszh}]{
+<fig/4-10-0.png, id=7323, 602.25pt x 602.25pt>
+File: fig/4-10-0.png Graphic file (type png)
+<use fig/4-10-0.png>
+Package pdftex.def Info: fig/4-10-0.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/4-10-1.png, id=7324, 602.25pt x 602.25pt>
+File: fig/4-10-1.png Graphic file (type png)
+<use fig/4-10-1.png>
+Package pdftex.def Info: fig/4-10-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/4-10-2.png, id=7325, 602.25pt x 602.25pt>
+File: fig/4-10-2.png Graphic file (type png)
+<use fig/4-10-2.png>
+Package pdftex.def Info: fig/4-10-2.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/4-10-3.png, id=7326, 602.25pt x 602.25pt>
+File: fig/4-10-3.png Graphic file (type png)
+<use fig/4-10-3.png>
+Package pdftex.def Info: fig/4-10-3.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [Zurich, without beam search\label{fig:withoutbszh}]{
+<fig/4-10-4.png, id=7327, 602.25pt x 602.25pt>
+File: fig/4-10-4.png Graphic file (type png)
+<use fig/4-10-4.png>
+Package pdftex.def Info: fig/4-10-4.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/4-10-5.png, id=7328, 602.25pt x 602.25pt>
+File: fig/4-10-5.png Graphic file (type png)
+<use fig/4-10-5.png>
+Package pdftex.def Info: fig/4-10-5.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/4-10-6.png, id=7329, 602.25pt x 602.25pt>
+File: fig/4-10-6.png Graphic file (type png)
+<use fig/4-10-6.png>
+Package pdftex.def Info: fig/4-10-6.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/4-10-7.png, id=7330, 602.25pt x 602.25pt>
+File: fig/4-10-7.png Graphic file (type png)
+<use fig/4-10-7.png>
+Package pdftex.def Info: fig/4-10-7.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.3})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.15 	\subbottom
+                [Chicago, with beam search\label{fig:withbsch}]{
+<fig/4-11-0.png, id=7331, 602.25pt x 602.25pt>
+File: fig/4-11-0.png Graphic file (type png)
+<use fig/4-11-0.png>
+Package pdftex.def Info: fig/4-11-0.png  used on input line 20. on input line 2
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+20.
+<fig/4-11-1.png, id=7332, 602.25pt x 602.25pt>
+File: fig/4-11-1.png Graphic file (type png)
+<use fig/4-11-1.png>
+Package pdftex.def Info: fig/4-11-1.png  used on input line 20. on input line 2
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+20.
+<fig/4-11-2.png, id=7333, 602.25pt x 602.25pt>
+File: fig/4-11-2.png Graphic file (type png)
+<use fig/4-11-2.png>
+Package pdftex.def Info: fig/4-11-2.png  used on input line 20. on input line 2
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+20.
+<fig/4-11-3.png, id=7334, 602.25pt x 602.25pt>
+File: fig/4-11-3.png Graphic file (type png)
+<use fig/4-11-3.png>
+Package pdftex.def Info: fig/4-11-3.png  used on input line 20. on input line 2
+0.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+20.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.4})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.21 	\subbottom
+                [Chicago, without beam search\label{fig:withoutbsch}]{
+<fig/4-11-4.png, id=7335, 602.25pt x 602.25pt>
+File: fig/4-11-4.png Graphic file (type png)
+<use fig/4-11-4.png>
+Package pdftex.def Info: fig/4-11-4.png  used on input line 26. on input line 2
+6.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+26.
+<fig/4-11-5.png, id=7336, 602.25pt x 602.25pt>
+File: fig/4-11-5.png Graphic file (type png)
+<use fig/4-11-5.png>
+Package pdftex.def Info: fig/4-11-5.png  used on input line 26. on input line 2
+6.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+26.
+<fig/4-11-6.png, id=7337, 602.25pt x 602.25pt>
+File: fig/4-11-6.png Graphic file (type png)
+<use fig/4-11-6.png>
+Package pdftex.def Info: fig/4-11-6.png  used on input line 26. on input line 2
+6.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+26.
+<fig/4-11-7.png, id=7338, 602.25pt x 602.25pt>
+File: fig/4-11-7.png Graphic file (type png)
+<use fig/4-11-7.png>
+Package pdftex.def Info: fig/4-11-7.png  used on input line 26. on input line 2
+6.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+26.
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [55 <./fig/4-10-0.png> <./fig/4-10-1.png> <./fig/4-10-2.png> <./fig/4-10-3.png
+> <./fig/4-10-4.png> <./fig/4-10-5.png> <./fig/4-10-6.png> <./fig/4-10-7.png> <
+./fig/4-11-0.png> <./fig/4-11-1.png> <./fig/4-11-2.png> <./fig/4-11-3.png> <./f
+ig/4-11-4.png> <./fig/4-11-5.png> <./fig/4-11-6.png> <./fig/4-11-7.png>] (./fig
+/4-08.tex
+<fig/4-08.png, id=7362, 1525.7pt x 2137.9875pt>
+File: fig/4-08.png Graphic file (type png)
+<use fig/4-08.png>
+Package pdftex.def Info: fig/4-08.png  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 465.36739pt on input lin
+e 3.
+)
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [56 <./fig/4-08.png (PNG copy)>] (./fig/4-09.tex
+<fig/4-09.png, id=7369, 1525.7pt x 2137.9875pt>
+File: fig/4-09.png Graphic file (type png)
+<use fig/4-09.png>
+Package pdftex.def Info: fig/4-09.png  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 465.36739pt on input lin
+e 3.
+)) (./5-future.tex [57 <./fig/4-09.png (PNG copy)>] [58
+
+] (./fig/5-00.texpdfTeX warning (ext4): destination with the same identifier (n
+ame{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [resolution problem in the dataset of Zurich\label{fig:respro...
+<fig/5-00-0.png, id=7386, 602.25pt x 602.25pt>
+File: fig/5-00-0.png Graphic file (type png)
+<use fig/5-00-0.png>
+Package pdftex.def Info: fig/5-00-0.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/5-00-1.png, id=7387, 602.25pt x 602.25pt>
+File: fig/5-00-1.png Graphic file (type png)
+<use fig/5-00-1.png>
+Package pdftex.def Info: fig/5-00-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/5-00-2.png, id=7388, 602.25pt x 602.25pt>
+File: fig/5-00-2.png Graphic file (type png)
+<use fig/5-00-2.png>
+Package pdftex.def Info: fig/5-00-2.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/5-00-3.png, id=7389, 602.25pt x 602.25pt>
+File: fig/5-00-3.png Graphic file (type png)
+<use fig/5-00-3.png>
+Package pdftex.def Info: fig/5-00-3.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [resolution problem in the dataset of Chicago\label{fig:respr...
+<fig/5-00-4.png, id=7390, 602.25pt x 602.25pt>
+File: fig/5-00-4.png Graphic file (type png)
+<use fig/5-00-4.png>
+Package pdftex.def Info: fig/5-00-4.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/5-00-5.png, id=7391, 602.25pt x 602.25pt>
+File: fig/5-00-5.png Graphic file (type png)
+<use fig/5-00-5.png>
+Package pdftex.def Info: fig/5-00-5.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/5-00-6.png, id=7392, 602.25pt x 602.25pt>
+File: fig/5-00-6.png Graphic file (type png)
+<use fig/5-00-6.png>
+Package pdftex.def Info: fig/5-00-6.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/5-00-7.png, id=7393, 602.25pt x 602.25pt>
+File: fig/5-00-7.png Graphic file (type png)
+<use fig/5-00-7.png>
+Package pdftex.def Info: fig/5-00-7.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [59] (./fig/5-01.texpdfTeX warning (ext4): destination with the same identifi
+er (name{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [false vertex problem in the dataset of Zurich\label{fig:flsp...
+<fig/5-01-0.png, id=7404, 602.25pt x 602.25pt>
+File: fig/5-01-0.png Graphic file (type png)
+<use fig/5-01-0.png>
+Package pdftex.def Info: fig/5-01-0.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/5-01-1.png, id=7405, 602.25pt x 602.25pt>
+File: fig/5-01-1.png Graphic file (type png)
+<use fig/5-01-1.png>
+Package pdftex.def Info: fig/5-01-1.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/5-01-2.png, id=7406, 602.25pt x 602.25pt>
+File: fig/5-01-2.png Graphic file (type png)
+<use fig/5-01-2.png>
+Package pdftex.def Info: fig/5-01-2.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+<fig/5-01-3.png, id=7407, 602.25pt x 602.25pt>
+File: fig/5-01-3.png Graphic file (type png)
+<use fig/5-01-3.png>
+Package pdftex.def Info: fig/5-01-3.png  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+8.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.9 	\subbottom
+               [false vertex problem in the dataset of Chicago\label{fig:fls...
+<fig/5-01-4.png, id=7408, 602.25pt x 602.25pt>
+File: fig/5-01-4.png Graphic file (type png)
+<use fig/5-01-4.png>
+Package pdftex.def Info: fig/5-01-4.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/5-01-5.png, id=7409, 602.25pt x 602.25pt>
+File: fig/5-01-5.png Graphic file (type png)
+<use fig/5-01-5.png>
+Package pdftex.def Info: fig/5-01-5.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/5-01-6.png, id=7410, 602.25pt x 602.25pt>
+File: fig/5-01-6.png Graphic file (type png)
+<use fig/5-01-6.png>
+Package pdftex.def Info: fig/5-01-6.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+<fig/5-01-7.png, id=7411, 602.25pt x 602.25pt>
+File: fig/5-01-7.png Graphic file (type png)
+<use fig/5-01-7.png>
+Package pdftex.def Info: fig/5-01-7.png  used on input line 14. on input line 1
+4.
+Package pdftex.def Info: Requested size: 83.02725pt x 83.02788pt on input line 
+14.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) (./fig/5-02.texpdfTeX warning (ext4): destination with the same identifier (n
+ame{subfigure.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.3 	\subbottom
+               [angle distribution in Zurich\label{fig:agldstbzurich}]{
+<fig/5-02-0.pdf, id=7413, pagebox=cropbox, 462.52798pt x 346.89601pt>
+File: fig/5-02-0.pdf Graphic file (type pdf)
+<use fig/5-02-0.pdf>
+Package pdftex.def Info: fig/5-02-0.pdf  used on input line 5. on input line 5.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 124.5384pt on input line
+ 5.
+pdfTeX warning (ext4): destination with the same identifier (name{subfigure.2})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.6 	\subbottom
+               [angle distribution in Chicago\label{fig:agldstbchicago}]{
+<fig/5-02-1.pdf, id=7414, pagebox=cropbox, 462.52798pt x 346.89601pt>
+File: fig/5-02-1.pdf Graphic file (type pdf)
+<use fig/5-02-1.pdf>
+Package pdftex.def Info: fig/5-02-1.pdf  used on input line 8. on input line 8.
+
+Package pdftex.def Info: Requested size: 166.04887pt x 124.5384pt on input line
+ 8.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [60 <./fig/5-00-0.png> <./fig/5-00-1.png> <./fig/5-00-2.png> <./fig/5-00-3.pn
+g> <./fig/5-00-4.png> <./fig/5-00-5.png> <./fig/5-00-6.png> <./fig/5-00-7.png>]
+[61 <./fig/5-01-0.png> <./fig/5-01-1.png> <./fig/5-01-2.png> <./fig/5-01-3.png>
+ <./fig/5-01-4.png> <./fig/5-01-5.png> <./fig/5-01-6.png> <./fig/5-01-7.png> <.
+/fig/5-02-0.pdf> <./fig/5-02-1.pdf
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./fig/5-02-1.pdf): PDF inclu
+sion: multiple pdfs with page group included in a single page
+>] (./fig/5-04.tex
+<fig/5-04.pdf, id=7523, pagebox=cropbox, 623.32875pt x 321.2pt>
+File: fig/5-04.pdf Graphic file (type pdf)
+<use fig/5-04.pdf>
+Package pdftex.def Info: fig/5-04.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 221.40225pt x 114.08806pt on input lin
+e 3.
+) (./fig/5-03.tex
+<fig/5-03.pdf, id=7526, pagebox=cropbox, 441.86981pt x 123.09087pt>
+File: fig/5-03.pdf Graphic file (type pdf)
+<use fig/5-03.pdf>
+Package pdftex.def Info: fig/5-03.pdf  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 92.517pt on input line 3
+.
+) [62 <./fig/5-04.pdf> <./fig/5-03.pdf>])
+(./appendix.tex [63] [64
+
+] [65] [66] [67
+
+] [68] [69] [70
+
+] (./fig/6-00.tex
+<fig/6-00.png, id=8171, 1525.7pt x 2137.9875pt>
+File: fig/6-00.png Graphic file (type png)
+<use fig/6-00.png>
+Package pdftex.def Info: fig/6-00.png  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 465.36739pt on input lin
+e 3.
+)
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+(./fig/6-01.tex
+<fig/6-01.png, id=8173, 1525.7pt x 2137.9875pt>
+File: fig/6-01.png Graphic file (type png)
+<use fig/6-01.png>
+Package pdftex.def Info: fig/6-01.png  used on input line 3. on input line 3.
+Package pdftex.def Info: Requested size: 332.09775pt x 465.36739pt on input lin
+e 3.
+))
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[71] [72 <./fig/6-00.png (PNG copy)>] [73 <./fig/6-01.png (PNG copy)>] [74
+
+]
+(./thesis.lof [75]) [76] (./thesis.lot) [77] (./thesis.bbl [78
+
+]
+bibitemlist
+
+Underfull \hbox (badness 1960) in paragraph at lines 4--7
+[]\OT1/ppl/m/n/10.95 P. Kaiser, J. D. Weg-ner, A. Luc-chi, M. Jaggi, T. Hof-man
+n, and
+ []
+
+[79] [80] [81])
+<declaration-of-originality.pdf, id=8295, pagebox=cropbox, 597.432pt x 845.0771
+8pt>
+File: declaration-of-originality.pdf Graphic file (type pdf)
+<use declaration-of-originality.pdf>
+Package pdftex.def Info: declaration-of-originality.pdf  used on input line 127
+. on input line 127.
+Package pdftex.def Info: Requested size: 597.43054pt x 845.07512pt on input lin
+e 127.
+File: declaration-of-originality.pdf Graphic file (type pdf)
+<use declaration-of-originality.pdf>
+Package pdftex.def Info: declaration-of-originality.pdf  used on input line 127
+. on input line 127.
+Package pdftex.def Info: Requested size: 597.43054pt x 845.07512pt on input lin
+e 127.
+<declaration-of-originality.pdf, id=8298, page=1, pagebox=cropbox, 597.432pt x 
+845.07718pt>
+File: declaration-of-originality.pdf Graphic file (type pdf)
+<use declaration-of-originality.pdf, page 1>
+Package pdftex.def Info: declaration-of-originality.pdf , page1 used on input l
+ine 127. on input line 127.
+Package pdftex.def Info: Requested size: 597.43054pt x 845.07512pt on input lin
+e 127.
+File: declaration-of-originality.pdf Graphic file (type pdf)
+<use declaration-of-originality.pdf, page 1>
+Package pdftex.def Info: declaration-of-originality.pdf , page1 used on input l
+ine 127. on input line 127.
+Package pdftex.def Info: Requested size: 597.45789pt x 845.1138pt on input line
+ 127.
+ [82]
+File: declaration-of-originality.pdf Graphic file (type pdf)
+<use declaration-of-originality.pdf, page 1>
+Package pdftex.def Info: declaration-of-originality.pdf , page1 used on input l
+ine 127. on input line 127.
+Package pdftex.def Info: Requested size: 597.45789pt x 845.1138pt on input line
+ 127.
+File: declaration-of-originality.pdf Graphic file (type pdf)
+<use declaration-of-originality.pdf, page 1>
+Package pdftex.def Info: declaration-of-originality.pdf , page1 used on input l
+ine 127. on input line 127.
+Package pdftex.def Info: Requested size: 597.45789pt x 845.1138pt on input line
+ 127.
+File: declaration-of-originality.pdf Graphic file (type pdf)
+<use declaration-of-originality.pdf, page 1>
+Package pdftex.def Info: declaration-of-originality.pdf , page1 used on input l
+ine 127. on input line 127.
+Package pdftex.def Info: Requested size: 597.45789pt x 845.1138pt on input line
+ 127.
+ [83 <./declaration-of-originality.pdf, page is rotated 90 degrees>]
+<declaration-of-consent.pdf, id=8310, pagebox=cropbox, 597.55246pt x 845.07718p
+t>
+File: declaration-of-consent.pdf Graphic file (type pdf)
+<use declaration-of-consent.pdf>
+Package pdftex.def Info: declaration-of-consent.pdf  used on input line 128. on
+ input line 128.
+Package pdftex.def Info: Requested size: 597.551pt x 845.07512pt on input line 
+128.
+File: declaration-of-consent.pdf Graphic file (type pdf)
+<use declaration-of-consent.pdf>
+Package pdftex.def Info: declaration-of-consent.pdf  used on input line 128. on
+ input line 128.
+Package pdftex.def Info: Requested size: 597.551pt x 845.07512pt on input line 
+128.
+<declaration-of-consent.pdf, id=8313, page=1, pagebox=cropbox, 597.55246pt x 84
+5.07718pt>
+File: declaration-of-consent.pdf Graphic file (type pdf)
+<use declaration-of-consent.pdf, page 1>
+Package pdftex.def Info: declaration-of-consent.pdf , page1 used on input line 
+128. on input line 128.
+Package pdftex.def Info: Requested size: 597.551pt x 845.07512pt on input line 
+128.
+File: declaration-of-consent.pdf Graphic file (type pdf)
+<use declaration-of-consent.pdf, page 1>
+Package pdftex.def Info: declaration-of-consent.pdf , page1 used on input line 
+128. on input line 128.
+Package pdftex.def Info: Requested size: 597.57834pt x 845.1138pt on input line
+ 128.
+File: declaration-of-consent.pdf Graphic file (type pdf)
+<use declaration-of-consent.pdf, page 1>
+Package pdftex.def Info: declaration-of-consent.pdf , page1 used on input line 
+128. on input line 128.
+Package pdftex.def Info: Requested size: 597.57834pt x 845.1138pt on input line
+ 128.
+File: declaration-of-consent.pdf Graphic file (type pdf)
+<use declaration-of-consent.pdf, page 1>
+Package pdftex.def Info: declaration-of-consent.pdf , page1 used on input line 
+128. on input line 128.
+Package pdftex.def Info: Requested size: 597.57834pt x 845.1138pt on input line
+ 128.
+File: declaration-of-consent.pdf Graphic file (type pdf)
+<use declaration-of-consent.pdf, page 1>
+Package pdftex.def Info: declaration-of-consent.pdf , page1 used on input line 
+128. on input line 128.
+Package pdftex.def Info: Requested size: 597.57834pt x 845.1138pt on input line
+ 128.
+ [84 <./declaration-of-consent.pdf, page is rotated 270 degrees>]
+\tf@thm=\write5
+\openout5 = `thesis.thm'.
+
+\tf@toc=\write6
+\openout6 = `thesis.toc'.
+
+\tf@lof=\write7
+\openout7 = `thesis.lof'.
+
+\tf@lot=\write8
+\openout8 = `thesis.lot'.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 130.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 130.
+
+(./thesis.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 130.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 130.
+Package rerunfilecheck Info: File `thesis.out' has not changed.
+(rerunfilecheck)             Checksum: 3D281FB5F9B3642D9460C5A74AD8D24A;4732.
+ ) 
+Here is how much of TeX's memory you used:
+ 17698 strings out of 492990
+ 250278 string characters out of 6132637
+ 413477 words of memory out of 5000000
+ 20263 multiletter control sequences out of 15000+600000
+ 48386 words of font info for 150 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 54i,18n,91p,1123b,1174s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
+xlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
+live/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texli
+ve/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texliv
+e/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/texlive
+/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/texlive/2
+017/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/
+2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2
+017/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/20
+17/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/texlive/2017
+/texmf-dist/fonts/type1/public/mathpazo/fplmbb.pfb></usr/local/texlive/2017/tex
+mf-dist/fonts/type1/public/mathpazo/fplmr.pfb></usr/local/texlive/2017/texmf-di
+st/fonts/type1/public/mathpazo/fplmri.pfb></usr/local/texlive/2017/texmf-dist/f
+onts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2017/texmf-di
+st/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2017/texmf-dist/font
+s/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1
+/urw/palatino/uplri8a.pfb>
+Output written on thesis.pdf (92 pages, 74990539 bytes).
+PDF statistics:
+ 8461 PDF objects out of 8907 (max. 8388607)
+ 4652 compressed objects within 47 object streams
+ 374 named destinations out of 1000 (max. 500000)
+ 13555 words of extra memory for PDF output out of 14400 (max. 10000000)
+

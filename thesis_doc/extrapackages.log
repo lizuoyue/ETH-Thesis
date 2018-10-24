@@ -1,0 +1,37 @@
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2017.7.4)  11 APR 2018 20:59
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**extrapackages.tex
+(./extrapackages.tex
+LaTeX2e <2017-04-15>
+Babel <3.12> and hyphenation patterns for 84 language(s) loaded.
+
+./extrapackages.tex:9: LaTeX Error: \usepackage before \documentclass.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.9 \usepackage{
+                varioref}
+? 
+./extrapackages.tex:9: Emergency stop.
+ ...                                              
+                                                  
+l.9 \usepackage{
+                varioref}
+\usepackage may only appear in the document preamble, i.e.,
+between \documentclass and \begin{document}.
+
+ 
+Here is how much of TeX's memory you used:
+ 5 strings out of 492998
+ 208 string characters out of 6134492
+ 61708 words of memory out of 5000000
+ 4084 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 5i,0n,5p,89b,14s stack positions out of 5000i,500n,10000p,200000b,80000s
+No pages of output.

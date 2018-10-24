@@ -1,0 +1,72 @@
+\BOOKMARK [0][-]{Doc-Start}{Abstract}{}% 1
+\BOOKMARK [0][-]{Doc-Start}{Acknowledgment}{}% 2
+\BOOKMARK [0][-]{section*.1}{Contents}{}% 3
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 4
+\BOOKMARK [1][-]{section.1.1}{Background}{chapter.1}% 5
+\BOOKMARK [2][-]{subsection.1.1.1}{Aerial Image}{section.1.1}% 6
+\BOOKMARK [2][-]{subsection.1.1.2}{Image Segmentation}{section.1.1}% 7
+\BOOKMARK [2][-]{subsection.1.1.3}{Geometrical Shape}{section.1.1}% 8
+\BOOKMARK [1][-]{section.1.2}{Problem Definition}{chapter.1}% 9
+\BOOKMARK [1][-]{section.1.3}{Focus of This Work}{chapter.1}% 10
+\BOOKMARK [1][-]{section.1.4}{Thesis Organization}{chapter.1}% 11
+\BOOKMARK [0][-]{chapter.2}{Related Work}{}% 12
+\BOOKMARK [1][-]{section.2.1}{Deep Learning for Image Segmentation}{chapter.2}% 13
+\BOOKMARK [2][-]{subsection.2.1.1}{Frameworks for Semantic Segmentation}{section.2.1}% 14
+\BOOKMARK [2][-]{subsection.2.1.2}{Frameworks for Instance Segmentation}{section.2.1}% 15
+\BOOKMARK [1][-]{section.2.2}{Frameworks Related to Geometrical Shapes}{chapter.2}% 16
+\BOOKMARK [2][-]{subsection.2.2.1}{Graph-based Approach}{section.2.2}% 17
+\BOOKMARK [2][-]{subsection.2.2.2}{Polygonal Partitioning Approach}{section.2.2}% 18
+\BOOKMARK [2][-]{subsection.2.2.3}{Bounding Box Covering Approach}{section.2.2}% 19
+\BOOKMARK [2][-]{subsection.2.2.4}{PolygonRNN}{section.2.2}% 20
+\BOOKMARK [1][-]{section.2.3}{Motivation}{chapter.2}% 21
+\BOOKMARK [0][-]{chapter.3}{Model Architecture}{}% 22
+\BOOKMARK [1][-]{section.3.1}{PolygonRNN}{chapter.3}% 23
+\BOOKMARK [2][-]{subsection.3.1.1}{CNN Part}{section.3.1}% 24
+\BOOKMARK [2][-]{subsection.3.1.2}{RNN Part}{section.3.1}% 25
+\BOOKMARK [2][-]{subsection.3.1.3}{Loss Function}{section.3.1}% 26
+\BOOKMARK [1][-]{section.3.2}{Feature Pyramid Network}{chapter.3}% 27
+\BOOKMARK [2][-]{subsection.3.2.1}{Single Bounding Box Regression}{section.3.2}% 28
+\BOOKMARK [2][-]{subsection.3.2.2}{Anchor and Its Properties}{section.3.2}% 29
+\BOOKMARK [2][-]{subsection.3.2.3}{Multiple Bounding Boxes Regression}{section.3.2}% 30
+\BOOKMARK [2][-]{subsection.3.2.4}{Feature Pyramid and Backbone}{section.3.2}% 31
+\BOOKMARK [1][-]{section.3.3}{R-PolygonRNN}{chapter.3}% 32
+\BOOKMARK [2][-]{subsection.3.3.1}{Two-step Version}{section.3.3}% 33
+\BOOKMARK [2][-]{subsection.3.3.2}{Hybrid Version}{section.3.3}% 34
+\BOOKMARK [2][-]{subsection.3.3.3}{Hybrid Version with RoIAlign}{section.3.3}% 35
+\BOOKMARK [2][-]{subsection.3.3.4}{Beam Search}{section.3.3}% 36
+\BOOKMARK [0][-]{chapter.4}{Experiments and Results}{}% 37
+\BOOKMARK [1][-]{section.4.1}{Ground Truth}{chapter.4}% 38
+\BOOKMARK [2][-]{subsection.4.1.1}{Google Static Maps API}{section.4.1}% 39
+\BOOKMARK [2][-]{subsection.4.1.2}{OpenStreetMap}{section.4.1}% 40
+\BOOKMARK [2][-]{subsection.4.1.3}{Areas and Buildings}{section.4.1}% 41
+\BOOKMARK [2][-]{subsection.4.1.4}{Problems}{section.4.1}% 42
+\BOOKMARK [2][-]{subsection.4.1.5}{Adjustments}{section.4.1}% 43
+\BOOKMARK [1][-]{section.4.2}{Implementation Details}{chapter.4}% 44
+\BOOKMARK [2][-]{subsection.4.2.1}{Dataset Information}{section.4.2}% 45
+\BOOKMARK [2][-]{subsection.4.2.2}{Model Configuration}{section.4.2}% 46
+\BOOKMARK [2][-]{subsection.4.2.3}{Training Phase}{section.4.2}% 47
+\BOOKMARK [2][-]{subsection.4.2.4}{Prediction Phase}{section.4.2}% 48
+\BOOKMARK [1][-]{section.4.3}{Experiment Results}{chapter.4}% 49
+\BOOKMARK [2][-]{subsection.4.3.1}{Loss Decrease}{section.4.3}% 50
+\BOOKMARK [2][-]{subsection.4.3.2}{Time Consumption}{section.4.3}% 51
+\BOOKMARK [2][-]{subsection.4.3.3}{Evaluation Metrics}{section.4.3}% 52
+\BOOKMARK [2][-]{subsection.4.3.4}{Prediction Results}{section.4.3}% 53
+\BOOKMARK [0][-]{chapter.5}{Problems and Future Work}{}% 54
+\BOOKMARK [1][-]{section.5.1}{Problems}{chapter.5}% 55
+\BOOKMARK [2][-]{subsection.5.1.1}{Output Resolution}{section.5.1}% 56
+\BOOKMARK [2][-]{subsection.5.1.2}{False Vertex}{section.5.1}% 57
+\BOOKMARK [1][-]{section.5.2}{Future Work}{chapter.5}% 58
+\BOOKMARK [0][-]{appendix.A}{APIs}{}% 59
+\BOOKMARK [1][-]{section.A.1}{Google Static Maps API}{appendix.A}% 60
+\BOOKMARK [1][-]{section.A.2}{OpenStreetMap}{appendix.A}% 61
+\BOOKMARK [0][-]{appendix.B}{Algorithms}{}% 62
+\BOOKMARK [1][-]{section.B.1}{Projection}{appendix.B}% 63
+\BOOKMARK [1][-]{section.B.2}{Order of Polygon Vertices}{appendix.B}% 64
+\BOOKMARK [1][-]{section.B.3}{Shift and Resizing Adjustment}{appendix.B}% 65
+\BOOKMARK [1][-]{section.B.4}{Anchor Assignment}{appendix.B}% 66
+\BOOKMARK [0][-]{appendix.C}{Prediction Results}{}% 67
+\BOOKMARK [1][-]{section.C.1}{Zurich}{appendix.C}% 68
+\BOOKMARK [1][-]{section.C.2}{Chicago}{appendix.C}% 69
+\BOOKMARK [0][-]{section*.31}{List of Figures}{}% 70
+\BOOKMARK [0][-]{section*.32}{List of Tables}{}% 71
+\BOOKMARK [0][-]{section*.34}{Bibliography}{}% 72

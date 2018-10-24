@@ -1,1 +1,0 @@
-rm -rf Log __pycache__ LossTrain.out LossValid.out Eval.out lsf.* test_res *.pyc
