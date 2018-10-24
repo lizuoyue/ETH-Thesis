@@ -23,7 +23,7 @@ def preserve(filename, num_lines):
 
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2 or len(sys.argv) == 3)
-	city_name = sys.argv[2]
+	city_name = sys.argv[-1]
 
 	# Define graph
 	graph = HybridModel(
