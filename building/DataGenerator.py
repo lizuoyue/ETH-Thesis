@@ -120,7 +120,7 @@ class DataGenerator(object):
 		return math.fabs(p1[0] - p2[0]) + math.fabs(p1[1] - p2[1])
 
 	def removeColinear(self, polygon):
-		flag = [polygon[i-1] == polygon[i] for i in range(len(polygon))]
+		flag = [polygon[i-1] != polygon[i] for i in range(len(polygon))]
 		polygon = [v for i, v in enumerate(polygon) if flag[i]]
 		print(polygon)
 		for i in range(len(polygon)):
