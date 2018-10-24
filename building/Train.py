@@ -28,9 +28,10 @@ def preserve(filename, num_lines):
 if __name__ == '__main__':
 	argv = {k: v for k, v in zip(sys.argv[1::2], sys.argv[2::2])}
 	city_name = argv['--city']
-	img_bias = np.array(config.PATH[self.city_name]['bias'])
+	img_bias = np.array(config.PATH[city_name]['bias'])
 	backbone = argv['--net']
 	restore = argv['--pre'] != '0'
+	print(city_name, backbone, restore)
 
 	# Define graph
 	graph = Model(
