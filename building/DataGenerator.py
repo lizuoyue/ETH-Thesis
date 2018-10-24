@@ -50,19 +50,22 @@ class DataGenerator(object):
 		self.TEST_ANNOTATIONS_PATH  = config.PATH[city_name]['ann-test']
 		self.TRAIN_IMAGES_DIRECTORY = config.PATH[city_name]['img-train']
 		self.VAL_IMAGES_DIRECTORY   = config.PATH[city_name]['img-val']
-		if mode == 'test':
-			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-test']
-		else:
-			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-val']
-		if self.TEST_ANNOTATIONS_PATH is None:
-			self.TEST_IMAGE_IDS = list(range(len(glob.glob(self.TEST_IMAGES_DIRECTORY + '/*'))))
-		else:
-			self.coco_test = COCO(self.TEST_ANNOTATIONS_PATH)
-			self.TEST_IMAGE_IDS = list(self.coco_test.getImgIds(catIds = self.coco_train.getCatIds()))
+
 		self.TEST_CURRENT = 0
 		self.TEST_FLAG = True
 		self.TEST_RESULT = []
 
+		if mode == 'test':
+			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-test']
+			if self.TEST_ANNOTATIONS_PATH is None:
+				self.TEST_IMAGE_IDS = list(range(len(glob.glob(self.TEST_IMAGES_DIRECTORY + '/*'))))
+			else:
+				self.coco_test = COCO(self.TEST_ANNOTATIONS_PATH)
+				self.TEST_IMAGE_IDS = list(self.coco_test.getImgIds(catIds = self.coco_train.getCatIds()))
+		if mode == 'val':
+			self.coco_valid = COCO(self.VAL_ANNOTATIONS_PATH)
+			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-val']
+			self.TEST_IMAGE_IDS = list(self.coco_valid.getImgIds(catIds = self.coco_train.getCatIds()))
 		if mode == 'train':
 			self.coco_train = COCO(self.TRAIN_ANNOTATIONS_PATH)
 			self.coco_valid = COCO(self.VAL_ANNOTATIONS_PATH)

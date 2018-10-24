@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
 	# Create new folder
 	model_path = './Model_%s_%s/' % (backbone, city_name)
-	if not os.path.exists():
+	if not os.path.exists(model_path):
 		os.makedirs(model_path)
 	loss_train_out = './LossTrain_%s_%s.out' % (backbone, city_name)
 	loss_valid_out = './LossTrain_%s_%s.out' % (backbone, city_name)
