@@ -172,6 +172,7 @@ class DataGenerator(object):
 			a, b = int(math.floor(x * x_rate)), int(math.floor(y * y_rate))
 			if not polygon_s or self.distL1((a, b), polygon_s[-1]) > 0:
 				polygon_s.append((a, b))
+		print(polygon_s)
 		polygon_s = self.removeColinear(polygon_s)
 		print(polygon_s)
 
@@ -437,6 +438,7 @@ class DataGenerator(object):
 		return
 
 if __name__ == '__main__':
+	np.random.seed(8888)
 	dg = DataGenerator(
 		city_name = sys.argv[1],
 		img_size = config.PATCH_SIZE,
