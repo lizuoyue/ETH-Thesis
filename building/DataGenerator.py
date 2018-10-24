@@ -123,6 +123,7 @@ class DataGenerator(object):
 		flag = [polygon[i-1] != polygon[i] for i in range(len(polygon))]
 		polygon = [v for i, v in enumerate(polygon) if flag[i]]
 		print(polygon)
+		flag = []
 		for i in range(len(polygon)):
 			temp_poly = [polygon[i - 1], polygon[i], polygon[(i + 1) % len(polygon)]]
 			flag.append(self.area(temp_poly) > 1e-6)
