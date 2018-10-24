@@ -119,7 +119,7 @@ class Model(object):
 		if not reuse:
 			loss  = self.WeightedLogLoss(gt_boundary, boundary_prob)
 			loss += self.WeightedLogLoss(gt_vertices, vertices_prob)
-			return combine, loss
+			return combine, loss * 5
 		else:
 			prob, idx = tf.nn.top_k(tf.reshape(vertices_prob, [-1, self.res_num]), k = config.BEAM_WIDTH)
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)

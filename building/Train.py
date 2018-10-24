@@ -26,6 +26,8 @@ def preserve(filename, num_lines):
 	return
 
 if __name__ == '__main__':
+	np.random.seed(8888)
+
 	argv = {k: v for k, v in zip(sys.argv[1::2], sys.argv[2::2])}
 	city_name = argv['--city']
 	img_bias = np.array(config.PATH[city_name]['bias'])
@@ -77,8 +79,8 @@ if __name__ == '__main__':
 	model_path = './Model_%s_%s/' % (backbone, city_name)
 	if not os.path.exists(model_path):
 		os.makedirs(model_path)
-	loss_train_out = './LossTrain_%s_%s.out' % (backbone, city_name)
-	loss_valid_out = './LossTrain_%s_%s.out' % (backbone, city_name)
+	loss_train_out = './Loss_Train_%s_%s.out' % (backbone, city_name)
+	loss_valid_out = './Loss_Valid_%s_%s.out' % (backbone, city_name)
 
 	# Launch graph
 	with tf.Session() as sess:
