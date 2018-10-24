@@ -331,6 +331,7 @@ class DataGenerator(object):
 				return np.array(res)
 			else:
 				return None
+		print(sel)
 		return [np.array([item[i] for item in res]) for i in range(3)]
 
 	def getPatchesFromAreas(self, pred_score, pred_box):
