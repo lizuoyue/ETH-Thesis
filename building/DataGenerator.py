@@ -122,12 +122,10 @@ class DataGenerator(object):
 	def removeColinear(self, polygon):
 		flag = [polygon[i-1] != polygon[i] for i in range(len(polygon))]
 		polygon = [v for i, v in enumerate(polygon) if flag[i]]
-		print(polygon)
 		flag = []
 		for i in range(len(polygon)):
 			temp_poly = [polygon[i - 1], polygon[i], polygon[(i + 1) % len(polygon)]]
 			flag.append(abs(self.area(temp_poly)) > 1e-6)
-		print(flag)
 		return [v for i, v in enumerate(polygon) if flag[i]]
 
 	def getSingleBuilding(self, mode, ann_id, rotate = True):
@@ -171,20 +169,20 @@ class DataGenerator(object):
 		img_patch = Image.fromarray(img_patch).resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
 		img_patch = np.array(img_patch, np.float32)[..., 0: 3]
 		polygon_s = []
-		print(polygon)
 		for x, y in polygon:
 			a, b = int(math.floor(x * x_rate)), int(math.floor(y * y_rate))
 			if not polygon_s or self.distL1((a, b), polygon_s[-1]) > 0:
 				polygon_s.append((a, b))
-		print(polygon_s)
 		polygon_s = self.removeColinear(polygon_s)
-		print(polygon_s)
-		print('======')
+		if len(polygon_s) == 1:
+			polygon_b = polygon_s + polygon_s
+		else:
+			polygon_b = polygon_s
 
 		# Draw boundary and vertices
 		boundary = Image.new('P', self.v_out_res, color = 0)
 		draw = ImageDraw.Draw(boundary)
-		draw.polygon(polygon_s, fill = 0, outline = 255)
+		draw.polygon(polygon_b, fill = 0, outline = 255)
 		boundary = np.array(boundary.rotate(rotate)) / 255.0
 
 		vertices = Image.new('P', self.v_out_res, color = 0)
@@ -450,10 +448,14 @@ if __name__ == '__main__':
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
-	item1 = dg.getAreasBatch(4, mode = 'train')
-	item2 = dg.getBuildingsBatch(12, mode = 'train')
-	item3 = dg.getAreasBatch(4, mode = 'valid')
-	item4 = dg.getBuildingsBatch(12, mode = 'valid')
+
+	for n in range(10000):
+		print(n)
+		item1 = dg.getAreasBatch(4, mode = 'train')
+		item2 = dg.getBuildingsBatch(12, mode = 'train')
+		item3 = dg.getAreasBatch(4, mode = 'valid')
+		item4 = dg.getBuildingsBatch(12, mode = 'valid')
+	quit()
 
 	for k in range(12):
 		for i, item in enumerate(list(item2)):
