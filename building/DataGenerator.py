@@ -268,7 +268,8 @@ class DataGenerator(object):
 
 		if True: # <- Local test
 			draw = ImageDraw.Draw(img)
-			for u, l, d, r in gt_boxes:
+			for uu, ll, dd, rr in gt_boxes:
+				l, u, r, d = ll * rx, uu * ry, rr * rx, dd * ry
 				draw.line([(l, u), (r, u), (r, d), (l, d), (l, u)], fill = (255, 0, 0, 255), width = 1)
 			img.save('%s.png' % str(img_id).zfill(12))
 
