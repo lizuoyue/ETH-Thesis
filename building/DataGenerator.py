@@ -152,7 +152,7 @@ class DataGenerator(object):
 
 		# Rotate polygon
 		polygon = annotation['segmentation'][0]
-		polygon = [(x, y) for x, y in zip(polygon[0::2], polygon[1::2])]
+		polygon = [(int(round(x)), int(round(y))) for x, y in zip(polygon[0::2], polygon[1::2])]
 		print(polygon)
 		w, h = org_w, org_h
 		for _ in range(rotate):
