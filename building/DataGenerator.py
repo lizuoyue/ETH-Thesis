@@ -266,7 +266,7 @@ class DataGenerator(object):
 				(w, h), (l, u, r, d) = rotateBox((w, h), (l, u, r, d))
 			gt_boxes.append([u / rx, l / ry, d / rx, r / ry])
 
-		if True: # <- Local test
+		if False: # <- Local test
 			draw = ImageDraw.Draw(img)
 			for uu, ll, dd, rr in gt_boxes:
 				l, u, r, d = ll * rx, uu * ry, rr * rx, dd * ry
