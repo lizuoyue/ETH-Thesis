@@ -119,7 +119,7 @@ class Model(object):
 		if not reuse:
 			loss  = self.WeightedLogLoss(gt_boundary, boundary_prob)
 			loss += self.WeightedLogLoss(gt_vertices, vertices_prob)
-			return combine, loss * 5
+			return combine, loss
 		else:
 			prob, idx = tf.nn.top_k(tf.reshape(vertices_prob, [-1, self.res_num]), k = config.BEAM_WIDTH)
 			v_first = tf.gather(self.vertex_pool, idx, axis = 0)
@@ -250,12 +250,17 @@ class Model(object):
 
 		# FPN part
 		pred_logit, pred_delta, backbone_result = self.FPN(img)
-		loss_class = 10000 * self.FPNClassLoss(anchor_class, pred_logit)
-		loss_delta = 3 * self.FPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
+		loss_class = self.FPNClassLoss(anchor_class, pred_logit)
+		loss_delta = self.FPNDeltaLoss(anchor_class, anchor_delta, pred_delta)
 
 		# PolygonRNN part
 		feature, loss_CNN = self.CNN(crop_info, backbone_result, gt_boundary, gt_vertices)
 		logits , loss_RNN = self.RNN(feature, v_in, gt_rnn_out, gt_seq_len)
+
+		loss_class *= 1e4
+		loss_delta *= 3.0
+		loss_CNN   *= 4.0
+		loss_RNN   *= 1.0
 
 		# 
 		pred_boundary = feature[..., -2]

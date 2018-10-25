@@ -295,7 +295,6 @@ class DataGenerator(object):
 			anns_p = normalize([setValidNum(ann) for ann in anns])
 			while len(res) < batch_size:
 				ann_id = np.random.choice(self.anns_choose_from, 1, replace = True, p = anns_p)
-				print(ann_id)
 				ann = self.getSingleBuilding('train', int(ann_id), rotate = self.rotate)
 				if ann is not None:
 					res.append(ann)

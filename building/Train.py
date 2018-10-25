@@ -32,7 +32,7 @@ if __name__ == '__main__':
 	city_name = argv['--city']
 	img_bias = np.array(config.PATH[city_name]['bias'])
 	backbone = argv['--net']
-	restore = argv['--pre'] != '0'
+	restore = argv['--load'] != '0'
 	print(city_name, backbone, restore)
 
 	# Define graph
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 	# quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
-	train = optimizer.minimize(2.000 * train_res[0] + 0.667 * train_res[1] + 0.441 * train_res[2] + 0.345 * train_res[3])
+	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
 	saver = tf.train.Saver(max_to_keep = 1)
 	init = tf.global_variables_initializer()
 
@@ -79,8 +79,8 @@ if __name__ == '__main__':
 	model_path = './Model_%s_%s/' % (backbone, city_name)
 	if not os.path.exists(model_path):
 		os.makedirs(model_path)
-	loss_train_out = './Loss_Train_%s_%s.out' % (backbone, city_name)
-	loss_valid_out = './Loss_Valid_%s_%s.out' % (backbone, city_name)
+	loss_train_out = './Loss_train_%s_%s.out' % (backbone, city_name)
+	loss_valid_out = './Loss_valid_%s_%s.out' % (backbone, city_name)
 
 	# Launch graph
 	with tf.Session() as sess:
@@ -107,7 +107,7 @@ if __name__ == '__main__':
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
 			img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_TRAIN_BATCH, mode = 'train')
-			_, boundary, vertices, v_in, v_out, end, seq_len, _, crop_info = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'train')
+			_, boundary, vertices, v_in, v_out, end, seq_len, crop_info = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'train')
 			feed_dict = {
 				aa: img - img_bias, cc: anchor_cls, dd: anchor_box,
 				pp: crop_info, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len
@@ -125,7 +125,7 @@ if __name__ == '__main__':
 			# Validation
 			if i % 100 == 0:
 				img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_TRAIN_BATCH, mode = 'valid')
-				_, boundary, vertices, v_in, v_out, end, seq_len, _, crop_info = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'valid')
+				_, boundary, vertices, v_in, v_out, end, seq_len, crop_info = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'valid')
 				feed_dict = {
 					aa: img - img_bias, cc: anchor_cls, dd: anchor_box,
 					pp: crop_info, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len
