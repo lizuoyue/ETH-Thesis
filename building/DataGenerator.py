@@ -153,11 +153,10 @@ class DataGenerator(object):
 		# Rotate polygon
 		polygon = annotation['segmentation'][0]
 		polygon = [(int(round(x)), int(round(y))) for x, y in zip(polygon[0::2], polygon[1::2])]
-		print(polygon)
+		polygon = [(min(max(x, 0), org_w - 1), min(max(y, 0), org_h - 1)) for x, y in polygon]
 		w, h = org_w, org_h
 		for _ in range(rotate):
 			(w, h), polygon = rotatePolygon((w, h), polygon)
-		print(polygon)
 		poly_np = np.array(polygon)
 		x0, y0, x1, y1 = poly_np[:, 0].min(), poly_np[:, 1].min(), poly_np[:, 0].max() + 1, poly_np[:, 1].max() + 1
 		x0_old, y0_old, x1_old, y1_old, = x0, y0, x1, y1
