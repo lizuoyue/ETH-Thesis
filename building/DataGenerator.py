@@ -464,6 +464,7 @@ class DataGenerator(object):
 
 if __name__ == '__main__':
 	np.random.seed(8888)
+
 	dg = DataGenerator(
 		city_name = sys.argv[1],
 		img_size = config.PATCH_SIZE,
@@ -471,13 +472,13 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
 
-	# for n in range(10000):
-	# 	print(n)
-	item1 = dg.getAreasBatch(4, mode = 'train')
-	item2 = dg.getBuildingsBatch(12, mode = 'train')
-	item3 = dg.getAreasBatch(4, mode = 'valid')
-	item4 = dg.getBuildingsBatch(12, mode = 'valid')
-	# quit()
+	for n in range(10000):
+		print(n)
+		item1 = dg.getAreasBatch(4, mode = 'train')
+		item2 = dg.getBuildingsBatch(12, mode = 'train')
+		item3 = dg.getAreasBatch(4, mode = 'valid')
+		item4 = dg.getBuildingsBatch(12, mode = 'valid')
+	quit()
 
 	for k in range(12):
 		for i, item in enumerate(list(item2)):
