@@ -90,8 +90,8 @@ if __name__ == '__main__':
 			files = glob.glob(model_path + '*.ckpt.meta')
 			files = [(int(file.replace(model_path, '').replace('.ckpt.meta', '')), file) for file in files]
 			files.sort()
-			num, model_path = files[-1]
-			saver.restore(sess, model_path.replace('.meta', ''))
+			num, model_to_load = files[-1]
+			saver.restore(sess, model_to_load.replace('.meta', ''))
 			iter_obj = range(num + 1, config.NUM_ITER)
 			preserve(loss_train_out, num + 1)
 			preserve(loss_valid_out, num + 1)
@@ -137,7 +137,7 @@ if __name__ == '__main__':
 				valid_loss.flush()
 
 			# Save model
-			if i % 10000 == 0:
+			if i % 5000 == 0:
 				saver.save(sess, model_path + '%d.ckpt' % i)
 
 		# End main loop

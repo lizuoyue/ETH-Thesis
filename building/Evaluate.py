@@ -31,7 +31,7 @@ if __name__ == '__main__':
 	backbone = argv['--net']
 	mode = argv['--mode']
 	vis = argv['--vis'] != '0'
-	print(city_name, backbone)
+	print(city_name, backbone, mode, vis)
 
 	# Create data generator
 	obj = DataGenerator(
@@ -69,12 +69,15 @@ if __name__ == '__main__':
 	# 	print(v.name)
 	# quit()
 
+	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
+	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
+
 	saver = tf.train.Saver(max_to_keep = 1)
 	model_path = './Model_%s_%s/' % (backbone, city_name)
 	files = glob.glob(model_path + '*.ckpt.meta')
 	files = [(int(file.replace(model_path, '').replace('.ckpt.meta', '')), file) for file in files]
 	files.sort()
-	_, model_path = files[-1]
+	_, model_to_load = files[-1]
 
 	test_path = './Test_Result_%s_%s' % (backbone, city_name)
 	if not os.path.exists(test_path):
@@ -84,7 +87,7 @@ if __name__ == '__main__':
 	with tf.Session() as sess:
 		with open('Eval.out', 'w') as f:
 			# Restore weights
-			saver.restore(sess, model_path)
+			saver.restore(sess, model_to_load)
 			i = 0
 			while obj.TEST_FLAG:
 				time_res = [i]
