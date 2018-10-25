@@ -123,7 +123,7 @@ def generatePyramidAnchors(scales, ratios, feature_shapes, feature_strides):
 		anchors.append(generateAnchors(scales[i], ratios, feature_shapes[i], feature_strides[i]))
 	return np.concatenate(anchors, axis=0)
 
-def buildRPNTargets(anchors, gt_boxes):
+def buildFPNTargets(anchors, gt_boxes):
 	"""Given the anchors and GT boxes, compute overlaps and identify positive
 	anchors and deltas to refine them to match their corresponding GT boxes.
 

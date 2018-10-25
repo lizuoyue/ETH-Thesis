@@ -24,6 +24,10 @@ def rotateBox(size, box):
 	x1, y1, x2, y2 = box
 	return (h, w), (y1, w - x2, y2, w - x1)
 
+def rotatePolygon(size, polygon):
+	w, h = size
+	return (h, w), [(y, w - 1 - x) for x, y in polygon]
+
 def overlay(img, mask):
 	"""
 		both img and mask PIL.Image, rgb
@@ -128,13 +132,8 @@ class DataGenerator(object):
 			flag.append(abs(self.area(temp_poly)) > 1e-6)
 		return [v for i, v in enumerate(polygon) if flag[i]]
 
-	def getSingleBuilding(self, mode, ann_id, rotate = True):
-		# Rotate
-		if rotate:
-			rotate = random.choice([0, 90, 180, 270])
-		else:
-			rotate = 0
-
+	def getSingleBuilding(self, mode, ann_id, rotate):
+		rotate_deg = rotate * 90
 		if mode == 'train':
 			annotation = self.coco_train.loadAnns([ann_id])[0]
 			img_info = self.coco_train.loadImgs(annotation['image_id'])[0]
@@ -144,29 +143,40 @@ class DataGenerator(object):
 			img_info = self.coco_valid.loadImgs(annotation['image_id'])[0]
 			image_path = os.path.join(self.VAL_IMAGES_DIRECTORY, img_info['file_name'])
 
-		img = np.array(Image.open(image_path))
+		img = Image.open(image_path)
+		org_w, org_h = img.size
+
+		# Rotate image
+		img = np.array(img.rotate(rotate_deg))
 		img_h, img_w = float(img.shape[0] - 1), float(img.shape[1] - 1)
-		polygon, (x0, y0, x1, y1) = self.polygon2bbox(annotation['segmentation'][0])
+
+		# Rotate polygon
+		polygon = annotation['segmentation'][0]
+		polygon = zip(polygon[0::2], polygon[1::2])
+		for _ in range(rotate):
+			(w, h), polygon = rotatePolygon((w, h), polygon)
+		poly_np = np.array(polygon)
+		x0, y0, x1, y1 = poly_np[:, 0].min(), poly_np[:, 1].min(), poly_np[:, 0].max() + 1, poly_np[:, 1].max() + 1
 		x0_old, y0_old, x1_old, y1_old, = x0, y0, x1, y1
+
+		# Padding
 		if True:
 			x0 = max(0, x0 - random.randint(0, 20))
 			x1 = min(img.shape[1], x1 + random.randint(0, 20))
 			y0 = max(0, y0 - random.randint(0, 20))
 			y1 = min(img.shape[0], y1 + random.randint(0, 20))
-		img_patch = img[y0: y1, x0: x1, ...]
-		w, h = x1 - x0, y1 - y0
-		delta_x, delta_y = x0_old - x0, y0_old - y0
 
-		polygon = [(min(w - 1, x + delta_x), min(h - 1, y + delta_y)) for x, y in polygon]
+		img_patch = img[y0: y1, x0: x1, ...]
+		polygon = [(x - x0, y - y0) for x, y in polygon]
 		if self.area(polygon) > 0:
 			polygon.reverse()
+		patch_h, patch_w = img_patch.shape[0: 2]
 
 		# Adjust image and polygon
-		org_info = [w, h, rotate]
 		crop_info = [self.to_batch_idx[annotation['image_id']], y0 / img_h, x0 / img_w, y1 / img_h, x1 / img_w]
-		x_rate = self.v_out_res[0] / w
-		y_rate = self.v_out_res[1] / h
-		img_patch = Image.fromarray(img_patch).resize(self.img_size, resample = Image.BICUBIC).rotate(rotate)
+		x_rate = self.v_out_res[0] / patch_w
+		y_rate = self.v_out_res[1] / patch_h
+		img_patch = Image.fromarray(img_patch).resize(self.img_size, resample = Image.BICUBIC)
 		img_patch = np.array(img_patch, np.float32)[..., 0: 3]
 		polygon_s = []
 		for x, y in polygon:
@@ -174,26 +184,24 @@ class DataGenerator(object):
 			if not polygon_s or self.distL1((a, b), polygon_s[-1]) > 0:
 				polygon_s.append((a, b))
 		polygon_s = self.removeColinear(polygon_s)
-		if len(polygon_s) == 1:
-			polygon_b = polygon_s + polygon_s
-		else:
-			polygon_b = polygon_s
+		if len(polygon_s) <= 2:
+			return None
 
 		# Draw boundary and vertices
 		boundary = Image.new('P', self.v_out_res, color = 0)
 		draw = ImageDraw.Draw(boundary)
-		draw.polygon(polygon_b, fill = 0, outline = 255)
-		boundary = np.array(boundary.rotate(rotate)) / 255.0
+		draw.polygon(polygon_s, fill = 0, outline = 255)
+		boundary = np.array(boundary) / 255.0
 
 		vertices = Image.new('P', self.v_out_res, color = 0)
 		draw = ImageDraw.Draw(vertices)
 		draw.point(polygon_s, fill = 255)
-		vertices = np.array(vertices.rotate(rotate)) / 255.0
+		vertices = np.array(vertices) / 255.0
 
 		# Get each single vertex
 		vertex_input, vertex_output = [], []
 		for i, (x, y) in enumerate(polygon_s):
-			v = self.vertex_pool[int(y)][int(x)].rotate(rotate)
+			v = self.vertex_pool[int(y)][int(x)]
 			vertex_input.append(np.array(v, dtype = np.float32) / 255.0)
 			if i == 0:
 				continue
@@ -221,15 +229,11 @@ class DataGenerator(object):
 		#  in: 0 1 2 3 4 5 X X
 
 		# Return
-		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len, org_info, crop_info
+		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len, crop_info
 
-	def getSingleArea(self, mode, img_id, rotate = True):
+	def getSingleArea(self, mode, img_id, rotate):
 		# Rotate, anticlockwise
-		if rotate:
-			n_rotate = random.choice([0, 1, 2, 3])
-		else:
-			n_rotate = 0
-
+		rotate_deg = rotate * 90
 		if mode == 'train':
 			img_info = self.coco_train.loadImgs([img_id])[0]
 			image_path = os.path.join(self.TRAIN_IMAGES_DIRECTORY, img_info['file_name'])
@@ -241,29 +245,30 @@ class DataGenerator(object):
 		if mode == 'test':
 			image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, str(img_id).zfill(12) + '.jpg')
 
-		org = Image.open(image_path)
-		org_rot = org.rotate(n_rotate * 90)
-		self.recover_rate = org_rot.size[0] / config.AREA_SIZE[0]
-		self.area_imgs.append(org_rot)
-		org_resize = org_rot.resize(config.AREA_SIZE)
-		ret_img = np.array(org_resize, np.float32)[..., 0: 3]
+		img = Image.open(image_path)
+		org_w, org_h = img.size
+		img = img.rotate(rotate_deg)
+		self.recover_rate = (img.size[0] / config.AREA_SIZE[0], img.size[1] / config.AREA_SIZE[1])
+		self.area_imgs.append(img)
+		ret_img = np.array(img.resize(config.AREA_SIZE), np.float32)[..., 0: 3]
 
 		if mode == 'test':
 			return ret_img
 
 		gt_boxes = []
+		rx, ry = self.recover_rate
 		for annotation in annotations:
-			polygon, (l, u, r, d) = self.polygon2bbox(annotation['segmentation'][0])
-			w, h = r - l, d - u
-			for _ in range(n_rotate):
+			w, h = org_w, org_h
+			_, (l, u, r, d) = self.polygon2bbox(annotation['segmentation'][0])
+			for _ in range(rotate):
 				(w, h), (l, u, r, d) = rotateBox((w, h), (l, u, r, d))
-			gt_boxes.append([u, l, d, r])
+			gt_boxes.append([u / rx, l / ry, d / rx, r / ry])
 
-		if False: # <- Local test
-			draw = ImageDraw.Draw(org_rot)
+		if True: # <- Local test
+			draw = ImageDraw.Draw(img)
 			for u, l, d, r in gt_boxes:
 				draw.line([(l, u), (r, u), (r, d), (l, d), (l, u)], fill = (255, 0, 0, 255), width = 1)
-			org_rot.show()
+			img.save('%s.png' % str(img_id).zfill(12))
 
 		if len(gt_boxes) == 0:
 			gt_boxes = np.zeros((0, 4), np.int32)
@@ -272,7 +277,7 @@ class DataGenerator(object):
 
 		# 
 		anchor_cls = np.zeros([self.anchors.shape[0], 2], np.int32)
-		rpn_match, anchor_box = buildRPNTargets(self.anchors * self.recover_rate, gt_boxes)
+		rpn_match, anchor_box = buildFPNTargets(self.anchors, gt_boxes)
 		anchor_cls[rpn_match == 1, 0] = 1
 		anchor_cls[rpn_match == -1, 1] = 1
 
@@ -285,36 +290,48 @@ class DataGenerator(object):
 		if mode == 'train':
 			anns = self.coco_train.loadAnns(self.anns_choose_from)
 			anns_p = normalize([setValidNum(ann) for ann in anns])
-			sel = np.random.choice(self.anns_choose_from, batch_size, replace = True, p = anns_p)
-			for ann_id in sel:
-				res.append(self.getSingleBuilding('train', ann_id, rotate = False))
+			while len(res) < batch_size:
+				ann_id = np.random.choice(self.anns_choose_from, 1, replace = True, p = anns_p)
+				ann = self.getSingleBuilding('train', ann_id, rotate = self.rotate)
+				if ann is not None:
+					res.append(ann)
 		if mode == 'valid':
 			anns = self.coco_valid.loadAnns(self.anns_choose_from)
 			anns_p = normalize([setValidNum(ann) for ann in anns])
-			sel = np.random.choice(self.anns_choose_from, batch_size, replace = True, p = anns_p)
-			for ann_id in sel:
-				res.append(self.getSingleBuilding('valid', ann_id, rotate = False))
-		return [np.array([item[i] for item in res]) for i in range(9)]
+			while len(res) < batch_size:
+				ann_id = np.random.choice(self.anns_choose_from, 1, replace = True, p = anns_p)
+				ann = self.getSingleBuilding('valid', ann_id, rotate = self.rotate)
+				if ann is not None:
+					res.append(ann)
+		return [np.array([item[i] for item in res]) for i in range(8)]
 
 	def getAreasBatch(self, batch_size, mode = None):
 		# Real
 		res = []
+		self.rotate = random.choice([0, 1, 2, 3])
 		self.area_imgs = []
 		self.anns_choose_from = []
 		self.to_batch_idx = {}
 		if mode == 'train':
-			sel = np.random.choice(self.train_img_ids, batch_size, replace = True)
-			self.anns_choose_from = self.coco_train.getAnnIds(imgIds = sel)
+			while True:
+				sel = np.random.choice(self.train_img_ids, batch_size, replace = True)
+				self.anns_choose_from = self.coco_train.getAnnIds(imgIds = sel)
+				if len(self.anns_choose_from) > 0:
+					break
 			for i, img_id in enumerate(sel):
-				res.append(self.getSingleArea('train', img_id, rotate = False))
+				res.append(self.getSingleArea('train', img_id, rotate = self.rotate))
 				self.to_batch_idx[img_id] = i
 		if mode == 'valid':
-			sel = np.random.choice(self.valid_img_ids, batch_size, replace = True)
-			self.anns_choose_from = self.coco_valid.getAnnIds(imgIds = sel)
+			while True:
+				sel = np.random.choice(self.valid_img_ids, batch_size, replace = True)
+				self.anns_choose_from = self.coco_valid.getAnnIds(imgIds = sel)
+				if len(self.anns_choose_from) > 0:
+					break
 			for i, img_id in enumerate(sel):
-				res.append(self.getSingleArea('valid', img_id, rotate = False))
+				res.append(self.getSingleArea('valid', img_id, rotate = self.rotate))
 				self.to_batch_idx[img_id] = i
 		if mode == 'test':
+			self.rotate = 0
 			if self.TEST_FLAG:
 				beg = self.TEST_CURRENT
 				end = min(len(self.TEST_IMAGE_IDS), beg + batch_size)
@@ -327,11 +344,11 @@ class DataGenerator(object):
 				else:
 					self.TEST_CURRENT = end
 				for img_id in self.TEST_CURRENT_IDS:
-					res.append(self.getSingleArea('test', img_id, rotate = False))
+					res.append(self.getSingleArea('test', img_id, rotate = 0))
 				return np.array(res)
 			else:
 				return None
-		print(sel)
+		print(sel, self.rotate)
 		return [np.array([item[i] for item in res]) for i in range(3)]
 
 	def getPatchesFromAreas(self, pred_score, pred_box):
@@ -450,13 +467,13 @@ if __name__ == '__main__':
 		max_num_vertices = config.MAX_NUM_VERTICES,
 	)
 
-	for n in range(10000):
-		print(n)
-		item1 = dg.getAreasBatch(4, mode = 'train')
-		item2 = dg.getBuildingsBatch(12, mode = 'train')
-		item3 = dg.getAreasBatch(4, mode = 'valid')
-		item4 = dg.getBuildingsBatch(12, mode = 'valid')
-	quit()
+	# for n in range(10000):
+	# 	print(n)
+	item1 = dg.getAreasBatch(4, mode = 'train')
+	item2 = dg.getBuildingsBatch(12, mode = 'train')
+	item3 = dg.getAreasBatch(4, mode = 'valid')
+	item4 = dg.getBuildingsBatch(12, mode = 'valid')
+	# quit()
 
 	for k in range(12):
 		for i, item in enumerate(list(item2)):
@@ -469,11 +486,5 @@ if __name__ == '__main__':
 					Image.fromarray(np.array(item[k, j, ...] * 255.0, np.uint8)).save('%d-%d-%d.png' % (k, i, j))
 			else:
 				print(item[k])
-		input()
-	a, b, c, d = dg.getPatchesFromAreas([np.array([[100, 100, 200, 200]]) for i in range(4)])
-	for i in range(4):
-		a[i].show()
-		Image.fromarray(b[i].astype(np.uint8)).show()
-		input()
 
 
