@@ -356,16 +356,16 @@ class DataGenerator(object):
 
 	def getPatchesFromAreas(self, pred_score, pred_box):
 		assert(len(pred_box) == len(self.area_imgs))
+		rx, ry = self.recover_rate
 		crop_info = []
 		patch_info = []
 		box_info = []
-		for i, (im, score, bbox) in enumerate(zip(self.area_imgs, pred_score, pred_box)):
+		for i, (im, score, boxes) in enumerate(zip(self.area_imgs, pred_score, pred_box)):
 			img = np.array(im, np.uint8)[..., 0: 3]
-			boxes = bbox * self.recover_rate
 			assert(score.shape[0] == boxes.shape[0])
 			for j in range(boxes.shape[0]):
 				y1, x1, y2, x2 = tuple(list(boxes[j]))
-				x1, x2, y1, y2 = max(0, x1), min(img.shape[1], x2), max(0, y1), min(img.shape[0], y2)
+				x1, x2, y1, y2 = max(0, x1 * rx), min(img.shape[1], x2 * rx), max(0, y1 * ry), min(img.shape[0], y2 * ry)
 				h, w = y2 - y1, x2 - x1
 				if h > 0 and w > 0:
 					if h * w > config.MIN_BBOX_AREA:

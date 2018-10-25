@@ -5,6 +5,7 @@ from UtilityGeography import BoundingBox
 from Config import Config
 
 config = Config()
+
 class NumpyEncoder(json.JSONEncoder):
 	""" Special json encoder for numpy types """
 	def default(self, obj):

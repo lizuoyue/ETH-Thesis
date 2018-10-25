@@ -6,41 +6,47 @@ from HybridModel import *
 from DataGenerator import *
 from UtilityBoxAnchor import *
 
-class NumpyEncoder(json.JSONEncoder):
-	def default(self, obj):
-		if isinstance(obj, np.integer):
-			return int(obj)
-		elif isinstance(obj, np.floating):
-			return float(obj)
-		elif isinstance(obj, np.ndarray):
-			return obj.tolist()
-		else:
-			return super(NumpyEncoder, self).default(obj)
-
 config = Config()
 
+class NumpyEncoder(json.JSONEncoder):
+	""" Special json encoder for numpy types """
+	def default(self, obj):
+		if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
+			np.int16, np.int32, np.int64, np.uint8,
+			np.uint16, np.uint32, np.uint64)):
+			return int(obj)
+		elif isinstance(obj, (np.float_, np.float16, np.float32, 
+			np.float64)):
+			return float(obj)
+		elif isinstance(obj,(np.ndarray,)):
+			return obj.tolist()
+		return json.JSONEncoder.default(self, obj)
+
 if __name__ == '__main__':
-	assert(len(sys.argv) == 2)
-	if sys.argv[1] == 'test':
-		mode = 'test'
-	if sys.argv[1] == 'valid':
-		mode = 'test-val'
+	np.random.seed(8888)
+
+	argv = {k: v for k, v in zip(sys.argv[1::2], sys.argv[2::2])}
+	city_name = argv['--city']
+	img_bias = np.array(config.PATH[city_name]['bias'])
+	backbone = argv['--net']
+	mode = argv['--mode']
+	print(city_name, backbone)
+
 	# Create data generator
 	obj = DataGenerator(
+		city_name = city_name,
 		img_size = config.PATCH_SIZE,
 		v_out_res = config.V_OUT_RES,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		mode = mode
 	)
 
-	img_bias = np.array([77.91342018,  89.78918901, 101.50963053])
-
 	# Define graph
-	graph = HybridModel(
+	graph = Model(
+		backbone = backbone,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
-		mode = 'train'
 	)
 	aa = tf.placeholder(tf.float32)
 	cc = tf.placeholder(tf.float32)
@@ -52,21 +58,26 @@ if __name__ == '__main__':
 	oo = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.float32)
-	vgg = [tf.placeholder(tf.float32) for _ in range(5)]
+	nn = [tf.placeholder(tf.float32) for _ in range(5)]
 
 	train_res = graph.train(aa, cc, dd, pp, ii, bb, vv, oo, ee, ll)
-	graph.mode = 'test'
 	pred_rpn_res  = graph.predict_rpn(aa, config.AREA_TEST_BATCH)
-	pred_poly_res = graph.predict_polygon(pp, vgg)
+	pred_poly_res = graph.predict_polygon(pp, nn)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
 	# quit()
 
 	saver = tf.train.Saver(max_to_keep = 1)
-	files = glob.glob('./Model/Model-*.ckpt.meta')
-	files = [(int(file.replace('./Model/Model-', '').replace('.ckpt.meta', '')), file) for file in files]
-	model_path = './Model/Model-%d.ckpt' % files[-1][0]
+	model_path = './Model_%s_%s/' % (backbone, city_name)
+	files = glob.glob(model_path + '*.ckpt.meta')
+	files = [(int(file.replace(model_path, '').replace('.ckpt.meta', '')), file) for file in files]
+	files.sort()
+	_, model_path = files[-1]
+
+	test_path = './Test_Result_%s_%s' % (backbone, city_name)
+	if not os.path.exists(test_path)
+		os.popen('mkdir %s' % test_path.replace('./', ''))
 
 	# Launch graph
 	with tf.Session() as sess:
@@ -80,12 +91,12 @@ if __name__ == '__main__':
 				feed_dict = {aa: img - img_bias}
 
 				t = time.time()
-				pred_score, pred_box, vgg16_res = sess.run(pred_rpn_res, feed_dict = feed_dict)
+				pred_score, pred_box, backbone_result = sess.run(pred_rpn_res, feed_dict = feed_dict)
 				time_res.append(time.time() - t)
 
-				vgg16_res = list(vgg16_res)
+				backbone_result = list(backbone_result)
 				crop_info, patch_info, box_info = obj.getPatchesFromAreas(pred_score, pred_box)
-				feed_dict = {k: v for k, v in zip(vgg, vgg16_res)}
+				feed_dict = {k: v for k, v in zip(nn, backbone_result)}
 				feed_dict[pp] = crop_info
 
 				t = time.time()
@@ -95,12 +106,10 @@ if __name__ == '__main__':
 				else:
 					time_res.append(0)
 				time_res.append((time.time() - t))
-
-				path = './test_res'
-				os.popen('mkdir %s' % path.replace('./', ''))
+				
 				obj.recoverBoxPolygon(patch_info, box_info, pred_v_out, mode = 'test', visualize = True, path = path, batch_idx = i)
 
-				f.write('%d,%.3lf,%.3lf,%.3lf\n' % tuple(time_res))
+				f.write('%d, %.3lf, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
 
 				print(i)
