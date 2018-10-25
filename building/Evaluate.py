@@ -77,7 +77,7 @@ if __name__ == '__main__':
 	_, model_path = files[-1]
 
 	test_path = './Test_Result_%s_%s' % (backbone, city_name)
-	if not os.path.exists(test_path)
+	if not os.path.exists(test_path):
 		os.popen('mkdir %s' % test_path.replace('./', ''))
 
 	# Launch graph
