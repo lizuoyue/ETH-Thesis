@@ -2,7 +2,7 @@ import numpy as np
 import os, sys, time, json, glob
 import tensorflow as tf
 from Config import *
-from HybridModel import *
+from Model import *
 from DataGenerator import *
 from UtilityBoxAnchor import *
 
