@@ -155,6 +155,7 @@ class DataGenerator(object):
 		polygon = zip(polygon[0::2], polygon[1::2])
 		for _ in range(rotate):
 			(w, h), polygon = rotatePolygon((w, h), polygon)
+		print(polygon)
 		poly_np = np.array(polygon)
 		x0, y0, x1, y1 = poly_np[:, 0].min(), poly_np[:, 1].min(), poly_np[:, 0].max() + 1, poly_np[:, 1].max() + 1
 		x0_old, y0_old, x1_old, y1_old, = x0, y0, x1, y1
