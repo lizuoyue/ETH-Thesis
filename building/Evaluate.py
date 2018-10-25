@@ -62,7 +62,7 @@ if __name__ == '__main__':
 	nn = [tf.placeholder(tf.float32) for _ in range(5)]
 
 	train_res = graph.train(aa, cc, dd, pp, ii, bb, vv, oo, ee, ll)
-	pred_rpn_res  = graph.predict_rpn(aa, config.AREA_TEST_BATCH)
+	pred_rpn_res  = graph.predict_fpn(aa, config.AREA_TEST_BATCH)
 	pred_poly_res = graph.predict_polygon(pp, nn)
 
 	# for v in tf.global_variables():
