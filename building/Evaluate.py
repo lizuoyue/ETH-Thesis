@@ -111,7 +111,7 @@ if __name__ == '__main__':
 					time_res.append(0)
 				time_res.append((time.time() - t))
 				
-				obj.recoverBoxPolygon(patch_info, box_info, pred_v_out, mode = 'test', visualize = vis, path = path, batch_idx = i)
+				obj.recoverBoxPolygon(patch_info, box_info, pred_v_out, mode = 'test', visualize = vis, path = test_path, batch_idx = i)
 
 				f.write('%d, %.3lf, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
