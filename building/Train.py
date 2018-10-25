@@ -92,6 +92,7 @@ if __name__ == '__main__':
 			files.sort()
 			num, model_to_load = files[-1]
 			saver.restore(sess, model_to_load.replace('.meta', ''))
+			quit()
 			iter_obj = range(num + 1, config.NUM_ITER)
 			preserve(loss_train_out, num + 1)
 			preserve(loss_valid_out, num + 1)
