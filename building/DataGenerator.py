@@ -245,7 +245,11 @@ class DataGenerator(object):
 			image_path = os.path.join(self.VAL_IMAGES_DIRECTORY, img_info['file_name'])
 			annotations = self.coco_valid.loadAnns(self.coco_valid.getAnnIds(imgIds = img_info['id']))
 		if mode == 'test':
-			image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, str(img_id).zfill(12) + '.jpg')
+			if self.TEST_ANNOTATIONS_PATH is None:
+				image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, str(img_id).zfill(12) + '.jpg')
+			else:
+				img_info = self.coco_test.loadImgs([img_id])[0]
+				image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, img_info['file_name'])
 
 		img = Image.open(image_path)
 		org_w, org_h = img.size

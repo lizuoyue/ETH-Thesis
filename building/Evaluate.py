@@ -73,7 +73,7 @@ if __name__ == '__main__':
 	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
 
 	saver = tf.train.Saver(max_to_keep = 1)
-	model_path = './Model_%s_%s/30000.ckpt.meta' % (backbone, city_name)
+	model_path = './Model_%s_%s/' % (backbone, city_name) # 30000.ckpt.meta
 	files = glob.glob(model_path + '*.ckpt.meta')
 	files = [(int(file.replace(model_path, '').replace('.ckpt.meta', '')), file) for file in files]
 	files.sort()
