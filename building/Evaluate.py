@@ -87,7 +87,7 @@ if __name__ == '__main__':
 	with tf.Session() as sess:
 		with open('Eval.out', 'w') as f:
 			# Restore weights
-			saver.restore(sess, model_to_load)
+			saver.restore(sess, model_to_load.replace('.meta', ''))
 			i = 0
 			while obj.TEST_FLAG:
 				time_res = [i]
