@@ -96,7 +96,6 @@ class Config(object):
 		self.OSM_HIGHWAY_BLACKLIST = {
 			'pedestrian', 'footway', 'bridleway', 'steps', 'path', 'sidewalk', 'cycleway', 'proposed',
 			'construction', 'bus_stop', 'crossing', 'elevator', 'emergency_access_point', 'escape', 'give_way',
-			'motorway', 'trunk'
 		}
 
 
