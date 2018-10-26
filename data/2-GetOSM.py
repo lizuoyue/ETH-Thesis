@@ -82,7 +82,7 @@ class Constructor(object):
 		return osm
 
 	def save(self):
-		np.save(self.file_b, self.building)
+		# np.save(self.file_b, self.building)
 		np.save(self.file_r, self.road)
 		return
 
@@ -166,7 +166,24 @@ class Constructor(object):
 							v = sub_item.attrib.get('v')
 							if k and v:
 								d[k] = v
+					if len(node_list) < 2:
+						continue
 					if 'highway' in d:
+						if d['highway'] in config.OSM_HIGHWAY_BLACKLIST:
+							print('Highway in blacklist.')
+							continue
+						if 'amenity' in d and d['amenity'] == 'parking':
+							print('Parking 1.')
+							continue
+						if 'service' in d and (d['service'] == 'parking_aisle' or d['service'] == 'driveway'):
+							print('Parking 2.')
+							continue
+						if 'tunnel' in d and d['tunnel'] == 'yes':
+							print('Tunnel 1.')
+							continue
+						if 'layer' in d and len(d['layer']) >= 2 and d['layer'][0] == '-':
+							print('Tunnel 2.')
+							continue
 						rid = int(item.attrib.get('id'))
 						if rid in self.road:
 							assert(len(self.road[rid]) == len(node_list))
@@ -198,7 +215,7 @@ class Constructor(object):
 					osm_str = ET.tostring(osm, pretty_print = True)
 					with open(filename, 'wb') as f:
 						f.write(osm_str)
-				self.addBuilding(osm)
+				# self.addBuilding(osm)
 				self.addRoad(osm)
 				self.printBuildingList()
 				self.printRoadList()

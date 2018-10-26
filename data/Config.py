@@ -93,3 +93,11 @@ class Config(object):
 				'val_test': lambda lon, lat: 0 if lon <= -71.0300 else (1 if lat <= 42.4150 else 2) # 0,1,2 - train,val,test
 			}
 		}
+		self.OSM_HIGHWAY_BLACKLIST = {
+			'pedestrian', 'footway', 'bridleway', 'steps', 'path', 'sidewalk', 'cycleway', 'proposed',
+			'construction', 'bus_stop', 'crossing', 'elevator', 'emergency_access_point', 'escape', 'give_way',
+			'motorway', 'trunk'
+		}
+
+
+
