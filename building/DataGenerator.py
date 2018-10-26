@@ -466,8 +466,6 @@ class DataGenerator(object):
 		return
 
 if __name__ == '__main__':
-	np.random.seed(8888)
-
 	dg = DataGenerator(
 		city_name = sys.argv[1],
 		img_size = config.PATCH_SIZE,
