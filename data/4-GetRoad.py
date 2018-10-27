@@ -366,7 +366,7 @@ if __name__ == '__main__':
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
 		quit()
-		if mid >= 0: and mid % 100 == 0:
+		if mid > 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
 
