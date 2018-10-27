@@ -30,6 +30,11 @@ def area(polygon):
 	s /= 2.0
 	return s
 
+def colinear(p0, p1, p2):
+	x1, y1 = p1[0] - p0[0], p1[1] - p0[1]
+	x2, y2 = p2[0] - p0[0], p2[1] - p0[1]
+	return abs(x1 * y2 - x2 * y1) < 1e-6
+
 def clip(subjectPolygon, clipPolygon):
 	# both polygons should be clockwise/anti-clockwise
 	def inside(p):
@@ -167,63 +172,65 @@ class RoadPool(object):
 
 		return res
 
-# def graphProcess(edges):
-# ################## Preprocessing ##################
-# 	# 1. Remove duplicate
-# 	road = roadJSON[img_id]
-# 	v_val = [tuple(np.floor(np.array(v) / 599.0 * (config.AREA_SIZE[0] - 1) / downsample).astype(np.int32)) for v in road['v']]
-# 	e_val = [(v_val[s], v_val[t]) for s, t in road['e']]
-# 	v_val = list(set(v_val))
-# 	e_val = list(set(e_val))
-# 	v_val2idx = {v: k for k, v in enumerate(v_val)}
-# 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
-# 	e_idx = [(s, t) for s, t in e_idx if s != t]
+def graphProcess(graph):
+	# graph: [(edge_1), ..., (edge_n)]
+	# edge : ((x1, y1), (x2, y2))
 
-# 	# 2. Get v to be removed
-# 	nb = [[] for _ in range(len(v_val))]
-# 	for s, t in e_idx:
-# 		nb[s].append(t)
-# 	v_rm = []
-# 	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
-# 		if len(vnb) == 2:
-# 			v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
-# 			if colinear(v, v0, v1):
-# 				v_rm.append(v_val2idx[v])
-# 	v_rm_set = set(v_rm)
-# 	if len(v_rm_set) < 0:
-# 		show = True
+	# 1. Remove duplicate
+	v_val, e_val = set(), set()
+	for item in graph:
+		v_val.add(item[0])
+		v_val.add(item[1])
+		e_val.add(item)
+		e_val.add((item[1], item[0]))
+	v_val = list(v_val)
+	e_val = list(e_val)
+	v_val2idx = {v: k for k, v in enumerate(v_val)}
+	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
 
-# 	# 3. Get e to be added
-# 	e_add = []
-# 	visited = [False for _ in range(len(v_val))]
-# 	for vid in v_rm_set:
-# 		if not visited[vid]:
-# 			visited[vid] = True
-# 			assert(len(nb[vid]) == 2)
-# 			res = []
-# 			for nvid_iter in nb[vid]:
-# 				nvid = int(nvid_iter)
-# 				while nvid in v_rm_set:
-# 					visited[nvid] = True
-# 					v1, v2 = nb[nvid]
-# 					assert((v1 in v_rm_set and visited[v1]) + (v2 in v_rm_set and visited[v2]) == 1)
-# 					if (v1 in v_rm_set and visited[v1]):
-# 						nvid = v2
-# 					else:
-# 						nvid = v1
-# 				res.append(nvid)
-# 			assert(len(res) == 2)
-# 			e_add.append((res[0], res[1]))
-# 			e_add.append((res[1], res[0]))
+	# 2. Get v to be removed
+	nb = [[] for _ in range(len(v_val))]
+	for s, t in e_idx:
+		nb[s].append(t)
+	v_rm = []
+	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
+		if len(vnb) == 2:
+			v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
+			if colinear(v, v0, v1):
+				v_rm.append(vid)
+	v_rm_set = set(v_rm)
 
-# 	# 4. Remove v and add e
-# 	e_idx = [(s, t) for s, t in e_idx if s not in v_rm_set and t not in v_rm_set]
-# 	e_idx.extend(e_add)
-# 	e_val = [(v_val[s], v_val[t]) for s, t in e_idx]
-# 	v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
-# 	v_val2idx = {v: k for k, v in enumerate(v_val)}
-# 	e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
-# 	###################################################
+	# 3. Get e to be added
+	e_add = []
+	visited = [False for _ in range(len(v_val))]
+	for vid in v_rm_set:
+		if not visited[vid]:
+			visited[vid] = True
+			assert(len(nb[vid]) == 2)
+			res = []
+			for nvid_iter in nb[vid]:
+				nvid = int(nvid_iter)
+				while nvid in v_rm_set:
+					visited[nvid] = True
+					v1, v2 = nb[nvid]
+					assert((v1 in v_rm_set and visited[v1]) + (v2 in v_rm_set and visited[v2]) == 1)
+					if v1 in v_rm_set and visited[v1]:
+						nvid = v2
+					else:
+						nvid = v1
+				res.append(nvid)
+			assert(len(res) == 2)
+			e_add.append((res[0], res[1]))
+			e_add.append((res[1], res[0]))
+
+	# 4. Remove v and add e
+	e_idx = [(s, t) for s, t in e_idx if s not in v_rm_set and t not in v_rm_set]
+	e_idx.extend(e_add)
+	e_val = [(v_val[s], v_val[t]) for s, t in e_idx]
+	# v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
+	# v_val2idx = {v: k for k, v in enumerate(v_val)}
+	# e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
+	return e_val
 
 def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	city_name = city_info['city_name']
@@ -299,9 +306,12 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 				else:
 					assert(len(res) == 0)
 
-			road['segmentation'] = list(eSet)
+			road['segmentation'] = graphProcess(list(eSet))
 			roads.append(road)
-			print(road)
+			if eSet != set(road['segmentation'])
+				print(eSet)
+				print(set(road['segmentation']))
+				input()
 
 			ann_img = Image.new('P', (bw, bh), color = 255)
 			draw = ImageDraw.Draw(ann_img)
@@ -365,7 +375,7 @@ if __name__ == '__main__':
 		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
-		quit()
+		continue
 		if mid > 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
