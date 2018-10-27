@@ -276,7 +276,7 @@ def extractPolygons(edges):
 			polygon.append(v_next)
 			eSet.remove((v_now, v_next))
 			nb[v_now].remove(v_next)
-			v_prev = n_now
+			v_prev = v_now
 			v_now = v_next
 			vec1 = np.array(v_now) - np.array(v_prev)
 			comp = []
