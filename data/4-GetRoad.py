@@ -301,7 +301,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 
 			road['segmentation'] = list(eSet)
 			roads.append(road)
-			print(road)
+			print(type(road['id']))
 
 			ann_img = Image.new('P', (bw, bh), color = 255)
 			draw = ImageDraw.Draw(ann_img)
@@ -361,9 +361,8 @@ if __name__ == '__main__':
 	for mid in map_list:
 		print('Map ID:', mid)
 		patch_seq = sum([len(item['images']) for item in result])
-		print(patch_seq)
 		ann_seq = sum([len(item['annotations']) for item in result])
-		print(ann_seq)
+		print(type(ann_seq), ann_seq)
 		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
