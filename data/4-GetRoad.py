@@ -1,4 +1,4 @@
-import math, sys, time, os, io, requests, json, glob
+import math, sys, time, os, io, requests, json, glob, random
 import numpy as np
 from PIL import Image, ImageDraw
 from UtilityGeography import BoundingBox
@@ -43,7 +43,7 @@ def colinear_angle(p0, p1, p2):
 	li.sort()
 	a, b, c = li
 	cos_C = (a * a + b * b - c * c) / (2 * a * b)
-	return cos_C < -0.9962 # cos(175 deg)
+	return cos_C < -0.996 # cos(174.8736°)
 
 def clip(subjectPolygon, clipPolygon):
 	# both polygons should be clockwise/anti-clockwise
@@ -101,6 +101,12 @@ def saveEdgeImg(edges, size, filename):
 		draw.line(list(v1) + list(v2), fill = 0, width = 5)
 	img.save(filename)
 	return
+
+def savePolygonImg(polygon, size, filename):
+	img = Image.new('P', size, color = 255)
+	draw = ImageDraw.Draw(img)
+	draw.polygon(polygon, fill = 255, outline = 0)
+	img.save(filename)
 
 class RoadPool(object):
 	def __init__(self):
@@ -194,7 +200,7 @@ class RoadPool(object):
 
 def graphProcess(graph):
 	# graph: [(edge_1), ..., (edge_n)]
-	# edge : ((x1, y1), (x2, y2))
+	## edge: ((x1, y1), (x2, y2))
 
 	# 1. Remove duplicate
 	v_val, e_val = set(), set()
@@ -247,10 +253,41 @@ def graphProcess(graph):
 	e_idx = [(s, t) for s, t in e_idx if s not in v_rm_set and t not in v_rm_set]
 	e_idx.extend(e_add)
 	e_val = [(v_val[s], v_val[t]) for s, t in e_idx]
-	# v_val = [v for i, v in enumerate(v_val) if i not in v_rm_set]
-	# v_val2idx = {v: k for k, v in enumerate(v_val)}
-	# e_idx = [(v_val2idx[s], v_val2idx[t]) for s, t in e_val]
+
 	return e_val
+
+def extractPolygons(edges):
+	eSet = set()
+	nb = {}
+	for u, v in edges:
+		eSet.add((u, v))
+		eSet.add((v, u))
+		nb[u] = set()
+		nb[v] = set()
+	for u, v in eSet:
+		nb[u].add(v)
+		nb[v].add(u)
+	res = []
+	while len(eSet) > 0:
+		v_prev, v_now = random.sample(eSet, 1)
+		eSet.remove(v_prev, v_now)
+		nb[v_prev].remove(v_now)
+		polygon = [v_prev]
+		v_next = v_now
+		while v_next != v_prev:
+			polygon.append(v_next)
+			vec1 = np.array(v_now) - np.array(v_prev)
+			comp = []
+			for v in nb[v_now]:
+				vec2 = np.array(v) - np.array(v_now)
+				cross = vec1[0] * vec2[1] - vec1[1] * vec2[0]
+				comp.append((cross, v))
+			v_prev = v_now
+			v_now = v_next
+			_, v_next = max(comp)
+		res.append(polygon)
+	return res
+
 
 def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 	city_name = city_info['city_name']
@@ -330,11 +367,19 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 				eSet.add((v, u))
 
 			road['segmentation'] = graphProcess(list(eSet))
-			roads.append(road)
-			if eSet != set(road['segmentation']):
-				saveEdgeImg(eSet, (bw, bh), '%sRoad1.png' % str(patch_seq).zfill(6))
-				saveEdgeImg(road['segmentation'], (bw, bh), '%sRoad2.png' % str(patch_seq).zfill(6))
 
+			if False: # Show diff before/after removal of colinear
+				if eSet != set(road['segmentation']):
+					saveEdgeImg(eSet, (bw, bh), '%sRoad1.png' % str(patch_seq).zfill(6))
+					saveEdgeImg(road['segmentation'], (bw, bh), '%sRoad2.png' % str(patch_seq).zfill(6))
+
+			if True:
+				saveEdgeImg(road['segmentation'], (bw, bh), '%s.png' % str(patch_seq).zfill(6))
+				polygons = extractPolygons(road['segmentation'])
+				for pid, polygon in enumerate(polygons):
+					savePolygonImg(polygon, (bw, bh), '%s_%d.png' % (str(patch_seq).zfill(6), pid))
+
+			roads.append(road)
 			saveEdgeImg(road['segmentation'], (bw, bh), './%sPatch/%sRoad.png' % (city_name, str(patch_seq).zfill(6)))
 			patch_seq += 1
 			ann_seq += 1
@@ -348,7 +393,6 @@ def saveJSON(result, city_name):
 	return
 
 if __name__ == '__main__':
-	# print(colinear_angle((245, 273), (245, 299), (242, 201)))
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
 	city_info = config.CITY_INFO[city_name]
@@ -391,10 +435,7 @@ if __name__ == '__main__':
 		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
-		if mid < 20:
-			continue
-		else:
-			quit()
+		continue
 		if mid > 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
