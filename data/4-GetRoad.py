@@ -306,7 +306,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 				else:
 					assert(len(res) == 0)
 
-			for u, v in eSet:
+			for u, v in list(eSet):
 				eSet.add((v, u))
 
 			road['segmentation'] = graphProcess(list(eSet))
