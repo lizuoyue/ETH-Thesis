@@ -275,7 +275,6 @@ def extractPolygons(edges):
 		while (v_now, v_next) in eSet:
 			polygon.append(v_next)
 			eSet.remove((v_now, v_next))
-			# nb[v_now].remove(v_next)
 			v_prev = v_now
 			v_now = v_next
 			vec1 = np.array(v_now) - np.array(v_prev)
@@ -293,8 +292,6 @@ def extractPolygons(edges):
 					else:
 						comp.append((2 - cos_a, v))
 			_, v_next = min(comp)
-		# eSet.remove((polygon[-1], v_start))
-		# nb[polygon[-1]].remove(v_start)
 		res.append(polygon)
 	return res
 
@@ -445,7 +442,8 @@ if __name__ == '__main__':
 		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
-		quit()
+		if mid == 5:
+			quit()
 		if mid > 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
