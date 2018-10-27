@@ -270,6 +270,7 @@ def extractPolygons(edges):
 	res = []
 	print(eSet)
 	while len(eSet) > 0:
+		random.seed(8888)
 		v_start, v_next = random.sample(eSet, 1)[0]
 		print(v_start)
 		v_prev, v_now = None, v_start
