@@ -82,7 +82,7 @@ class Constructor(object):
 		return osm
 
 	def save(self):
-		# np.save(self.file_b, self.building)
+		np.save(self.file_b, self.building)
 		np.save(self.file_r, self.road)
 		return
 
@@ -215,7 +215,7 @@ class Constructor(object):
 					osm_str = ET.tostring(osm, pretty_print = True)
 					with open(filename, 'wb') as f:
 						f.write(osm_str)
-				# self.addBuilding(osm)
+				self.addBuilding(osm)
 				self.addRoad(osm)
 				self.printBuildingList()
 				self.printRoadList()
