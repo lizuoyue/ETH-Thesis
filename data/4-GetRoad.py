@@ -268,8 +268,10 @@ def extractPolygons(edges):
 		nb[u].add(v)
 		nb[v].add(u)
 	res = []
+	print(eSet)
 	while len(eSet) > 0:
 		v_start, v_next = random.sample(eSet, 1)[0]
+		print(v_start)
 		v_prev, v_now = None, v_start
 		polygon = [v_now]
 		while v_next != v_start:
