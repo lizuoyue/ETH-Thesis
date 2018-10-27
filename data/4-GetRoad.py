@@ -269,21 +269,21 @@ def extractPolygons(edges):
 		nb[v].add(u)
 	res = []
 	while len(eSet) > 0:
-		v_prev, v_now = random.sample(eSet, 1)[0]
-		eSet.remove(v_prev, v_now)
-		nb[v_prev].remove(v_now)
-		polygon = [v_prev]
-		v_next = v_now
-		while v_next != v_prev:
+		v_start, v_next = random.sample(eSet, 1)[0]
+		v_prev, v_now = None, v_start
+		polygon = [v_now]
+		while v_next != v_start:
 			polygon.append(v_next)
+			eSet.remove((v_now, v_next))
+			nb[v_now].remove(v_next)
+			v_prev = n_now
+			v_now = v_next
 			vec1 = np.array(v_now) - np.array(v_prev)
 			comp = []
 			for v in nb[v_now]:
 				vec2 = np.array(v) - np.array(v_now)
 				cross = vec1[0] * vec2[1] - vec1[1] * vec2[0]
 				comp.append((cross, v))
-			v_prev = v_now
-			v_now = v_next
 			_, v_next = max(comp)
 		res.append(polygon)
 	return res
