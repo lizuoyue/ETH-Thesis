@@ -82,6 +82,16 @@ def clip_in_img(subjectPolygon, w, h):
 	res = clip(subjectPolygon, clipPolygon)
 	return [(round(x), round(-y)) for x, y in res]
 
+def saveEdgeImg(edges, filename):
+	img = Image.new('P', (bw, bh), color = 255)
+	draw = ImageDraw.Draw(img)
+	for v1, v2 in edges:
+		for xx, yy in [v1, v2]:
+			draw.rectangle([xx - 5, yy - 5, xx + 5, yy + 5], fill = 0)
+		draw.line(list(v1) + list(v2), fill = 0, width = 5)
+	img.save(filename)
+	return
+
 class RoadPool(object):
 	def __init__(self):
 		self.v = {}
@@ -261,7 +271,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			tmp_box = BoundingBox(tmp_clon, tmp_clat, bw, bh, z, s)
 
 			patch = {}
-			patch['id'] = int(patch_seq)
+			patch['id'] = patch_seq
 			patch['file_name'] = '%s.png' % str(patch_seq).zfill(6)
 			patch['width'] = bw
 			patch['height'] = bh
@@ -272,8 +282,8 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			patches.append(patch)
 
 			road = {'category_id': 999999, 'iscrowd': 0}
-			road['id'] = int(ann_seq)
-			road['image_id'] = int(patch_seq)
+			road['id'] = ann_seq
+			road['image_id'] = patch_seq
 			road['area'] = 0
 			road['bbox'] = [0, 0, 0, 0]
 
@@ -312,18 +322,10 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			road['segmentation'] = graphProcess(list(eSet))
 			roads.append(road)
 			if eSet != set(road['segmentation']):
-				print(eSet)
-				print(set(road['segmentation']))
-				input()
+				saveEdgeImg(eSet, '%sRoad1.png' % (city_name, str(patch_seq).zfill(6)))
+				saveEdgeImg(road['segmentation'], '%sRoad2.png' % (city_name, str(patch_seq).zfill(6)))
 
-			ann_img = Image.new('P', (bw, bh), color = 255)
-			draw = ImageDraw.Draw(ann_img)
-			for v1, v2 in road['segmentation']:
-				for xx, yy in [v1, v2]:
-					draw.rectangle([xx-5,yy-5,xx+5,yy+5], fill = 0)
-				draw.line(list(v1) + list(v2), fill = 0, width = 5)
-			ann_img.save('./%sPatch/%sRoad.png' % (city_name, str(patch_seq).zfill(6)))
-
+			saveEdgeImg(road['segmentation'], './%sPatch/%sRoad.png' % (city_name, str(patch_seq).zfill(6)))
 			patch_seq += 1
 			ann_seq += 1
 
