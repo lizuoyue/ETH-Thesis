@@ -35,6 +35,16 @@ def colinear(p0, p1, p2):
 	x2, y2 = p2[0] - p0[0], p2[1] - p0[1]
 	return abs(x1 * y2 - x2 * y1) < 1e-6
 
+def colinear_angle(p0, p1, p2):
+	def l2dist(a, b):
+		diff = np.array(a) - np.array(b)
+		return np.sqrt(np.dot(diff, diff))
+	li = [l2dist(p0, p1), l2dist(p1, p2), l2dist(p0, p2)]
+	li.sort()
+	a, b, c = li
+	cos_C = (a * a + b * b - c * c) / (2 * a * b)
+	return cos_C < -0.999
+
 def clip(subjectPolygon, clipPolygon):
 	# both polygons should be clockwise/anti-clockwise
 	def inside(p):
@@ -206,7 +216,7 @@ def graphProcess(graph):
 	for vid, (v, vnb) in enumerate(zip(v_val, nb)):
 		if len(vnb) == 2:
 			v0, v1 = v_val[vnb[0]], v_val[vnb[1]]
-			if colinear(v, v0, v1):
+			if colinear_angle(v, v0, v1):
 				v_rm.append(vid)
 	v_rm_set = set(v_rm)
 
@@ -338,6 +348,7 @@ def saveJSON(result, city_name):
 	return
 
 if __name__ == '__main__':
+	# print(colinear_angle((245, 273), (245, 299), (242, 201)))
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
 	city_info = config.CITY_INFO[city_name]
