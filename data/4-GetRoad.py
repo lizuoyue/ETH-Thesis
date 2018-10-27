@@ -17,6 +17,7 @@ class NumpyEncoder(json.JSONEncoder):
 			np.float64)):
 			return float(obj)
 		elif isinstance(obj,(np.ndarray,)):
+			print(obj.tolist())
 			return obj.tolist()
 		return json.JSONEncoder.default(self, obj)
 
@@ -300,6 +301,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 
 			road['segmentation'] = list(eSet)
 			roads.append(road)
+			print(road)
 
 			ann_img = Image.new('P', (bw, bh), color = 255)
 			draw = ImageDraw.Draw(ann_img)
