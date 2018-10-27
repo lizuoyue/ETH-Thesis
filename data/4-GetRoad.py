@@ -322,8 +322,8 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			road['segmentation'] = graphProcess(list(eSet))
 			roads.append(road)
 			if eSet != set(road['segmentation']):
-				saveEdgeImg(eSet, (bw, bh), '%sRoad1.png' % (city_name, str(patch_seq).zfill(6)))
-				saveEdgeImg(road['segmentation'], (bw, bh), '%sRoad2.png' % (city_name, str(patch_seq).zfill(6)))
+				saveEdgeImg(eSet, (bw, bh), '%sRoad1.png' % str(patch_seq).zfill(6))
+				saveEdgeImg(road['segmentation'], (bw, bh), '%sRoad2.png' % str(patch_seq).zfill(6))
 
 			saveEdgeImg(road['segmentation'], (bw, bh), './%sPatch/%sRoad.png' % (city_name, str(patch_seq).zfill(6)))
 			patch_seq += 1
