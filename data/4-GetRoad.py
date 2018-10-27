@@ -265,7 +265,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			patches.append(patch)
 
 			road = {'category_id': 999999, 'iscrowd': 0}
-			road['id'] = int(ann_seq),
+			road['id'] = int(ann_seq)
 			road['image_id'] = int(patch_seq)
 			road['area'] = 0
 			road['bbox'] = [0, 0, 0, 0]
@@ -301,7 +301,7 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 
 			road['segmentation'] = list(eSet)
 			roads.append(road)
-			print(type(road['id']))
+			print(road)
 
 			ann_img = Image.new('P', (bw, bh), color = 255)
 			draw = ImageDraw.Draw(ann_img)
@@ -362,13 +362,12 @@ if __name__ == '__main__':
 		print('Map ID:', mid)
 		patch_seq = sum([len(item['images']) for item in result])
 		ann_seq = sum([len(item['annotations']) for item in result])
-		print(type(ann_seq), ann_seq)
 		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
-		if mid >= 1:# and mid % 100 == 0:
+		quit()
+		if mid >= 0: and mid % 100 == 0:
 			saveJSON(result, city_name)
-			quit()
 	saveJSON(result, city_name)
 
 
