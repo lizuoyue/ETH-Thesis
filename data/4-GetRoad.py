@@ -374,16 +374,16 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 				eSet.add((v, u))
 
 			road['segmentation'] = graphProcess(list(eSet))
+			road['polygons'] = extractPolygons(road['segmentation'])
 
 			if False: # Show diff before/after removal of colinear
 				if eSet != set(road['segmentation']):
 					saveEdgeImg(eSet, (bw, bh), '%sRoad1.png' % str(patch_seq).zfill(6))
 					saveEdgeImg(road['segmentation'], (bw, bh), '%sRoad2.png' % str(patch_seq).zfill(6))
 
-			if True:
+			if False:
 				saveEdgeImg(road['segmentation'], (bw, bh), '%s.png' % str(patch_seq).zfill(6))
-				polygons = extractPolygons(road['segmentation'])
-				for pid, polygon in enumerate(polygons):
+				for pid, polygon in enumerate(road['polygons']):
 					savePolygonImg(polygon, (bw, bh), '%s_%d.png' % (str(patch_seq).zfill(6), pid))
 
 			roads.append(road)
@@ -442,8 +442,6 @@ if __name__ == '__main__':
 		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
-		if mid == 5:
-			quit()
 		if mid > 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
