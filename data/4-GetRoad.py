@@ -43,7 +43,7 @@ def colinear_angle(p0, p1, p2):
 	li.sort()
 	a, b, c = li
 	cos_C = (a * a + b * b - c * c) / (2 * a * b)
-	return cos_C < -0.9962
+	return cos_C < -0.9962 # cos(175 deg)
 
 def clip(subjectPolygon, clipPolygon):
 	# both polygons should be clockwise/anti-clockwise
@@ -391,7 +391,10 @@ if __name__ == '__main__':
 		idx, patches, roads = cropMap(p, map_info, mid, city_info, patch_seq, ann_seq)
 		result[idx]['images'].extend(patches)
 		result[idx]['annotations'].extend(roads)
-		continue
+		if mid < 20:
+			continue
+		else:
+			quit()
 		if mid > 0 and mid % 100 == 0:
 			saveJSON(result, city_name)
 	saveJSON(result, city_name)
