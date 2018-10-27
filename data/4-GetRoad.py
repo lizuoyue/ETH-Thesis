@@ -43,7 +43,7 @@ def colinear_angle(p0, p1, p2):
 	li.sort()
 	a, b, c = li
 	cos_C = (a * a + b * b - c * c) / (2 * a * b)
-	return cos_C < -0.999
+	return cos_C < -0.9962
 
 def clip(subjectPolygon, clipPolygon):
 	# both polygons should be clockwise/anti-clockwise
