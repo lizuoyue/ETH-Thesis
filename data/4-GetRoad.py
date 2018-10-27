@@ -82,8 +82,8 @@ def clip_in_img(subjectPolygon, w, h):
 	res = clip(subjectPolygon, clipPolygon)
 	return [(round(x), round(-y)) for x, y in res]
 
-def saveEdgeImg(edges, filename):
-	img = Image.new('P', (bw, bh), color = 255)
+def saveEdgeImg(edges, size, filename):
+	img = Image.new('P', size, color = 255)
 	draw = ImageDraw.Draw(img)
 	for v1, v2 in edges:
 		for xx, yy in [v1, v2]:
@@ -322,10 +322,10 @@ def cropMap(road_pool, map_info, mid, city_info, patch_seq, ann_seq):
 			road['segmentation'] = graphProcess(list(eSet))
 			roads.append(road)
 			if eSet != set(road['segmentation']):
-				saveEdgeImg(eSet, '%sRoad1.png' % (city_name, str(patch_seq).zfill(6)))
-				saveEdgeImg(road['segmentation'], '%sRoad2.png' % (city_name, str(patch_seq).zfill(6)))
+				saveEdgeImg(eSet, (bw, bh), '%sRoad1.png' % (city_name, str(patch_seq).zfill(6)))
+				saveEdgeImg(road['segmentation'], (bw, bh), '%sRoad2.png' % (city_name, str(patch_seq).zfill(6)))
 
-			saveEdgeImg(road['segmentation'], './%sPatch/%sRoad.png' % (city_name, str(patch_seq).zfill(6)))
+			saveEdgeImg(road['segmentation'], (bw, bh), './%sPatch/%sRoad.png' % (city_name, str(patch_seq).zfill(6)))
 			patch_seq += 1
 			ann_seq += 1
 
