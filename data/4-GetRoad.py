@@ -269,7 +269,7 @@ def extractPolygons(edges):
 		nb[v].add(u)
 	res = []
 	while len(eSet) > 0:
-		v_prev, v_now = random.sample(eSet, 1)
+		(v_prev, v_now) = random.sample(eSet, 1)
 		eSet.remove(v_prev, v_now)
 		nb[v_prev].remove(v_now)
 		polygon = [v_prev]
