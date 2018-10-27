@@ -270,6 +270,8 @@ def extractPolygons(edges):
 	res = []
 	while len(eSet) > 0:
 		item = random.sample(eSet, 1)
+		print(item)
+		quit()
 		v_prev, v_now = item
 		eSet.remove(v_prev, v_now)
 		nb[v_prev].remove(v_now)
