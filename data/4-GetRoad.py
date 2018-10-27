@@ -279,12 +279,20 @@ def extractPolygons(edges):
 			v_prev = v_now
 			v_now = v_next
 			vec1 = np.array(v_now) - np.array(v_prev)
+			len_vec1 = np.sqrt(np.dot(vec1, vec1))
 			comp = []
 			for v in nb[v_now]:
-				vec2 = np.array(v) - np.array(v_now)
-				cross = vec1[0] * vec2[1] - vec1[1] * vec2[0]
-				comp.append((cross, v))
-			_, v_next = max(comp)
+				if v == v_prev:
+					comp.append((3, v))
+				else:
+					vec2 = np.array(v) - np.array(v_now)
+					cross = vec1[0] * vec2[1] - vec1[1] * vec2[0]
+					cos_a = np.dot(vec1, vec2) / len_vec1 / np.sqrt(np.dot(vec2, vec2))
+					if cross > 0:
+						comp.append((cos_a, v))
+					else:
+						comp.append((2 - cos_a, v))
+			_, v_next = min(comp)
 		eSet.remove((polygon[-1], v_start))
 		nb[polygon[-1]].remove(v_start)
 		res.append(polygon)
