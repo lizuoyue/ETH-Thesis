@@ -82,13 +82,13 @@ def rotateN(n, w, h, x, y):
 	return w, h, x, y
 
 class DataGenerator(object):
-	def __init__(self, city_name, img_size, v_out_res, max_num_vertices, mode = 'train'):
+	def __init__(self, city_name, img_size, v_out_res, max_seq_len, mode = 'train'):
 		assert(mode in ['train', 'val', 'test'])
 		self.mode = mode
 		self.city_name = city_name
 		self.img_size = img_size
 		self.v_out_res = v_out_res
-		self.max_num_vertices = max_num_vertices
+		self.max_seq_len = max_seq_len
 
 		self.TRAIN_ANNOTATIONS_PATH = config.PATH[city_name]['ann-train']
 		self.VAL_ANNOTATIONS_PATH   = config.PATH[city_name]['ann-val']
@@ -248,14 +248,14 @@ class DataGenerator(object):
 			vertex_output = vertex_input[1:]
 			vertex_terminal = [vertex_input[0], self.vertex_pool[g.v[t][1]][g.v[t][0]]]
 
-			while len(vertex_input) < max_seq_len:
+			while len(vertex_input) < self.max_seq_len:
 				vertex_input.append(blank)
-			while len(vertex_output) < max_seq_len:
+			while len(vertex_output) < self.max_seq_len:
 				vertex_output.append(blank)
-			if len(vertex_input) != max_seq_len:
+			if len(vertex_input) != self.max_seq_len:
 				print(len(vertex_input))
-			assert(len(vertex_output) == max_seq_len)
-			end = np.zeros([max_seq_len])
+			assert(len(vertex_output) == self.max_seq_len)
+			end = np.zeros([self.max_seq_len])
 			if len(path_v) > 0:
 				end[len(path_v) - 1] = 1
 
@@ -434,7 +434,7 @@ def recoverMultiPath(img_size, paths):
 
 if __name__ == '__main__':
 	dg = DataGenerator('Chicago', config.AREA_SIZE, config.V_OUT_RES, config.MAX_NUM_VERTICES)
-	for i in range(100000):
+	for i in range(10):
 		print(i)
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = dg.getAreasBatch(4, 'train')
 
