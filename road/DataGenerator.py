@@ -261,11 +261,11 @@ class DataGenerator(object):
 
 			if True:
 				color = [0] + [1, 2] * 30
-				for i, vvv in enumerate([vertex_input, vertex_output, vertex_terminal]):
+				for seq, vvv in enumerate([vertex_input, vertex_output, vertex_terminal]):
 					visualize = np.zeros((self.v_out_res[1], self.v_out_res[0], 3), np.uint8)
 					for i, item in enumerate(vvv):
 						visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
-					Image.fromarray(visualize).resize(self.img_size).save('%d_%d.png' % (img_id, i))
+					Image.fromarray(visualize).resize(self.img_size).save('%d_%d.png' % (img_id, seq))
 				print(end)
 				print(len(path_v))
 
