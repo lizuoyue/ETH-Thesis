@@ -36,12 +36,11 @@ def colinear(p0, p1, p2):
 	return abs(x1 * y2 - x2 * y1) < 1e-6
 
 def colinear_angle(p0, p1, p2):
+	# angle of p0
 	def l2dist(a, b):
 		diff = np.array(a) - np.array(b)
 		return np.sqrt(np.dot(diff, diff))
-	li = [l2dist(p0, p1), l2dist(p1, p2), l2dist(p0, p2)]
-	li.sort()
-	a, b, c = li
+	a, b, c = l2dist(p0, p1), l2dist(p0, p2), l2dist(p1, p2)
 	cos_C = (a * a + b * b - c * c) / (2 * a * b)
 	return cos_C < -0.996 # cos(174.8736°)
 
@@ -201,9 +200,6 @@ class RoadPool(object):
 def graphProcess(graph):
 	# graph: [(edge_1), ..., (edge_n)]
 	## edge: ((x1, y1), (x2, y2))
-
-	print("==========")
-	print(graph)
 
 	# 1. Remove duplicate
 	v_val, e_val = set(), set()
@@ -429,7 +425,7 @@ if __name__ == '__main__':
 			p.addE(nid2, nid1)
 	p.sortV()
 
-	if False:
+	if True:
 		result = [{
 			'info': {
 				'contributor': 'Zuoyue Li',
@@ -449,8 +445,6 @@ if __name__ == '__main__':
 	map_list.sort()
 
 	for mid in map_list:
-		if mid < 8501:
-			continue
 		print('Map ID:', mid)
 		patch_seq = sum([len(item['images']) for item in result])
 		ann_seq = sum([len(item['annotations']) for item in result])
