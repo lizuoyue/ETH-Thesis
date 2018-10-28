@@ -241,10 +241,10 @@ class DataGenerator(object):
 			path_v = [g.v[idx] for idx in path]
 			path_v = path_v[: self.max_num_vertices]
 
-			vertex_input = [vertex_pool[r][c] for c, r in path_v]
+			vertex_input = [self.vertex_pool[r][c] for c, r in path_v]
 			assert(len(vertex_input) > 0)
 			vertex_output = vertex_input[1:]
-			vertex_terminal = [vertex_input[0], vertex_pool[g.v[t][1]][g.v[t][0]]]
+			vertex_terminal = [vertex_input[0], self.vertex_pool[g.v[t][1]][g.v[t][0]]]
 
 			while len(vertex_input) < max_seq_len:
 				vertex_input.append(blank)
