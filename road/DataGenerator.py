@@ -249,9 +249,9 @@ class DataGenerator(object):
 			vertex_terminal = [vertex_input[0], self.vertex_pool[g.v[t][1]][g.v[t][0]]]
 
 			while len(vertex_input) < self.max_seq_len:
-				vertex_input.append(blank)
+				vertex_input.append(self.blank)
 			while len(vertex_output) < self.max_seq_len:
-				vertex_output.append(blank)
+				vertex_output.append(self.blank)
 			if len(vertex_input) != self.max_seq_len:
 				print(len(vertex_input))
 			assert(len(vertex_output) == self.max_seq_len)
