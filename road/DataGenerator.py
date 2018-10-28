@@ -182,10 +182,8 @@ class DataGenerator(object):
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
 		d = {v: k for k, v in enumerate(v_li)}
 
-		print(annotation['segmentation'])
-		print(annotation['polygons'])
-		edges = [(d[v1], d[v2]) for v1, v2 in annotation['segmentation']]
-		polygons = [[d[v] for v in polygon] for polygon in annotation['polygons']]
+		edges = [(d[tuple(v1)], d[tuple(v2)]) for v1, v2 in annotation['segmentation']]
+		polygons = [[d[tuple(v)] for v in polygon] for polygon in annotation['polygons']]
 
 		g = directed_graph()
 		for v in v_li_8:
