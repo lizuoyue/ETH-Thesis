@@ -159,6 +159,8 @@ class DataGenerator(object):
 			image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, img_info['file_name'])
 
 		img = Image.open(image_path)
+		print(image_path)
+		print(img.size)
 		org_w, org_h = img.size
 		img = img.rotate(rotate_deg)
 		if True:
