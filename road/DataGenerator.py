@@ -160,6 +160,7 @@ class DataGenerator(object):
 
 		img = Image.open(image_path)
 		org_w, org_h = img.size
+		print('imgsize', img.size)
 		ret_img = img.rotate(rotate_deg).resize(self.img_size)
 
 		if True:
