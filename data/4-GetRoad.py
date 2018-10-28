@@ -202,6 +202,9 @@ def graphProcess(graph):
 	# graph: [(edge_1), ..., (edge_n)]
 	## edge: ((x1, y1), (x2, y2))
 
+	print("==========")
+	print(graph)
+
 	# 1. Remove duplicate
 	v_val, e_val = set(), set()
 	for item in graph:
