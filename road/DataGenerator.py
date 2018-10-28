@@ -161,6 +161,8 @@ class DataGenerator(object):
 		img = Image.open(image_path)
 		org_w, org_h = img.size
 		img = img.rotate(rotate_deg)
+		if True:
+			img.save('%d.png' % img_id)
 		self.recover_rate = (img.size[0] / self.img_size[0], img.size[1] / self.img_size[1])
 		ret_img = np.array(img.resize(self.img_size), np.float32)[..., 0: 3]
 
@@ -200,18 +202,16 @@ class DataGenerator(object):
 		draw = ImageDraw.Draw(boundary)
 		for e in g.e:
 			draw.line(list(g.v[e[0]]) + list(g.v[e[1]]), fill = 255, width = 1)
-		if show:
-			boundary.resize(self.img_size).show()
-			time.sleep(0.1)
+		if True:
+			boundary.resize(self.img_size).save('%d_b.png' % img_id)
 		boundary = np.array(boundary) / 255.0
 
 		vertices = Image.new('P', (w8, h8), color = 0)
 		draw = ImageDraw.Draw(vertices)
 		for i in range(len(g.v)):
 			draw.ellipse(make_ellipse(g.v[i], pad = 0), fill = 255, outline = 255)
-		if show:
-			vertices.resize(self.img_size).show()
-			time.sleep(0.1)
+		if True:
+			vertices.resize(self.img_size).save('%d_v.png' % img_id)
 		vertices = np.array(vertices) / 255.0
 
 		# RNN in and out
