@@ -403,7 +403,7 @@ def loadJSON(city_name):
 	result = []
 	for set_type in ['Train', 'Val', 'Test']:
 		with open('%sRoad%s.json' % (city_name, set_type), 'r') as infile:
-			result.append(json.load(infile).item())
+			result.append(json.load(infile))
 	return result
 
 if __name__ == '__main__':
