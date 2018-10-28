@@ -399,6 +399,13 @@ def saveJSON(result, city_name):
 			json.dump(sub_res, outfile, cls = NumpyEncoder)
 	return
 
+def loadJSON(city_name):
+	result = []
+	for set_type in ['Train', 'Val', 'Test']:
+		with open('%sRoad%s.json' % (city_name, set_type), 'r') as infile:
+			result.append(json.load(infile).item())
+	return result
+
 if __name__ == '__main__':
 	assert(len(sys.argv) == 2)
 	city_name = sys.argv[1]
@@ -419,23 +426,28 @@ if __name__ == '__main__':
 			p.addE(nid2, nid1)
 	p.sortV()
 
-	result = [{
-		'info': {
-			'contributor': 'Zuoyue Li',
-			'about': '%s dataset for %s roads' % (set_type, city_name),
-		},
-		'categories': [
-			{'id': 999999, 'name': 'road', 'supercategory': 'road'}
-		],
-		'images': [],
-		'annotations': []
-	} for set_type in ['training', 'validation', 'test']]
+	if False:
+		result = [{
+			'info': {
+				'contributor': 'Zuoyue Li',
+				'about': '%s dataset for %s roads' % (set_type, city_name),
+			},
+			'categories': [
+				{'id': 999999, 'name': 'road', 'supercategory': 'road'}
+			],
+			'images': [],
+			'annotations': []
+		} for set_type in ['training', 'validation', 'test']]
+	else:
+		result = loadJSON(city_name)
 
 	map_info = np.load('%sMapInfo.npy' % city_name).item()
 	map_list = [int(item.split('/')[-1].replace('.png', '')) for item in glob.glob('./%sMap/*' % city_name)]
 	map_list.sort()
 
 	for mid in map_list:
+		if mid < 8501:
+			continue
 		print('Map ID:', mid)
 		patch_seq = sum([len(item['images']) for item in result])
 		ann_seq = sum([len(item['annotations']) for item in result])
