@@ -6,11 +6,11 @@ class Config(object):
 		self.AREA_SIZE_4    = [int(item /  4) for item in self.AREA_SIZE]
 		self.AREA_SIZE_8    = [int(item /  8) for item in self.AREA_SIZE]
 		self.AREA_SIZE_16   = [int(item / 16) for item in self.AREA_SIZE]
+		self.AREA_SIZE_32   = [int(item / 32) for item in self.AREA_SIZE]
 
 		#
-		self.BEAM_WIDTH = 10
+		self.BEAM_WIDTH = 6
 		self.BEAM_WIDTH_2 = int(self.BEAM_WIDTH / 2)
-		self.BLUR = 0.75
 
 		self.TABLEAU20 = [
 			(174, 199, 232), (255, 187, 120), (152, 223, 138), (255, 152, 150), (197, 176, 213),
@@ -24,12 +24,53 @@ class Config(object):
 		]
 
 		# Learning parameters
-		self.NUM_ITER = 5000001
-		self.MAX_NUM_VERTICES = 10
+		self.NUM_ITER = 500001
+		self.MAX_NUM_VERTICES = 30
 		self.LEARNING_RATE = 2e-5
 		self.LSTM_OUT_CHANNEL = [64, 32, 16, 8]
 		self.V_OUT_RES = tuple(self.AREA_SIZE_8)
 		self.AREA_TRAIN_BATCH = 4
-		self.AREA_VALID_BATCH = 8
+		self.AREA_VALID_BATCH = 6
 		self.AREA_TEST_BATCH = 12
-		self.TRAIN_NUM_PATH = 16
+
+		self.TRAIN_NUM_PATH = 12
+		self.VALID_NUM_PATH = 16
+
+		self.PATH = {
+			'roadtracer': {
+				'img-train': '/local/home/zoli/data/roadtracer/train/images',
+				'img-val'  : '/local/home/zoli/data/roadtracer/test/images',
+				'img-test' : '/local/home/zoli/data/roadtracer/test/images',
+				'ann-train': '/local/home/zoli/data/roadtracer/train/annotation.json',
+				'ann-val'  : '/local/home/zoli/data/roadtracer/test/annotation.json',
+				'ann-test' : '/local/home/zoli/data/roadtracer/test/annotation.json',
+				'bias'     : [0, 0, 0]
+			},
+			'Chicago': {
+				'img-train': '/local/home/zoli/data/Chicago/ChicagoPatch',
+				'img-val'  : '/local/home/zoli/data/Chicago/ChicagoPatch',
+				'img-test' : '/local/home/zoli/data/Chicago/ChicagoPatch',
+				'ann-train': '/local/home/zoli/data/Chicago/ChicagoRoadTrain.json',
+				'ann-val'  : '/local/home/zoli/data/Chicago/ChicagoRoadVal.json',
+				'ann-test' : '/local/home/zoli/data/Chicago/ChicagoRoadTest.json',
+				'bias'     : [84.60222819, 80.07855799, 70.79262454]
+			},
+			'Sunnyvale': {
+				'img-train': '/local/home/zoli/data/Sunnyvale/SunnyvalePatch',
+				'img-val'  : '/local/home/zoli/data/Sunnyvale/SunnyvalePatch',
+				'img-test' : '/local/home/zoli/data/Sunnyvale/SunnyvalePatch',
+				'ann-train': '/local/home/zoli/data/Sunnyvale/SunnyvaleRoadTrain.json',
+				'ann-val'  : '/local/home/zoli/data/Sunnyvale/SunnyvaleRoadVal.json',
+				'ann-test' : '/local/home/zoli/data/Sunnyvale/SunnyvaleRoadTest.json',
+				'bias'     : [107.52448122, 106.82606879, 98.10730461]
+			},
+			'Boston': {
+				'img-train': '/local/home/zoli/data/Boston/BostonPatch',
+				'img-val'  : '/local/home/zoli/data/Boston/BostonPatch',
+				'img-test' : '/local/home/zoli/data/Boston/BostonPatch',
+				'ann-train': '/local/home/zoli/data/Boston/BostonRoadTrain.json',
+				'ann-val'  : '/local/home/zoli/data/Boston/BostonRoadVal.json',
+				'ann-test' : '/local/home/zoli/data/Boston/BostonRoadTest.json',
+				'bias'     : [76.86692809, 75.58776253, 67.1285512]
+			}
+		}

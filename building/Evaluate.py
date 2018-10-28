@@ -23,8 +23,6 @@ class NumpyEncoder(json.JSONEncoder):
 		return json.JSONEncoder.default(self, obj)
 
 if __name__ == '__main__':
-	np.random.seed(8888)
-
 	argv = {k: v for k, v in zip(sys.argv[1::2], sys.argv[2::2])}
 	city_name = argv['--city']
 	img_bias = np.array(config.PATH[city_name]['bias'])
@@ -85,7 +83,7 @@ if __name__ == '__main__':
 
 	# Launch graph
 	with tf.Session() as sess:
-		with open('Eval.out', 'w') as f:
+		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
 			i = 0
@@ -119,7 +117,7 @@ if __name__ == '__main__':
 				print(i)
 				i += 1
 
-			with open('predictions.json', 'w') as fp:
+			with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
 				fp.write(json.dumps(obj.TEST_RESULT, cls = NumpyEncoder))
 				fp.close()
 

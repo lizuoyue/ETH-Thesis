@@ -44,6 +44,7 @@ def overlay(img, mask):
 class DataGenerator(object):
 	def __init__(self, city_name, img_size, v_out_res, max_num_vertices, mode = 'train'):
 		assert(mode in ['train', 'val', 'test'])
+		self.mode = mode
 		self.city_name = city_name
 		self.img_size = img_size
 		self.v_out_res = v_out_res
@@ -59,18 +60,18 @@ class DataGenerator(object):
 		self.TEST_FLAG = True
 		self.TEST_RESULT = []
 
-		if mode == 'test':
+		if self.mode == 'test':
 			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-test']
 			if self.TEST_ANNOTATIONS_PATH is None:
 				self.TEST_IMAGE_IDS = list(range(len(glob.glob(self.TEST_IMAGES_DIRECTORY + '/*'))))
 			else:
 				self.coco_test = COCO(self.TEST_ANNOTATIONS_PATH)
 				self.TEST_IMAGE_IDS = list(self.coco_test.getImgIds(catIds = self.coco_test.getCatIds()))
-		if mode == 'val':
+		if self.mode == 'val':
 			self.coco_valid = COCO(self.VAL_ANNOTATIONS_PATH)
 			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-val']
 			self.TEST_IMAGE_IDS = list(self.coco_valid.getImgIds(catIds = self.coco_valid.getCatIds()))
-		if mode == 'train':
+		if self.mode == 'train':
 			self.coco_train = COCO(self.TRAIN_ANNOTATIONS_PATH)
 			self.coco_valid = COCO(self.VAL_ANNOTATIONS_PATH)
 			self.train_img_ids = self.coco_train.getImgIds(catIds = self.coco_train.getCatIds())
@@ -133,12 +134,13 @@ class DataGenerator(object):
 		return [v for i, v in enumerate(polygon) if flag[i]]
 
 	def getSingleBuilding(self, mode, ann_id, rotate):
+		assert(self.mode == 'train')
 		rotate_deg = rotate * 90
 		if mode == 'train':
 			annotation = self.coco_train.loadAnns([ann_id])[0]
 			img_info = self.coco_train.loadImgs(annotation['image_id'])[0]
 			image_path = os.path.join(self.TRAIN_IMAGES_DIRECTORY, img_info['file_name'])
-		if mode == 'valid':
+		if mode == 'val':
 			annotation = self.coco_valid.loadAnns([ann_id])[0]
 			img_info = self.coco_valid.loadImgs(annotation['image_id'])[0]
 			image_path = os.path.join(self.VAL_IMAGES_DIRECTORY, img_info['file_name'])
@@ -234,22 +236,32 @@ class DataGenerator(object):
 		return img_patch, boundary, vertices, vertex_input, vertex_output, end, seq_len, crop_info
 
 	def getSingleArea(self, mode, img_id, rotate):
+		if self.mode == 'train':
+			assert(mode in ['train', 'val'])
+		else:
+			assert(mode == self.mode)
+
 		# Rotate, anticlockwise
-		rotate_deg = rotate * 90
-		if mode == 'train':
-			img_info = self.coco_train.loadImgs([img_id])[0]
-			image_path = os.path.join(self.TRAIN_IMAGES_DIRECTORY, img_info['file_name'])
-			annotations = self.coco_train.loadAnns(self.coco_train.getAnnIds(imgIds = img_info['id']))
-		if mode == 'valid':
-			img_info = self.coco_valid.loadImgs([img_id])[0]
-			image_path = os.path.join(self.VAL_IMAGES_DIRECTORY, img_info['file_name'])
-			annotations = self.coco_valid.loadAnns(self.coco_valid.getAnnIds(imgIds = img_info['id']))
-		if mode == 'test':
-			if self.TEST_ANNOTATIONS_PATH is None:
-				image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, str(img_id).zfill(12) + '.jpg')
-			else:
-				img_info = self.coco_test.loadImgs([img_id])[0]
+		if self.mode == 'train':
+			rotate_deg = rotate * 90
+			if mode == 'train':
+				img_info = self.coco_train.loadImgs([img_id])[0]
+				image_path = os.path.join(self.TRAIN_IMAGES_DIRECTORY, img_info['file_name'])
+				annotations = self.coco_train.loadAnns(self.coco_train.getAnnIds(imgIds = img_info['id']))
+			if mode == 'val':
+				img_info = self.coco_valid.loadImgs([img_id])[0]
+				image_path = os.path.join(self.VAL_IMAGES_DIRECTORY, img_info['file_name'])
+				annotations = self.coco_valid.loadAnns(self.coco_valid.getAnnIds(imgIds = img_info['id']))
+		else:
+			if mode == 'val':
+				img_info = self.coco_valid.loadImgs([img_id])[0]
 				image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, img_info['file_name'])
+			if mode == 'test':
+				if self.TEST_ANNOTATIONS_PATH is None:
+					image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, str(img_id).zfill(12) + '.jpg')
+				else:
+					img_info = self.coco_test.loadImgs([img_id])[0]
+					image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, img_info['file_name'])
 
 		img = Image.open(image_path)
 		org_w, org_h = img.size
@@ -258,7 +270,7 @@ class DataGenerator(object):
 		self.area_imgs.append(img)
 		ret_img = np.array(img.resize(config.AREA_SIZE), np.float32)[..., 0: 3]
 
-		if mode == 'test':
+		if self.mode != 'train':
 			return ret_img
 
 		gt_boxes = []
@@ -293,6 +305,7 @@ class DataGenerator(object):
 
 	def getBuildingsBatch(self, batch_size, mode = None):
 		# Real
+		assert(self.mode == 'train')
 		res = []
 		if mode == 'train':
 			anns = self.coco_train.loadAnns(self.anns_choose_from)
@@ -302,42 +315,47 @@ class DataGenerator(object):
 				ann = self.getSingleBuilding('train', int(ann_id), rotate = self.rotate)
 				if ann is not None:
 					res.append(ann)
-		if mode == 'valid':
+		if mode == 'val':
 			anns = self.coco_valid.loadAnns(self.anns_choose_from)
 			anns_p = normalize([setValidNum(ann) for ann in anns])
 			while len(res) < batch_size:
 				ann_id = np.random.choice(self.anns_choose_from, 1, replace = True, p = anns_p)
-				ann = self.getSingleBuilding('valid', int(ann_id), rotate = self.rotate)
+				ann = self.getSingleBuilding('val', int(ann_id), rotate = self.rotate)
 				if ann is not None:
 					res.append(ann)
 		return [np.array([item[i] for item in res]) for i in range(8)]
 
-	def getAreasBatch(self, batch_size, mode = None):
+	def getAreasBatch(self, batch_size, mode):
 		# Real
 		res = []
 		self.rotate = random.choice([0, 1, 2, 3])
 		self.area_imgs = []
 		self.anns_choose_from = []
 		self.to_batch_idx = {}
-		if mode == 'train':
-			while True:
-				sel = np.random.choice(self.train_img_ids, batch_size, replace = True)
-				self.anns_choose_from = self.coco_train.getAnnIds(imgIds = sel)
-				if len(self.anns_choose_from) > 0:
-					break
-			for i, img_id in enumerate(sel):
-				res.append(self.getSingleArea('train', img_id, rotate = self.rotate))
-				self.to_batch_idx[img_id] = i
-		if mode == 'valid':
-			while True:
-				sel = np.random.choice(self.valid_img_ids, batch_size, replace = True)
-				self.anns_choose_from = self.coco_valid.getAnnIds(imgIds = sel)
-				if len(self.anns_choose_from) > 0:
-					break
-			for i, img_id in enumerate(sel):
-				res.append(self.getSingleArea('valid', img_id, rotate = self.rotate))
-				self.to_batch_idx[img_id] = i
-		if mode == 'test':
+		if self.mode == 'train':
+			assert(mode in ['train', 'val'])
+			if mode == 'train':
+				while True:
+					sel = np.random.choice(self.train_img_ids, batch_size, replace = True)
+					self.anns_choose_from = self.coco_train.getAnnIds(imgIds = sel)
+					if len(self.anns_choose_from) > 0:
+						break
+				for i, img_id in enumerate(sel):
+					res.append(self.getSingleArea('train', img_id, rotate = self.rotate))
+					self.to_batch_idx[img_id] = i
+			if mode == 'val':
+				while True:
+					sel = np.random.choice(self.valid_img_ids, batch_size, replace = True)
+					self.anns_choose_from = self.coco_valid.getAnnIds(imgIds = sel)
+					if len(self.anns_choose_from) > 0:
+						break
+				for i, img_id in enumerate(sel):
+					res.append(self.getSingleArea('val', img_id, rotate = self.rotate))
+					self.to_batch_idx[img_id] = i
+			print(sel, self.rotate)
+			return [np.array([item[i] for item in res]) for i in range(3)]
+		else:
+			assert(mode in ['test', 'val'])
 			self.rotate = 0
 			if self.TEST_FLAG:
 				beg = self.TEST_CURRENT
@@ -351,12 +369,10 @@ class DataGenerator(object):
 				else:
 					self.TEST_CURRENT = end
 				for img_id in self.TEST_CURRENT_IDS:
-					res.append(self.getSingleArea('test', img_id, rotate = 0))
+					res.append(self.getSingleArea(mode, img_id, rotate = 0))
 				return np.array(res)
 			else:
 				return None
-		print(sel, self.rotate)
-		return [np.array([item[i] for item in res]) for i in range(3)]
 
 	def getPatchesFromAreas(self, pred_score, pred_box):
 		assert(len(pred_box) == len(self.area_imgs))
@@ -477,8 +493,8 @@ if __name__ == '__main__':
 		print(n)
 		item1 = dg.getAreasBatch(4, mode = 'train')
 		item2 = dg.getBuildingsBatch(12, mode = 'train')
-		item3 = dg.getAreasBatch(4, mode = 'valid')
-		item4 = dg.getBuildingsBatch(12, mode = 'valid')
+		item3 = dg.getAreasBatch(4, mode = 'val')
+		item4 = dg.getBuildingsBatch(12, mode = 'val')
 	quit()
 
 	for k in range(12):

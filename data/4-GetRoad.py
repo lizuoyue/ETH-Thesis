@@ -17,7 +17,6 @@ class NumpyEncoder(json.JSONEncoder):
 			np.float64)):
 			return float(obj)
 		elif isinstance(obj,(np.ndarray,)):
-			print(obj.tolist())
 			return obj.tolist()
 		return json.JSONEncoder.default(self, obj)
 

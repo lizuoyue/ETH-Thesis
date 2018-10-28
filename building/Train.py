@@ -122,8 +122,8 @@ if __name__ == '__main__':
 
 			# Validation
 			if i % 100 == 0:
-				img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_TRAIN_BATCH, mode = 'valid')
-				_, boundary, vertices, v_in, v_out, end, seq_len, crop_info = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'valid')
+				img, anchor_cls, anchor_box = obj.getAreasBatch(config.AREA_TRAIN_BATCH, mode = 'val')
+				_, boundary, vertices, v_in, v_out, end, seq_len, crop_info = obj.getBuildingsBatch(config.BUILDING_TRAIN_BATCH, mode = 'val')
 				feed_dict = {
 					aa: img - img_bias, cc: anchor_cls, dd: anchor_box,
 					pp: crop_info, ii: v_in, bb: boundary, vv: vertices, oo: v_out, ee: end, ll: seq_len

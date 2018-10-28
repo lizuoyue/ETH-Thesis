@@ -37,7 +37,7 @@ class Config(object):
 		self.MAX_NUM_VERTICES = 30
 		self.LEARNING_RATE = 2e-5 # 2e-5 4e-6
 		self.LSTM_OUT_CHANNEL = [64, 32, 16]
-		self.V_OUT_RES = (28, 28)
+		self.V_OUT_RES = tuple(self.AREA_SIZE_8)
 		self.AREA_TRAIN_BATCH = 4
 		self.AREA_VALID_BATCH = 6
 		self.AREA_TEST_BATCH = 12
