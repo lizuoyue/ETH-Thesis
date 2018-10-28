@@ -159,20 +159,18 @@ class DataGenerator(object):
 			image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, img_info['file_name'])
 
 		img = Image.open(image_path)
-		print(image_path)
-		print(img.size)
 		org_w, org_h = img.size
-		img = img.rotate(rotate_deg)
-		if True:
-			img.save('%d.png' % img_id)
-		self.recover_rate = (img.size[0] / self.img_size[0], img.size[1] / self.img_size[1])
-		ret_img = np.array(img.resize(self.img_size), np.float32)[..., 0: 3]
+		ret_img = img.rotate(rotate_deg).resize(self.img_size)
 
+		if True:
+			ret_img.save('%d.png' % img_id)
+
+		ret_img = np.array(ret_img, np.float32)[..., 0: 3]
 		if self.mode != 'train':
 			return ret_img
 
 		assert(len(annotations) == 1)
-		w8, h8 = int(org_w / 8), int(org_h / 8)
+		w8, h8 = self.v_out_res
 		annotation = annotations[0]
 
 		v_set = set()
