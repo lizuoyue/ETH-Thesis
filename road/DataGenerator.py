@@ -285,7 +285,7 @@ class DataGenerator(object):
 		ends = np.array(ends)
 		seq_lens = np.array(seq_lens)
 
-		# print(img.shape)
+		# print(ret_img.shape)
 		# print(boundary.shape)
 		# print(vertices.shape)
 		# print(vertex_inputs.shape)
@@ -294,7 +294,7 @@ class DataGenerator(object):
 		# print(ends.shape)
 		# print(seq_lens.shape)
 
-		return img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
+		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
 	def getAreasBatch(self, batch_size, mode):
 		res = []
