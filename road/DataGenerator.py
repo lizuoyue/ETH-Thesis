@@ -120,10 +120,6 @@ class DataGenerator(object):
 			train_anns = self.coco_train.loadAnns(self.train_ann_ids)
 			valid_anns = self.coco_valid.loadAnns(self.valid_ann_ids)
 
-			# 
-			self.train_ann_p = normalize([setValidNum(ann) for ann in train_anns])
-			self.valid_ann_p = normalize([setValidNum(ann) for ann in valid_anns])
-
 			print('Totally %d patches for train.' % len(self.train_ann_ids))
 			print('Totally %d patches for valid.' % len(self.valid_ann_ids))
 
