@@ -180,6 +180,7 @@ class DataGenerator(object):
 		v_li = list(v_set)
 		v_li.sort()
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
+		print(v_li)
 		print(v_li_8)
 		d = {v: k for k, v in enumerate(v_li)}
 
