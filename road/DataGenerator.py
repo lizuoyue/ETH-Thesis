@@ -74,7 +74,7 @@ def make_ellipse(p, pad = 10):
 	return [(p[0] - pad, p[1] - pad), (p[0] + pad, p[1] + pad)]
 
 def rotate1(w, h, x, y):
-	return h, w, h - y - 1, x
+	return h, w, y, w - 1 - x
 
 def rotateN(n, w, h, x, y):
 	for _ in range(n):
@@ -180,8 +180,6 @@ class DataGenerator(object):
 		v_li = list(v_set)
 		v_li.sort()
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
-		print(v_li)
-		print(v_li_8)
 		d = {v: k for k, v in enumerate(v_li)}
 
 		edges = [(d[tuple(v1)], d[tuple(v2)]) for v1, v2 in annotation['segmentation']]
