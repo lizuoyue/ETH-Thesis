@@ -241,7 +241,7 @@ class DataGenerator(object):
 			else:
 				path = [s]
 			path_v = [g.v[idx] for idx in path]
-			path_v = path_v[: self.max_num_vertices]
+			path_v = path_v[: self.max_seq_len]
 
 			vertex_input = [self.vertex_pool[r][c] for c, r in path_v]
 			assert(len(vertex_input) > 0)
