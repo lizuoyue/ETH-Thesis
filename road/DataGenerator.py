@@ -5,7 +5,7 @@ import time, json
 from scipy.stats import multivariate_normal
 from Config import *
 from scipy.ndimage.filters import gaussian_filter
-import scipy, socket, sys
+import scipy, socket, sys, os
 from pycocotools.coco import COCO
 
 config = Config()
