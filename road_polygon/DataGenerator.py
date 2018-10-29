@@ -194,74 +194,53 @@ class DataGenerator(object):
 			edges = []
 			polygons = []
 
-		g = directed_graph()
-		for v in v_li_8_unique:
-			g.add_v(rotateN(rotate, w8, h8, v[0], v[1])[2: 4])
-		for s, t in edges:
-			if s != t:
-				g.add_e(s, t)
-		g.shortest_path_all()
-
 		w8, h8 = rotateN(rotate, w8, h8, 0, 0)[0: 2]
 
 		# Draw boundary and vertices
 		boundary = Image.new('P', (w8, h8), color = 0)
 		draw = ImageDraw.Draw(boundary)
-		for e in g.e:
-			draw.line(list(g.v[e[0]]) + list(g.v[e[1]]), fill = 255, width = 1)
+		for e in edges:
+			draw.line(list(v_li_8_unique[e[0]]) + list(v_li_8_unique[e[1]]), fill = 255, width = 1)
 		if SHOW:
 			boundary.resize(self.img_size).save('%d_b.png' % img_id)
 		boundary = np.array(boundary) / 255.0
 
 		vertices = Image.new('P', (w8, h8), color = 0)
 		draw = ImageDraw.Draw(vertices)
-		for i in range(len(g.v)):
-			draw.ellipse(make_ellipse(g.v[i], pad = 0), fill = 255, outline = 255)
+		for i in range(len(v_li_8_unique)):
+			draw.ellipse(make_ellipse(v_li_8_unique[i], pad = 0), fill = 255, outline = 255)
 		if SHOW:
 			vertices.resize(self.img_size).save('%d_v.png' % img_id)
 		vertices = np.array(vertices) / 255.0
 
 		# RNN in and out
-		vertex_terminals = []
 		vertex_inputs = []
 		vertex_outputs = []
 		ends = []
 		seq_lens = []
-		for s in range(len(g.v)):
-			if len(g.v) == 1:
-				break
-			t = int(np.random.choice(len(g.v), 1)[0])
-			while t == s:
-				t = int(np.random.choice(len(g.v), 1)[0])
-			dist, prev = g.sp[s]
-			if dist[t] > 0:
-				path = []
-				p = t
-				while p != s:
-					path.append(p)
-					p = prev[p]
-				path.append(p)
-				path.reverse()
-			else:
-				path = [s]
-			path_v = [g.v[idx] for idx in path]
-			path_v = path_v[: self.max_seq_len]
+		for polygon in polygons:
+			assert(len(polygon) > 2)
+			start = np.random.randint(len(polygon), 1)[0]
+			full_path = polygon[start:] + polygon[1: start + 1]
+			full_path = [v_li_8_unique[idx] for idx in full_path]
+			seq_len = len(full_path) - 1
 
-			vertex_input = [self.vertex_pool[r][c] for c, r in path_v]
-			assert(len(vertex_input) > 0)
-			vertex_output = vertex_input[1:]
-			vertex_terminal = [vertex_input[0], self.vertex_pool[g.v[t][1]][g.v[t][0]]]
+			vertex_input_1 = [self.vertex_pool[r][c] for c, r in full_path[:-1]]
+			vertex_input_2 = [self.vertex_pool[r][c] for c, r in full_path[ 1:]]
+			vertex_input = [[in1, in2] for in1, in2 in zip(vertex_input_1, vertex_input_2)]
+			vertex_output = vertex_input_2[1:]
 
 			while len(vertex_input) < self.max_seq_len:
-				vertex_input.append(self.blank)
+				vertex_input.append([self.blank, self.blank])
 			while len(vertex_output) < self.max_seq_len:
 				vertex_output.append(self.blank)
-			if len(vertex_input) != self.max_seq_len:
-				print(len(vertex_input))
-			assert(len(vertex_output) == self.max_seq_len)
+
+			vertex_input = vertex_input[: self.max_seq_len]
+			vertex_output = vertex_output[: self.max_seq_len]
+
 			end = np.zeros([self.max_seq_len])
-			if len(path_v) > 0:
-				end[len(path_v) - 1] = 1
+			if seq_len <= self.max_seq_len:
+				end[seq_len - 1] = 1
 
 			if SHOW:
 				color = [0] + [1, 2] * 30
@@ -270,22 +249,19 @@ class DataGenerator(object):
 					for i, item in enumerate(vvv):
 						visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
 					Image.fromarray(visualize).resize(self.img_size).save('%d_%d.png' % (img_id, seq))
-				# print(end)
-				# print(len(path_v))
+				print(end)
+				print(len(path_v))
 
 			vertex_input = [np.array(item) for item in vertex_input]
 			vertex_output = [np.array(item) for item in vertex_output]
-			vertex_terminal = [np.array(item) for item in vertex_terminal]
 			vertex_inputs.append(vertex_input)
 			vertex_outputs.append(vertex_output)
-			vertex_terminals.append(vertex_terminal)
 			ends.append(end)
-			seq_lens.append(len(path_v))
+			seq_lens.append(min(seq_len, self.max_seq_len))
 
-		seq_idx = seq_id * np.ones([len(vertex_terminals)], np.int32)
+		seq_idx = seq_id * np.ones([len(polygons)], np.int32)
 		vertex_inputs = np.array(vertex_inputs)
 		vertex_outputs = np.array(vertex_outputs)
-		vertex_terminals = np.array(vertex_terminals)
 		ends = np.array(ends)
 		seq_lens = np.array(seq_lens)
 
@@ -294,11 +270,10 @@ class DataGenerator(object):
 		# print(vertices.shape)
 		# print(vertex_inputs.shape)
 		# print(vertex_outputs.shape)
-		# print(vertex_terminals.shape)
 		# print(ends.shape)
 		# print(seq_lens.shape)
 
-		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
+		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, seq_idx
 
 	def getAreasBatch(self, batch_size, mode):
 		res = []

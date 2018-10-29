@@ -217,14 +217,17 @@ class DataGenerator(object):
 			vertex_input.append(np.array(self.blank, dtype = np.float32))
 		while len(vertex_output) < self.max_num_vertices:
 			vertex_output.append(np.array(self.blank, dtype = np.float32))
+		vertex_input = vertex_input[: self.max_num_vertices]
+		vertex_output = vertex_output[: self.max_num_vertices]
 		vertex_input = np.array(vertex_input)
 		vertex_output = np.array(vertex_output)
 
 		# Get end signal
 		seq_len = len(polygon_s)
-		end = [0.0 for i in range(self.max_num_vertices)]
-		end[seq_len - 1] = 1.0
-		end = np.array(end)
+		end = np.zeros([self.max_seq_len])
+		if seq_len <= self.max_seq_len:
+			end[seq_len - 1] = 1.0
+		seq_len = min(self.max_num_vertices, seq_len)
 
 		# Example:
 		# seq_len = 6
