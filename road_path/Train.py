@@ -68,7 +68,7 @@ if __name__ == '__main__':
 		city_name = city_name,
 		img_size = config.AREA_SIZE,
 		v_out_res = config.V_OUT_RES,
-		max_num_vertices = config.MAX_NUM_VERTICES,
+		max_seq_len = config.MAX_NUM_VERTICES,
 	)
 
 	# Create new folder
