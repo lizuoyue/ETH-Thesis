@@ -303,6 +303,7 @@ class DataGenerator(object):
 		if self.mode == 'train':
 			assert(mode in ['train', 'val'])
 			ids = np.random.choice(self.train_img_ids, batch_size, replace = False)
+			ids = [5373, 15261, 19378, 22105]
 			for i in range(batch_size):
 				res.append(self.getSingleArea('train', ids[i], i, rotate))
 			new_res = [np.array([item[i] for item in res]) for i in range(3)]
@@ -430,7 +431,7 @@ def recoverMultiPath(img_size, paths):
 
 if __name__ == '__main__':
 	dg = DataGenerator('roadtracer', config.AREA_SIZE, config.V_OUT_RES, config.MAX_NUM_VERTICES)
-	for i in range(10):
+	for i in range(1):
 		print(i)
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = dg.getAreasBatch(4, 'train')
 
