@@ -271,9 +271,9 @@ class DataGenerator(object):
 				# print(end)
 				# print(len(path_v))
 
-			vertex_input = [np.array(item) for item in vertex_input]
-			vertex_output = [np.array(item) for item in vertex_output]
-			vertex_terminal = [np.array(item) for item in vertex_terminal]
+			vertex_input = [np.array(item) / 255.0 for item in vertex_input]
+			vertex_output = [np.array(item) / 255.0 for item in vertex_output]
+			vertex_terminal = [np.array(item) / 255.0 for item in vertex_terminal]
 			vertex_inputs.append(vertex_input)
 			vertex_outputs.append(vertex_output)
 			vertex_terminals.append(vertex_terminal)
@@ -297,13 +297,14 @@ class DataGenerator(object):
 		# print(seq_lens.shape)
 
 		if vertex_outputs.shape[0] > 0:
+			print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 28 * 28]).sum(axis = -1))
+			print(np.reshape(vertex_terminals, [-1, self.max_seq_len, 28 * 28]).sum(axis = -1))
 			t1 = np.reshape(vertex_outputs, [-1, self.max_seq_len, 28 * 28])
 			t2 = ends[..., np.newaxis]
 			tt = np.concatenate([t1, t2], axis = -1)
-			print(tt.shape)
 			ttt = tt.sum(axis = -1)
 			print(ttt)
-			assert(ttt.mean() == 1)
+			input()
 
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
