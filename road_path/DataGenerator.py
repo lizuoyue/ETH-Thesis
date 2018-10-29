@@ -260,6 +260,8 @@ class DataGenerator(object):
 			end = np.zeros([self.max_seq_len])
 			if seq_len <= self.max_seq_len:
 				end[seq_len - 1] = 1
+			else:
+				end[self.max_seq_len - 1] = 1
 
 			if SHOW:
 				color = [0] + [1, 2] * 30
