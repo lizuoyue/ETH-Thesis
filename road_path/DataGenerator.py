@@ -295,7 +295,7 @@ class DataGenerator(object):
 		# print(vertex_terminals.shape)
 		# print(ends.shape)
 		# print(seq_lens.shape)
-		t1 = np.reshape(vertex_outputs, [8, 10, 28*28])
+		t1 = np.reshape(vertex_outputs, [-1, 10, 28*28])
 		t2 = ends[..., np.newaxis]
 		tt = np.concatenate([t1, t2], axis = -1)
 		ttt = tt.sum(axis = -1)
