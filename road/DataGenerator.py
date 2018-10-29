@@ -160,10 +160,9 @@ class DataGenerator(object):
 
 		img = Image.open(image_path)
 		org_w, org_h = img.size
-		print('imgsize', img.size)
 		ret_img = img.rotate(rotate_deg).resize(self.img_size)
 
-		if True:
+		if False:
 			ret_img.save('%d.png' % img_id)
 
 		ret_img = np.array(ret_img, np.float32)[..., 0: 3]
@@ -182,8 +181,6 @@ class DataGenerator(object):
 		v_li.sort()
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
 		d = {v: k for k, v in enumerate(v_li)}
-		print(v_li)
-		print(v_li_8)
 
 		edges = [(d[tuple(v1)], d[tuple(v2)]) for v1, v2 in annotation['segmentation']]
 		polygons = [[d[tuple(v)] for v in polygon] for polygon in annotation['polygons']]
@@ -206,7 +203,7 @@ class DataGenerator(object):
 		draw = ImageDraw.Draw(boundary)
 		for e in g.e:
 			draw.line(list(g.v[e[0]]) + list(g.v[e[1]]), fill = 255, width = 1)
-		if True:
+		if False:
 			boundary.resize(self.img_size).save('%d_b.png' % img_id)
 		boundary = np.array(boundary) / 255.0
 
@@ -214,7 +211,7 @@ class DataGenerator(object):
 		draw = ImageDraw.Draw(vertices)
 		for i in range(len(g.v)):
 			draw.ellipse(make_ellipse(g.v[i], pad = 0), fill = 255, outline = 255)
-		if True:
+		if False:
 			vertices.resize(self.img_size).save('%d_v.png' % img_id)
 		vertices = np.array(vertices) / 255.0
 
@@ -260,7 +257,7 @@ class DataGenerator(object):
 			if len(path_v) > 0:
 				end[len(path_v) - 1] = 1
 
-			if True:
+			if False:
 				color = [0] + [1, 2] * 30
 				for seq, vvv in enumerate([vertex_input, vertex_output, vertex_terminal]):
 					visualize = np.zeros((self.v_out_res[1], self.v_out_res[0], 3), np.uint8)
@@ -303,7 +300,6 @@ class DataGenerator(object):
 		if self.mode == 'train':
 			assert(mode in ['train', 'val'])
 			ids = np.random.choice(self.train_img_ids, batch_size, replace = False)
-			ids = [5373, 15261, 19378, 22105]
 			for i in range(batch_size):
 				res.append(self.getSingleArea('train', ids[i], i, rotate))
 			new_res = [np.array([item[i] for item in res]) for i in range(3)]
@@ -431,7 +427,7 @@ def recoverMultiPath(img_size, paths):
 
 if __name__ == '__main__':
 	dg = DataGenerator('roadtracer', config.AREA_SIZE, config.V_OUT_RES, config.MAX_NUM_VERTICES)
-	for i in range(1):
+	for i in range(10000):
 		print(i)
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = dg.getAreasBatch(4, 'train')
 
