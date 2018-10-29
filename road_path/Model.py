@@ -54,7 +54,7 @@ class Model(object):
 			kernel_shape = [3, 3]
 		)
 
-	def weightedLogLoss(self, gt, pred):
+	def WeightedLogLoss(self, gt, pred):
 		num = tf.reduce_sum(tf.ones(tf.shape(gt)))
 		n_pos = tf.reduce_sum(gt)
 		n_neg = tf.reduce_sum(1 - gt)
