@@ -300,7 +300,7 @@ class DataGenerator(object):
 		if self.mode == 'train':
 			assert(mode in ['train', 'val'])
 			ids = np.random.choice(self.train_img_ids, batch_size, replace = False)
-			ids = [ 34282,  27272, 128754,   3757]
+			# ids = [ 34282,  27272, 128754,   3757]
 			print(ids, rotate)
 			for i in range(batch_size):
 				res.append(self.getSingleArea('train', ids[i], i, rotate))
