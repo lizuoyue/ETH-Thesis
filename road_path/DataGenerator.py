@@ -297,15 +297,12 @@ class DataGenerator(object):
 		# print(seq_lens.shape)
 
 		if vertex_outputs.shape[0] > 0:
-			print(vertex_outputs.shape)
-			t1 = np.reshape(vertex_outputs, [-1, 10, 28*28])
+			t1 = np.reshape(vertex_outputs, [-1, self.max_seq_len, 28 * 28])
 			t2 = ends[..., np.newaxis]
-			print(t1.shape)
-			print(t2.shape)
 			tt = np.concatenate([t1, t2], axis = -1)
+			print(tt.shape)
 			ttt = tt.sum(axis = -1)
-			print(ttt.shape)
-			print(ttt.mean())
+			print(ttt)
 			assert(ttt.mean() == 1)
 
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
