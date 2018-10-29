@@ -428,20 +428,10 @@ def recoverMultiPath(img_size, paths):
 	return res, pathImgs
 
 
-
-
-
-
-
 if __name__ == '__main__':
 	dg = DataGenerator('roadtracer', config.AREA_SIZE, config.V_OUT_RES, config.MAX_NUM_VERTICES)
 	for i in range(10):
 		print(i)
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = dg.getAreasBatch(4, 'train')
-
-
-
-
-
 
 

@@ -38,13 +38,13 @@ class Config(object):
 
 		self.PATH = {
 			'roadtracer': {
-				'img-train': '/local/home/zoli/data/roadtracer/train/images',
-				'img-val'  : '/local/home/zoli/data/roadtracer/test/images',
-				'img-test' : '/local/home/zoli/data/roadtracer/test/images',
-				'ann-train': '/local/home/zoli/data/roadtracer/train/annotation.json',
-				'ann-val'  : '/local/home/zoli/data/roadtracer/test/annotation.json',
-				'ann-test' : '/local/home/zoli/data/roadtracer/test/annotation.json',
-				'bias'     : [0, 0, 0]
+				'img-train': '/local/home/zoli/data/roadtracer/train_images',
+				'img-val'  : '/local/home/zoli/data/roadtracer/test_images',
+				'img-test' : '/local/home/zoli/data/roadtracer/test_images',
+				'ann-train': '/local/home/zoli/data/roadtracer/roadtracer_train.json',
+				'ann-val'  : '/local/home/zoli/data/roadtracer/roadtracer_test.json',
+				'ann-test' : '/local/home/zoli/data/roadtracer/roadtracer_test.json',
+				'bias'     : [100.28884016, 101.06444319, 89.79566705]
 			},
 			'Chicago': {
 				'img-train': '/local/home/zoli/data/Chicago/ChicagoPatch',
