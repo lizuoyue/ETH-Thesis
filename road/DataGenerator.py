@@ -188,6 +188,11 @@ class DataGenerator(object):
 		edges = [(d[tuple(v1)], d[tuple(v2)]) for v1, v2 in annotation['segmentation']]
 		polygons = [[d[tuple(v)] for v in polygon] for polygon in annotation['polygons']]
 
+		if len(v_li_8_unique) == 1:
+			v_li_8_unique = []
+			edges = []
+			polygons = []
+
 		g = directed_graph()
 		for v in v_li_8_unique:
 			g.add_v(rotateN(rotate, w8, h8, v[0], v[1])[2: 4])
@@ -195,11 +200,6 @@ class DataGenerator(object):
 			if s != t:
 				g.add_e(s, t)
 		g.shortest_path_all()
-
-		if len(g.v) > 0 and len(g.sp_idx_s) == 0:
-			print(g.v)
-			print(g.e)
-			input()
 
 		w8, h8 = rotateN(rotate, w8, h8, 0, 0)[0: 2]
 
