@@ -134,12 +134,11 @@ class DataGenerator(object):
 				self.vertex_pool[i][j] = Image.fromarray(self.vertex_pool[i][j])
 		return
 
-	def getSingleArea(self, mode, img_id, seq_id, rotate, path_type = 'general'):
+	def getSingleArea(self, mode, img_id, seq_id, rotate):
 		if self.mode == 'train':
 			assert(mode in ['train', 'val'])
 		else:
 			assert(mode == self.mode)
-		assert(path_type in ['general', 'polygon'])
 
 		# Rotate, anticlockwise
 		if self.mode == 'train':
@@ -183,6 +182,7 @@ class DataGenerator(object):
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
 		v_li_8_unique = list(set(v_li_8))
 		v_li_8_unique.sort()
+		v_li_8_unique = [rotateN(rotate, w8, h8, x, y)[2:] for x, y in v_li_8_unique]
 		v_li_8_d = {v: k for k, v in enumerate(v_li_8_unique)}
 		d = {v: v_li_8_d[v8] for v, v8 in zip(v_li, v_li_8)}
 

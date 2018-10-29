@@ -134,12 +134,11 @@ class DataGenerator(object):
 				self.vertex_pool[i][j] = Image.fromarray(self.vertex_pool[i][j])
 		return
 
-	def getSingleArea(self, mode, img_id, seq_id, rotate, path_type = 'general'):
+	def getSingleArea(self, mode, img_id, seq_id, rotate):
 		if self.mode == 'train':
 			assert(mode in ['train', 'val'])
 		else:
 			assert(mode == self.mode)
-		assert(path_type in ['general', 'polygon'])
 
 		# Rotate, anticlockwise
 		if self.mode == 'train':
