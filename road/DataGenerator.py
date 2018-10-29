@@ -9,6 +9,7 @@ import scipy, socket, sys, os
 from pycocotools.coco import COCO
 
 config = Config()
+SHOW = True
 
 class directed_graph(object):
 	def __init__(self, downsample = 8):
@@ -162,7 +163,7 @@ class DataGenerator(object):
 		org_w, org_h = img.size
 		ret_img = img.rotate(rotate_deg).resize(self.img_size)
 
-		if False:
+		if SHOW:
 			ret_img.save('%d.png' % img_id)
 
 		ret_img = np.array(ret_img, np.float32)[..., 0: 3]
@@ -208,7 +209,7 @@ class DataGenerator(object):
 		draw = ImageDraw.Draw(boundary)
 		for e in g.e:
 			draw.line(list(g.v[e[0]]) + list(g.v[e[1]]), fill = 255, width = 1)
-		if False:
+		if SHOW:
 			boundary.resize(self.img_size).save('%d_b.png' % img_id)
 		boundary = np.array(boundary) / 255.0
 
@@ -216,7 +217,7 @@ class DataGenerator(object):
 		draw = ImageDraw.Draw(vertices)
 		for i in range(len(g.v)):
 			draw.ellipse(make_ellipse(g.v[i], pad = 0), fill = 255, outline = 255)
-		if False:
+		if SHOW:
 			vertices.resize(self.img_size).save('%d_v.png' % img_id)
 		vertices = np.array(vertices) / 255.0
 
@@ -262,15 +263,15 @@ class DataGenerator(object):
 			if len(path_v) > 0:
 				end[len(path_v) - 1] = 1
 
-			if False:
+			if SHOW:
 				color = [0] + [1, 2] * 30
 				for seq, vvv in enumerate([vertex_input, vertex_output, vertex_terminal]):
 					visualize = np.zeros((self.v_out_res[1], self.v_out_res[0], 3), np.uint8)
 					for i, item in enumerate(vvv):
 						visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
 					Image.fromarray(visualize).resize(self.img_size).save('%d_%d.png' % (img_id, seq))
-				print(end)
-				print(len(path_v))
+				# print(end)
+				# print(len(path_v))
 
 			vertex_input = [np.array(item) for item in vertex_input]
 			vertex_output = [np.array(item) for item in vertex_output]
@@ -415,7 +416,7 @@ def recoverMultiPath(img_size, paths):
 
 if __name__ == '__main__':
 	dg = DataGenerator(sys.argv[1], config.AREA_SIZE, config.V_OUT_RES, config.MAX_NUM_VERTICES)
-	for i in range(10000):
+	for i in range(10):
 		print(i)
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = dg.getAreasBatch(4, 'train')
 
