@@ -224,8 +224,8 @@ class DataGenerator(object):
 
 		# Get end signal
 		seq_len = len(polygon_s)
-		end = np.zeros([self.max_seq_len])
-		if seq_len <= self.max_seq_len:
+		end = np.zeros([self.max_num_vertices])
+		if seq_len <= self.max_num_vertices:
 			end[seq_len - 1] = 1.0
 		seq_len = min(self.max_num_vertices, seq_len)
 
