@@ -260,8 +260,6 @@ class DataGenerator(object):
 			end = np.zeros([self.max_seq_len])
 			if seq_len <= self.max_seq_len:
 				end[seq_len - 1] = 1
-			else:
-				end[self.max_seq_len - 1] = 1
 
 			if SHOW:
 				color = [0] + [1, 2] * 30
@@ -293,9 +291,10 @@ class DataGenerator(object):
 		# print(boundary.shape)
 		# print(vertices.shape)
 		# print(vertex_inputs.shape)
-		# print(vertex_outputs.shape)
+		print(vertex_outputs.shape)
 		# print(vertex_terminals.shape)
-		# print(ends.shape)
+		print(ends.shape)
+		quit()
 		# print(seq_lens.shape)
 
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
