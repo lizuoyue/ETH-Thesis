@@ -102,7 +102,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'train')
+			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getAreasBatch(config.AREA_TRAIN_BATCH, 'train')
 			feed_dict = {
 				aa: img - img_bias, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens, dd: path_idx
 			}
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
 			# Validation
 			if i % 100 == 0:
-				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getDataBatch(config.AREA_TRAIN_BATCH, 'val')
+				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = getAreasBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
 					aa: img - img_bias, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens, dd: path_idx
 				}
