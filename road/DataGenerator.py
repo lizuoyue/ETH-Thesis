@@ -300,6 +300,7 @@ class DataGenerator(object):
 		if self.mode == 'train':
 			assert(mode in ['train', 'val'])
 			ids = np.random.choice(self.train_img_ids, batch_size, replace = False)
+			ids = [ 34282,  27272, 128754,   3757]
 			print(ids, rotate)
 			for i in range(batch_size):
 				res.append(self.getSingleArea('train', ids[i], i, rotate))
@@ -314,6 +315,7 @@ class DataGenerator(object):
 					res.append(self.getSingleArea('train', ids[i], i, rotate))
 				new_res = [np.array([item[i] for item in res]) for i in range(3)]
 				for i in range(3, 9):
+					print(item[i].shape)
 					li = [item[i] for item in res if item[i].shape[0] > 0]
 					if li:
 						new_res.append(np.concatenate(li, axis = 0))
