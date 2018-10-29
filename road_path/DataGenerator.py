@@ -300,6 +300,7 @@ class DataGenerator(object):
 		tt = np.concatenate([t1, t2], axis = -1)
 		ttt = tt.sum(axis = -1)
 		print(ttt.mean())
+		assert(ttt.mean() == 1)
 
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
