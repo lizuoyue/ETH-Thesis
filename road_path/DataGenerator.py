@@ -9,7 +9,7 @@ import scipy, socket, sys, os
 from pycocotools.coco import COCO
 
 config = Config()
-SHOW = True
+SHOW = False
 
 class directed_graph(object):
 	def __init__(self, downsample = 8):
@@ -415,7 +415,7 @@ def recoverMultiPath(img_size, paths):
 
 if __name__ == '__main__':
 	dg = DataGenerator(sys.argv[1], config.AREA_SIZE, config.V_OUT_RES, config.MAX_NUM_VERTICES)
-	for i in range(10):
+	for i in range(10000):
 		print(i)
 		img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, _ = dg.getAreasBatch(4, 'train')
 
