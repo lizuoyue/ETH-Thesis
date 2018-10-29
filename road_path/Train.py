@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from Config import *
 from Model import *
-from RoadData import *
+from DataGenerator import *
 from PIL import Image
 
 config = Config()
