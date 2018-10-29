@@ -253,6 +253,7 @@ class DataGenerator(object):
 				image_path = os.path.join(self.VAL_IMAGES_DIRECTORY, img_info['file_name'])
 				annotations = self.coco_valid.loadAnns(self.coco_valid.getAnnIds(imgIds = img_info['id']))
 		else:
+			rotate_deg = 0
 			if mode == 'val':
 				img_info = self.coco_valid.loadImgs([img_id])[0]
 				image_path = os.path.join(self.TEST_IMAGES_DIRECTORY, img_info['file_name'])
