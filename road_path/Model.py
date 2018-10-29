@@ -90,7 +90,7 @@ class Model(object):
 		if not reuse:
 			loss  = self.WeightedLogLoss(gt_boundary, boundary_prob)
 			loss += self.WeightedLogLoss(gt_vertices, vertices_prob)
-			return feature, loss
+			return feature, boundary_prob, vertices_prob, loss
 		else:
 			return feature, boundary_prob, vertices_prob
 
