@@ -305,8 +305,10 @@ class DataGenerator(object):
 			for i in range(batch_size):
 				res.append(self.getSingleArea('train', ids[i], i, rotate))
 			new_res = [np.array([item[i] for item in res]) for i in range(3)]
+			for item in new_res:
+				for i in range(9):
+					print(item[i].shape)
 			for i in range(3, 9):
-				print(item[i].shape)
 				li = [item[i] for item in res if item[i].shape[0] > 0]
 				new_res.append(np.concatenate(li, axis = 0))
 			return new_res
