@@ -94,3 +94,63 @@ if __name__ == '__main__':
 
 
 
+			# Test
+			if i % 1 == choose_test:
+				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
+				# if i < 45 or i > 45:
+				# 	continue
+				print(i)
+				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
+
+				path = 'test_res%s/' % city_name
+				savePNG(img[0], np.zeros(config.AREA_SIZE), path + '%d-0.png' % i)
+				savePNG(img[0], pred_boundary[0, ..., 0] * 255, path + '%d-1.png' % i)
+				savePNG(img[0], pred_vertices[0, ..., 0] * 255, path + '%d-2.png' % i)
+
+				map_b, map_v, all_terminal, indices = getAllTerminal(pred_boundary[0], pred_vertices[0])
+				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
+
+				savePNG(img[0], map_b, path + '%d-3.png' % i)
+				savePNG(img[0], map_v, path + '%d-4.png' % i)
+
+				multi_roads = []
+				prob_res_li = []
+				for terminal_1, terminal_2 in all_terminal:
+					pred_v_out_1, prob_res_1, rnn_prob_1 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_1})
+					pred_v_out_2, prob_res_2, rnn_prob_2 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_2})
+					if rnn_prob_1[0] >= rnn_prob_2[0]:
+						multi_roads.append(pred_v_out_1[0])
+						prob_res_li.append(prob_res_1[0])
+					else:
+						multi_roads.append(pred_v_out_2[0])
+						prob_res_li.append(prob_res_2[0])
+
+				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
+				paths[paths > 1e-3] = 1.0
+				savePNG(img[0], paths, path + '%d-5.png' % i)
+				os.makedirs('./test_res%s/%d' % (city_name, i))
+				for j, pathImg in enumerate(pathImgs):
+					savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((i,) + indices[j]))
+					np.save(path + '%d/%d-%d.npy' % ((i,) + indices[j]), prob_res_li[j])
+
+
+
+
+
+
+
+def savePNG(mat1, mat2, filename):
+	if mat2.shape[0] < mat1.shape[0]:
+		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST)
+	if mat2.max() > 0:
+		mat2 = mat2 / mat2.max()
+	m1 = Image.fromarray(mat1, mode = 'RGB')
+	m1.putalpha(255)
+	m2 = Image.fromarray(np.array(cmap(mat2) * 255.0, np.uint8)).convert(mode = 'RGB')
+	m2.putalpha(255)
+	m2 = np.array(m2)
+	m2[..., 3] = np.array(mat2 * 255.0, np.uint8)
+	m2 = Image.fromarray(m2)
+	Image.alpha_composite(m1, m2).save(filename)
+	return
+

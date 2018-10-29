@@ -6,13 +6,15 @@ from BasicModel import *
 config = Config()
 
 class Model(object):
-	def __init__(self, max_num_vertices, lstm_out_channel, v_out_res):
+	def __init__(self, backbone, max_num_vertices, lstm_out_channel, v_out_res):
 		"""
 			max_num_vertices  : scalar
 			lstm_out_channel  : list of int numbers
 			v_out_res         : [n_row, n_col]
 		"""
 		# RolygonRNN parameters
+		assert(backbone in ['vgg16', 'vgg19', 'resnet50', 'resnet101', 'resnet152'])
+		self.backbone         = backbone
 		self.max_num_vertices = max_num_vertices
 		self.lstm_out_channel = lstm_out_channel
 		self.lstm_in_channel  = [134] + lstm_out_channel[: -1]
@@ -20,23 +22,8 @@ class Model(object):
 		self.v_out_nrow       = self.v_out_res[0]
 		self.v_out_ncol       = self.v_out_res[1]
 		self.res_num          = self.v_out_nrow * self.v_out_ncol
-		self.num_stage        = 3
 
 		# Multi-layer LSTM and inital state
-		# self.stacked_lstm_fw  = tf.contrib.rnn.MultiRNNCell(
-		# 	[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
-		# )
-		# self.stacked_lstm_bw  = tf.contrib.rnn.MultiRNNCell(
-		# 	[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
-		# )
-		# self.lstm_init_state_fw = [
-		# 	tf.get_variable('ConvLSTM_Cell_%d_State_FW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
-		# 	for i, c_out in enumerate(lstm_out_channel)
-		# ]
-		# self.lstm_init_state_bw = [
-		# 	tf.get_variable('ConvLSTM_Cell_%d_State_BW' % i, [2, self.v_out_nrow, self.v_out_ncol, c_out])
-		# 	for i, c_out in enumerate(lstm_out_channel)
-		# ]
 		self.stacked_lstm  = tf.contrib.rnn.MultiRNNCell(
 			[self.ConvLSTMCell(in_c, out_c) for in_c, out_c in zip(self.lstm_in_channel, self.lstm_out_channel)]
 		)
@@ -78,30 +65,34 @@ class Model(object):
 
 	def CNN(self, img, gt_boundary = None, gt_vertices = None, reuse = None):
 		"""
+			img               : [batch_size, height, width, 3]
 			gt_boundary       : [batch_size, height, width, 1]
 			gt_vertices       : [batch_size, height, width, 1]
 		"""
-		resnet_result = ResNetV1_50('ResNetV1_50', img, reuse)
-		skip_feature = SkipFeatureResNet('SkipFeatureResNet', resnet_result, reuse)
-		# vgg_result = VGG19('VGG19', img, reuse = reuse)
-		# skip_feature = SkipFeature('SkipFeature', vgg_result, reuse = reuse)
-		bb, vv = Mask('Mask_1', skip_feature, reuse = reuse)
-		b_prob = [tf.nn.softmax(bb)[..., 0: 1]]
-		v_prob = [tf.nn.softmax(bb)[..., 0: 1]]
-		for i in range(2, self.num_stage + 1):
-			stage_input = tf.concat([skip_feature, bb, vv], axis = -1)
-			bb, vv = Mask('Mask_%d' % i, stage_input, reuse = reuse)
-			b_prob.append(tf.nn.softmax(bb)[..., 0: 1])
-			v_prob.append(tf.nn.softmax(vv)[..., 0: 1])
-		if not reuse:
-			loss_B, loss_V = 0, 0
-			for item in b_prob:
-				loss_B += self.weightedLogLoss(gt_boundary, item)
-			for item in v_prob:
-				loss_V += self.weightedLogLoss(gt_vertices, item)
-			return skip_feature, b_prob[-1], v_prob[-1], loss_B + loss_V
+		if self.backbone == 'vgg16':
+			backbone_result = VGG16('VGG16', img, reuse)
+		if self.backbone == 'vgg19':
+			backbone_result = VGG16('VGG19', img, reuse)
+		if self.backbone == 'resnet50':
+			backbone_result = ResNetV1_50('ResNetV1_50', img, reuse)
+		if self.backbone == 'resnet101':
+			backbone_result = ResNetV1_101('ResNetV1_101', img, reuse)
+		if self.backbone == 'resnet152':
+			backbone_result = ResNetV1_152('ResNetV1_152', img, reuse)
+		if self.backbone.startswith('vgg'):
+			feature = SkipFeature('SkipFeatureVGG', 'vgg', backbone_result, None, reuse)
 		else:
-			return skip_feature, b_prob[-1], v_prob[-1]
+			feature = SkipFeature('SkipFeatureResNet', 'resnet', backbone_result, None, reuse)
+		boundary, vertices = Mask('MaskLayer', feature, reuse = reuse)
+		boundary_prob = tf.nn.softmax(boundary)[..., 0: 1]
+		vertices_prob = tf.nn.softmax(vertices)[..., 0: 1]
+		# combine = tf.concat([feature, boundary, vertices], 3)
+		if not reuse:
+			loss  = self.WeightedLogLoss(gt_boundary, boundary_prob)
+			loss += self.WeightedLogLoss(gt_vertices, vertices_prob)
+			return feature, loss
+		else:
+			return feature, boundary_prob, vertices_prob
 
 	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, gt_vertices = None, reuse = None):
 		""" 
@@ -110,17 +101,14 @@ class Model(object):
 			gt_seq_len
 		"""
 		if not reuse:
-			output_reshape = tf.reshape(rnn_output, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1]])	
+			output_reshape = tf.reshape(rnn_output, [-1, self.max_num_vertices, self.res_num * self.lstm_out_channel[-1]])	
 		else:
-			output_reshape = tf.reshape(rnn_output, [1, 1, self.res_num * self.lstm_out_channel[-1]])
+			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
 			logits = tf.layers.dense(inputs = output_reshape, units = 4096, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = 1024, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = self.res_num + 1, activation = None)
 		if not reuse:
-			# gt_vertices = tf.reshape(gt_vertices, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num])
-			# gt_vertices = tf.concat([gt_vertices, tf.ones([config.TRAIN_NUM_PATH, self.max_num_vertices, 1])], axis = -1)
-			# logits -= 1e10 * (1 - gt_vertices)
 			loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
 			loss = tf.reduce_sum(loss) / tf.to_float(tf.reduce_sum(gt_seq_len))
 			return logits, loss
@@ -131,14 +119,6 @@ class Model(object):
 
 	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
 		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
-		# initial_state_fw = tuple([tf.contrib.rnn.LSTMStateTuple(
-		# 	c = tf.tile(self.lstm_init_state_fw[i][0: 1], batch_size),
-		# 	h = tf.tile(self.lstm_init_state_fw[i][1: 2], batch_size)
-		# ) for i in range(len(self.lstm_out_channel))])
-		# initial_state_bw = tuple([tf.contrib.rnn.LSTMStateTuple(
-		# 	c = tf.tile(self.lstm_init_state_bw[i][0: 1], batch_size),
-		# 	h = tf.tile(self.lstm_init_state_bw[i][1: 2], batch_size)
-		# ) for i in range(len(self.lstm_out_channel))])
 		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
 			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
@@ -155,15 +135,6 @@ class Model(object):
 			# v_in_1:   0 1 2 3 4 ... N - 1
 			# v_in_2:   0 0 1 2 3 ... N - 2
 			# rnn_out:  1 2 3 4 5 ... N
-			# outputs, state = tf.nn.bidirectional_dynamic_rnn(
-			# 	cell_fw = self.stacked_lstm_fw,
-			# 	cell_bw = self.stacked_lstm_bw,
-			# 	initial_state_fw = initial_state_fw,
-			# 	initial_state_bw = initial_state_bw,
-			# 	inputs = rnn_input,
-			# 	sequence_length = gt_seq_len,
-			# 	dtype = tf.float32
-			# )
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
 				initial_state = initial_state,
@@ -225,65 +196,6 @@ class Model(object):
 
 			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1]), tf.transpose(tf.stack(rnn_hmap, 0), [0, 2, 1]), rnn_prob
 
-			### Full Search ###
-			# # current prob, time line, current state
-			# rnn_prob = [tf.zeros([1])]
-			# rnn_tmln = [terminal[:, 0, ...]]
-			# rnn_stat = [initial_state]
-
-			# # BFS
-			# for i in range(1 + 5):
-			# 	last_prob, last_tmln, last_stat = rnn_prob.pop(0), rnn_tmln.pop(0), rnn_stat.pop(0)
-			# 	v_in_0 = terminal[:, 0, ...]
-			# 	v_in_e = terminal[:, 1, ...]
-			# 	n = last_tmln.get_shape().as_list()[-1]
-			# 	v_in_1 = last_tmln[..., max(n - 1, 0): max(n - 1, 0) + 1]
-			# 	v_in_2 = last_tmln[..., max(n - 2, 0): max(n - 2, 0) + 1]
-			# 	inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
-			# 	outputs, states = self.stacked_lstm(inputs = inputs, state = last_stat)
-			# 	prob_new, tmln_new, _ = self.FC(rnn_output = outputs, reuse = True)
-			# 	### update prob
-			# 	for j in range(config.BEAM_WIDTH):
-			# 		rnn_prob.append(last_prob + prob_new[j: j + 1])
-			# 	### update tmln
-			# 	for j in range(config.BEAM_WIDTH):
-			# 		rnn_tmln.append(tf.concat([last_tmln, tmln_new[j: j + 1]], 3))
-			# 	### update stat
-			# 	for j in range(config.BEAM_WIDTH):
-			# 		rnn_stat.append(states)
-
-			# return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1])
-
-			### No Beam Search ###
-			# res = [terminal[:, 0, ...]]
-			# prob_res = []
-			# states = [initial_state]
-			# for i in range(1, self.max_num_vertices + 1):
-			# 	rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
-			# 	rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
-			# 	states.append(state)
-			# 	next_v, prob = self.FC(rnn_output = rnn_output, reuse = True)
-			# 	res.append(next_v)
-			# 	prob_res.append(prob)
-			# return tf.stack(res, 1), tf.stack(prob_res, 0)
-
-	def RNN_tmp(self, feature, terminal, indices):
-		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
-		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
-			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
-			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
-		) for i in range(len(self.lstm_out_channel))])
-		res = [tf.expand_dims(tf.gather(self.vertex_pool, tf.ones([1], dtype = tf.int32) * idx, axis = 0), axis = 3) for idx in indices]
-		prob_res = []
-		states = [initial_state]
-		for i in range(1, len(indices) + 1):
-			rnn_input = tf.concat([feature, terminal[:, 0, ...], res[i - 1], res[max(i - 2, 0)], terminal[:, 1, ...]], 3)
-			rnn_output, state = self.stacked_lstm(inputs = rnn_input, state = states[-1])
-			states.append(state)
-			_, prob = self.FC(rnn_output = rnn_output, reuse = True)
-			prob_res.append(prob)
-		return tf.stack(res, 1), tf.stack(prob_res, 0)
-
 	def train(self, aa, bb, vv, ii, oo, tt, ee, ll, dd):
 		#
 		img          = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
@@ -325,25 +237,5 @@ class Model(object):
 		pred_v_out, prob_res, rnn_prob = self.RNN(feature, terminal, reuse = True)
 		return pred_v_out, prob_res, rnn_prob
 
-	def predict_path_tmp(self, ff, tt, indices):
-		#
-		feature  = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 130])
-		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
 
-		#
-		pred_v_out, prob_res = self.RNN_tmp(feature, terminal, indices)
-		return pred_v_out, prob_res
 
-class Logger(object):
-	def __init__(self, log_dir):
-		self.writer = tf.summary.FileWriter(log_dir)
-		return
-
-	def log_scalar(self, tag, value, step):
-		summary = tf.Summary(value = [tf.Summary.Value(tag = tag, simple_value = value)])
-		self.writer.add_summary(summary, step)
-		return
-
-	def close(self):
-		self.writer.close()
-		return

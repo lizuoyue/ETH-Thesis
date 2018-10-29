@@ -9,7 +9,7 @@ import scipy, socket, sys, os
 from pycocotools.coco import COCO
 
 config = Config()
-SHOW = True
+SHOW = False
 
 class directed_graph(object):
 	def __init__(self, downsample = 8):
