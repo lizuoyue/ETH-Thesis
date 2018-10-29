@@ -180,16 +180,20 @@ class DataGenerator(object):
 		v_li = list(v_set)
 		v_li.sort()
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
-		d = {v: k for k, v in enumerate(v_li)}
+		v_li_8_unique = list(set(v_li_8))
+		v_li_8_unique.sort()
+		v_li_8_d = {v: k for k, v in enumerate(v_li_8_unique)}
+		d = {v: v_li_8_d[v8] for v, v8 in zip(v_li, v_li_8)}
 
 		edges = [(d[tuple(v1)], d[tuple(v2)]) for v1, v2 in annotation['segmentation']]
 		polygons = [[d[tuple(v)] for v in polygon] for polygon in annotation['polygons']]
 
 		g = directed_graph()
-		for v in v_li_8:
+		for v in v_li_8_unique:
 			g.add_v(rotateN(rotate, w8, h8, v[0], v[1])[2: 4])
 		for s, t in edges:
-			g.add_e(s, t)
+			if s != t:
+				g.add_e(s, t)
 		g.shortest_path_all()
 
 		if len(g.v) > 0 and len(g.sp_idx_s) == 0:
