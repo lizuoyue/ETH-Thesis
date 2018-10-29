@@ -125,7 +125,7 @@ class DataGenerator(object):
 			print('Totally %d patches for valid.' % len(self.valid_ann_ids))
 
 		# 
-		self.blank = np.zeros(self.v_out_res, dtype = np.uint8)
+		self.blank = Image.fromarray(np.zeros(self.v_out_res, dtype = np.uint8))
 		self.vertex_pool = [[] for i in range(self.v_out_res[1])]
 		for i in range(self.v_out_res[1]):
 			for j in range(self.v_out_res[0]):
