@@ -250,7 +250,7 @@ class DataGenerator(object):
 				print(end)
 				print(seq_len)
 
-			vertex_input = [np.array(item) for item in vertex_input]
+			vertex_input = [np.array([np.array(sub) for sub in item]) for item in vertex_input]
 			vertex_output = [np.array(item) for item in vertex_output]
 			vertex_inputs.append(vertex_input)
 			vertex_outputs.append(vertex_output)
