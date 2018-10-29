@@ -160,7 +160,6 @@ class DataGenerator(object):
 
 		img = Image.open(image_path)
 		org_w, org_h = img.size
-		org_w_8, org_h_8 = round(org_w / 8), round(org_h / 8)
 		ret_img = img.rotate(rotate_deg).resize(self.img_size)
 
 		if SHOW:
@@ -183,7 +182,7 @@ class DataGenerator(object):
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
 		v_li_8_unique = list(set(v_li_8))
 		v_li_8_unique.sort()
-		v_li_8_unique = [rotateN(rotate, org_w_8, org_h_8, x, y)[2:] for x, y in v_li_8_unique]
+		v_li_8_unique = [rotateN(rotate, w8, h8, x, y)[2:] for x, y in v_li_8_unique]
 		v_li_8_d = {v: k for k, v in enumerate(v_li_8_unique)}
 		d = {v: v_li_8_d[v8] for v, v8 in zip(v_li, v_li_8)}
 
