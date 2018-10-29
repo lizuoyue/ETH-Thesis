@@ -71,7 +71,7 @@ if __name__ == '__main__':
 	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
 
 	saver = tf.train.Saver(max_to_keep = 1)
-	model_path = './Model_%s_%s/' % (backbone, city_name) # 30000.ckpt.meta
+	model_path = './Model_%s_%s/' % (backbone, city_name)
 	files = glob.glob(model_path + '*.ckpt.meta')
 	files = [(int(file.replace(model_path, '').replace('.ckpt.meta', '')), file) for file in files]
 	files.sort()
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 			i = 0
 			while obj.TEST_FLAG:
 				time_res = [i]
-				img = obj.getAreasBatch(config.AREA_TEST_BATCH, mode = 'test')
+				img = obj.getAreasBatch(config.AREA_TEST_BATCH, mode = mode)
 				feed_dict = {aa: img - img_bias}
 
 				t = time.time()
@@ -109,7 +109,7 @@ if __name__ == '__main__':
 					time_res.append(0)
 				time_res.append((time.time() - t))
 				
-				obj.recoverBoxPolygon(patch_info, box_info, pred_v_out, mode = 'test', visualize = vis, path = test_path, batch_idx = i)
+				obj.recoverBoxPolygon(patch_info, box_info, pred_v_out, mode = mode, visualize = vis, path = test_path, batch_idx = i)
 
 				f.write('%d, %.3lf, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
