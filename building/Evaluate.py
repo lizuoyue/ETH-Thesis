@@ -63,9 +63,9 @@ if __name__ == '__main__':
 	pred_rpn_res  = graph.predict_fpn(aa, config.AREA_TEST_BATCH)
 	pred_poly_res = graph.predict_polygon(pp, nn)
 
-	# for v in tf.global_variables():
-	# 	print(v.name)
-	# quit()
+	for v in tf.global_variables():
+		print(v.name)
+	quit()
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
