@@ -292,6 +292,15 @@ class DataGenerator(object):
 		# print(ends.shape)
 		# print(seq_lens.shape)
 
+		# if vertex_inputs.shape[0] == 0:
+		# 	vertex_inputs = np.zeros((0, self.max_seq_len, self.v_out_res[1], self.v_out_res[0]))
+		# if vertex_outputs.shape[0] == 0:
+		# 	vertex_outputs = np.zeros((0, self.max_seq_len, self.v_out_res[1], self.v_out_res[0]))
+		# if vertex_terminals.shape[0] == 0:
+		# 	vertex_terminals = np.zeros((0, 2, self.v_out_res[1], self.v_out_res[0]))
+		# if ends.shape[0] == 0:
+		# 	ends = np.zeros((0, self.max_seq_len))
+
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
 	def getAreasBatch(self, batch_size, mode):
@@ -299,26 +308,6 @@ class DataGenerator(object):
 		rotate = random.choice([0, 1, 2, 3])
 		if self.mode == 'train':
 			assert(mode in ['train', 'val'])
-			ids = np.random.choice(self.train_img_ids, batch_size, replace = False)
-			# ids = [ 34282,  27272, 128754,   3757]
-			print(ids, rotate)
-			for i in range(batch_size):
-				res.append(self.getSingleArea('train', ids[i], i, rotate))
-			for item in res:
-				for i in range(9):
-					print(item[i].shape)
-			quit()
-
-
-
-			new_res = [np.array([item[i] for item in res]) for i in range(3)]
-			for item in new_res:
-				for i in range(9):
-					print(item[i].shape)
-			for i in range(3, 9):
-				li = [item[i] for item in res if item[i].shape[0] > 0]
-				new_res.append(np.concatenate(li, axis = 0))
-			return new_res
 			while True:
 				ids = np.random.choice(self.train_img_ids, batch_size, replace = False)
 				for i in range(batch_size):
@@ -331,24 +320,14 @@ class DataGenerator(object):
 					else:
 						break
 				if len(new_res) != 9:
-					print('There is sth wrong.')
+					# No paths in the images
 					continue
-				if new_res[-1].shape[0] > 0:
-					choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
-					for i in range(3, 9):
-						new_res[i] = new_res[i][choose]
-					break
-				else:
-					print('There is sth wrong.')
+				assert(new_res[-1].shape[0] > 0)
+				choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
+				for i in range(3, 9):
+					new_res[i] = new_res[i][choose]
+				break
 			return new_res
-
-
-
-
-
-
-
-
 
 
 
