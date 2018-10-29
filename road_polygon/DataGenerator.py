@@ -248,7 +248,7 @@ class DataGenerator(object):
 					for i, item in enumerate(vvv):
 						item.save('%d_%s_%d.png' % (img_id, tp[seq], i))
 				print(end)
-				print(len(path_v))
+				print(seq_len)
 
 			vertex_input = [np.array(item) for item in vertex_input]
 			vertex_output = [np.array(item) for item in vertex_output]
