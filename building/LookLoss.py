@@ -24,7 +24,7 @@ def process(filename, n = 1000):
 if __name__ == '__main__':
 	server = 'dalab'
 	net = 'resnet50'
-	city = 'Chicago'
+	city = 'Sunnyvale'
 	# os.popen('scp %s:~/thesis/building/Loss_train_%s_%s.out ./LossTrain.out' % (server, net, city))
 	# os.popen('scp %s:~/thesis/building/Loss_valid_%s_%s.out ./LossValid.out' % (server, net, city))
 	# quit()
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
 	plt.title('Training Loss')
 	plt.ylim(ymin = 0, ymax = 5)
-	# plt.xlim(xmin = 200000)
+	plt.xlim(xmin = 498000)
 	plt.legend(loc = 'upper right')
 	plt.show()
 

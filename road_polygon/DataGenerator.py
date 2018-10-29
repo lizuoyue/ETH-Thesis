@@ -243,12 +243,10 @@ class DataGenerator(object):
 				end[seq_len - 1] = 1
 
 			if SHOW:
-				color = [0] + [1, 2] * 30
-				for seq, vvv in enumerate([vertex_input, vertex_output, vertex_terminal]):
-					visualize = np.zeros((self.v_out_res[1], self.v_out_res[0], 3), np.uint8)
+				tp = ['in1', 'in2', 'out']
+				for seq, vvv in enumerate([[cao[0] for cao in vertex_input], [cao[i] for cao in vertex_input], vertex_output]):
 					for i, item in enumerate(vvv):
-						visualize[..., color[i]] = np.maximum(visualize[..., color[i]], np.array(item, np.uint8))
-					Image.fromarray(visualize).resize(self.img_size).save('%d_%d.png' % (img_id, seq))
+						Image.fromarray(item).save('%d_%s_%d.png' % (img_id, tp[seq], i))
 				print(end)
 				print(len(path_v))
 
@@ -286,18 +284,18 @@ class DataGenerator(object):
 				for i in range(batch_size):
 					res.append(self.getSingleArea('train', ids[i], i, rotate))
 				new_res = [np.array([item[i] for item in res]) for i in range(3)]
-				for i in range(3, 9):
+				for i in range(3, 8):
 					li = [item[i] for item in res if item[i].shape[0] > 0]
 					if li:
 						new_res.append(np.concatenate(li, axis = 0))
 					else:
 						break
-				if len(new_res) != 9:
-					print('No paths in the images, re-generate ...')
+				if len(new_res) != 8:
+					print('No polygons in the images, re-generate ...')
 					continue
 				assert(new_res[-1].shape[0] > 0)
 				choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
-				for i in range(3, 9):
+				for i in range(3, 8):
 					new_res[i] = new_res[i][choose]
 				break
 			return new_res
