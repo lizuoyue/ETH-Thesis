@@ -220,7 +220,7 @@ class DataGenerator(object):
 		seq_lens = []
 		for polygon in polygons:
 			assert(len(polygon) > 2)
-			start = np.random.randint(len(polygon), 1)[0]
+			start = np.random.randint(len(polygon))
 			full_path = polygon[start:] + polygon[1: start + 1]
 			full_path = [v_li_8_unique[idx] for idx in full_path]
 			seq_len = len(full_path) - 1
