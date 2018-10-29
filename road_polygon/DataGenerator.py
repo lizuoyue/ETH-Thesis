@@ -180,8 +180,8 @@ class DataGenerator(object):
 		v_li = list(v_set)
 		v_li.sort()
 		v_li_8 = [(round(x / (org_w - 1) * (w8 - 1)), round(y / (org_h - 1) * (h8 - 1))) for x, y in v_li]
-		v_li_8_rotate = [rotateN(rotate, w8, h8, x, y)[2:] for x, y in v_li_8]
-		v_li_8_unique = list(set(v_li_8_rotate))
+		v_li_8 = [rotateN(rotate, w8, h8, x, y)[2:] for x, y in v_li_8]
+		v_li_8_unique = list(set(v_li_8))
 		v_li_8_unique.sort()
 		v_li_8_d = {v: k for k, v in enumerate(v_li_8_unique)}
 		d = {v: v_li_8_d[v8] for v, v8 in zip(v_li, v_li_8)}
