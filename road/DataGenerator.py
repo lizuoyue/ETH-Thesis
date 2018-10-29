@@ -195,6 +195,7 @@ class DataGenerator(object):
 		if len(g.v) > 0 and len(g.sp_idx_s) == 0:
 			print(g.v)
 			print(g.e)
+			input()
 
 		w8, h8 = rotateN(rotate, w8, h8, 0, 0)[0: 2]
 
@@ -292,15 +293,6 @@ class DataGenerator(object):
 		# print(ends.shape)
 		# print(seq_lens.shape)
 
-		# if vertex_inputs.shape[0] == 0:
-		# 	vertex_inputs = np.zeros((0, self.max_seq_len, self.v_out_res[1], self.v_out_res[0]))
-		# if vertex_outputs.shape[0] == 0:
-		# 	vertex_outputs = np.zeros((0, self.max_seq_len, self.v_out_res[1], self.v_out_res[0]))
-		# if vertex_terminals.shape[0] == 0:
-		# 	vertex_terminals = np.zeros((0, 2, self.v_out_res[1], self.v_out_res[0]))
-		# if ends.shape[0] == 0:
-		# 	ends = np.zeros((0, self.max_seq_len))
-
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
 	def getAreasBatch(self, batch_size, mode):
@@ -310,6 +302,7 @@ class DataGenerator(object):
 			assert(mode in ['train', 'val'])
 			while True:
 				ids = np.random.choice(self.train_img_ids, batch_size, replace = False)
+				print(ids, rotate)
 				for i in range(batch_size):
 					res.append(self.getSingleArea('train', ids[i], i, rotate))
 				new_res = [np.array([item[i] for item in res]) for i in range(3)]
@@ -320,7 +313,7 @@ class DataGenerator(object):
 					else:
 						break
 				if len(new_res) != 9:
-					# No paths in the images
+					print('No paths in the images, re-generate ...')
 					continue
 				assert(new_res[-1].shape[0] > 0)
 				choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
