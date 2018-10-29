@@ -291,11 +291,15 @@ class DataGenerator(object):
 		# print(boundary.shape)
 		# print(vertices.shape)
 		# print(vertex_inputs.shape)
-		print(vertex_outputs.shape)
+		# print(vertex_outputs.shape)
 		# print(vertex_terminals.shape)
-		print(ends.shape)
-		quit()
+		# print(ends.shape)
 		# print(seq_lens.shape)
+		t1 = np.reshape(vertex_outputs, [8, 10, 28*28])
+		t2 = ends[..., np.newaxis]
+		tt = np.concatenate([t1, t2], axis = -1)
+		ttt = tt.sum(axis = -1)
+		print(ttt.mean())
 
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, seq_idx
 
