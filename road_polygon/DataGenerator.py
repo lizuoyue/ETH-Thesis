@@ -417,5 +417,15 @@ if __name__ == '__main__':
 	for i in range(10):
 		print(i)
 		img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, seq_idx = dg.getAreasBatch(4, 'train')
+		print(img.shape)
+		print(boundary.shape)
+		print(vertices.shape)
+		print(vertex_inputs.shape)
+		print(vertex_outputs.shape)
+		print(ends.shape)
+		print(seq_lens.shape)
+		print(seq_idx.shape)
+
+
 
 
