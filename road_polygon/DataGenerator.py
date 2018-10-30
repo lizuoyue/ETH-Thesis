@@ -256,7 +256,10 @@ class DataGenerator(object):
 			seq_lens.append(min(seq_len, self.max_seq_len))
 
 		seq_idx = seq_id * np.ones([len(polygons)], np.int32)
-		vertex_inputs = np.array(vertex_inputs).transpose([0, 2, 3, 1])
+		vertex_inputs = np.array(vertex_inputs)
+		print(vertex_inputs.shape)
+		quit()
+		#.transpose([0, 2, 3, 1])
 		vertex_outputs = np.array(vertex_outputs)
 		ends = np.array(ends)
 		seq_lens = np.array(seq_lens)
