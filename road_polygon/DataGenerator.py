@@ -256,12 +256,10 @@ class DataGenerator(object):
 			seq_lens.append(min(seq_len, self.max_seq_len))
 
 		seq_idx = seq_id * np.ones([len(polygons)], np.int32)
-		vertex_inputs = np.array(vertex_inputs)
+		vertex_inputs = np.array(vertex_inputs).transpose([0, 1, 3, 4, 2])
 		vertex_outputs = np.array(vertex_outputs)
 		ends = np.array(ends)
 		seq_lens = np.array(seq_lens)
-
-		vertex_inputs = np.transpose(vertex_inputs, [0, 1, 3, 4, 2])
 
 		# print(ret_img.shape)
 		# print(boundary.shape)
@@ -272,7 +270,7 @@ class DataGenerator(object):
 		# print(seq_lens.shape)
 
 		# if vertex_outputs.shape[0] > 0:
-		# 	print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 2, 28 * 28]).sum(axis = -1))
+		# 	print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 28 * 28, 2]).sum(axis = -2))
 		# 	t1 = np.reshape(vertex_outputs, [-1, self.max_seq_len, 28 * 28])
 		# 	t2 = ends[..., np.newaxis]
 		# 	tt = np.concatenate([t1, t2], axis = -1)
