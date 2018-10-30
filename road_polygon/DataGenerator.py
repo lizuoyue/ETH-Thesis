@@ -248,8 +248,8 @@ class DataGenerator(object):
 				print(end)
 				print(seq_len)
 
-			vertex_input = [np.array([np.array(sub) for sub in item]) for item in vertex_input]
-			vertex_output = [np.array(item) for item in vertex_output]
+			vertex_input = [np.array([np.array(sub) / 255.0 for sub in item]) for item in vertex_input]
+			vertex_output = [np.array(item) / 255.0 for item in vertex_output]
 			vertex_inputs.append(vertex_input)
 			vertex_outputs.append(vertex_output)
 			ends.append(end)
@@ -268,6 +268,17 @@ class DataGenerator(object):
 		# print(vertex_outputs.shape)
 		# print(ends.shape)
 		# print(seq_lens.shape)
+
+		if vertex_outputs.shape[0] > 0:
+			print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 28 * 28]).sum(axis = -1))
+			print(np.reshape(vertex_terminals, [-1, 2, 28 * 28]).sum(axis = -1))
+			t1 = np.reshape(vertex_outputs, [-1, self.max_seq_len, 28 * 28])
+			t2 = ends[..., np.newaxis]
+			tt = np.concatenate([t1, t2], axis = -1)
+			ttt = tt.sum(axis = -1)
+			print(ttt)
+			print(seq_lens)
+			input()
 
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, seq_idx
 

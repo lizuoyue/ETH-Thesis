@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
 	plt.title('Training Loss')
 	plt.ylim(ymin = 0, ymax = 5)
-	plt.xlim(xmin = 498000)
+	plt.xlim(xmin = 0)
 	plt.legend(loc = 'upper right')
 	plt.show()
 
