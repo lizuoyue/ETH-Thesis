@@ -25,16 +25,16 @@ class Config(object):
 
 		# Learning parameters
 		self.NUM_ITER = 500001
-		self.MAX_NUM_VERTICES = 10
+		self.MAX_NUM_VERTICES = 20
 		self.LEARNING_RATE = 2e-5
 		self.LSTM_OUT_CHANNEL = [64, 32, 16, 8]
 		self.V_OUT_RES = tuple(self.AREA_SIZE_8)
 		self.AREA_TRAIN_BATCH = 4
 		self.AREA_VALID_BATCH = 6
-		self.AREA_TEST_BATCH = 12
+		self.AREA_TEST_BATCH = 8
 
-		self.TRAIN_NUM_PATH = 12
-		self.VALID_NUM_PATH = 16
+		self.TRAIN_NUM_PATH = 8
+		self.VALID_NUM_PATH = 12
 
 		self.PATH = {
 			'roadtracer': {

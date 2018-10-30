@@ -261,6 +261,8 @@ class DataGenerator(object):
 		ends = np.array(ends)
 		seq_lens = np.array(seq_lens)
 
+		vertex_inputs = np.transpose(vertex_inputs, [0, 1, 3, 4, 2])
+
 		# print(ret_img.shape)
 		# print(boundary.shape)
 		# print(vertices.shape)
@@ -308,7 +310,7 @@ class DataGenerator(object):
 				break
 			for item in new_res:
 				print(item.shape)
-				input()
+			input()
 			return new_res
 
 
