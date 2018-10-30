@@ -211,6 +211,9 @@ class DataGenerator(object):
 			vertices.resize(self.img_size).save('%d_c.png' % img_id)
 		vertices = np.array(vertices) / 255.0
 
+		if SHOW:
+			print('Img', img_id, len(polygons), 'polygons')
+
 		# RNN in and out
 		vertex_inputs = []
 		vertex_outputs = []
@@ -247,7 +250,6 @@ class DataGenerator(object):
 						item.save('%d_p%d_%d_%s.png' % (img_id, pid, i, tp[seq]))
 				print(end)
 				print(seq_len)
-				input()
 
 			vertex_input = [np.array([np.array(sub) / 255.0 for sub in item]) for item in vertex_input]
 			vertex_output = [np.array(item) / 255.0 for item in vertex_output]
@@ -263,6 +265,8 @@ class DataGenerator(object):
 		vertex_outputs = np.array(vertex_outputs)
 		ends = np.array(ends)
 		seq_lens = np.array(seq_lens)
+
+		input()
 
 		# print(ret_img.shape)
 		# print(boundary.shape)
