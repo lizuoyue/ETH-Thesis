@@ -270,7 +270,7 @@ class DataGenerator(object):
 		# print(seq_lens.shape)
 
 		if vertex_outputs.shape[0] > 0:
-			print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 28 * 28]).sum(axis = -1))
+			print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 2, 28 * 28]).sum(axis = -1))
 			t1 = np.reshape(vertex_outputs, [-1, self.max_seq_len, 28 * 28])
 			t2 = ends[..., np.newaxis]
 			tt = np.concatenate([t1, t2], axis = -1)
