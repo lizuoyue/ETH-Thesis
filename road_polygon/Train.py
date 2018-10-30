@@ -101,9 +101,9 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = dg.getAreasBatch(config.AREA_TRAIN_BATCH, 'train')
+			img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, path_idx = dg.getAreasBatch(config.AREA_TRAIN_BATCH, 'train')
 			feed_dict = {
-				aa: img - img_bias, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens, dd: path_idx
+				aa: img - img_bias, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ee: ends, ll: seq_lens, dd: path_idx
 			}
 
 			# Training and get result
@@ -117,9 +117,9 @@ if __name__ == '__main__':
 
 			# Validation
 			if i % 100 == 0:
-				img, boundary, vertices, vertex_inputs, vertex_outputs, vertex_terminals, ends, seq_lens, path_idx = dg.getAreasBatch(config.AREA_TRAIN_BATCH, 'val')
+				img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, path_idx = dg.getAreasBatch(config.AREA_TRAIN_BATCH, 'val')
 				feed_dict = {
-					aa: img - img_bias, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, tt: vertex_terminals, ee: ends, ll: seq_lens, dd: path_idx
+					aa: img - img_bias, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ee: ends, ll: seq_lens, dd: path_idx
 				}
 				init_time = time.time()
 				loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end = sess.run(train_res, feed_dict)
