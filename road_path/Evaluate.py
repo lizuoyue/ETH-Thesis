@@ -3,27 +3,61 @@ import numpy as np
 import tensorflow as tf
 from Config import *
 from Model import *
-from RoadData import *
+from DataGenerator import *
 import cv2, json, glob
-
-class NumpyEncoder(json.JSONEncoder):
-	def default(self, obj):
-		if isinstance(obj, np.integer):
-			return int(obj)
-		elif isinstance(obj, np.floating):
-			return float(obj)
-		elif isinstance(obj, np.ndarray):
-			return obj.tolist()
-		else:
-			return super(NumpyEncoder, self).default(obj)
 
 config = Config()
 
+class NumpyEncoder(json.JSONEncoder):
+	""" Special json encoder for numpy types """
+	def default(self, obj):
+		if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
+			np.int16, np.int32, np.int64, np.uint8,
+			np.uint16, np.uint32, np.uint64)):
+			return int(obj)
+		elif isinstance(obj, (np.float_, np.float16, np.float32, 
+			np.float64)):
+			return float(obj)
+		elif isinstance(obj,(np.ndarray,)):
+			return obj.tolist()
+		return json.JSONEncoder.default(self, obj)
+
+def savePNG(mat1, mat2, filename):
+	if mat2.shape[0] < mat1.shape[0]:
+		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST)
+	if mat2.max() > 0:
+		mat2 = mat2 / mat2.max()
+	m1 = Image.fromarray(mat1, mode = 'RGB')
+	m1.putalpha(255)
+	m2 = Image.fromarray(np.array(cmap(mat2) * 255.0, np.uint8)).convert(mode = 'RGB')
+	m2.putalpha(255)
+	m2 = np.array(m2)
+	m2[..., 3] = np.array(mat2 * 255.0, np.uint8)
+	m2 = Image.fromarray(m2)
+	Image.alpha_composite(m1, m2).save(filename)
+	return
+
 if __name__ == '__main__':
-	city_name = sys.argv[1]
+	argv = {k: v for k, v in zip(sys.argv[1::2], sys.argv[2::2])}
+	city_name = argv['--city']
+	img_bias = np.array(config.PATH[city_name]['bias'])
+	backbone = argv['--net']
+	mode = argv['--mode']
+	vis = argv['--vis'] != '0'
+	print(city_name, backbone, mode, vis)
+
+	# Create data generator
+	obj = DataGenerator(
+		city_name = city_name,
+		img_size = config.PATCH_SIZE,
+		v_out_res = config.V_OUT_RES,
+		max_num_vertices = config.MAX_NUM_VERTICES,
+		mode = mode
+	)
 
 	# Define graph
 	graph = Model(
+		backbone = backbone,
 		max_num_vertices = config.MAX_NUM_VERTICES,
 		lstm_out_channel = config.LSTM_OUT_CHANNEL, 
 		v_out_res = config.V_OUT_RES,
@@ -35,10 +69,11 @@ if __name__ == '__main__':
 	oo = tf.placeholder(tf.float32)
 	tt = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
-	ll = tf.placeholder(tf.float32)
+	ll = tf.placeholder(tf.int32)
 	ff = tf.placeholder(tf.float32)
+	dd = tf.placeholder(tf.int32)
 
-	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll)
+	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll, dd)
 	pred_mask_res = graph.predict_mask(aa)
 	pred_path_res = graph.predict_path(ff, tt)
 
@@ -46,18 +81,25 @@ if __name__ == '__main__':
 	# 	print(v.name)
 	# quit()
 
-	saver = tf.train.Saver(max_to_keep = 1)
-	files = glob.glob('./Model/Model%s/Model-*.ckpt.meta' % city_name)
-	files = [(int(file.replace('./Model/Model%s/Model-' % city_name, '').replace('.ckpt.meta', '')), file) for file in files]
-	model_path = './Model/Model%s/Model-%d.ckpt' % (city_name, files[-1][0])
+	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
+	train = optimizer.minimize(train_res[0] + train_res[1] + train_res[2] + train_res[3])
 
-	path = './test_res/'
-	os.popen('mkdir %s' % path.replace('./', ''))
+	saver = tf.train.Saver(max_to_keep = 1)
+	model_path = './Model_%s_%s/' % (backbone, city_name)
+	files = glob.glob(model_path + '*.ckpt.meta')
+	files = [(int(file.replace(model_path, '').replace('.ckpt.meta', '')), file) for file in files]
+	files.sort()
+	_, model_to_load = files[-1]
+
+	test_path = './Test_Result_%s_%s' % (backbone, city_name)
+	if not os.path.exists(test_path):
+		os.popen('mkdir %s' % test_path.replace('./', ''))
+
 	# Launch graph
 	with tf.Session() as sess:
-		with open('Eval.out', 'w') as f:
+		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
-			saver.restore(sess, model_path)
+			saver.restore(sess, model_to_load[:-5])
 			for i in range(10):
 				time_res = [i]
 				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
@@ -87,11 +129,6 @@ if __name__ == '__main__':
 
 				f.write('%d,%.3lf,%.3lf\n' % tuple(time_res))
 				f.flush()
-
-
-
-
-
 
 
 			# Test
@@ -139,18 +176,5 @@ if __name__ == '__main__':
 
 
 
-def savePNG(mat1, mat2, filename):
-	if mat2.shape[0] < mat1.shape[0]:
-		mat2 = cv2.resize(mat2, (0, 0), fx = 8, fy = 8, interpolation = cv2.INTER_NEAREST)
-	if mat2.max() > 0:
-		mat2 = mat2 / mat2.max()
-	m1 = Image.fromarray(mat1, mode = 'RGB')
-	m1.putalpha(255)
-	m2 = Image.fromarray(np.array(cmap(mat2) * 255.0, np.uint8)).convert(mode = 'RGB')
-	m2.putalpha(255)
-	m2 = np.array(m2)
-	m2[..., 3] = np.array(mat2 * 255.0, np.uint8)
-	m2 = Image.fromarray(m2)
-	Image.alpha_composite(m1, m2).save(filename)
-	return
+
 

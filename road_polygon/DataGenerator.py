@@ -9,7 +9,7 @@ import scipy, socket, sys, os
 from pycocotools.coco import COCO
 
 config = Config()
-SHOW = True
+SHOW = False
 
 class directed_graph(object):
 	def __init__(self, downsample = 8):
@@ -266,7 +266,8 @@ class DataGenerator(object):
 		ends = np.array(ends)
 		seq_lens = np.array(seq_lens)
 
-		input()
+		if SHOW:
+			input()
 
 		# print(ret_img.shape)
 		# print(boundary.shape)

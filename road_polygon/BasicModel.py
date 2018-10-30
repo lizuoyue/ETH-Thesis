@@ -119,15 +119,16 @@ def ResNetV1_101(scope, img, reuse = None):
 def ResNetV1_152(scope, img, reuse = None):
 	return ResNetV1(scope, img, [3, 8, 36, 3], reuse)
 
-def SkipFeature(scope, mode, backbone_result, crop_info, reuse = None):
+def SkipFeature(scope, mode, backbone_result, crop_info = None, reuse = None):
 	assert(mode == 'vgg' or mode == 'resnet')
 	if mode == 'vgg':
 		pool2, pool3, _, conv4_4, conv5_4 = backbone_result
-		idx = tf.cast(crop_info[:, 0], tf.int32)
-		pool2   = tf.image.crop_and_resize(pool2  , crop_info[:, 1: 5], idx, config.PATCH_SIZE_4 )
-		pool3   = tf.image.crop_and_resize(pool3  , crop_info[:, 1: 5], idx, config.PATCH_SIZE_8 )
-		conv4_4 = tf.image.crop_and_resize(conv4_4, crop_info[:, 1: 5], idx, config.PATCH_SIZE_8 )
-		conv5_4 = tf.image.crop_and_resize(conv5_4, crop_info[:, 1: 5], idx, config.PATCH_SIZE_16)
+		if crop_info:
+			idx = tf.cast(crop_info[:, 0], tf.int32)
+			pool2   = tf.image.crop_and_resize(pool2  , crop_info[:, 1: 5], idx, config.PATCH_SIZE_4 )
+			pool3   = tf.image.crop_and_resize(pool3  , crop_info[:, 1: 5], idx, config.PATCH_SIZE_8 )
+			conv4_4 = tf.image.crop_and_resize(conv4_4, crop_info[:, 1: 5], idx, config.PATCH_SIZE_8 )
+			conv5_4 = tf.image.crop_and_resize(conv5_4, crop_info[:, 1: 5], idx, config.PATCH_SIZE_16)
 		with tf.variable_scope(scope, reuse = reuse):
 			inter1  = tf.layers.max_pooling2d(inputs = pool2  , pool_size = 2, strides = 2)																	 #  28
 			part1   = tf.layers.conv2d       (inputs = inter1 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Sconv1' ) #  28
@@ -140,11 +141,12 @@ def SkipFeature(scope, mode, backbone_result, crop_info, reuse = None):
 			return feature
 	if mode == 'resnet':
 		_, conv2, conv3, conv4, conv5 = backbone_result
-		idx = tf.cast(crop_info[:, 0], tf.int32)
-		conv2 = tf.image.crop_and_resize(conv2, crop_info[:, 1: 5], idx, config.PATCH_SIZE_4 )
-		conv3 = tf.image.crop_and_resize(conv3, crop_info[:, 1: 5], idx, config.PATCH_SIZE_8 )
-		conv4 = tf.image.crop_and_resize(conv4, crop_info[:, 1: 5], idx, config.PATCH_SIZE_16)
-		conv5 = tf.image.crop_and_resize(conv5, crop_info[:, 1: 5], idx, config.PATCH_SIZE_32)
+		if crop_info:
+			idx = tf.cast(crop_info[:, 0], tf.int32)
+			conv2 = tf.image.crop_and_resize(conv2, crop_info[:, 1: 5], idx, config.PATCH_SIZE_4 )
+			conv3 = tf.image.crop_and_resize(conv3, crop_info[:, 1: 5], idx, config.PATCH_SIZE_8 )
+			conv4 = tf.image.crop_and_resize(conv4, crop_info[:, 1: 5], idx, config.PATCH_SIZE_16)
+			conv5 = tf.image.crop_and_resize(conv5, crop_info[:, 1: 5], idx, config.PATCH_SIZE_32)
 		with tf.variable_scope(scope, reuse = reuse):
 			inter1  = tf.layers.max_pooling2d(inputs = conv2  , pool_size = 2, strides = 2)																	 #  28
 			part1   = tf.layers.conv2d       (inputs = inter1 , filters = 128, kernel_size = 3, padding = 'same', activation = tf.nn.relu, name = 'Sconv1' ) #  28

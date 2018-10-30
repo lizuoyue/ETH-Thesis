@@ -212,6 +212,7 @@ class Model(object):
 
 		# PolygonRNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
+		loss_CNN *= 5
 		feature_RNN = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
 		logits , loss_RNN = self.RNN(feature_RNN, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len, gt_idx)
 

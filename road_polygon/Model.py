@@ -117,8 +117,8 @@ class Model(object):
 			val, idx = tf.nn.top_k(prob[0, 0, :], k = config.BEAM_WIDTH_2)
 			return tf.log(val), tf.expand_dims(tf.gather(self.vertex_pool, idx, axis = 0), axis = 3), prob[0, 0, :]
 
-	def RNN(self, feature, terminal, v_in = None, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
-		batch_size = tf.concat([[tf.shape(terminal)[0]], [1, 1, 1]], 0)
+	def RNN(self, feature, v_in, gt_rnn_out = None, gt_seq_len = None, gt_idx = None, reuse = None):
+		batch_size = tf.concat([[tf.shape(v_in)[0]], [1, 1, 1]], 0)
 		initial_state = tuple([tf.contrib.rnn.LSTMStateTuple(
 			c = tf.tile(self.lstm_init_state[i][0: 1], batch_size),
 			h = tf.tile(self.lstm_init_state[i][1: 2], batch_size)
@@ -126,15 +126,13 @@ class Model(object):
 		if not reuse:
 			feature_rep = tf.gather(feature, gt_idx)
 			feature_rep = tf.tile(tf.expand_dims(feature_rep, axis = 1), [1, self.max_num_vertices, 1, 1, 1])
-			v_in_0 = tf.tile(terminal[:, 0: 1, ...], [1, self.max_num_vertices, 1, 1, 1])
-			v_in_e = tf.tile(terminal[:, 1: 2, ...], [1, self.max_num_vertices, 1, 1, 1])
-			v_in_1 = v_in
-			v_in_2 = tf.stack([v_in[:, 0, ...]] + tf.unstack(v_in, axis = 1)[: -1], axis = 1)
-			rnn_input = tf.concat([feature_rep, v_in_0, v_in_1, v_in_2, v_in_e], axis = 4)
-			# v_in_0:   0 0 0 0 0 ... 0
-			# v_in_1:   0 1 2 3 4 ... N - 1
-			# v_in_2:   0 0 1 2 3 ... N - 2
-			# rnn_out:  1 2 3 4 5 ... N
+			v_s = tf.tile(v_in[:, 0: 1, ...], [1, self.max_num_vertices, 1, 1, 1])
+			rnn_input = tf.concat([feature_rep, v_s, v_in], axis = 4)
+			# v_s : 0 0 0 0 0 ... 0
+			#       1 1 1 1 1 ... 1
+			# v_in: 0 1 2 3 4 ... N
+			#       1 2 3 4 5 ... 0
+			# out : 2 3 4 5 6 ... E
 			outputs, state = tf.nn.dynamic_rnn(
 				cell = self.stacked_lstm,
 				initial_state = initial_state,
@@ -146,24 +144,22 @@ class Model(object):
 		else:
 			# current prob, time line, current state
 			rnn_prob = [tf.zeros([1])] + [tf.ones([1]) * -99999999 for _ in range(config.BEAM_WIDTH - 1)]
-			rnn_tmln = [terminal[:, 0, ...] for _ in range(config.BEAM_WIDTH)]
+			rnn_tmln = [v_in for _ in range(config.BEAM_WIDTH)]
 			rnn_stat = [initial_state for _ in range(config.BEAM_WIDTH)]
 			rnn_hmap = [tf.zeros([785, 1]) for _ in range(config.BEAM_WIDTH)]
-
+			v_s = v_in
 			# beam search
-			for i in range(1, self.max_num_vertices + 1):
+			for i in range(2, self.max_num_vertices + 2):
 				prob, tmln, stat, hmap = [], [], [[[], []] for item in self.lstm_out_channel], []
 				for j in range(config.BEAM_WIDTH):
 					prob_last = tf.tile(rnn_prob[j], [config.BEAM_WIDTH_2])
-					v_in_0 = terminal[:, 0, ...]
-					v_in_e = terminal[:, 1, ...]
-					v_in_1 = rnn_tmln[j][..., i - 1: i]
-					v_in_2 = rnn_tmln[j][..., max(i - 2, 0): max(i - 2, 0) + 1]
-					inputs = tf.concat([feature, v_in_0, v_in_1, v_in_2, v_in_e], 3)
+					v_in_0 = rnn_tmln[j][..., i - 2: i - 1]
+					v_in_1 = rnn_tmln[j][..., i - 1: i    ]
+					inputs = tf.concat([feature, v_s, v_in_0, v_in_1], 3)
 					outputs, states = self.stacked_lstm(inputs = inputs, state = rnn_stat[j])
 					prob_new, time_new, prob_hmap = self.FC(rnn_output = outputs, reuse = True)
 					# Force to predice <eos> if input is <eos>
-					cd = tf.reduce_sum(v_in_1)
+					cd = tf.reduce_sum(v_in_0) + tf.reduce_sum(v_in_1)
 					prob_new  = tf.cond(cd < 0.5, lambda: tf.zeros([config.BEAM_WIDTH_2]), lambda: prob_new)
 					time_new  = tf.cond(cd < 0.5, lambda: tf.concat([v_in_1 for _ in range(config.BEAM_WIDTH_2)], 0), lambda: time_new)
 					prob_hmap = tf.cond(cd < 0.5, lambda: tf.concat([tf.zeros(784), tf.ones(1)], 0), lambda: prob_hmap)
@@ -196,7 +192,7 @@ class Model(object):
 
 			return tf.transpose(tf.stack(rnn_tmln, 0), [0, 4, 2, 3, 1]), tf.transpose(tf.stack(rnn_hmap, 0), [0, 2, 1]), rnn_prob
 
-	def train(self, aa, bb, vv, ii, oo, tt, ee, ll, dd):
+	def train(self, aa, bb, vv, ii, oo, ee, ll, dd):
 		#
 		img          = tf.reshape(aa, [config.AREA_TRAIN_BATCH, config.AREA_SIZE[1], config.AREA_SIZE[0], 3])
 		gt_boundary  = tf.reshape(bb, [config.AREA_TRAIN_BATCH, self.v_out_nrow, self.v_out_ncol, 1])
@@ -204,7 +200,6 @@ class Model(object):
 
 		gt_v_in      = tf.reshape(ii, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol, 2])
 		gt_v_out     = tf.reshape(oo, [config.TRAIN_NUM_PATH, self.max_num_vertices, self.res_num])
-		gt_terminal  = tf.reshape(tt, [config.TRAIN_NUM_PATH, 2, self.v_out_nrow, self.v_out_ncol, 1])
 		gt_end       = tf.reshape(ee, [config.TRAIN_NUM_PATH, self.max_num_vertices, 1])
 		gt_seq_len   = tf.reshape(ll, [config.TRAIN_NUM_PATH])
 		gt_idx       = tf.reshape(dd, [config.TRAIN_NUM_PATH])
@@ -213,12 +208,11 @@ class Model(object):
 		# PolygonRNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
 		feature_RNN = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
-		logits , loss_RNN = self.RNN(feature_RNN, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len, gt_idx)
+		logits , loss_RNN = self.RNN(feature_RNN, gt_v_in, gt_rnn_out, gt_seq_len, gt_idx)
 
 		# 
 		pred_rnn      = tf.nn.softmax(logits)
 		pred_v_out    = tf.reshape(pred_rnn[..., 0: self.res_num], [-1, self.max_num_vertices, self.v_out_nrow, self.v_out_ncol])
-		pred_v_out    = tf.concat([gt_terminal[:, 0: 1, :, :, 0], pred_v_out[:, :-1, ...]], axis = 1)
 		pred_end      = tf.reshape(pred_rnn[..., self.res_num], [-1, self.max_num_vertices])
 
 		return loss_CNN, loss_RNN, pred_boundary, pred_vertices, pred_v_out, pred_end
@@ -228,13 +222,13 @@ class Model(object):
 		feature, pred_boundary, pred_vertices = self.CNN(img, reuse = True)
 		return feature, pred_boundary, pred_vertices
 
-	def predict_path(self, ff, tt):
+	def predict_path(self, ff, ii):
 		#
 		feature  = tf.reshape(ff, [1, self.v_out_nrow, self.v_out_ncol, 130])
-		terminal = tf.reshape(tt, [1, 2, self.v_out_nrow, self.v_out_ncol, 1])
+		v_in = tf.reshape(ii, [1, self.v_out_nrow, self.v_out_ncol, 2])
 
 		#
-		pred_v_out, prob_res, rnn_prob = self.RNN(feature, terminal, reuse = True)
+		pred_v_out, prob_res, rnn_prob = self.RNN(feature, v_in, reuse = True)
 		return pred_v_out, prob_res, rnn_prob
 
 
