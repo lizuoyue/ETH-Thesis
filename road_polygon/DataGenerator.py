@@ -163,7 +163,7 @@ class DataGenerator(object):
 		ret_img = img.rotate(rotate_deg).resize(self.img_size)
 
 		if SHOW:
-			ret_img.save('%d.png' % img_id)
+			ret_img.save('%d_a.png' % img_id)
 
 		ret_img = np.array(ret_img, np.float32)[..., 0: 3]
 		if self.mode != 'train':
@@ -208,7 +208,7 @@ class DataGenerator(object):
 		for i in range(len(v_li_8_unique)):
 			draw.ellipse(make_ellipse(v_li_8_unique[i], pad = 0), fill = 255, outline = 255)
 		if SHOW:
-			vertices.resize(self.img_size).save('%d_v.png' % img_id)
+			vertices.resize(self.img_size).save('%d_c.png' % img_id)
 		vertices = np.array(vertices) / 255.0
 
 		# RNN in and out
@@ -216,7 +216,7 @@ class DataGenerator(object):
 		vertex_outputs = []
 		ends = []
 		seq_lens = []
-		for polygon in polygons:
+		for pid, polygon in enumerate(polygons):
 			assert(len(polygon) > 2)
 			start = np.random.randint(len(polygon))
 			full_path = polygon[start:] + polygon[1: start + 1]
@@ -244,9 +244,10 @@ class DataGenerator(object):
 				tp = ['in1', 'in2', 'out']
 				for seq, vvv in enumerate([[cao[0] for cao in vertex_input], [cao[1] for cao in vertex_input], vertex_output]):
 					for i, item in enumerate(vvv):
-						item.save('%d_%s_%d.png' % (img_id, tp[seq], i))
+						item.save('%d_p%d_%d_%s.png' % (img_id, pid, i, tp[seq]))
 				print(end)
 				print(seq_len)
+				input()
 
 			vertex_input = [np.array([np.array(sub) / 255.0 for sub in item]) for item in vertex_input]
 			vertex_output = [np.array(item) / 255.0 for item in vertex_output]
