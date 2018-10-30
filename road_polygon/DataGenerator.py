@@ -308,6 +308,7 @@ class DataGenerator(object):
 						break
 				if len(new_res) != 8:
 					print('No polygons in the images, re-generate ...')
+					res = []
 					continue
 				assert(new_res[-1].shape[0] > 0)
 				choose = np.random.choice(new_res[-1].shape[0], config.TRAIN_NUM_PATH, replace = (new_res[-1].shape[0] < config.TRAIN_NUM_PATH))
