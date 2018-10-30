@@ -9,7 +9,7 @@ import scipy, socket, sys, os
 from pycocotools.coco import COCO
 
 config = Config()
-SHOW = False
+SHOW = True
 
 class directed_graph(object):
 	def __init__(self, downsample = 8):
@@ -309,9 +309,9 @@ class DataGenerator(object):
 				for i in range(3, 8):
 					new_res[i] = new_res[i][choose]
 				break
-			for item in new_res:
-				print(item.shape)
-			input()
+			# for item in new_res:
+			# 	print(item.shape)
+			# input()
 			return new_res
 
 
