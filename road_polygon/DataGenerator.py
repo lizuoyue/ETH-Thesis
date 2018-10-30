@@ -269,15 +269,15 @@ class DataGenerator(object):
 		# print(ends.shape)
 		# print(seq_lens.shape)
 
-		if vertex_outputs.shape[0] > 0:
-			print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 2, 28 * 28]).sum(axis = -1))
-			t1 = np.reshape(vertex_outputs, [-1, self.max_seq_len, 28 * 28])
-			t2 = ends[..., np.newaxis]
-			tt = np.concatenate([t1, t2], axis = -1)
-			ttt = tt.sum(axis = -1)
-			print(ttt)
-			print(seq_lens)
-			input()
+		# if vertex_outputs.shape[0] > 0:
+		# 	print(np.reshape(vertex_inputs, [-1, self.max_seq_len, 2, 28 * 28]).sum(axis = -1))
+		# 	t1 = np.reshape(vertex_outputs, [-1, self.max_seq_len, 28 * 28])
+		# 	t2 = ends[..., np.newaxis]
+		# 	tt = np.concatenate([t1, t2], axis = -1)
+		# 	ttt = tt.sum(axis = -1)
+		# 	print(ttt)
+		# 	print(seq_lens)
+		# 	input()
 
 		return ret_img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, seq_idx
 
@@ -306,6 +306,9 @@ class DataGenerator(object):
 				for i in range(3, 8):
 					new_res[i] = new_res[i][choose]
 				break
+			for item in new_res:
+				print(items.shape)
+				input()
 			return new_res
 
 
