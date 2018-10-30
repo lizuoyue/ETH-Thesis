@@ -307,7 +307,7 @@ class DataGenerator(object):
 					new_res[i] = new_res[i][choose]
 				break
 			for item in new_res:
-				print(items.shape)
+				print(item.shape)
 				input()
 			return new_res
 
