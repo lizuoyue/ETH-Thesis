@@ -262,7 +262,7 @@ class DataGenerator(object):
 			ends.append(end)
 			seq_lens.append(min(seq_len, self.max_seq_len))
 
-		seq_idx = seq_id * np.ones([len(polygons)], np.int32)
+		seq_idx = seq_id * np.ones([len(ends)], np.int32)
 		vertex_inputs = np.array(vertex_inputs)
 		if vertex_inputs.shape[0] > 0:
 			vertex_inputs = vertex_inputs.transpose([0, 1, 3, 4, 2])
