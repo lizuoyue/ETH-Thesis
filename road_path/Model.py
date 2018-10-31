@@ -22,6 +22,7 @@ class Model(object):
 		self.v_out_nrow       = self.v_out_res[0]
 		self.v_out_ncol       = self.v_out_res[1]
 		self.res_num          = self.v_out_nrow * self.v_out_ncol
+		self.num_stage        = 3
 
 		# Multi-layer LSTM and inital state
 		self.stacked_lstm  = tf.contrib.rnn.MultiRNNCell(
@@ -83,16 +84,22 @@ class Model(object):
 			feature = SkipFeature('SkipFeatureVGG', 'vgg', backbone_result, None, reuse)
 		else:
 			feature = SkipFeature('SkipFeatureResNet', 'resnet', backbone_result, None, reuse)
-		boundary, vertices = Mask('MaskLayer', feature, reuse = reuse)
-		boundary_prob = tf.nn.softmax(boundary)[..., 0: 1]
-		vertices_prob = tf.nn.softmax(vertices)[..., 0: 1]
-		# combine = tf.concat([feature, boundary, vertices], 3)
+
+		bb, vv = Mask('MaskLayer_1', feature, reuse = reuse)
+		b_prob = [tf.nn.softmax(bb)[..., 0: 1]]
+		v_prob = [tf.nn.softmax(vv)[..., 0: 1]]
+		for i in range(2, self.num_stage + 1):
+			stage_input = tf.concat([feature, bb, vv], axis = -1)
+			bb, vv = Mask('MaskLayer_%d' % i, stage_input, reuse = reuse)
+			b_prob.append(tf.nn.softmax(bb)[..., 0: 1])
+			v_prob.append(tf.nn.softmax(vv)[..., 0: 1])
 		if not reuse:
-			loss  = self.WeightedLogLoss(gt_boundary, boundary_prob)
-			loss += self.WeightedLogLoss(gt_vertices, vertices_prob)
-			return feature, boundary_prob, vertices_prob, loss
+			loss = 0
+			for item in b_prob + v_prob:
+				loss += self.WeightedLogLoss(gt_boundary, item)
+			return feature, b_prob[-1], v_prob[-1], loss
 		else:
-			return feature, boundary_prob, vertices_prob
+			return feature, b_prob[-1], v_prob[-1]
 
 	def FC(self, rnn_output, gt_rnn_out = None, gt_seq_len = None, gt_vertices = None, reuse = None):
 		""" 
@@ -105,8 +112,7 @@ class Model(object):
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
-			logits = tf.layers.dense(inputs = output_reshape, units = 4096, activation = tf.nn.relu)
-			logits = tf.layers.dense(inputs = logits, units = 1024, activation = tf.nn.relu)
+			logits = tf.layers.dense(inputs = output_reshape, units = 2048, activation = tf.nn.relu)
 			logits = tf.layers.dense(inputs = logits, units = self.res_num + 1, activation = None)
 		if not reuse:
 			loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
@@ -212,7 +218,6 @@ class Model(object):
 
 		# PolygonRNN part
 		feature, pred_boundary, pred_vertices, loss_CNN = self.CNN(img, gt_boundary, gt_vertices)
-		loss_CNN *= 5
 		feature_RNN = tf.concat([feature, gt_boundary, gt_vertices], axis = -1)
 		logits , loss_RNN = self.RNN(feature_RNN, gt_terminal, gt_v_in, gt_rnn_out, gt_seq_len, gt_idx)
 

@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
 	optimizer = tf.train.AdamOptimizer(learning_rate = config.LEARNING_RATE)
 	train = optimizer.minimize(train_res[0] + train_res[1])
-	saver = tf.train.Saver(max_to_keep = 5)
+	saver = tf.train.Saver(max_to_keep = 3)
 	init = tf.global_variables_initializer()
 
 	dg = DataGenerator(
