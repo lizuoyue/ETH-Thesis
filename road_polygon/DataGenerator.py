@@ -220,14 +220,18 @@ class DataGenerator(object):
 		ends = []
 		seq_lens = []
 		for pid, polygon in enumerate(polygons):
-			assert(len(polygon) > 2)
+			if len(polygon) <= 3:
+				if len(polygon) <= 2:
+					print('Invalid polygon (%d)' % pid)
+					continue
+				else:
+					if polygon[0] == polygon[1]:
+						print('Invalid polygon (%d)' % pid)
+						continue
+
 			start = np.random.randint(len(polygon))
 			full_path = polygon[start:] + polygon[1: start + 1]
 			full_path = [v_li_8_unique[idx] for idx in full_path]
-			if len(full_path) == 3:
-				if full_path[0] == full_path[1]:
-					print('Invalid polygon (%d)' % pid)
-					continue
 			seq_len = len(full_path) - 1
 
 			vertex_input_1 = [self.vertex_pool[r][c] for c, r in full_path[:-1]]

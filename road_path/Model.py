@@ -112,8 +112,8 @@ class Model(object):
 		else:
 			output_reshape = tf.reshape(rnn_output, [-1, 1, self.res_num * self.lstm_out_channel[-1]])
 		with tf.variable_scope('FC', reuse = reuse):
-			logits = tf.layers.dense(inputs = output_reshape, units = 2048, activation = tf.nn.relu)
-			logits = tf.layers.dense(inputs = logits, units = self.res_num + 1, activation = None)
+			# logits = tf.layers.dense(inputs = output_reshape, units = 2048, activation = tf.nn.relu)
+			logits = tf.layers.dense(inputs = output_reshape, units = self.res_num + 1, activation = None)
 		if not reuse:
 			loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = gt_rnn_out, logits = logits)
 			loss = tf.reduce_sum(loss) / tf.to_float(tf.reduce_sum(gt_seq_len))

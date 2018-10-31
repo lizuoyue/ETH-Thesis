@@ -53,11 +53,11 @@ class Config(object):
 
 		self.PATH = {
 			'crowdAI-leonhard': {
-				'img-train': '/cluster/scratch/zoli/data/train/images',
-				'img-val'  : '/cluster/scratch/zoli/data/val/images',
-				'img-test' : '/cluster/scratch/zoli/data/test_images',
-				'ann-train': '/cluster/scratch/zoli/data/train/annotation.json',
-				'ann-val'  : '/cluster/scratch/zoli/data/val/annotation.json',
+				'img-train': '/cluster/scratch/zoli/crowdAI/train/images',
+				'img-val'  : '/cluster/scratch/zoli/crowdAI/val/images',
+				'img-test' : '/cluster/scratch/zoli/crowdAI/test_images',
+				'ann-train': '/cluster/scratch/zoli/crowdAI/train/annotation.json',
+				'ann-val'  : '/cluster/scratch/zoli/crowdAI/val/annotation.json',
 				'ann-test' : None,
 				'bias'     : [77.91342018, 89.78918901, 101.50963053]
 			},
