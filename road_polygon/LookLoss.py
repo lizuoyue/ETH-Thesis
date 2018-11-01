@@ -20,9 +20,9 @@ def process(filename, n = 1000):
 	return mov_avg(loss_cnn, n), mov_avg(loss_rnn, n)
 
 if __name__ == '__main__':
-	server = 'dalab'
+	server = 'leonhard'
 	net = 'resnet50'
-	city = 'Chicago'
+	city = 'roadtracer-leonhard'
 	# os.popen('scp %s:~/thesis/road_polygon/Loss_train_%s_%s.out ./LossTrain.out' % (server, net, city))
 	# os.popen('scp %s:~/thesis/road_polygon/Loss_valid_%s_%s.out ./LossValid.out' % (server, net, city))
 	# quit()
