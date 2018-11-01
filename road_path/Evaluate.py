@@ -138,7 +138,7 @@ if __name__ == '__main__':
 				else:
 					time_res.append((time.time() - t) / len(all_terminal))
 
-				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
+				paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
 
 				if vis:
