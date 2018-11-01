@@ -5,6 +5,7 @@ from Config import *
 from Model import *
 from DataGenerator import *
 import cv2, json, glob
+from PIL import Image
 
 config = Config()
 
@@ -44,16 +45,8 @@ if __name__ == '__main__':
 	backbone = argv['--net']
 	mode = argv['--mode']
 	vis = argv['--vis'] != '0'
+	assert(mode in ['val', 'test'])
 	print(city_name, backbone, mode, vis)
-
-	# Create data generator
-	obj = DataGenerator(
-		city_name = city_name,
-		img_size = config.PATCH_SIZE,
-		v_out_res = config.V_OUT_RES,
-		max_num_vertices = config.MAX_NUM_VERTICES,
-		mode = mode
-	)
 
 	# Define graph
 	graph = Model(
@@ -92,64 +85,39 @@ if __name__ == '__main__':
 	_, model_to_load = files[-1]
 
 	test_path = './Test_Result_%s_%s' % (backbone, city_name)
-	if not os.path.exists(test_path):
-		os.popen('mkdir %s' % test_path.replace('./', ''))
+	if vis:
+		if not os.path.exists(test_path):
+			os.popen('mkdir %s' % test_path.replace('./', ''))
+
+	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
+	eval_files.sort()
 
 	# Launch graph
 	with tf.Session() as sess:
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for i in range(10):
-				time_res = [i]
-				img, _, _, _, _, terminal_gt, _, _ = getDataBatch(1)
+			for img_file in eval_files:
+				img_id = int(mg_file.split('/')[-1].split('.')[0])
+				img = np.array(Image.open(img_file))[..., 0: 3]
 
 				t = time.time()
-				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img})
+				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
 				time_res.append(time.time() - t)
 
-				cv2.imwrite(path + '%d-0.png' % i, img[0])
-				cv2.imwrite(path + '%d-2.png' % i, pred_boundary[0] * 255)
-				cv2.imwrite(path + '%d-3.png' % i, pred_vertices[0] * 255)
-
-				terminal = getAllTerminal(pred_vertices[0])
-
-				t = time.time()
-				res = []
-				for j in range(terminal.shape[0]):
-					pred_v_out = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_gt})
-					res.append(pred_v_out[0, 0])
-				if terminal.shape[0] == 0:
-					time_res.append(0)
-				else:
-					time_res.append((time.time() - t) / terminal.shape[0])
-
-				newImg = recoverMultiPath(img[0], np.array(res))
-				cv2.imwrite(path + '%d-1.png' % i, newImg)
-
-				f.write('%d,%.3lf,%.3lf\n' % tuple(time_res))
-				f.flush()
-
-
-			# Test
-			if i % 1 == choose_test:
-				img, _, _, _, _, _, _, _, _ = getDataBatch(1, 'val')
-				# if i < 45 or i > 45:
-				# 	continue
-				print(i)
-				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img})
-
-				path = 'test_res%s/' % city_name
-				savePNG(img[0], np.zeros(config.AREA_SIZE), path + '%d-0.png' % i)
-				savePNG(img[0], pred_boundary[0, ..., 0] * 255, path + '%d-1.png' % i)
-				savePNG(img[0], pred_vertices[0, ..., 0] * 255, path + '%d-2.png' % i)
+				if vis:
+					savePNG(img, np.zeros(config.AREA_SIZE), test_path + '%d-0.png' % img_id)
+					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '%d-1.png' % img_id)
+					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '%d-2.png' % img_id)
 
 				map_b, map_v, all_terminal, indices = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
-				savePNG(img[0], map_b, path + '%d-3.png' % i)
-				savePNG(img[0], map_v, path + '%d-4.png' % i)
+				if vis:
+					savePNG(img, map_b, test_path + '%d-3.png' % img_id)
+					savePNG(img, map_v, test_path + '%d-4.png' % img_id)
 
+				t = time.time()
 				multi_roads = []
 				prob_res_li = []
 				for terminal_1, terminal_2 in all_terminal:
@@ -161,20 +129,21 @@ if __name__ == '__main__':
 					else:
 						multi_roads.append(pred_v_out_2[0])
 						prob_res_li.append(prob_res_2[0])
+				if terminal.shape[0] == 0:
+					time_res.append(0)
+				else:
+					time_res.append((time.time() - t) / terminal.shape[0])
 
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
-				savePNG(img[0], paths, path + '%d-5.png' % i)
-				os.makedirs('./test_res%s/%d' % (city_name, i))
-				for j, pathImg in enumerate(pathImgs):
-					savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((i,) + indices[j]))
-					np.save(path + '%d/%d-%d.npy' % ((i,) + indices[j]), prob_res_li[j])
 
+				if vis:
+					savePNG(img, paths, path + '%d-5.png' % img_id)
+					os.makedirs(test_path + '/%d' % img_id)
+					for i, pathImg in enumerate(pathImgs):
+						savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((img_id,) + indices[i]))
+						np.save(path + '%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
-
-
-
-
-
-
+				f.write('%d,%.3lf,%.3lf\n' % tuple(time_res))
+				f.flush()
 
