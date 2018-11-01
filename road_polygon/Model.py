@@ -95,8 +95,10 @@ class Model(object):
 			v_prob.append(tf.nn.softmax(vv)[..., 0: 1])
 		if not reuse:
 			loss = 0
-			for item in b_prob + v_prob:
+			for item in b_prob:
 				loss += self.WeightedLogLoss(gt_boundary, item)
+			for item in v_prob:
+				loss += self.WeightedLogLoss(gt_vertices, item)
 			return feature, b_prob[-1], v_prob[-1], loss
 		else:
 			return feature, b_prob[-1], v_prob[-1]
