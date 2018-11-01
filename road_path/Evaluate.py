@@ -5,9 +5,11 @@ from Config import *
 from Model import *
 from DataGenerator import *
 import cv2, json, glob
+import matplotlib.pyplot as plt
 from PIL import Image
 
 config = Config()
+cmap = plt.get_cmap('viridis')
 
 class NumpyEncoder(json.JSONEncoder):
 	""" Special json encoder for numpy types """
