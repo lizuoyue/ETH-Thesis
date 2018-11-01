@@ -106,21 +106,21 @@ if __name__ == '__main__':
 				time_res = [img_seq, img_id]
 
 				t = time.time()
-				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
+				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
 				time_res.append(time.time() - t)
 
 				if vis:
-					savePNG(img, np.zeros(config.AREA_SIZE), test_path + '%d-0.png' % img_id)
-					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '%d-1.png' % img_id)
-					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '%d-2.png' % img_id)
+					savePNG(img, np.zeros(config.AREA_SIZE), test_path + '/%d-0.png' % img_id)
+					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
+					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
 				print(pred_boundary[0].shape, pred_vertices[0].shape)
 				map_b, map_v, all_terminal, indices = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
 				if vis:
-					savePNG(img, map_b, test_path + '%d-3.png' % img_id)
-					savePNG(img, map_v, test_path + '%d-4.png' % img_id)
+					savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
+					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
 
 				t = time.time()
 				multi_roads = []
@@ -143,11 +143,11 @@ if __name__ == '__main__':
 				paths[paths > 1e-3] = 1.0
 
 				if vis:
-					savePNG(img, paths, path + '%d-5.png' % img_id)
+					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
 					os.makedirs(test_path + '/%d' % img_id)
 					for i, pathImg in enumerate(pathImgs):
-						savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((img_id,) + indices[i]))
-						np.save(path + '%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
+						savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
+						np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
