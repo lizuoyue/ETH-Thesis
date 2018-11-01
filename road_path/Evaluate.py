@@ -92,7 +92,7 @@ if __name__ == '__main__':
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
 	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
-	eval_files.sort()
+	# eval_files.sort()
 	eval_files = [item for item in eval_files if not (item.endswith('Building.png') or item.endswith('Road.png'))]
 
 	# Launch graph
@@ -100,7 +100,8 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files):
+			for img_seq, img_file in enumerate(eval_files[:10]):
+				print(img_seq)
 
 				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
