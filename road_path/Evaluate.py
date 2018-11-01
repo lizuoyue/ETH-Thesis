@@ -97,9 +97,11 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_file in eval_files:
+			for img_seq, img_file in enumerate(eval_files):
+
 				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
+				time_res = [img_seq, img_id]
 
 				t = time.time()
 				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
@@ -144,6 +146,6 @@ if __name__ == '__main__':
 						savePNG(img[0], pathImg, path + '%d/%d-%d.png' % ((img_id,) + indices[i]))
 						np.save(path + '%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
-				f.write('%d,%.3lf,%.3lf\n' % tuple(time_res))
+				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
 
