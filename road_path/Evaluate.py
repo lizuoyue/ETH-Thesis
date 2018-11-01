@@ -114,7 +114,6 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				print(pred_boundary[0].shape, pred_vertices[0].shape)
 				map_b, map_v, all_terminal, indices = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
@@ -134,10 +133,10 @@ if __name__ == '__main__':
 					else:
 						multi_roads.append(pred_v_out_2[0])
 						prob_res_li.append(prob_res_2[0])
-				if terminal.shape[0] == 0:
+				if len(all_terminal) == 0:
 					time_res.append(0)
 				else:
-					time_res.append((time.time() - t) / terminal.shape[0])
+					time_res.append((time.time() - t) / len(all_terminal))
 
 				paths, pathImgs = recoverMultiPath(img[0].shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
