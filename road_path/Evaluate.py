@@ -93,6 +93,7 @@ if __name__ == '__main__':
 
 	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
 	eval_files.sort()
+	eval_files = [item for item in eval_files if not (item.endswith('Building.png') or item.endswith('Road.png'))]
 
 	# Launch graph
 	with tf.Session() as sess:
