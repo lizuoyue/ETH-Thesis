@@ -118,6 +118,11 @@ if __name__ == '__main__':
 				print(i)
 				i += 1
 
+				if i % 10 == 1:
+					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
+						fp.write(json.dumps(obj.TEST_RESULT, cls = NumpyEncoder))
+						fp.close()
+
 			with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
 				fp.write(json.dumps(obj.TEST_RESULT, cls = NumpyEncoder))
 				fp.close()
