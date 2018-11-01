@@ -83,7 +83,8 @@ def rotateN(n, w, h, x, y):
 	return w, h, x, y
 
 class VertexPool(object):
-	def __init__(self):
+	def __init__(self, v_out_res):
+		self.v_out_res = v_out_res
 		self.blank = np.zeros(self.v_out_res, dtype = np.uint8)
 		self.vertex_pool = [[] for i in range(self.v_out_res[1])]
 		for i in range(self.v_out_res[1]):
@@ -93,7 +94,7 @@ class VertexPool(object):
 				self.vertex_pool[i][j] = Image.fromarray(self.vertex_pool[i][j])
 		return
 
-vp = VertexPool()
+vp = VertexPool(config.V_OUT_RES)
 
 class DataGenerator(object):
 	def __init__(self, city_name, img_size, v_out_res, max_seq_len, mode = 'train'):
