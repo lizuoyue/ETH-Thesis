@@ -78,8 +78,9 @@ if __name__ == '__main__':
 	_, model_to_load = files[-1]
 
 	test_path = './Test_Result_%s_%s' % (backbone, city_name)
-	if not os.path.exists(test_path):
-		os.popen('mkdir %s' % test_path.replace('./', ''))
+	if vis:
+		if not os.path.exists(test_path):
+			os.popen('mkdir %s' % test_path.replace('./', ''))
 
 	# Launch graph
 	with tf.Session() as sess:
