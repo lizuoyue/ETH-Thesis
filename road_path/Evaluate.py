@@ -98,7 +98,7 @@ if __name__ == '__main__':
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
 			for img_file in eval_files:
-				img_id = int(mg_file.split('/')[-1].split('.')[0])
+				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file))[..., 0: 3]
 
 				t = time.time()
