@@ -99,7 +99,7 @@ if __name__ == '__main__':
 			saver.restore(sess, model_to_load[:-5])
 			for img_file in eval_files:
 				img_id = int(img_file.split('/')[-1].split('.')[0])
-				img = np.array(Image.open(img_file))[..., 0: 3]
+				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
 
 				t = time.time()
 				pred_boundary, pred_vertices, feature = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
