@@ -9,8 +9,8 @@ class Config(object):
 		self.AREA_SIZE_32   = [int(item / 32) for item in self.AREA_SIZE]
 
 		#
-		self.BEAM_WIDTH = 6
-		self.BEAM_WIDTH_2 = int(self.BEAM_WIDTH / 2)
+		self.BEAM_WIDTH = 1
+		self.BEAM_WIDTH_2 = 1#int(self.BEAM_WIDTH / 2)
 
 		self.TABLEAU20 = [
 			(174, 199, 232), (255, 187, 120), (152, 223, 138), (255, 152, 150), (197, 176, 213),
