@@ -380,6 +380,7 @@ class DataGenerator(object):
 			self.rotate = 0
 			for img_id in self.TEST_GROUPS[self.TEST_GROUP_ID]:
 				res.append(self.getSingleArea(mode, img_id, rotate = 0))
+			self.TEST_GROUP_ID += 1
 			return np.array(res)
 
 	def getPatchesFromAreas(self, pred_score, pred_box):

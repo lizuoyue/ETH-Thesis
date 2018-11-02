@@ -111,7 +111,7 @@ if __name__ == '__main__':
 				
 				obj.recoverBoxPolygon(patch_info, box_info, pred_v_out, mode = mode, visualize = vis, path = test_path, batch_idx = i)
 
-				print('%d, %.3lf, %.3lf, %.3lf\n' % tuple(time_res))
+				print('%d, %.3lf, %.3lf, %.3lf' % tuple(time_res))
 				f.write('%d, %.3lf, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
 
