@@ -127,6 +127,7 @@ if __name__ == '__main__':
 				multi_roads = []
 				prob_res_li = []
 				for pair in pairs:
+					print(pair.shape)
 					pred_v_out, prob_res, rnn_prob = sess.run(pred_path_res, feed_dict = {ff: feature, ii: pair})
 					a = pred_v_out[0,0,...,0]
 					b = pred_v_out[0,1,...,0]
