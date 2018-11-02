@@ -425,7 +425,10 @@ class DataGenerator(object):
 			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1]]
 			pred_v_out = pred_v_out[:, 0: len(valid_patch_idx), ...]
 		else:
+			print(len(patch_info))
+			print(patch_info)
 			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1]]
+			print(len(valid_patch_idx), pred_v_out.shape)
 			assert(len(valid_patch_idx) == pred_v_out.shape[1])
 
 		#
