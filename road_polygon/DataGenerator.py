@@ -82,6 +82,20 @@ def rotateN(n, w, h, x, y):
 		w, h, x, y = rotate1(w, h, x, y)
 	return w, h, x, y
 
+class VertexPool(object):
+	def __init__(self, v_out_res):
+		self.v_out_res = v_out_res
+		self.blank = np.zeros(self.v_out_res, dtype = np.uint8)
+		self.vertex_pool = [[] for i in range(self.v_out_res[1])]
+		for i in range(self.v_out_res[1]):
+			for j in range(self.v_out_res[0]):
+				self.vertex_pool[i].append(np.copy(self.blank))
+				self.vertex_pool[i][j][i, j] = 255
+				self.vertex_pool[i][j] = Image.fromarray(self.vertex_pool[i][j])
+		return
+
+vp = VertexPool(config.V_OUT_RES)
+
 class DataGenerator(object):
 	def __init__(self, city_name, img_size, v_out_res, max_seq_len, mode = 'train'):
 		assert(mode in ['train', 'val', 'test'])
@@ -379,8 +393,8 @@ def getAllTerminal(hmb, hmv):
 		for j in range(i + 1, len(peaks_with_score)):
 			x2, y2, _ = peaks_with_score[j]
 			allTerminal.append((
-				np.array([np.array(vertex_pool[y1][x1]), np.array(vertex_pool[y2][x2])]),
-				np.array([np.array(vertex_pool[y2][x2]), np.array(vertex_pool[y1][x1])])
+				np.array([np.array(vp.vertex_pool[y1][x1]), np.array(vp.vertex_pool[y2][x2])]),
+				np.array([np.array(vp.vertex_pool[y2][x2]), np.array(vp.vertex_pool[y1][x1])])
 			))
 			indices.append((i, j))
 
