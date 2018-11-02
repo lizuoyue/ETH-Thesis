@@ -142,9 +142,9 @@ if __name__ == '__main__':
 					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
-					for i, pathImg in enumerate(pathImgs):
-						savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
-						np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
+					# for i, pathImg in enumerate(pathImgs):
+					# 	savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
+					# 	np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
