@@ -100,11 +100,12 @@ if __name__ == '__main__':
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
 			for img_seq, img_file in enumerate(eval_files[:10]):
-				print(img_seq)
 
 				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
 				time_res = [img_seq, img_id]
+
+				print(img_seq, img_id)
 
 				t = time.time()
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
