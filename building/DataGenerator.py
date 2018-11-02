@@ -84,6 +84,7 @@ class DataGenerator(object):
 			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-val']
 			self.TEST_IMAGE_IDS = list(self.coco_valid.getImgIds(catIds = self.coco_valid.getCatIds()))
 		if self.mode in ['val', 'test']:
+			self.TEST_IMAGE_IDS.sort()
 			self.TEST_RESULT = []
 			self.TEST_GROUPS, self.TEST_LAST_LEN = group(self.TEST_IMAGE_IDS, config.AREA_TEST_BATCH)
 			self.TEST_GROUP_NUM, self.TEST_GROUP_ID = len(self.TEST_GROUPS), 0
