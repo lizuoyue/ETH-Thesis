@@ -408,7 +408,10 @@ def getVerticesPairs(hmb, hmv):
 			_, j = min(dist)
 			x2, y2, _ = peaks_with_score[j]
 			pairs.append(
-				np.concatenate([np.array(vp.vertex_pool[y1][x1]), np.array(vp.vertex_pool[y2][x2])], axis = -1)
+				np.concatenate([
+					np.array(vp.vertex_pool[y1][x1])[..., np.newaxis],
+					np.array(vp.vertex_pool[y2][x2])[..., np.newaxis]
+				], axis = -1)
 			)
 			print(x1, y1, x2, y2)
 	edges_map = np.array(edges_map, np.float32) / 255.0
