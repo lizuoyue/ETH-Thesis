@@ -422,13 +422,10 @@ class DataGenerator(object):
 		if batch_idx == self.TEST_GROUP_NUM - 1:
 			box_info = [item for item in box_info if item[0] < self.TEST_LAST_LEN]
 			patch_info = [item for item in patch_info if item[0] < self.TEST_LAST_LEN]
-			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1]]
+			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1] is not None]
 			pred_v_out = pred_v_out[:, 0: len(valid_patch_idx), ...]
 		else:
-			print(len(patch_info))
-			print(patch_info)
-			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1]]
-			print(len(valid_patch_idx), pred_v_out.shape)
+			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1] in not None]
 			assert(len(valid_patch_idx) == pred_v_out.shape[1])
 
 		#
