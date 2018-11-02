@@ -87,12 +87,11 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			i = 0
-			while obj.TEST_FLAG:
-				time_res = [i]
+			for i in range(obj.TEST_GROUP_NUM):
 				img = obj.getAreasBatch(config.AREA_TEST_BATCH, mode = mode)
 				feed_dict = {aa: img - img_bias}
 
+				time_res = [i]
 				t = time.time()
 				pred_score, pred_box, backbone_result = sess.run(pred_rpn_res, feed_dict = feed_dict)
 				time_res.append(time.time() - t)
@@ -112,13 +111,11 @@ if __name__ == '__main__':
 				
 				obj.recoverBoxPolygon(patch_info, box_info, pred_v_out, mode = mode, visualize = vis, path = test_path, batch_idx = i)
 
+				print('%d, %.3lf, %.3lf, %.3lf\n' % tuple(time_res))
 				f.write('%d, %.3lf, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
 
-				print(i)
-				i += 1
-
-				if i % 10 == 1:
+				if i % 100 == 0:
 					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
 						fp.write(json.dumps(obj.TEST_RESULT, cls = NumpyEncoder))
 						fp.close()

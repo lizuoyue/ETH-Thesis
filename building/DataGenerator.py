@@ -41,6 +41,22 @@ def overlay(img, mask):
 	alpha = Image.fromarray(np.array(alpha, np.uint8), mode = 'RGBA')
 	return Image.alpha_composite(img, alpha)
 
+def group(ids, batch_size):
+	res, temp = [], []
+	for item in ids:
+		if len(temp) < batch_size:
+			temp.append(item)
+		if len(temp) == batch_size:
+			res.append(temp)
+			temp = []
+	l = batch_size
+	if len(temp) != 0:
+		l = len(temp)
+		while len(temp) < batch_size:
+			temp.append(item)
+		res.append(temp)
+	return res, l
+
 class DataGenerator(object):
 	def __init__(self, city_name, img_size, v_out_res, max_num_vertices, mode = 'train'):
 		assert(mode in ['train', 'val', 'test'])
@@ -56,10 +72,6 @@ class DataGenerator(object):
 		self.TRAIN_IMAGES_DIRECTORY = config.PATH[city_name]['img-train']
 		self.VAL_IMAGES_DIRECTORY   = config.PATH[city_name]['img-val']
 
-		self.TEST_CURRENT = 0
-		self.TEST_FLAG = True
-		self.TEST_RESULT = []
-
 		if self.mode == 'test':
 			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-test']
 			if self.TEST_ANNOTATIONS_PATH is None:
@@ -71,6 +83,10 @@ class DataGenerator(object):
 			self.coco_valid = COCO(self.VAL_ANNOTATIONS_PATH)
 			self.TEST_IMAGES_DIRECTORY = config.PATH[city_name]['img-val']
 			self.TEST_IMAGE_IDS = list(self.coco_valid.getImgIds(catIds = self.coco_valid.getCatIds()))
+		if self.mode in ['val', 'test']:
+			self.TEST_RESULT = []
+			self.TEST_GROUPS, self.TEST_LAST_LEN = group(self.TEST_IMAGE_IDS, config.AREA_TEST_BATCH)
+			self.TEST_GROUP_NUM, self.TEST_GROUP_ID = len(self.TEST_GROUPS), 0
 		if self.mode == 'train':
 			self.coco_train = COCO(self.TRAIN_ANNOTATIONS_PATH)
 			self.coco_valid = COCO(self.VAL_ANNOTATIONS_PATH)
@@ -359,24 +375,12 @@ class DataGenerator(object):
 			print(sel, self.rotate)
 			return [np.array([item[i] for item in res]) for i in range(3)]
 		else:
-			assert(mode in ['test', 'val'])
+			assert(mode == self.mode)
+			assert(batch_size == config.AREA_TEST_BATCH)
 			self.rotate = 0
-			if self.TEST_FLAG:
-				beg = self.TEST_CURRENT
-				end = min(len(self.TEST_IMAGE_IDS), beg + batch_size)
-				self.TEST_CURRENT_IDS = self.TEST_IMAGE_IDS[beg: end]
-				if end - beg < batch_size:
-					self.TEST_CURRENT_IDS.extend(self.TEST_IMAGE_IDS[0: (batch_size - end + beg)])
-				if end == len(self.TEST_IMAGE_IDS):
-					self.TEST_FLAG = False
-					self.TEST_TRUE_IDS = self.TEST_IMAGE_IDS[beg: end]
-				else:
-					self.TEST_CURRENT = end
-				for img_id in self.TEST_CURRENT_IDS:
-					res.append(self.getSingleArea(mode, img_id, rotate = 0))
-				return np.array(res)
-			else:
-				return None
+			for img_id in self.TEST_GROUPS[self.TEST_GROUP_ID]:
+				res.append(self.getSingleArea(mode, img_id, rotate = 0))
+			return np.array(res)
 
 	def getPatchesFromAreas(self, pred_score, pred_box):
 		assert(len(pred_box) == len(self.area_imgs))
@@ -401,9 +405,9 @@ class DataGenerator(object):
 							crop_info.append([i, ny1 / img_h, nx1 / img_w, ny2 / img_h, nx2 / img_w])
 							patch_info.append((i, ny1, nx1, ny2, nx2))
 						else:
-							patch_info.append(None)
+							patch_info.append((i, None, None, None, None))
 					else:
-						patch_info.append(None)
+						patch_info.append((i, None, None, None, None))
 					box_info.append((i, y1, x1, y2, x2, score[j]))
 		return np.array(crop_info, np.float32), patch_info, box_info
 
@@ -412,9 +416,17 @@ class DataGenerator(object):
 		if visualize:
 			assert(path != None)
 			assert(batch_idx != None)
+
+		# 
 		assert(len(patch_info) == len(box_info))
-		valid_patch_info = [(i, item) for i, item in enumerate(patch_info) if item]
-		assert(len(valid_patch_info) == pred_v_out.shape[1])
+		if batch_idx == self.TEST_GROUP_NUM - 1:
+			box_info = [item for item in box_info if item[0] < self.TEST_LAST_LEN]
+			patch_info = [item for item in patch_info if item[0] < self.TEST_LAST_LEN]
+			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1]]
+			pred_v_out = pred_v_out[:, 0: len(valid_patch_idx), ...]
+		else:
+			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1]]
+			assert(len(valid_patch_idx) == pred_v_out.shape[1])
 
 		#
 		res_ann = []
@@ -424,16 +436,15 @@ class DataGenerator(object):
 				'category_id': 100,
 				'bbox': [x1, y1, x2 - x1, y2 - y1],
 				'segmentation': [[x1, y1, x2, y1, x2, y2, x1, y2]],
-				'score': score
+				'score': score,
+				'image_id': self.TEST_GROUPS[batch_idx][idx]
 			})
-			if mode == 'test':
-				res_ann[-1]['image_id'] = self.TEST_CURRENT_IDS[idx]
 			img_idx.append(idx)
 
 		# pred_v_out: [beam width, batch_size, max_len, ...]
-		batch_size = len(self.area_imgs)
 		for i in range(pred_v_out.shape[1]):
-			ann_idx, (idx, y1, x1, y2, x2) = valid_patch_info[i]
+			ann_idx = valid_patch_idx[i]
+			idx, y1, x1, y2, x2 = patch_info[ann_idx]
 			w, h = x2 - x1, y2 - y1
 			polygon, flag = [], False
 			for j in range(pred_v_out.shape[2]):
@@ -449,12 +460,7 @@ class DataGenerator(object):
 					break
 			if flag and len(polygon) >= 6:
 				res_ann[ann_idx]['segmentation'] = [polygon]
-
-		if mode == 'test':
-			self.TEST_RESULT.extend(res_ann)
-			if not self.TEST_FLAG:
-				while self.TEST_RESULT[-1]['image_id'] not in self.TEST_TRUE_IDS:
-					self.TEST_RESULT.pop()
+		self.TEST_RESULT.extend(res_ann)
 
 		if not visualize:
 			return
@@ -486,6 +492,12 @@ class DataGenerator(object):
 		return
 
 if __name__ == '__main__':
+	ids = list(range(123))
+	groups, last_len = group(ids, 12)
+	print(groups)
+	print(last_len)
+	quit()
+
 	dg = DataGenerator(
 		city_name = sys.argv[1],
 		img_size = config.PATCH_SIZE,
