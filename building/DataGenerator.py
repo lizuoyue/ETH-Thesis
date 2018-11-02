@@ -424,6 +424,7 @@ class DataGenerator(object):
 			patch_info = [item for item in patch_info if item[0] < self.TEST_LAST_LEN]
 			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1] is not None]
 			pred_v_out = pred_v_out[:, 0: len(valid_patch_idx), ...]
+			self.area_imgs = self.area_imgs[:self.TEST_LAST_LEN]
 		else:
 			valid_patch_idx = [i for i, item in enumerate(patch_info) if item[1] is not None]
 			assert(len(valid_patch_idx) == pred_v_out.shape[1])
@@ -471,7 +472,7 @@ class DataGenerator(object):
 			bbox_mask_draw[idx].polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)], outline = (0, 227, 0))
 
 		color_count, len_c = 0, len(config.TABLEAU20)
-		ins_mask = [[] for i in range(batch_size)]
+		ins_mask = [[] for i in range(len(self.area_imgs))]
 		for idx, ann in zip(img_idx, res_ann):
 			polygon = ann['segmentation'][0]
 			polygon = [(x, y) for x, y in zip(polygon[0::2], polygon[1::2])]
