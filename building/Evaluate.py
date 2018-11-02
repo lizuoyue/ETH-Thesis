@@ -87,7 +87,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for i in range(2):#obj.TEST_GROUP_NUM):
+			for i in [0, 5026]:#range(2):#obj.TEST_GROUP_NUM):
 				img = obj.getAreasBatch(config.AREA_TEST_BATCH, mode = mode)
 				feed_dict = {aa: img - img_bias}
 
