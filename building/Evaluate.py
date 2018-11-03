@@ -103,7 +103,6 @@ if __name__ == '__main__':
 				crop_info, patch_info, box_info = obj.getPatchesFromAreas(pred_score, pred_box)
 
 				result.append((crop_info, patch_info, box_info))
-				break
 
 			if False:
 				feed_dict = {k: v for k, v in zip(nn, backbone_result)}
