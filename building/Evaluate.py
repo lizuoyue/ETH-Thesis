@@ -60,7 +60,7 @@ if __name__ == '__main__':
 	nn = [tf.placeholder(tf.float32) for _ in range(5)]
 
 	train_res = graph.train(aa, cc, dd, pp, ii, bb, vv, oo, ee, ll)
-	pred_rpn_res  = graph.predict_fpn(aa, config.AREA_TEST_BATCH)
+	pred_fpn_res  = graph.predict_fpn(aa, config.AREA_TEST_BATCH)
 	pred_poly_res = graph.predict_polygon(pp, nn)
 
 	# for v in tf.global_variables():
@@ -93,11 +93,15 @@ if __name__ == '__main__':
 
 				time_res = [i]
 				t = time.time()
-				pred_score, pred_box, backbone_result = sess.run(pred_rpn_res, feed_dict = feed_dict)
+				pred_score, pred_box, backbone_result = sess.run(pred_fpn_res, feed_dict = feed_dict)
 				time_res.append(time.time() - t)
 
 				backbone_result = list(backbone_result)
 				crop_info, patch_info, box_info = obj.getPatchesFromAreas(pred_score, pred_box)
+				print(crop_info)
+				print(patch_info)
+				print(box_info)
+				input()
 				feed_dict = {k: v for k, v in zip(nn, backbone_result)}
 				feed_dict[pp] = crop_info
 
