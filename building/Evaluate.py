@@ -1,5 +1,5 @@
 import numpy as np
-import os, sys, time, json, glob
+import os, sys, time, json, glob, pickle
 import tensorflow as tf
 from Config import *
 from Model import *
@@ -82,12 +82,15 @@ if __name__ == '__main__':
 		if not os.path.exists(test_path):
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
+	result = []
+
 	# Launch graph
 	with tf.Session() as sess:
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
 			for i in range(obj.TEST_GROUP_NUM):
+				print(i)
 				img = obj.getAreasBatch(config.AREA_TEST_BATCH, mode = mode)
 				feed_dict = {aa: img - img_bias}
 
@@ -98,10 +101,11 @@ if __name__ == '__main__':
 
 				backbone_result = list(backbone_result)
 				crop_info, patch_info, box_info = obj.getPatchesFromAreas(pred_score, pred_box)
-				print(crop_info)
-				print(patch_info)
-				print(box_info)
-				input()
+
+				result.append((crop_info, patch_info, box_info))
+				break
+
+			if False:
 				feed_dict = {k: v for k, v in zip(nn, backbone_result)}
 				feed_dict[pp] = crop_info
 
@@ -123,6 +127,10 @@ if __name__ == '__main__':
 					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
 						fp.write(json.dumps(obj.TEST_RESULT, cls = NumpyEncoder))
 						fp.close()
+
+			with open('vgg16_box_res.pkl', 'wb') as f:
+				pickle.dump(result, f)
+			quit()
 
 			with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
 				fp.write(json.dumps(obj.TEST_RESULT, cls = NumpyEncoder))
