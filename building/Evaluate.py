@@ -83,6 +83,7 @@ if __name__ == '__main__':
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
 	temp_res = pickle.load(open('vgg16_box_res.pkl', 'rb'))
+	assert(len(temp_res) == obj.TEST_GROUP_NUM)
 
 	# Launch graph
 	with tf.Session() as sess:
