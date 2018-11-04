@@ -8,5 +8,11 @@ while True:
 		if li[-i].startswith('|==='):
 			break
 		res.append(int(li[-i][5]))
-	print(78)
-	quit()
+		print(res)
+		if 2 not in res:
+			print(2)
+			quit()
+		if 3 not in res:
+			print(3)
+			quit()
+	time.sleep(1)
