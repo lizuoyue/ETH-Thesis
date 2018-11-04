@@ -99,7 +99,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files[:10]):
+			for img_seq, img_file in enumerate(eval_files[9:10]):
 
 				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
@@ -127,7 +127,6 @@ if __name__ == '__main__':
 				multi_roads = []
 				prob_res_li = []
 				for pair in pairs:
-					print(pair.shape)
 					pred_v_out, prob_res, rnn_prob = sess.run(pred_path_res, feed_dict = {ff: feature, ii: pair})
 					a = pred_v_out[0,0,...,0]
 					b = pred_v_out[0,1,...,0]
@@ -147,9 +146,9 @@ if __name__ == '__main__':
 					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
-					# for i, pathImg in enumerate(pathImgs):
-					# 	savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
-					# 	np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
+					for i, pathImg in enumerate(pathImgs):
+						# savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % img_id)
+						np.save(test_path + '/%d.npy' % img_id, prob_res_li[i])
 
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
