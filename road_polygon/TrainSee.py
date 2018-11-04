@@ -85,11 +85,11 @@ if __name__ == '__main__':
 			cost_time = time.time() - init_time
 
 			for j in range(config.AREA_TRAIN_BATCH):
-				Image.fromarray(np.array(img[i, ...], np.uint8)).save('temp/%d-0.png' % j)
-				Image.fromarray(np.array(boundary[i, ...] * 255, np.uint8)).save('temp/%d-1.png' % j)
-				Image.fromarray(np.array(pred_boundary[i, ..., 0] * 255, np.uint8)).save('temp/%d-1p.png' % j)
-				Image.fromarray(np.array(vertices[i, ...] * 255, np.uint8)).save('temp/%d-2.png' % j)
-				Image.fromarray(np.array(pred_vertices[i, ..., 0] * 255, np.uint8)).save('temp/%d-2p.png' % j)
+				Image.fromarray(np.array(img[j, ...], np.uint8)).save('temp/%d-0.png' % j)
+				Image.fromarray(np.array(boundary[j, ...] * 255, np.uint8)).save('temp/%d-1.png' % j)
+				Image.fromarray(np.array(pred_boundary[j, ..., 0] * 255, np.uint8)).save('temp/%d-1p.png' % j)
+				Image.fromarray(np.array(vertices[j, ...] * 255, np.uint8)).save('temp/%d-2.png' % j)
+				Image.fromarray(np.array(pred_vertices[j, ..., 0] * 255, np.uint8)).save('temp/%d-2p.png' % j)
 
 			for j in range(config.TRAIN_NUM_PATH):
 				print(seq_lens[j])
