@@ -83,11 +83,24 @@ if __name__ == '__main__':
 			_, (_, _, pred_boundary, pred_vertices, pred_v_out, pred_end) = sess.run([train, train_res], feed_dict)
 			cost_time = time.time() - init_time
 
-			print(img.shape)
-			print(boundary.shape, pred_boundary.shape)
-			print(vertices.shape, pred_vertices.shape)
-			print(vertex_inputs.shape, vertex_outputs.shape, ends.shape, seq_lens.shape, path_idx.shape)
-			print(pred_v_out.shape, pred_end.shape)
+			for j in range(config.AREA_TRAIN_BATCH):
+				Image.fromarray(np.array(img[i, ...], np.uint8)).save('%d-0.png' % j)
+				Image.fromarray(np.array(boundary[i, ...] * 255, np.uint8)).save('%d-1.png' % j)
+				Image.fromarray(np.array(pred_boundary[i, ..., 0] * 255, np.uint8)).save('%d-1p.png' % j)
+				Image.fromarray(np.array(vertices[i, ...] * 255, np.uint8)).save('%d-2.png' % j)
+				Image.fromarray(np.array(pred_vertices[i, ..., 0] * 255, np.uint8)).save('%d-2p.png' % j)
+
+			for j in range(config.TRAIN_NUM_PATH):
+				print(seq_lens[j])
+				print(ends[j])
+				print(pred_end[j])
+				idx = path_idx[j]
+				for k in range(config.MAX_NUM_VERTICES):
+					Image.fromarray(np.array(vertex_inputs[j, k, ..., 0] * 255, np.uint8)).save('%d-path%d-%din1.png' % (idx, j, k))
+					Image.fromarray(np.array(vertex_inputs[j, k, ..., 1] * 255, np.uint8)).save('%d-path%d-%din2.png' % (idx, j, k))
+					Image.fromarray(np.array(vertex_outputs[j, k] * 255, np.uint8)).save('%d-path%d-%dout.png' % (idx, j, k))
+					Image.fromarray(np.array(pred_v_out[j, k] * 255, np.uint8)).save('%d-path%d-%dvout.png' % (idx, j, k))
+
 			quit()
 			
 
