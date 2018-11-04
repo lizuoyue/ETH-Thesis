@@ -74,7 +74,7 @@ if __name__ == '__main__':
 		# Main loop
 		for i in iter_obj:
 			# Get training batch data and create feed dictionary
-			img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, path_idx = dg.getAreasBatch(config.AREA_TRAIN_BATCH, 'train')
+			img, boundary, vertices, vertex_inputs, vertex_outputs, ends, seq_lens, path_idx = dg.getAreasBatch(config.AREA_TRAIN_BATCH, 'val')
 			feed_dict = {
 				aa: img - img_bias, bb: boundary, vv: vertices, ii: vertex_inputs, oo: vertex_outputs, ee: ends, ll: seq_lens, dd: path_idx
 			}
