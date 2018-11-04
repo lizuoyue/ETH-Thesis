@@ -53,6 +53,8 @@ if __name__ == '__main__':
 		max_seq_len = config.MAX_NUM_VERTICES,
 	)
 
+	model_path = './Model_%s_%s/' % (backbone, city_name)
+
 	# Launch graph
 	with tf.Session() as sess:
 		# Restore weights
