@@ -99,7 +99,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files[9:10]):
+			for img_seq, img_file in enumerate(eval_files[10:20]):
 
 				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
