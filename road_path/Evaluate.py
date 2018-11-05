@@ -92,7 +92,7 @@ if __name__ == '__main__':
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
 	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
-	eval_files.sort()
+	# eval_files.sort()
 	eval_files = [item for item in eval_files if not (item.endswith('Building.png') or item.endswith('Road.png'))]
 
 	result = []
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files):
+			for img_seq, img_file in enumerate(eval_files[100: 120]):
 
 				t = time.time()
 				img_id = int(img_file.split('/')[-1].split('.')[0])
@@ -115,70 +115,74 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				# map_b, map_v, all_terminal, val2idx = getAllTerminal(pred_boundary[0], pred_vertices[0])
-				# feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
-				map_b, map_v, vertices, edges = getVE(pred_boundary[0], pred_vertices[0])
-				result.append({
-					'image_id': img_id,
-					'vertices': vertices,
-					'edges': edges
-				})
-
-				if vis:
-					savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
-					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
-
-				time_res.append(time.time() - t)
-
-				# t = time.time()
-				# indices = []
-				# multi_roads = []
-				# prob_res_li = []
-				# do_times = 0
-				# import random
-				# random.shuffle(all_terminal)
-				# while len(all_terminal) > 0:
-				# 	index = all_terminal[0][1]
-				# 	terminal_1, terminal_2 = all_terminal[0][2:4]
-				# 	pred_v_out_1, prob_res_1, rnn_prob_1 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_1})
-				# 	pred_v_out_2, prob_res_2, rnn_prob_2 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_2})
-				# 	if rnn_prob_1[0] >= rnn_prob_2[0]:
-				# 		indices.append(index)
-				# 		multi_roads.append(pred_v_out_1[0])
-				# 		prob_res_li.append(prob_res_1[0])
-				# 	else:
-				# 		indices.append((index[1], index[0]))
-				# 		multi_roads.append(pred_v_out_2[0])
-				# 		prob_res_li.append(prob_res_2[0])
-				# 	path, all_pairs = recoverSinglePath(multi_roads[-1], val2idx)
-				# 	all_terminal = [(item[1][0] in index or item[1][1] in index, item) for item in all_terminal[1:] if item[1] not in all_pairs]
-				# 	all_terminal.sort()
-				# 	all_terminal = [item[1] for item in all_terminal]
-				# 	do_times += 1
-				# if do_times == 0:
-				# 	time_res.append(0)
-				# else:
-				# 	time_res.append((time.time() - t) / do_times)
-
-				# paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
-				# paths[paths > 1e-3] = 1.0
+				#######################
+				# map_b, map_v, vertices, edges = getVE(pred_boundary[0], pred_vertices[0])
+				# result.append({
+				# 	'image_id': img_id,
+				# 	'vertices': vertices,
+				# 	'edges': edges
+				# })
 
 				# if vis:
-				# 	savePNG(img, paths, test_path + '/%d-5.png' % img_id)
-				# 	if not os.path.exists(test_path + '/%d' % img_id):
-				# 		os.makedirs(test_path + '/%d' % img_id)
-				# 	for i, pathImg in enumerate(pathImgs):
-				# 		savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
-				# 		np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
+				# 	savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
+				# 	savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
+
+				# time_res.append(time.time() - t)
+				########################
+
+				t = time.time()
+
+				map_b, map_v, all_terminal, val2idx = getAllTerminal(pred_boundary[0], pred_vertices[0])
+				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
+				
+				indices = []
+				multi_roads = []
+				prob_res_li = []
+				do_times = 0
+				import random
+				random.shuffle(all_terminal)
+				while len(all_terminal) > 0:
+					index = all_terminal[0][1]
+					terminal_1, terminal_2 = all_terminal[0][2:4]
+					pred_v_out_1, prob_res_1, rnn_prob_1 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_1})
+					pred_v_out_2, prob_res_2, rnn_prob_2 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_2})
+					if rnn_prob_1[0] >= rnn_prob_2[0]:
+						indices.append(index)
+						multi_roads.append(pred_v_out_1[0])
+						prob_res_li.append(prob_res_1[0])
+					else:
+						indices.append((index[1], index[0]))
+						multi_roads.append(pred_v_out_2[0])
+						prob_res_li.append(prob_res_2[0])
+					path, all_pairs = recoverSinglePath(multi_roads[-1], val2idx)
+					all_terminal = [(item[1][0] in index or item[1][1] in index, item) for item in all_terminal[1:] if item[1] not in all_pairs]
+					all_terminal.sort()
+					all_terminal = [item[1] for item in all_terminal]
+					do_times += 1
+				if do_times == 0:
+					time_res.append(0)
+				else:
+					time_res.append((time.time() - t) / do_times)
+
+				paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
+				paths[paths > 1e-3] = 1.0
+
+				if vis:
+					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
+					if not os.path.exists(test_path + '/%d' % img_id):
+						os.makedirs(test_path + '/%d' % img_id)
+					for i, pathImg in enumerate(pathImgs):
+						savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
+						np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
 				f.write('%d, %d, %.3lf\n' % tuple(time_res))
 				f.flush()
 
-				if img_seq % 100 == 0:
-					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
-						fp.write(json.dumps(result, cls = NumpyEncoder))
-						fp.close()
+			# 	if img_seq % 100 == 0:
+			# 		with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
+			# 			fp.write(json.dumps(result, cls = NumpyEncoder))
+			# 			fp.close()
 
-			with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
-				fp.write(json.dumps(result, cls = NumpyEncoder))
-				fp.close()
+			# with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
+			# 	fp.write(json.dumps(result, cls = NumpyEncoder))
+			# 	fp.close()
