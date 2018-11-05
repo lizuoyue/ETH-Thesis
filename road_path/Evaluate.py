@@ -123,10 +123,6 @@ if __name__ == '__main__':
 				# 	'edges': edges
 				# })
 
-				# if vis:
-				# 	savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
-				# 	savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
-
 				# time_res.append(time.time() - t)
 				########################
 
@@ -134,6 +130,10 @@ if __name__ == '__main__':
 
 				map_b, map_v, all_terminal, val2idx = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
+
+				if vis:
+					savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
+					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
 				
 				indices = []
 				multi_roads = []
