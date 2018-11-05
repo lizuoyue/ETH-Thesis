@@ -93,6 +93,8 @@ if __name__ == '__main__':
 
 	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
 	# eval_files.sort()
+	import random
+	random.shuffle(eval_files)
 	eval_files = [item for item in eval_files if not (item.endswith('Building.png') or item.endswith('Road.png'))]
 
 	result = []
@@ -101,7 +103,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files[100: 120]):
+			for img_seq, img_file in enumerate(eval_files):
 
 				t = time.time()
 				img_id = int(img_file.split('/')[-1].split('.')[0])
@@ -139,7 +141,6 @@ if __name__ == '__main__':
 				multi_roads = []
 				prob_res_li = []
 				do_times = 0
-				import random
 				random.shuffle(all_terminal)
 				while len(all_terminal) > 0:
 					index = all_terminal[0][1]
