@@ -214,18 +214,13 @@ class DataGenerator(object):
 		start_indices = []
 		new_polygons = []
 		for pid, polygon in enumerate(polygons):
-			print(polygon)
 			if len(polygon) < 3:
-				print()
-				print()
 				continue
 			if polygon[0] == polygon[-1]:
 				temp = polygon[:-1]
 			else:
 				temp = polygon
 			if len(temp) == 2 and (temp[0] == temp[1]):
-				print()
-				print()
 				continue
 			new_polygon = []
 			start_index = []
@@ -236,9 +231,6 @@ class DataGenerator(object):
 				new_polygon.append(temp[pvid])
 			new_polygons.append(new_polygon)
 			start_indices.append(start_index)
-			print(new_polygon)
-			print(start_index)
-			input()
 		polygons = new_polygons
 
 		if len(v_li_8_unique) == 1:
