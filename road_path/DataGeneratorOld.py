@@ -352,9 +352,6 @@ class DataGenerator(object):
 			return new_res
 
 
-def l2dist(x1, y1, x2, y2):
-	v = np.array([x1 - x2, y1 - y2])
-	return np.sqrt(np.dot(v, v))
 
 def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 	th = 0
@@ -393,24 +390,22 @@ def getAllTerminal(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
 	peaks_with_score = findPeaks(hmv, min_val = 0.9)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if True or hmb[y, x] > 0.9]
 	allTerminal = []
-	d = {}
+	indices = []
 	peaks_map = np.zeros([w, h], np.float32)
 	edges_map = Image.new('P', (w, h), color = 0)
 	draw = ImageDraw.Draw(edges_map)
 	for i in range(len(peaks_with_score)):
 		x1, y1, s1 = peaks_with_score[i]
-		d[(x1, y1)] = i
 		peaks_map[y1, x1] = 1
 		for j in range(i + 1, len(peaks_with_score)):
 			x2, y2, _ = peaks_with_score[j]
 			allTerminal.append((
-				l2dist(x1, y1, x2, y2),
-				(i, j),
 				np.array([np.array(vp.vertex_pool[y1][x1]), np.array(vp.vertex_pool[y2][x2])]),
 				np.array([np.array(vp.vertex_pool[y2][x2]), np.array(vp.vertex_pool[y1][x1])])
 			))
+			indices.append((i, j))
 
 			temp = Image.new('P', (w, h), color = 0)
 			tmp_draw = ImageDraw.Draw(temp)
@@ -419,7 +414,7 @@ def getAllTerminal(hmb, hmv):
 			if np.mean(hmb[temp > 0.5]) > 0.7:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 	edges_map = np.array(edges_map, np.float32) / 255.0
-	return edges_map, peaks_map, sorted(allTerminal, reverse = True), d
+	return edges_map, peaks_map, allTerminal, indices
 
 def recoverMultiPath(img_size, paths):
 	pathImgs = []
@@ -441,29 +436,6 @@ def recoverMultiPath(img_size, paths):
 		pathImgs.append(np.array(pathImg, np.float32))
 	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min() + 1e-9), np.uint8)
 	return res, pathImgs
-
-def recoverSinglePath(img_size, pred_v_out, val2idx):
-	path = []
-	for i in range(pred_v_out.shape[0]):
-		hmap = pred_v_out[i]
-		end = 1 - hmap.sum()
-		ind = np.unravel_index(np.argmax(hmap), hmap.shape)
-		if hmap[ind] >= end:
-			p = (ind[1], ind[0])
-			if p in val2idx:
-				path.append(val2idx[p])
-			else:
-				li = sorted([(l2dist(k[0], k[1], p[0], p[1]), val2idx[k]) for k in val2idx])
-				path.append(li[0][1])
-		else:
-			break
-	all_pairs = set()
-	for i in range(len(path)):
-		s = path[i]
-		for j in range(i + 1, len(path)):
-			t = path[j]
-			all_pairs.add((min(s, t), max(s, t)))
-	return path, all_pairs
 
 
 if __name__ == '__main__':

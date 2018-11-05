@@ -116,7 +116,7 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				map_b, map_v, all_terminal, val2idx = getAllTerminal(pred_boundary[0], pred_vertices[0])
+				map_b, map_v, all_terminal, indices = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
 				if vis:
@@ -124,30 +124,21 @@ if __name__ == '__main__':
 					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
 
 				t = time.time()
-				indices = []
 				multi_roads = []
 				prob_res_li = []
-				do_times = 0
-				while len(all_terminal) > 0:
-					index = all_terminal[0][1]
-					terminal_1, terminal_2 = all_terminal[0][2:4]
+				for terminal_1, terminal_2 in all_terminal:
 					pred_v_out_1, prob_res_1, rnn_prob_1 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_1})
 					pred_v_out_2, prob_res_2, rnn_prob_2 = sess.run(pred_path_res, feed_dict = {ff: feature, tt: terminal_2})
 					if rnn_prob_1[0] >= rnn_prob_2[0]:
-						indices.append(index)
 						multi_roads.append(pred_v_out_1[0])
 						prob_res_li.append(prob_res_1[0])
 					else:
-						indices.append((index[1], index[0]))
 						multi_roads.append(pred_v_out_2[0])
 						prob_res_li.append(prob_res_2[0])
-					path, all_pairs = recoverSinglePath(multi_roads[-1])
-					all_terminal = [item in all_terminal if item[1] not in all_pairs]
-					do_times += 1
-				if do_times == 0:
+				if len(all_terminal) == 0:
 					time_res.append(0)
 				else:
-					time_res.append((time.time() - t) / do_times)
+					time_res.append((time.time() - t) / len(all_terminal))
 
 				paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
