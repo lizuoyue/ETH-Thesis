@@ -39,7 +39,7 @@ class Config(object):
 		self.PATH = {
 			'roadtracer-dalabgpu': {
 				'img-train': '/local/home/zoli/data/roadtracer/train_images',
-				'img-val'  : '/local/home/zoli/data/roadtracer/test_images',
+				'img-val'  : '/local/home/zoli/data/roadtracer/train_images',
 				'img-test' : '/local/home/zoli/data/roadtracer/test_images',
 				'ann-train': '/local/home/zoli/data/roadtracer/roadtracer_train.json',
 				'ann-val'  : '/local/home/zoli/data/roadtracer/roadtracer_test.json',
