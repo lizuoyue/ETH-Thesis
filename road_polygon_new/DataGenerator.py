@@ -207,7 +207,7 @@ class DataGenerator(object):
 		for pid, polygon in enumerate(polygons):
 			temp = polygon[:-1]
 			new_polygon = []
-			for pvid in len(temp):
+			for pvid in range(len(temp)):
 				if temp[pvid-1] == temp[(pvid+1)%len(temp)]:
 					new_polygon.append(temp[pvid])
 				new_polygon.append(temp[pvid])
