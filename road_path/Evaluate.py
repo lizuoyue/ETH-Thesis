@@ -128,6 +128,7 @@ if __name__ == '__main__':
 				multi_roads = []
 				prob_res_li = []
 				do_times = 0
+				print(len(all_terminal))
 				while len(all_terminal) > 0:
 					index = all_terminal[0][1]
 					terminal_1, terminal_2 = all_terminal[0][2:4]
@@ -141,8 +142,9 @@ if __name__ == '__main__':
 						indices.append((index[1], index[0]))
 						multi_roads.append(pred_v_out_2[0])
 						prob_res_li.append(prob_res_2[0])
-					path, all_pairs = recoverSinglePath(multi_roads[-1])
-					all_terminal = [item for item in all_terminal if item[1] not in all_pairs]
+					path, all_pairs = recoverSinglePath(multi_roads[-1], val2idx)
+					all_terminal = [item for item in all_terminal[1:] if item[1] not in all_pairs]
+					print(len(all_terminal))
 					do_times += 1
 				if do_times == 0:
 					time_res.append(0)

@@ -442,7 +442,7 @@ def recoverMultiPath(img_size, paths):
 	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min() + 1e-9), np.uint8)
 	return res, pathImgs
 
-def recoverSinglePath(img_size, pred_v_out, val2idx):
+def recoverSinglePath(pred_v_out, val2idx):
 	path = []
 	for i in range(pred_v_out.shape[0]):
 		hmap = pred_v_out[i]
