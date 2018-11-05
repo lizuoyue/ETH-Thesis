@@ -394,14 +394,18 @@ def getVerticesPairs(hmb, hmv):
 	for i in range(len(peaks_with_score)):
 		x1, y1, s1 = peaks_with_score[i]
 		peaks_map[y1, x1] = 1
+		if not (x1 in [0, 27] or y1 in [0, 27]):
+			continue
 		dist = []
-		for j in range(i + 1, len(peaks_with_score)):
+		for j in range(len(peaks_with_score)):
+			if j == i:
+				continue
 			x2, y2, _ = peaks_with_score[j]
 			temp = Image.new('P', (w, h), color = 0)
 			tmp_draw = ImageDraw.Draw(temp)
 			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 			temp = np.array(temp, np.float32) / 255.0
-			if np.mean(hmb[temp > 0.5]) > 0.8:
+			if np.mean(hmb[temp > 0.5]) > 0.7:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 				dist.append(((x2 - x1) ** 2 + (y2 - y1) ** 2, j))
 		if len(dist) > 0:
@@ -413,7 +417,6 @@ def getVerticesPairs(hmb, hmv):
 					np.array(vp.vertex_pool[y2][x2])[..., np.newaxis] / 255.0
 				], axis = -1)
 			)
-			print(x1, y1, x2, y2)
 	edges_map = np.array(edges_map, np.float32) / 255.0
 	return edges_map, peaks_map, pairs
 
