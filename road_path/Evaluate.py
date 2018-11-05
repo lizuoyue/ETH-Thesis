@@ -142,7 +142,7 @@ if __name__ == '__main__':
 						multi_roads.append(pred_v_out_2[0])
 						prob_res_li.append(prob_res_2[0])
 					path, all_pairs = recoverSinglePath(multi_roads[-1])
-					all_terminal = [item in all_terminal if item[1] not in all_pairs]
+					all_terminal = [item for item in all_terminal if item[1] not in all_pairs]
 					do_times += 1
 				if do_times == 0:
 					time_res.append(0)
