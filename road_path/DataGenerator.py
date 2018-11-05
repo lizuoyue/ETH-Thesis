@@ -408,8 +408,8 @@ def getAllTerminal(hmb, hmv):
 			allTerminal.append((
 				l2dist(x1, y1, x2, y2),
 				(i, j),
-				np.array([np.array(vp.vertex_pool[y1][x1]), np.array(vp.vertex_pool[y2][x2])]),
-				np.array([np.array(vp.vertex_pool[y2][x2]), np.array(vp.vertex_pool[y1][x1])])
+				np.array([np.array(vp.vertex_pool[y1][x1]), np.array(vp.vertex_pool[y2][x2])]) / 255.0,
+				np.array([np.array(vp.vertex_pool[y2][x2]), np.array(vp.vertex_pool[y1][x1])]) / 255.0
 			))
 
 			temp = Image.new('P', (w, h), color = 0)

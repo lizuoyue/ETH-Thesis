@@ -409,8 +409,8 @@ def getVerticesPairs(hmb, hmv):
 			x2, y2, _ = peaks_with_score[j]
 			pairs.append(
 				np.concatenate([
-					np.array(vp.vertex_pool[y1][x1])[..., np.newaxis],
-					np.array(vp.vertex_pool[y2][x2])[..., np.newaxis]
+					np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0,
+					np.array(vp.vertex_pool[y2][x2])[..., np.newaxis] / 255.0
 				], axis = -1)
 			)
 			print(x1, y1, x2, y2)
