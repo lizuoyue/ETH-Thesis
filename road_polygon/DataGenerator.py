@@ -403,8 +403,8 @@ def getVerticesPairs(hmb, hmv):
 			temp = np.array(temp, np.float32) / 255.0
 			if np.mean(hmb[temp > 0.5]) > 0.8:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
-				dist.append((abs(x2 - x1) + abs(y2 - y1), j))
-		if i == 0 and len(dist) > 0:
+				dist.append(((x2 - x1) ** 2 + (y2 - y1) ** 2, j))
+		if len(dist) > 0:
 			_, j = min(dist)
 			x2, y2, _ = peaks_with_score[j]
 			pairs.append(
