@@ -203,13 +203,11 @@ class DataGenerator(object):
 		edges = [(d[tuple(v1)], d[tuple(v2)]) for v1, v2 in annotation['segmentation']]
 		polygons = [[d[tuple(v)] for v in polygon] for polygon in annotation['polygons']]
 		for i in range(len(polygons)):
-			print('B:', polygons[i])
 			temp = [polygons[i][0]]
 			for j in range(1, len(polygons[i])):
 				if polygons[i][j] != temp[-1]:
 					temp.append(polygons[i][j])
 			polygons[i] = temp
-			print('A:', polygons[i])
 
 		start_indices = []
 		new_polygons = []
