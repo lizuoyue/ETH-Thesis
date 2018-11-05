@@ -212,9 +212,6 @@ class DataGenerator(object):
 					new_polygon.append(temp[pvid])
 				new_polygon.append(temp[pvid])
 			new_polygon.append(polygon[-1])
-			print(polygon)
-			print(new_polygon)
-			input()
 			new_polygons.append(new_polygon)
 		polygons = new_polygons
 
