@@ -155,5 +155,3 @@ if __name__ == '__main__':
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
 
-				print('===================')
-
