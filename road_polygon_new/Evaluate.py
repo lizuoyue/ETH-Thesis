@@ -133,7 +133,9 @@ if __name__ == '__main__':
 					b = pred_v_out[0,1,...,0]
 					print(np.unravel_index(a.argmax(), a.shape), np.unravel_index(b.argmax(), b.shape))
 					multi_roads.append(pred_v_out[0])
-					prob_res_li.append(prob_res[0])
+					temp = np.reshape(pred_v_out[0, 0: 2, ..., 0], [2, 784])
+					temp = np.concatenate([temp, np.zeros((2, 1))], axis = -1)
+					prob_res_li.append(np.concatenate([temp, prob_res[0]], axis = 0))
 
 				if len(pairs) == 0:
 					time_res.append(0)
