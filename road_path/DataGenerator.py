@@ -471,7 +471,7 @@ def getVE(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
 	peaks_with_score = findPeaks(hmv, min_val = 0.9)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if True or hmb[y, x] > 0.8]
 	peaks_map = np.zeros([w, h], np.float32)
 	edges_map = Image.new('P', (w, h), color = 0)
 	draw = ImageDraw.Draw(edges_map)
@@ -485,9 +485,10 @@ def getVE(hmb, hmv):
 			tmp_draw = ImageDraw.Draw(temp)
 			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 			temp = np.array(temp, np.float32) / 255.0
-			if np.mean(hmb[temp > 0.5]) > 0.7:
+			score = np.mean(hmb[temp > 0.5])
+			if score >= 0.4:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
-				edges.append((i, j))
+				edges.append((i, j, score))
 	edges_map = np.array(edges_map, np.float32) / 255.0
 	return edges_map, peaks_map, peaks_with_score, edges
 
