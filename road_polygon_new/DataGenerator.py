@@ -414,6 +414,8 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 
 
 
+
+
 def getVerticesPairs(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
@@ -453,6 +455,10 @@ def getVerticesPairs(hmb, hmv):
 			)
 	edges_map = np.array(edges_map, np.float32) / 255.0
 	return edges_map, peaks_map, pairs
+
+
+
+
 
 
 

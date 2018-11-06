@@ -127,15 +127,14 @@ if __name__ == '__main__':
 				t = time.time()
 				multi_roads = []
 				prob_res_li = []
+				rnn_probs = []
 				for pair in pairs:
 					pred_v_out, prob_res, rnn_prob = sess.run(pred_path_res, feed_dict = {ff: feature, ii: pair})
-					a = pred_v_out[0,0,...,0]
-					b = pred_v_out[0,1,...,0]
-					print(np.unravel_index(a.argmax(), a.shape), np.unravel_index(b.argmax(), b.shape))
 					multi_roads.append(pred_v_out[0])
 					temp = np.reshape(pred_v_out[0, 0: 2, ..., 0], [2, 784])
 					temp = np.concatenate([temp, np.zeros((2, 1))], axis = -1)
-					prob_res_li.append(np.concatenate([temp, prob_res[0]], axis = 0))
+					prob_res_li.append(np.concatenate([temp, prob_res[0, 1:]], axis = 0))
+					rnn_probs.append(rnn_prob[0])
 
 				if len(pairs) == 0:
 					time_res.append(0)
@@ -150,7 +149,7 @@ if __name__ == '__main__':
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
 					for i, pathImg in enumerate(pathImgs):
-						savePNG(img, pathImg, test_path + '/%d/%d.png' % (img_id, i))
+						savePNG(img, pathImg, test_path + '/%d/%d-%.6lf.png' % (img_id, i, rnn_probs[i]))
 						np.save(test_path + '/%d/%d.npy' % (img_id, i), prob_res_li[i])
 
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
