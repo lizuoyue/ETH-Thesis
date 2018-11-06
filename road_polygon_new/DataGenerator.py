@@ -465,24 +465,38 @@ def getVerticesPairs(hmb, hmv):
 
 def recoverMultiPath(img_size, paths):
 	pathImgs = []
+	smallImgs = []
 	res = np.zeros(img_size)
 	for i in range(len(paths)):
 		path = []
+		path_small = []
 		for j in range(paths[i].shape[0]):
 			hmap = paths[i][j]
 			end = 1 - hmap.sum()
 			ind = np.unravel_index(np.argmax(hmap), hmap.shape)
 			if hmap[ind] >= end:
 				path.append((ind[1] * 8 + 4, ind[0] * 8 + 4))
+				path_small.append((ind[1], ind[0]))
 			else:
 				break
 		pathImg = Image.new('P', img_size, color = 0)
 		draw = ImageDraw.Draw(pathImg)
 		draw.line(path, fill = 1, width = 5)
 		res += np.array(pathImg, np.float32)
+		###
+		smallImg = Image.new('P', (round(img_size[0]/8), round(img_size[1]/8)), color = 0)
+		draw = ImageDraw.Draw(smallImg)
+		draw.line(path, fill = 1, width = 1)
+		###
 		pathImgs.append(np.array(pathImg, np.float32))
+		smallImgs.append(np.array(smallImg, np.float32))
 	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min() + 1e-9), np.uint8)
-	return res, pathImgs
+	return res, pathImgs, smallImgs
+
+
+
+
+
 
 
 if __name__ == '__main__':

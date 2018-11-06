@@ -384,7 +384,7 @@ def getVerticesPairs(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
 	peaks_with_score = findPeaks(hmv, min_val = 0.9)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if True or hmb[y, x] > 0.8]
 	peaks_with_score = sorted(peaks_with_score, key = lambda x: x[2], reverse = True)
 
 	pairs = []
@@ -405,7 +405,7 @@ def getVerticesPairs(hmb, hmv):
 			tmp_draw = ImageDraw.Draw(temp)
 			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 			temp = np.array(temp, np.float32) / 255.0
-			if np.mean(hmb[temp > 0.5]) > 0.7:
+			if np.mean(hmb[temp > 0.5]) > 0.75:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 				dist.append(((x2 - x1) ** 2 + (y2 - y1) ** 2, j))
 		if len(dist) > 0:
@@ -425,24 +425,33 @@ def getVerticesPairs(hmb, hmv):
 
 def recoverMultiPath(img_size, paths):
 	pathImgs = []
+	smallImgs = []
 	res = np.zeros(img_size)
 	for i in range(len(paths)):
 		path = []
+		path_small = []
 		for j in range(paths[i].shape[0]):
 			hmap = paths[i][j]
 			end = 1 - hmap.sum()
 			ind = np.unravel_index(np.argmax(hmap), hmap.shape)
 			if hmap[ind] >= end:
 				path.append((ind[1] * 8 + 4, ind[0] * 8 + 4))
+				path_small.append((ind[1], ind[0]))
 			else:
 				break
 		pathImg = Image.new('P', img_size, color = 0)
 		draw = ImageDraw.Draw(pathImg)
 		draw.line(path, fill = 1, width = 5)
 		res += np.array(pathImg, np.float32)
+		###
+		smallImg = Image.new('P', (round(img_size[0]/8), round(img_size[1]/8)), color = 0)
+		draw = ImageDraw.Draw(smallImg)
+		draw.line(path, fill = 1, width = 1)
+		###
 		pathImgs.append(np.array(pathImg, np.float32))
+		smallImgs.append(np.array(smallImg, np.float32))
 	res = np.array((res - res.min()) * 255.0 / (res.max() - res.min() + 1e-9), np.uint8)
-	return res, pathImgs
+	return res, pathImgs, smallImgs
 
 
 if __name__ == '__main__':

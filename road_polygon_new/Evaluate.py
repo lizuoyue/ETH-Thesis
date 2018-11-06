@@ -141,15 +141,16 @@ if __name__ == '__main__':
 				else:
 					time_res.append((time.time() - t) / len(pairs))
 
-				paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
+				paths, pathImgs, smallImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
 
 				if vis:
 					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
+					score = (pred_boundary[smallImgs[i] > 0.5] < 0.3).mean()
 					for i, pathImg in enumerate(pathImgs):
-						savePNG(img, pathImg, test_path + '/%d/%d-%.6lf.png' % (img_id, i, rnn_probs[i]))
+						savePNG(img, pathImg, test_path + '/%d/%d-%.6lf.png' % (img_id, i, score)) # rnn_probs[i]
 						np.save(test_path + '/%d/%d.npy' % (img_id, i), prob_res_li[i])
 
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
