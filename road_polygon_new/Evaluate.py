@@ -148,8 +148,8 @@ if __name__ == '__main__':
 					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
-					score = (pred_boundary[smallImgs[i] > 0.5] < 0.3).mean()
 					for i, pathImg in enumerate(pathImgs):
+						score = (pred_boundary[smallImgs[i] > 0.5] < 0.3).mean()
 						savePNG(img, pathImg, test_path + '/%d/%d-%.6lf.png' % (img_id, i, score)) # rnn_probs[i]
 						np.save(test_path + '/%d/%d.npy' % (img_id, i), prob_res_li[i])
 
