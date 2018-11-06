@@ -94,7 +94,7 @@ if __name__ == '__main__':
 			for j in range(config.TRAIN_NUM_PATH):
 				print(seq_lens[j])
 				print(ends[j])
-				print(pred_end[j])
+				# print(pred_end[j])
 				idx = path_idx[j]
 				for k in range(config.MAX_NUM_VERTICES):
 					Image.fromarray(np.array(vertex_inputs[j, k, ..., 0] * 255, np.uint8)).save('temp/%d-path%d-%din1.png' % (idx, j, k))
