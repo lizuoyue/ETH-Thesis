@@ -12,7 +12,7 @@ def mov_avg(li, n):
 		res.append(s / float(n))
 	return res
 
-def process(filename, n = 1000):
+def process(filename, n):
 	with open(filename) as f:
 		lines = [line.strip().split(', ') for line in f.readlines()]
 		loss_cnn = [float(line[1]) for line in lines]
