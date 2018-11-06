@@ -161,8 +161,10 @@ if __name__ == '__main__':
 					do_times += 1
 				if do_times == 0:
 					time_res.append(0)
+					time_res.append(0)
 				else:
-					time_res.append((time.time() - t) / do_times)
+					time_res.append((time.time() - t))
+					time_res.append(time_res[-1] / do_times)
 
 				paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
@@ -175,7 +177,7 @@ if __name__ == '__main__':
 						savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
 						np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
-				f.write('%d, %d, %.3lf\n' % tuple(time_res))
+				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
 
 			# 	if img_seq % 100 == 0:
