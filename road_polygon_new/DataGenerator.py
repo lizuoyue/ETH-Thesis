@@ -486,7 +486,7 @@ def recoverMultiPath(img_size, paths):
 		###
 		smallImg = Image.new('P', (round(img_size[0]/8), round(img_size[1]/8)), color = 0)
 		draw = ImageDraw.Draw(smallImg)
-		draw.line(path, fill = 1, width = 1)
+		draw.line(path_small, fill = 1, width = 1)
 		###
 		pathImgs.append(np.array(pathImg, np.float32))
 		smallImgs.append(np.array(smallImg, np.float32))
