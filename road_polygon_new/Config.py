@@ -26,7 +26,7 @@ class Config(object):
 		# Learning parameters
 		self.NUM_ITER = 1200001
 		self.MAX_NUM_VERTICES = 30
-		self.LEARNING_RATE = 2e-5
+		self.LEARNING_RATE = 1e-4
 		self.LSTM_OUT_CHANNEL = [64, 32, 16, 8]
 		self.V_OUT_RES = tuple(self.AREA_SIZE_8)
 		self.AREA_TRAIN_BATCH = 4
@@ -44,6 +44,15 @@ class Config(object):
 				'ann-train': '/local/home/zoli/data/roadtracer/roadtracer_train.json',
 				'ann-val'  : '/local/home/zoli/data/roadtracer/roadtracer_test.json',
 				'ann-test' : '/local/home/zoli/data/roadtracer/roadtracer_test.json',
+				'bias'     : [100.28884016, 101.06444319, 89.79566705]
+			},
+			'roadtracer-big': {
+				'img-train': '/local/home/zoli/data/roadtracer-big/train_images',
+				'img-val'  : '/local/home/zoli/data/roadtracer-big/test_images',
+				'img-test' : '/local/home/zoli/data/roadtracer-big/test_images',
+				'ann-train': '/local/home/zoli/data/roadtracer-big/roadtracer_train.json',
+				'ann-val'  : '/local/home/zoli/data/roadtracer-big/roadtracer_test.json',
+				'ann-test' : '/local/home/zoli/data/roadtracer-big/roadtracer_test.json',
 				'bias'     : [100.28884016, 101.06444319, 89.79566705]
 			},
 			'roadtracer-leonhard': {

@@ -46,6 +46,15 @@ class Config(object):
 				'ann-test' : '/local/home/zoli/data/roadtracer/roadtracer_test.json',
 				'bias'     : [100.28884016, 101.06444319, 89.79566705]
 			},
+			'roadtracer-big': {
+				'img-train': '/local/home/zoli/data/roadtracer-big/train_images',
+				'img-val'  : '/local/home/zoli/data/roadtracer-big/test_images',
+				'img-test' : '/local/home/zoli/data/roadtracer-big/test_images',
+				'ann-train': '/local/home/zoli/data/roadtracer-big/roadtracer_train.json',
+				'ann-val'  : '/local/home/zoli/data/roadtracer-big/roadtracer_test.json',
+				'ann-test' : '/local/home/zoli/data/roadtracer-big/roadtracer_test.json',
+				'bias'     : [100.28884016, 101.06444319, 89.79566705]
+			},
 			'roadtracer-leonhard': {
 				'img-train': '/cluster/scratch/zoli/roadtracer/train_images',
 				'img-val'  : '/cluster/scratch/zoli/roadtracer/test_images',
