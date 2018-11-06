@@ -99,7 +99,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files[10:20]):
+			for img_seq, img_file in enumerate(eval_files[:30]):
 
 				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
@@ -147,8 +147,8 @@ if __name__ == '__main__':
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
 					for i, pathImg in enumerate(pathImgs):
-						# savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % img_id)
-						np.save(test_path + '/%d.npy' % img_id, prob_res_li[i])
+						savePNG(img, pathImg, test_path + '/%d/%d.png' % (img_id, i))
+						np.save(test_path + '/%d/%d.npy' % (img_id, i), prob_res_li[i])
 
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
