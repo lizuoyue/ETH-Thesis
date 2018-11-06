@@ -103,6 +103,7 @@ if __name__ == '__main__':
 
 				img_id = int(img_file.split('/')[-1].split('.')[0])
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
+				img_bias = img.mean(axis = (0, 1))
 				time_res = [img_seq, img_id]
 
 				print(img_seq, img_id)
