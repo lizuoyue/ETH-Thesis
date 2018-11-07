@@ -163,8 +163,6 @@ if __name__ == '__main__':
 					'vertices': peaks_with_score,
 					'edges': edges
 				})
-				print(result[0])
-				break
 
 				if img_seq % 100 == 0:
 					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:

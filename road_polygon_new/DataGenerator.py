@@ -408,7 +408,7 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 	summary += hmap>=map_ur+th
 	peaks_binary = np.logical_and.reduce((summary >= 8, hmap >= min_val))
 	peaks = list(zip(np.nonzero(peaks_binary)[1], np.nonzero(peaks_binary)[0])) # note reverse
-	peaks_with_score = [x + (heatmap[x[1],x[0]],) for x in peaks]
+	peaks_with_score = [x + (float(heatmap[x[1],x[0]]),) for x in peaks]
 	return peaks_with_score
 
 
