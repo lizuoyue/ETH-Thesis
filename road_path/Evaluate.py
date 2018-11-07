@@ -120,8 +120,6 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				t = time.time()
-
 				map_b, map_v, all_terminal, val2idx, peaks_with_score, score_table = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
@@ -172,6 +170,7 @@ if __name__ == '__main__':
 						savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
 						np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
+				time_res.append(time.time() - t)
 				total_time += time_res[-1]
 				print('%d, %d, %.3lf' % tuple(time_res))
 				f.write('%d, %d, %.3lf\n' % tuple(time_res))
