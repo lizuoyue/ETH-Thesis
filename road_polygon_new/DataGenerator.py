@@ -419,42 +419,49 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 
 
 
-def getVerticesPairs(hmb, hmv):
+def getVE(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
-	peaks_with_score = findPeaks(hmv, min_val = 0.8)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if True or hmb[y, x] > 0.8]
+	peaks_with_score = findPeaks(hmv, min_val = 0.85)
 	peaks_with_score = sorted(peaks_with_score, key = lambda x: x[2], reverse = True)
+	num_peaks = len(peaks_with_score)
+	nb = [[] for _ in range(num_peaks)]
+	score_table = {}
+	edges_map = Image.new('P', (w, h), color = 0)
+	for i in range(num_peaks):
+		x1, y1, _ = peaks_with_score[i]
+		for j in range(i + 1, num_peaks):
+			x2, y2, _ = peaks_with_score[j]
+			edge_map = Image.new('P', (w, h), color = 0)
+			edge_draw = ImageDraw.Draw(edge_map)
+			edge_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+			edge_map = np.array(edge_map, np.float32)
+			score = np.mean(hmb[edge_map > 128])
+			score_table[(i, j)] = score
+			score_table[(j, i)] = score
+			if score > 0.7:
+				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+				nb[i].append(j)
+				nb[j].append(i)
+	edges_map = np.array(edges_map, np.float32) / 255.0
 
 	pairs = []
-	peaks_map = np.zeros([w, h], np.float32)
-	edges_map = Image.new('P', (w, h), color = 0)
-	draw = ImageDraw.Draw(edges_map)
-	for i in range(len(peaks_with_score)):
-		x1, y1, s1 = peaks_with_score[i]
-		peaks_map[y1, x1] = 1
-		if not (x1 in [0, 27] or y1 in [0, 27]):
-			continue
-		dist = []
-		for j in range(len(peaks_with_score)):
-			if j == i:
-				continue
-			x2, y2, _ = peaks_with_score[j]
-			temp = Image.new('P', (w, h), color = 0)
-			tmp_draw = ImageDraw.Draw(temp)
-			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
-			temp = np.array(temp, np.float32) / 255.0
-			if np.mean(hmb[temp > 0.5]) > 0.7:
-				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
-				dist.append(((x2 - x1) ** 2 + (y2 - y1) ** 2, j))
-		pairs.append(
-			np.concatenate([
-				np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0,
-				np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0
-			], axis = -1)
-		)
-	edges_map = np.array(edges_map, np.float32) / 255.0
-	return edges_map, peaks_map, pairs[:4]
+	v_val2idx = {}
+	peaks_map = np.zeros((w, h), np.float32)
+	for i in range(num_peaks):
+		x1, y1, _ = peaks_with_score[i]
+		v_val2idx[(x1, y1)] = i
+		if nb[i]:
+			peaks_map[y1, x1] = 1
+			if x1 in [0, 27] or y1 in [0, 27]:
+				pairs.append(
+					np.concatenate([
+						np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0,
+						np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0
+					], axis = -1)
+				)
+	
+	return edges_map, peaks_map, pairs[:5], peaks_with_score, v_val2idx, score_table
 
 
 
@@ -497,7 +504,33 @@ def recoverMultiPath(img_size, paths):
 
 
 
+def recoverEdges(pred_v_out, v_val2idx):
+	def l2dist(v1, v2):
+		diff = np.array(v1) - np.array(v2)
+		return np.sqrt(np.dot(diff, diff))
 
+	len_path = pred_v_out.shape[0]
+	path = []
+	for i in range(len_path):
+		hmap = paths[i]
+		end = 1 - hmap.sum()
+		ind = np.unravel_index(np.argmax(hmap), hmap.shape)
+		if hmap[ind] >= end:
+			v = (ind[1], ind[0])
+			if v in v_val2idx
+				path.append(v_val2idx[v])
+			else:
+				li = [(l2dist(v, v_val), i) for v_val, i in v_val2idx.items()]
+				path.append(min(li)[1])
+		else:
+			break
+	edges = []
+	if len(path) > 1:
+		for s, t in zip(path[:-1], path[1:]):
+			if s != t:
+				edges.append((s, t))
+				edges.append((t, s))
+	return edges
 
 
 

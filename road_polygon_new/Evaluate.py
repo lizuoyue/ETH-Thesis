@@ -90,9 +90,9 @@ if __name__ == '__main__':
 		if not os.path.exists(test_path):
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
-	nnnnn = 0
-	results = []
-	test_path = config.PATH[city_name]['img-%s' % mode]
+	result = []
+	total_time = 0
+	test_file_path = config.PATH[city_name]['img-%s' % mode]
 	test_info = json.load(open(config.PATH[city_name]['ann-%s' % mode]))
 
 	# Launch graph
@@ -101,10 +101,11 @@ if __name__ == '__main__':
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
 			for img_seq, img_info in enumerate(test_info['images']):
+
 				if not img_info['tile_file'].startswith('chicago'):
 					continue
 
-				img_file = test_path + '/' + img_info['file_name']
+				img_file = test_file_path + '/' + img_info['file_name']
 				img_id = img_info['id']
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
 				img_bias = img.mean(axis = (0, 1))
@@ -118,13 +119,14 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				map_b, map_v, pairs = getVerticesPairs(pred_boundary[0], pred_vertices[0])
+				map_b, map_v, pairs, peaks_with_score, v_val2idx, score_table = getVerticesPairs(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
 				if vis:
 					savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
 					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
 
+				edges = set()
 				multi_roads = []
 				prob_res_li = []
 				rnn_probs = []
@@ -136,10 +138,12 @@ if __name__ == '__main__':
 					prob_res_li.append(np.concatenate([temp, prob_res[0, 1:]], axis = 0))
 					rnn_probs.append(rnn_prob[0])
 
-				paths, pathImgs, smallImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
-				paths[paths > 1e-3] = 1.0
+					edges.update(recoverEdges(pred_v_out[0], v_val2idx))
+				edges = [item + (score_table[item], ) for item in list(edges)]
 
 				if vis:
+					paths, pathImgs, smallImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
+					paths[paths > 1e-3] = 1.0
 					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
@@ -149,18 +153,28 @@ if __name__ == '__main__':
 						np.save(test_path + '/%d/%d.npy' % (img_id, i), prob_res_li[i])
 
 				time_res.append(time.time() - t)
+				total_time += time_res[-1]
 				print(time_res)
 				f.write('%d, %d, %.3lf\n' % tuple(time_res))
 				f.flush()
 
-				nnnnn += 1
-				if nnnnn == 100:
-					quit()
+				result.append({
+					'image_id': img_id,
+					'vertices': peaks_with_score,
+					'edges': edges
+				})
+				print(result[0])
+				break
+
+				if img_seq % 100 == 0:
+					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
+						fp.write(json.dumps(result, cls = NumpyEncoder))
+						fp.close()
+
+			print(total_time, 's')
+			with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
+				fp.write(json.dumps(result, cls = NumpyEncoder))
+				fp.close()
 
 
-				# result.append({
-				# 	'image_id': img_id,
-				# 	'vertices': vertices,
-				# 	'edges': edges
-				# })
 
