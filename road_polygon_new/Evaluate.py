@@ -90,7 +90,7 @@ if __name__ == '__main__':
 		if not os.path.exists(test_path):
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
-	temp = 0
+	nnnnn = 0
 	results = []
 	test_path = config.PATH[city_name]['img-%s' % mode]
 	test_info = json.load(open(config.PATH[city_name]['ann-%s' % mode]))
@@ -153,8 +153,8 @@ if __name__ == '__main__':
 				f.write('%d, %d, %.3lf\n' % tuple(time_res))
 				f.flush()
 
-				temp += 1
-				if temp == 100:
+				nnnnn += 1
+				if nnnnn == 100:
 					quit()
 
 
