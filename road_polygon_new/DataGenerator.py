@@ -416,11 +416,14 @@ def findPeaks(heatmap, sigma = 0, min_val = 0.5):
 
 
 
+
+
+
 def getVerticesPairs(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
-	peaks_with_score = findPeaks(hmv, min_val = 0.9)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
+	peaks_with_score = findPeaks(hmv, min_val = 0.8)
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if True or hmb[y, x] > 0.8]
 	peaks_with_score = sorted(peaks_with_score, key = lambda x: x[2], reverse = True)
 
 	pairs = []
@@ -444,17 +447,16 @@ def getVerticesPairs(hmb, hmv):
 			if np.mean(hmb[temp > 0.5]) > 0.7:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 				dist.append(((x2 - x1) ** 2 + (y2 - y1) ** 2, j))
-		if len(dist) > 0:
-			_, j = min(dist)
-			x2, y2, _ = peaks_with_score[j]
-			pairs.append(
-				np.concatenate([
-					np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0,
-					np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0
-				], axis = -1)
-			)
+		pairs.append(
+			np.concatenate([
+				np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0,
+				np.array(vp.vertex_pool[y1][x1])[..., np.newaxis] / 255.0
+			], axis = -1)
+		)
 	edges_map = np.array(edges_map, np.float32) / 255.0
-	return edges_map, peaks_map, pairs
+	return edges_map, peaks_map, pairs[:4]
+
+
 
 
 

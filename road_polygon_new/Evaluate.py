@@ -90,27 +90,28 @@ if __name__ == '__main__':
 		if not os.path.exists(test_path):
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
-	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
-	# eval_files.sort()
-	eval_files = [item for item in eval_files if not (item.endswith('Building.png') or item.endswith('Road.png'))]
+	temp = 0
+	results = []
+	test_path = config.PATH[city_name]['img-%s' % mode]
+	test_info = json.load(open(config.PATH[city_name]['ann-%s' % mode]))
 
 	# Launch graph
 	with tf.Session() as sess:
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files[:100]):
+			for img_seq, img_info in enumerate(test_info['images']):
+				if not img_info['tile_file'].startswith('chicago'):
+					continue
 
-				img_id = int(img_file.split('/')[-1].split('.')[0])
+				img_file = test_path + '/' + img_info['file_name']
+				img_id = img_info['id']
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
 				img_bias = img.mean(axis = (0, 1))
 				time_res = [img_seq, img_id]
 
-				print(img_seq, img_id)
-
 				t = time.time()
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
-				time_res.append(time.time() - t)
 
 				if vis:
 					savePNG(img, np.zeros(config.AREA_SIZE), test_path + '/%d-0.png' % img_id)
@@ -124,7 +125,6 @@ if __name__ == '__main__':
 					savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
 					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
 
-				t = time.time()
 				multi_roads = []
 				prob_res_li = []
 				rnn_probs = []
@@ -135,11 +135,6 @@ if __name__ == '__main__':
 					temp = np.concatenate([temp, np.zeros((2, 1))], axis = -1)
 					prob_res_li.append(np.concatenate([temp, prob_res[0, 1:]], axis = 0))
 					rnn_probs.append(rnn_prob[0])
-
-				if len(pairs) == 0:
-					time_res.append(0)
-				else:
-					time_res.append((time.time() - t) / len(pairs))
 
 				paths, pathImgs, smallImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
 				paths[paths > 1e-3] = 1.0
@@ -153,6 +148,19 @@ if __name__ == '__main__':
 						savePNG(img, pathImg, test_path + '/%d/%d-%.6lf.png' % (img_id, i, score)) # rnn_probs[i]
 						np.save(test_path + '/%d/%d.npy' % (img_id, i), prob_res_li[i])
 
-				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
+				time_res.append(time.time() - t)
+				print(time_res)
+				f.write('%d, %d, %.3lf\n' % tuple(time_res))
 				f.flush()
+
+				temp += 1
+				if temp == 100:
+					quit()
+
+
+				# result.append({
+				# 	'image_id': img_id,
+				# 	'vertices': vertices,
+				# 	'edges': edges
+				# })
 
