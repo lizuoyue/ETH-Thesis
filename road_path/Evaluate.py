@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
 				edges = set()
 				for single in multi_roads:
-					edges.update(recoverEdges(single, v_val2idx))
+					edges.update(recoverEdges(single, val2idx))
 				edges = [item + (score_table[item], ) for item in list(edges)]
 
 				result.append({
