@@ -517,7 +517,7 @@ def recoverEdges(pred_v_out, v_val2idx):
 		ind = np.unravel_index(np.argmax(hmap), hmap.shape)
 		if hmap[ind] >= end:
 			v = (ind[1], ind[0])
-			if v in v_val2idx
+			if v in v_val2idx:
 				path.append(v_val2idx[v])
 			else:
 				li = [(l2dist(v, v_val), i) for v_val, i in v_val2idx.items()]
