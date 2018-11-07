@@ -129,6 +129,7 @@ if __name__ == '__main__':
 					savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
 					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
 				
+				indices = []
 				multi_roads = []
 				prob_res_li = []
 				rnn_probs = []
