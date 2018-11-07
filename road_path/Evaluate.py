@@ -91,23 +91,28 @@ if __name__ == '__main__':
 		if not os.path.exists(test_path):
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
-	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
-	# eval_files.sort()
-	eval_files = [item for item in eval_files if not (item.endswith('Building.png') or item.endswith('Road.png'))]
-
 	result = []
+	total_time = 0
+	test_file_path = config.PATH[city_name]['img-%s' % mode]
+	test_info = json.load(open(config.PATH[city_name]['ann-%s' % mode]))
+
 	# Launch graph
 	with tf.Session() as sess:
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files[:100]):
+			for img_seq, img_info in enumerate(test_info['images']):
 
-				t = time.time()
-				img_id = int(img_file.split('/')[-1].split('.')[0])
+				if not test_info['tile_file'].startswith('chicago'):
+					continue
+
+				img_file = test_file_path + '/' + img_info['file_name']
+				img_id = img_info['id']
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
+				img_bias = img.mean(axis = (0, 1))
 				time_res = [img_seq, img_id]
 
+				t = time.time()
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
 
 				if vis:
@@ -115,32 +120,18 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				#######################
-				# map_b, map_v, vertices, edges = getVE(pred_boundary[0], pred_vertices[0])
-				# result.append({
-				# 	'image_id': img_id,
-				# 	'vertices': vertices,
-				# 	'edges': edges
-				# })
-
-				# time_res.append(time.time() - t)
-				########################
-
 				t = time.time()
 
-				map_b, map_v, all_terminal, val2idx = getAllTerminal(pred_boundary[0], pred_vertices[0])
+				map_b, map_v, all_terminal, val2idx, peaks_with_score, score_table = getAllTerminal(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
 				if vis:
 					savePNG(img, map_b, test_path + '/%d-3.png' % img_id)
 					savePNG(img, map_v, test_path + '/%d-4.png' % img_id)
 				
-				indices = []
 				multi_roads = []
 				prob_res_li = []
-				do_times = 0
-				# import random
-				# random.shuffle(all_terminal)
+				rnn_probs = []
 				while len(all_terminal) > 0:
 					index = all_terminal[0][1]
 					terminal_1, terminal_2 = all_terminal[0][2:4]
@@ -158,18 +149,22 @@ if __name__ == '__main__':
 					all_terminal = [(item[1][0] in index or item[1][1] in index, item) for item in all_terminal[1:] if item[1] not in all_pairs]
 					all_terminal.sort()
 					all_terminal = [item[1] for item in all_terminal]
-					do_times += 1
-				if do_times == 0:
-					time_res.append(0)
-					time_res.append(0)
-				else:
-					time_res.append((time.time() - t))
-					time_res.append(time_res[-1] / do_times)
 
-				paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
-				paths[paths > 1e-3] = 1.0
+				edges = set()
+				for single in multi_roads:
+					edges.update(recoverEdges(single, v_val2idx))
+				edges = [item + (score_table[item], ) for item in list(edges)]
+
+				result.append({
+					'image_id': img_id,
+					'vertices': peaks_with_score,
+					'edges': edges
+				})
+				print(result[-1])
 
 				if vis:
+					paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
+					paths[paths > 1e-3] = 1.0
 					savePNG(img, paths, test_path + '/%d-5.png' % img_id)
 					if not os.path.exists(test_path + '/%d' % img_id):
 						os.makedirs(test_path + '/%d' % img_id)
@@ -179,12 +174,14 @@ if __name__ == '__main__':
 
 				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
 				f.flush()
+				quit()
 
-			# 	if img_seq % 100 == 0:
-			# 		with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
-			# 			fp.write(json.dumps(result, cls = NumpyEncoder))
-			# 			fp.close()
+				if img_seq % 100 == 0:
+					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
+						fp.write(json.dumps(result, cls = NumpyEncoder))
+						fp.close()
 
-			# with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
-			# 	fp.write(json.dumps(result, cls = NumpyEncoder))
-			# 	fp.close()
+			print(total_time, 's')
+			with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
+				fp.write(json.dumps(result, cls = NumpyEncoder))
+				fp.close()

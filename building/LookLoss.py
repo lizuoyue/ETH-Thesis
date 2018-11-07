@@ -22,9 +22,9 @@ def process(filename, n = 1000):
 	return mov_avg(loss_cls, n), mov_avg(loss_dlt, n), mov_avg(loss_cnn, n), mov_avg(loss_rnn, n)
 
 if __name__ == '__main__':
-	server = 'leonhard'
+	server = 'dalab'
 	net = 'resnet50'
-	city = 'crowdAI-leonhard'
+	city = 'Sunnyvale'
 	# os.popen('scp %s:~/thesis/building/Loss_train_%s_%s.out ./LossTrain.out' % (server, net, city))
 	# os.popen('scp %s:~/thesis/building/Loss_valid_%s_%s.out ./LossValid.out' % (server, net, city))
 	# quit()

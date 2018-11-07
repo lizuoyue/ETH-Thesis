@@ -393,9 +393,9 @@ def getAllTerminal(hmb, hmv):
 	assert(hmb.shape == hmv.shape)
 	h, w = hmb.shape[0: 2]
 	peaks_with_score = findPeaks(hmv, min_val = 0.9)
-	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
+	peaks_with_score = [(x, y, float(s)) for x, y, s in peaks_with_score if hmb[y, x] > 0.8]
 	allTerminal = []
-	d = {}
+	d, ddd = {}, {}
 	peaks_map = np.zeros([w, h], np.float32)
 	edges_map = Image.new('P', (w, h), color = 0)
 	draw = ImageDraw.Draw(edges_map)
@@ -411,15 +411,17 @@ def getAllTerminal(hmb, hmv):
 				np.array([np.array(vp.vertex_pool[y1][x1]), np.array(vp.vertex_pool[y2][x2])]) / 255.0,
 				np.array([np.array(vp.vertex_pool[y2][x2]), np.array(vp.vertex_pool[y1][x1])]) / 255.0
 			))
-
 			temp = Image.new('P', (w, h), color = 0)
 			tmp_draw = ImageDraw.Draw(temp)
 			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 			temp = np.array(temp, np.float32) / 255.0
-			if np.mean(hmb[temp > 0.5]) > 0.7:
+			score = np.mean(hmb[temp > 0.5])
+			ddd[(i, j)] = score
+			ddd[(j, i)] = score
+			if score > 0.7:
 				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 	edges_map = np.array(edges_map, np.float32) / 255.0
-	return edges_map, peaks_map, sorted(allTerminal, reverse = True), d
+	return edges_map, peaks_map, sorted(allTerminal, reverse = True), d, peaks_with_score, ddd
 
 def recoverMultiPath(img_size, paths):
 	pathImgs = []
@@ -491,6 +493,40 @@ def getVE(hmb, hmv):
 				edges.append((i, j, score))
 	edges_map = np.array(edges_map, np.float32) / 255.0
 	return edges_map, peaks_map, peaks_with_score, edges
+
+
+
+
+
+def recoverEdges(pred_v_out, v_val2idx):
+	def l2dist(v1, v2):
+		diff = np.array(v1) - np.array(v2)
+		return np.sqrt(np.dot(diff, diff))
+
+	len_path = pred_v_out.shape[0]
+	path = []
+	for i in range(len_path):
+		hmap = pred_v_out[i]
+		end = 1 - hmap.sum()
+		ind = np.unravel_index(np.argmax(hmap), hmap.shape)
+		if hmap[ind] >= end:
+			v = (ind[1], ind[0])
+			if v in v_val2idx:
+				path.append(v_val2idx[v])
+			else:
+				li = [(l2dist(v, v_val), i) for v_val, i in v_val2idx.items()]
+				path.append(min(li)[1])
+		else:
+			break
+	edges = []
+	if len(path) > 1:
+		for s, t in zip(path[:-1], path[1:]):
+			if s != t:
+				edges.append((s, t))
+				edges.append((t, s))
+	return edges
+
+
 
 
 

@@ -102,9 +102,6 @@ if __name__ == '__main__':
 			saver.restore(sess, model_to_load[:-5])
 			for img_seq, img_info in enumerate(test_info['images']):
 
-				if not img_info['tile_file'].startswith('chicago'):
-					continue
-
 				img_file = test_file_path + '/' + img_info['file_name']
 				img_id = img_info['id']
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
