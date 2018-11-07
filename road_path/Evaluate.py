@@ -161,7 +161,6 @@ if __name__ == '__main__':
 					'vertices': peaks_with_score,
 					'edges': edges
 				})
-				print(result[-1])
 
 				if vis:
 					paths, pathImgs = recoverMultiPath(img.shape[0: 2], multi_roads)
@@ -173,9 +172,10 @@ if __name__ == '__main__':
 						savePNG(img, pathImg, test_path + '/%d/%d-%d.png' % ((img_id,) + indices[i]))
 						np.save(test_path + '/%d/%d-%d.npy' % ((img_id,) + indices[i]), prob_res_li[i])
 
-				f.write('%d, %d, %.3lf, %.3lf\n' % tuple(time_res))
+				total_time += time_res[-1]
+				print('%d, %d, %.3lf' % tuple(time_res))
+				f.write('%d, %d, %.3lf\n' % tuple(time_res))
 				f.flush()
-				quit()
 
 				if img_seq % 100 == 0:
 					with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
@@ -186,3 +186,8 @@ if __name__ == '__main__':
 			with open('predictions_%s_%s_%s.json' % (city_name, backbone, mode), 'w') as fp:
 				fp.write(json.dumps(result, cls = NumpyEncoder))
 				fp.close()
+
+
+
+
+
