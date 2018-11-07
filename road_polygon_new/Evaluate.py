@@ -119,7 +119,7 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				map_b, map_v, pairs, peaks_with_score, v_val2idx, score_table = getVerticesPairs(pred_boundary[0], pred_vertices[0])
+				map_b, map_v, pairs, peaks_with_score, v_val2idx, score_table = getVE(pred_boundary[0], pred_vertices[0])
 				feature = np.concatenate([feature, map_b[np.newaxis, ..., np.newaxis], map_v[np.newaxis, ..., np.newaxis]], axis = -1)
 
 				if vis:
