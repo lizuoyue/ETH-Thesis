@@ -428,6 +428,7 @@ def getVE(hmb, hmv):
 	nb = [[] for _ in range(num_peaks)]
 	score_table = {}
 	edges_map = Image.new('P', (w, h), color = 0)
+	edges_draw = ImageDraw.Draw(edges_map)
 	for i in range(num_peaks):
 		x1, y1, _ = peaks_with_score[i]
 		for j in range(i + 1, num_peaks):
@@ -440,7 +441,7 @@ def getVE(hmb, hmv):
 			score_table[(i, j)] = score
 			score_table[(j, i)] = score
 			if score > 0.7:
-				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+				edges_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
 				nb[i].append(j)
 				nb[j].append(i)
 	edges_map = np.array(edges_map, np.float32) / 255.0
