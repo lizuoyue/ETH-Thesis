@@ -110,10 +110,10 @@ def func(in_fname, out_fname):
 if __name__ == '__main__':
 	os.popen('mkdir out_graph_clean')
 	import glob
-	files = glob.glob('out_graph/*')
+	files = glob.glob('out_graph_big/*')
 	for file in files:
 		print(file)
-		func(file, file.replace('out_graph', 'out_graph_clean'))
+		func(file, file.replace('out_graph_big', 'out_graph_clean'))
 
 
 

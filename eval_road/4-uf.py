@@ -46,12 +46,7 @@ class UnionFind:
 			self._id[j] = i
 			self._sz[i] += self._sz[j]
 
-cities = [
-	'boston', 'chicago', 'amsterdam', 'denver',
-	'la', 'montreal', 'paris', 'pittsburgh',
-	'saltlakecity', 'tokyo', 'toronto', 'vancouver',
-	'new york', 'kansas city', 'san diego'
-]
+cities = ['pittsburgh', 'tokyo', 'amsterdam', 'vancouver']
 
 def read_graph(filename):
 	with open(filename) as f:
@@ -76,8 +71,10 @@ def save_graph(filename, v, e):
 	return
 
 if __name__ == '__main__':
-	os.popen('mkdir out_graph_uf')
-	files = glob.glob('out_graph_clean/*')
+	os.popen('mkdir out_graph_big_extra')
+	files = []
+	for city in cities:
+		files.extend(glob.glob('out_graph_big_uf/%s*' % city))
 	for file in files:
 		print(file)
 		v, e = read_graph(file)
@@ -94,11 +91,15 @@ if __name__ == '__main__':
 			dv[uf._root(s)].add(s)
 			dv[uf._root(s)].add(t)
 
+		# print(sorted([len(dv[uf_id]) for uf_id in dv], reverse = True))
+		valid_uf_id = set([uf_id for uf_id in dv if len(dv[uf_id]) >= 5])
+
 		kd_tree = spatial.KDTree(v)
-		valid_uf_id = set([uf_id for uf_id in dv if len(dv[uf_id]) >= 3])
-		pairs = kd_tree.query_pairs(r = 128)
-		pairs = [(i, j) for i, j in pairs if uf._root(i) != uf._root(j)]
-		pairs = [(i, j) for i, j in pairs if uf._root(i) in valid_uf_id and  uf._root(j) in valid_uf_id]
+		pairs = list(kd_tree.query_pairs(r = 128))
+		# print(len(pairs))
+		# continue
+		# pairs = [(i, j) for i, j in pairs if uf._root(i) != uf._root(j)]
+		# pairs = [(i, j) for i, j in pairs if uf._root(i) in valid_uf_id and  uf._root(j) in valid_uf_id]
 		pairs.extend([(j, i) for i, j in pairs])
 
 		e_rec = []
@@ -116,7 +117,7 @@ if __name__ == '__main__':
 			v_val2idx[val] = k
 		new_e = [(v_val2idx[s], v_val2idx[t]) for s, t in e_rec]
 
-		save_graph(file.replace('out_graph_clean', 'out_graph_uf'), new_v, new_e)
+		save_graph(file.replace('out_graph_big_uf', 'out_graph_big_extra'), new_v, new_e)
 
 
 
