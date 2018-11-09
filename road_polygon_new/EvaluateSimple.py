@@ -100,7 +100,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_file in enumerate(eval_files):
+			for img_seq, img_info in enumerate(test_info['images']):
 
 				img_file = test_file_path + '/' + img_info['file_name']
 				img_id = img_info['id']
