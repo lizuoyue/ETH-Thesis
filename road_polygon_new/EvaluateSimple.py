@@ -62,15 +62,14 @@ if __name__ == '__main__':
 	vv = tf.placeholder(tf.float32)
 	ii = tf.placeholder(tf.float32)
 	oo = tf.placeholder(tf.float32)
-	tt = tf.placeholder(tf.float32)
 	ee = tf.placeholder(tf.float32)
 	ll = tf.placeholder(tf.int32)
 	ff = tf.placeholder(tf.float32)
 	dd = tf.placeholder(tf.int32)
 
-	train_res = graph.train(aa, bb, vv, ii, oo, tt, ee, ll, dd)
+	train_res = graph.train(aa, bb, vv, ii, oo, ee, ll, dd)
 	pred_mask_res = graph.predict_mask(aa)
-	pred_path_res = graph.predict_path(ff, tt)
+	pred_path_res = graph.predict_path(ff, ii)
 
 	# for v in tf.global_variables():
 	# 	print(v.name)
@@ -91,11 +90,11 @@ if __name__ == '__main__':
 		if not os.path.exists(test_path):
 			os.popen('mkdir %s' % test_path.replace('./', ''))
 
-	eval_files = glob.glob(config.PATH[city_name]['img-%s' % mode] + '/*')
-	eval_files.sort()
-	eval_files = [item for item in eval_files if not (item.endswith('Building.png') or item.endswith('Road.png'))]
-
 	result = []
+	total_time = 0
+	test_file_path = config.PATH[city_name]['img-%s' % mode]
+	test_info = json.load(open(config.PATH[city_name]['ann-%s' % mode]))
+
 	# Launch graph
 	with tf.Session() as sess:
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
@@ -103,11 +102,13 @@ if __name__ == '__main__':
 			saver.restore(sess, model_to_load[:-5])
 			for img_seq, img_file in enumerate(eval_files):
 
-				t = time.time()
-				img_id = int(img_file.split('/')[-1].split('.')[0])
+				img_file = test_file_path + '/' + img_info['file_name']
+				img_id = img_info['id']
 				img = np.array(Image.open(img_file).resize(config.AREA_SIZE))[..., 0: 3]
+				img_bias = img.mean(axis = (0, 1))
 				time_res = [img_seq, img_id]
 
+				t = time.time()
 				feature, pred_boundary, pred_vertices = sess.run(pred_mask_res, feed_dict = {aa: img - img_bias})
 
 				if vis:
@@ -115,7 +116,7 @@ if __name__ == '__main__':
 					savePNG(img, pred_boundary[0, ..., 0] * 255, test_path + '/%d-1.png' % img_id)
 					savePNG(img, pred_vertices[0, ..., 0] * 255, test_path + '/%d-2.png' % img_id)
 
-				map_b, map_v, vertices, edges = getVE(pred_boundary[0], pred_vertices[0])
+				map_b, map_v, vertices, edges = getVESimple(pred_boundary[0], pred_vertices[0])
 				result.append({
 					'image_id': img_id,
 					'vertices': vertices,

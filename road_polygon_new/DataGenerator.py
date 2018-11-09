@@ -465,6 +465,32 @@ def getVE(hmb, hmv):
 	return edges_map, peaks_map, pairs[:5], peaks_with_score, v_val2idx, score_table
 
 
+def getVESimple(hmb, hmv):
+	assert(hmb.shape == hmv.shape)
+	h, w = hmb.shape[0: 2]
+	peaks_with_score = findPeaks(hmv, min_val = 0.85)
+	peaks_with_score = [(x, y, s) for x, y, s in peaks_with_score if True or hmb[y, x] > 0.8]
+	peaks_map = np.zeros([w, h], np.float32)
+	edges_map = Image.new('P', (w, h), color = 0)
+	draw = ImageDraw.Draw(edges_map)
+	edges = []
+	for i in range(len(peaks_with_score)):
+		x1, y1, s1 = peaks_with_score[i]
+		peaks_map[y1, x1] = 1
+		for j in range(i + 1, len(peaks_with_score)):
+			x2, y2, _ = peaks_with_score[j]
+			temp = Image.new('P', (w, h), color = 0)
+			tmp_draw = ImageDraw.Draw(temp)
+			tmp_draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+			temp = np.array(temp, np.float32) / 255.0
+			score = np.mean(hmb[temp > 0.5])
+			if score >= 0.5:
+				draw.line([x1, y1, x2, y2], fill = 255, width = 1)
+				edges.append((i, j, score))
+	edges_map = np.array(edges_map, np.float32) / 255.0
+	return edges_map, peaks_map, peaks_with_score, edges
+
+
 
 
 
