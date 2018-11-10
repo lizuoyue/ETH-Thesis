@@ -22,7 +22,7 @@ def process(filename, n):
 if __name__ == '__main__':
 	server = 'dalab'
 	net = 'vgg16'
-	city = 'roadtracer-big'
+	city = 'Chicago'
 	# os.popen('scp %s:~/thesis/road_polygon_new/Loss_train_%s_%s.out ./LossTrain.out' % (server, net, city))
 	# os.popen('scp %s:~/thesis/road_polygon_new/Loss_valid_%s_%s.out ./LossValid.out' % (server, net, city))
 	# quit()
