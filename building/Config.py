@@ -97,5 +97,32 @@ class Config(object):
 				'ann-test' : '/local/home/zoli/data/Boston/BostonBuildingTest.json',
 				'bias'     : [76.86692809, 75.58776253, 67.1285512]
 			}
+			'Chicago-leonhard': {
+				'img-train': '/cluster/scratch/zoli/Chicago/ChicagoPatch',
+				'img-val'  : '/cluster/scratch/zoli/Chicago/ChicagoPatch',
+				'img-test' : '/cluster/scratch/zoli/Chicago/ChicagoPatch',
+				'ann-train': '/cluster/scratch/zoli/Chicago/ChicagoBuildingTrain.json',
+				'ann-val'  : '/cluster/scratch/zoli/Chicago/ChicagoBuildingVal.json',
+				'ann-test' : '/cluster/scratch/zoli/Chicago/ChicagoBuildingTest.json',
+				'bias'     : [84.60222819, 80.07855799, 70.79262454]
+			},
+			'Sunnyvale-leonhard': {
+				'img-train': '/cluster/scratch/zoli/Sunnyvale/SunnyvalePatch',
+				'img-val'  : '/cluster/scratch/zoli/Sunnyvale/SunnyvalePatch',
+				'img-test' : '/cluster/scratch/zoli/Sunnyvale/SunnyvalePatch',
+				'ann-train': '/cluster/scratch/zoli/Sunnyvale/SunnyvaleBuildingTrain.json',
+				'ann-val'  : '/cluster/scratch/zoli/Sunnyvale/SunnyvaleBuildingVal.json',
+				'ann-test' : '/cluster/scratch/zoli/Sunnyvale/SunnyvaleBuildingTest.json',
+				'bias'     : [107.52448122, 106.82606879, 98.10730461]
+			},
+			'Boston-leonhard': {
+				'img-train': '/cluster/scratch/zoli/Boston/BostonPatch',
+				'img-val'  : '/cluster/scratch/zoli/Boston/BostonPatch',
+				'img-test' : '/cluster/scratch/zoli/Boston/BostonPatch',
+				'ann-train': '/cluster/scratch/zoli/Boston/BostonBuildingTrain.json',
+				'ann-val'  : '/cluster/scratch/zoli/Boston/BostonBuildingVal.json',
+				'ann-test' : '/cluster/scratch/zoli/Boston/BostonBuildingTest.json',
+				'bias'     : [76.86692809, 75.58776253, 67.1285512]
+			}
 		}
 
