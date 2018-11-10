@@ -96,7 +96,7 @@ class Config(object):
 				'ann-val'  : '/local/home/zoli/data/Boston/BostonBuildingVal.json',
 				'ann-test' : '/local/home/zoli/data/Boston/BostonBuildingTest.json',
 				'bias'     : [76.86692809, 75.58776253, 67.1285512]
-			}
+			},
 			'Chicago-leonhard': {
 				'img-train': '/cluster/scratch/zoli/Chicago/ChicagoPatch',
 				'img-val'  : '/cluster/scratch/zoli/Chicago/ChicagoPatch',
