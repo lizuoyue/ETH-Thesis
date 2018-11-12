@@ -76,8 +76,8 @@ def save_graph(filename, v, e):
 	return
 
 if __name__ == '__main__':
-	os.popen('mkdir out_graph_uf')
-	files = glob.glob('out_graph_clean/*')
+	os.popen('mkdir out_graph_big_clean_uf')#_clean_uf
+	files = glob.glob('out_graph_big_clean/*')
 	for file in files:
 		print(file)
 		v, e = read_graph(file)
@@ -116,7 +116,7 @@ if __name__ == '__main__':
 			v_val2idx[val] = k
 		new_e = [(v_val2idx[s], v_val2idx[t]) for s, t in e_rec]
 
-		save_graph(file.replace('out_graph_clean', 'out_graph_uf'), new_v, new_e)
+		save_graph(file.replace('out_graph_big_clean', 'out_graph_big_clean_uf'), new_v, new_e)
 
 
 

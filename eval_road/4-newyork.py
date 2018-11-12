@@ -71,10 +71,10 @@ def save_graph(filename, v, e):
 	return
 
 if __name__ == '__main__':
-	os.popen('mkdir out_graph_big_extra')
+	os.popen('mkdir out_graph_big_cu_extra')
 	files = []
 	for city in cities:
-		files.extend(glob.glob('out_graph_big_uf/%s*' % city))
+		files.extend(glob.glob('out_graph_big_clean_uf/%s*' % city))
 	for file in files:
 		print(file)
 		v, e = read_graph(file)
@@ -116,7 +116,7 @@ if __name__ == '__main__':
 			v_val2idx[val] = k
 		new_e = [(v_val2idx[s], v_val2idx[t]) for s, t in e_rec]
 
-		save_graph(file.replace('out_graph_big_uf', 'out_graph_big_extra'), new_v, new_e)
+		save_graph(file.replace('out_graph_big_clean_uf', 'out_graph_big_cu_extra'), new_v, new_e)
 
 
 

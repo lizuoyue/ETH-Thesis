@@ -108,12 +108,12 @@ def func(in_fname, out_fname):
 	ng.save(out_fname)
 
 if __name__ == '__main__':
-	os.popen('mkdir out_graph_clean')
+	os.popen('mkdir out_graph_big_uf_clean')
 	import glob
-	files = glob.glob('out_graph_big/*')
+	files = glob.glob('out_graph_big_uf/*')
 	for file in files:
 		print(file)
-		func(file, file.replace('out_graph_big', 'out_graph_clean'))
+		func(file, file.replace('out_graph_big_uf', 'out_graph_big_uf_clean'))
 
 
 

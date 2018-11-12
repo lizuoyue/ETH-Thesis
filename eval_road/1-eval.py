@@ -41,7 +41,10 @@ for dt in dts:
 		res[city] = {'v': [], 'vd': {}, 'e': []}
 	assert(len(res[city]['v']) >= len(res[city]['vd']))
 	base_idx = len(res[city]['v'])
-	vs = [(item[0] + round(lurd[0] / sel_size * 28) + x_bias * sel_num * 28, item[1] + round(lurd[1] / sel_size * 28) + y_bias * sel_num * 28) for item in dt['vertices']]
+	vs = [(
+		item[0] + round(lurd[0] / sel_size * 28) + x_bias * sel_num * 28,
+		item[1] + round(lurd[1] / sel_size * 28) + y_bias * sel_num * 28
+	) for item in dt['vertices']]
 	r_idx2a_idx = {}
 	for r_idx, v in enumerate(vs):
 		f = near(res[city]['vd'], v)
@@ -89,7 +92,7 @@ for k in res:
 	for th in np.arange(0.5, 1.0, 0.05):
 		with open('./out_graph_big/%s_%.2lf.out.graph' % (k, th), 'w') as f:
 			for item in v:
-				x, y = round(item[0] * (sel_size / 28)), round(item[1] * (sel_size / 28))
+				x, y = round(item[0] * (sel_size / 28) + (sel_size / 28) / 2), round(item[1] * (sel_size / 28) + (sel_size / 28) / 2)
 				f.write('%d %d\n' % (x, y))
 			f.write('\n')
 			for s, t, score in e:
