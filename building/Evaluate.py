@@ -1,5 +1,5 @@
 import numpy as np
-import os, sys, time, json, glob, pickle
+import os, sys, time, json, glob, pickle, tqdm
 import tensorflow as tf
 from Config import *
 from Model import *
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for i in range(obj.TEST_GROUP_NUM):
+			for i in tqdm(range(obj.TEST_GROUP_NUM)):
 				img = obj.getAreasBatch(config.AREA_TEST_BATCH, mode = mode)
 				feed_dict = {aa: img - img_bias}
 

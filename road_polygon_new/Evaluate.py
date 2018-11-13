@@ -4,7 +4,7 @@ import tensorflow as tf
 from Config import *
 from Model import *
 from DataGenerator import *
-import cv2, json, glob
+import cv2, json, glob, tqdm
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 		with open('Eval_%s_%s_%s.out' % (city_name, backbone, mode), 'w') as f:
 			# Restore weights
 			saver.restore(sess, model_to_load[:-5])
-			for img_seq, img_info in enumerate(test_info['images']):
+			for img_seq, img_info in tqdm(enumerate(test_info['images'])):
 
 				img_file = test_file_path + '/' + img_info['file_name']
 				img_id = img_info['id']
