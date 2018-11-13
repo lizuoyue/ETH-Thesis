@@ -8,7 +8,7 @@ def colinear_angle(p0, p1, p2):
 		return np.sqrt(np.dot(diff, diff))
 	a, b, c = l2dist(p0, p1), l2dist(p0, p2), l2dist(p1, p2)
 	cos_C = (a * a + b * b - c * c) / (2 * a * b)
-	return cos_C < -0.996 # cos(174.8736°)
+	return cos_C < -0.87
 
 def graph_process(v, e):
 	# 1. Remove duplicate
@@ -91,12 +91,13 @@ def save_graph(filename, v, e):
 	return
 
 if __name__ == '__main__':
-	os.popen('mkdir out_graph_clean_1')
-	files = glob.glob('out_graph/*0.5*.graph')
+	os.popen('mkdir out_ours_cu_remove_clean')
+	files = glob.glob('out_ours_cu_remove/*.graph')
 	for file in files:
+		print(file)
 		v, e = read_graph(file)
 		v, e = graph_process(v, e)
-		save_graph(file.replace('out_graph', 'out_graph_clean_1'), v, e)
+		save_graph(file.replace('out_ours_cu_remove', 'out_ours_cu_remove_clean'), v, e)
 
 
 
