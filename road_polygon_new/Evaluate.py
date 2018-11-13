@@ -4,9 +4,10 @@ import tensorflow as tf
 from Config import *
 from Model import *
 from DataGenerator import *
-import cv2, json, glob, tqdm
+import cv2, json, glob
 import matplotlib.pyplot as plt
 from PIL import Image
+from tqdm import tqdm
 
 config = Config()
 cmap = plt.get_cmap('viridis')

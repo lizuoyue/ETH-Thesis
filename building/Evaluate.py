@@ -1,10 +1,11 @@
 import numpy as np
-import os, sys, time, json, glob, pickle, tqdm
+import os, sys, time, json, glob, pickle
 import tensorflow as tf
 from Config import *
 from Model import *
 from DataGenerator import *
 from UtilityBoxAnchor import *
+from tqdm import tqdm
 
 config = Config()
 
