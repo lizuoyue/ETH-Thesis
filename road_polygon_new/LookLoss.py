@@ -30,15 +30,15 @@ if __name__ == '__main__':
 	n = 1000
 	int_val = 100
 	n_val = int(n / int_val)
-	loss_cnn, loss_rnn = process('LossTrain.out', n)
+	# loss_cnn, loss_rnn = process('LossTrain.out', n)
 	loss_cnn_val, loss_rnn_val = process('LossValid.out', n_val)
-	l = len(loss_cnn)
+	# l = len(loss_cnn)
 	l_val = len(loss_cnn_val)
 
 	plt.plot((np.array(range(l_val)) + n_val) * int_val, loss_cnn_val, label = 'CNN Val')
 	plt.plot((np.array(range(l_val)) + n_val) * int_val, loss_rnn_val, label = 'RNN Val')
-	plt.plot(range(l), loss_cnn, label = 'CNN')
-	plt.plot(range(l), loss_rnn, label = 'RNN')
+	# plt.plot(range(l), loss_cnn, label = 'CNN')
+	# plt.plot(range(l), loss_rnn, label = 'RNN')
 
 	plt.title('Training Loss')
 	# plt.ylim(ymin = 0, ymax = 1.5)

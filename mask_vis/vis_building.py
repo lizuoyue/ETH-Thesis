@@ -107,7 +107,7 @@ if __name__ == '__main__':
 	# image_ids = list(np.random.choice(image_ids, 100, replace = False))
 	image_ids = [9843, 16502, 18848, 33232, 38410, 39412, 41635, 54737, 59830]
 
-	choose = ['vgg16']#, 'panet', 'maskrcnn']
+	choose = ['vgg16', 'panet', 'maskrcnn']
 	d = {}
 	for c in choose:
 		d[c] = {img_id: [] for img_id in image_ids}
