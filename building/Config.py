@@ -33,7 +33,7 @@ class Config(object):
 		]
 
 		# Learning parameters
-		self.NUM_ITER = 800001 # 200001 500001 
+		self.NUM_ITER = 1600001 # 200001 500001 
 		self.MAX_NUM_VERTICES = 30
 		self.LEARNING_RATE = 4e-6 # 1e-4 2e-5 4e-6
 		self.LSTM_OUT_CHANNEL = [64, 32, 16]
