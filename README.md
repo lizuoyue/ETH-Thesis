@@ -11,3 +11,5 @@ Arguments:
 * `--city`: the city name.
 * `--net`: backbone of the net.
 * `--load`: resume training or not.
+
+To train the model just simply `python3 Train.py --XXX YYY` is fine.
