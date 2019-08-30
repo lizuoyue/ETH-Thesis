@@ -11,5 +11,7 @@ Arguments:
 * `--city`: the city name.
 * `--net`: backbone of the net.
 * `--load`: resume training or not.
+* `--vis`: whether visualize the prediction or not.
 
 To train the model just simply `python3 Train.py --XXX YYY` is fine.
+To run inference just `python3 Evaluate.py --XXX YYY`.
