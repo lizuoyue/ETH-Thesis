@@ -3,6 +3,7 @@ import Config
 
 config = Config.Config()
 
+
 def lonLatToWorld(lon, lat):
 	# Truncating to 0.9999 effectively limits latitude to 89.189.
 	# This is about a third of a tile past the edge of the world tile.
